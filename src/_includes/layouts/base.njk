@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% if title %}{{ title }} · {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{{ description or site.description }}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="{{ '/styles/main.css' | url }}" />
+    {% if site.googleAds.enable and site.googleAds.client and env.isProd %}
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.googleAds.client }}"
+      crossorigin="anonymous"
+    ></script>
+    {% endif %}
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="bg-grid"></div>
+      <header class="topbar">
+        <div class="brand">
+          <span class="dot"></span>
+          <div>
+            <div class="brand-name">{{ site.title }}</div>
+            <div class="brand-tag">{{ site.tagline }}</div>
+          </div>
+        </div>
+        <button class="nav-toggle" aria-label="Toggle menu">≡</button>
+        <nav class="nav">
+          <a href="{{ '/#games' | url }}">게임</a>
+          <a href="{{ '/#freelance' | url }}">외주</a>
+          <a href="{{ '/#blog' | url }}">블로그</a>
+          <a href="{{ '/#contact' | url }}">연락</a>
+        </nav>
+      </header>
+
+      <main>{{ content | safe }}</main>
+
+      <footer class="footer" id="contact">
+        <div>
+          <div class="eyebrow">Contact</div>
+          <h2>협업, 피드백, 외주 문의</h2>
+          <p>메일이나 DM으로 편하게 연락주세요.</p>
+          <div class="footer-links">
+            {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+            {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
+            {% if site.socials.itch %}<a href="{{ site.socials.itch }}">itch.io</a>{% endif %}
+            {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
+            {% if site.socials.x %}<a href="{{ site.socials.x }}">X</a>{% endif %}
+          </div>
+        </div>
+        {% set newest = collections.posts | first %}
+        <div class="footer-meta">
+          <span>© {{ site.author }}{% if newest %} {{ newest.date | readableDate('yyyy') }}{% endif %}</span>
+          <span>Powered by Eleventy · GitHub Pages</span>
+        </div>
+      </footer>
+    </div>
+    <script>
+      const toggle = document.querySelector('.nav-toggle');
+      const nav = document.querySelector('.nav');
+      if (toggle && nav) {
+        toggle.addEventListener('click', () => nav.classList.toggle('open'));
+      }
+    </script>
+  </body>
+</html>
