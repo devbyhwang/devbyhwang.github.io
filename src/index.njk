@@ -3,42 +3,116 @@ layout: layouts/base.njk
 title: 홈
 description: "게임 devlog, 외주 작업 과정, 글과 잡담까지 모아두는 블로그 홈"
 ---
-<section class="hero" id="top">
-  <div class="hero-text">
+{% set newest = collections.posts | first %}
+<section class="intro">
+  <div>
     <p class="eyebrow">{{ site.hero.kicker }}</p>
     <h1>{{ site.hero.heading }}</h1>
     <p class="lede">{{ site.hero.subhead }}</p>
-    <div class="actions">
+    <div class="intro-actions">
       {% for action in site.hero.actions %}
-        <a class="btn" href="{{ action.href | url }}">{{ action.label }}</a>
+        <a class="link-pill" href="{{ action.href | url }}">{{ action.label }}</a>
       {% endfor %}
+      <a class="link-pill" href="{{ '/blog/' | url }}">아카이브</a>
     </div>
   </div>
-  <div class="stat-grid">
-    {% for item in studio.callouts %}
-      <div class="stat-card">
-        <div class="eyebrow">{{ item.title }}</div>
-        <p>{{ item.body }}</p>
+  <div class="intro-meta">
+    {% if newest %}
+      <div class="meta-block">
+        <span class="badge accent">Latest</span>
+        <div class="meta-title">{{ newest.data.title }}</div>
+        <div class="meta-sub">{{ newest.date | readableDate }} · {{ newest.data.readingTime or '읽기' }}</div>
       </div>
-    {% endfor %}
+    {% endif %}
+    <div class="meta-block">
+      <span class="badge">Devlog · Freelance</span>
+      <div class="meta-title">게임 제작 + 외주 기록</div>
+      <div class="meta-sub">Hwang Studio — GitHub Pages & Eleventy</div>
+    </div>
   </div>
 </section>
 
-<section class="panel" id="games">
-  <div class="section-head">
-    <div>
-      <p class="eyebrow">Games</p>
-      <h2>만드는 게임들</h2>
-      <p>빌드 로그와 플레이 링크를 묶어두었습니다.</p>
+<section class="layout-two" id="latest">
+  <div class="feed">
+    {% if newest %}
+      <article class="featured-post">
+        <div class="badge accent">{{ newest.data.category or 'notes' }}</div>
+        <h2><a href="{{ newest.url | url }}">{{ newest.data.title }}</a></h2>
+        <p class="muted">{{ newest.data.excerpt }}</p>
+        <div class="post-meta">{{ newest.date | readableDate }} · {{ newest.data.readingTime or '읽기' }}</div>
+      </article>
+    {% endif %}
+    <div class="post-list">
+      {% for post in collections.posts | slice(1,7) %}
+        <a class="post-item" href="{{ post.url | url }}">
+          <div class="post-item-top">
+            <span class="badge">{{ post.data.category | default('notes') }}</span>
+            <span class="post-meta">{{ post.date | readableDate }} · {{ post.data.readingTime or '읽기' }}</span>
+          </div>
+          <div class="post-item-title">{{ post.data.title }}</div>
+          <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
+        </a>
+      {% endfor %}
     </div>
-    <a class="ghost" href="#blog">더 많은 devlog →</a>
+    {% include "ad-slot.njk" %}
   </div>
-  <div class="card-grid">
+  <aside class="sidebar">
+    <div class="sidebar-card profile-card">
+      <div class="avatar-dot"></div>
+      <div>
+        <div class="profile-name">{{ site.author }}</div>
+        <p class="muted">{{ site.tagline }}</p>
+        {% if site.email %}<a class="text-link" href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+      </div>
+    </div>
+    <div class="sidebar-card">
+      <div class="card-title">카테고리</div>
+      <ul class="category-list">
+        {% set labels = {
+          'devlog': 'Devlog',
+          'freelance': 'Freelance',
+          'games': 'Games',
+          'notes': 'Notes'
+        } %}
+        {% for key, posts in collections.byCategory %}
+          <li>
+            <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
+            <span class="count">{{ posts | length }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="sidebar-card">
+      <div class="card-title">콜아웃</div>
+      <ul class="callout-list">
+        {% for item in studio.callouts %}
+          <li>
+            <span class="badge light">{{ item.title }}</span>
+            <p class="muted">{{ item.body }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% include "ad-slot.njk" %}
+  </aside>
+</section>
+
+<section class="projects" id="projects">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Projects</p>
+      <h2>게임 & 외주</h2>
+      <p class="muted">진행 중인 게임과 외주 작업을 티스토리식 카드로 묶었습니다.</p>
+    </div>
+    <a class="text-link" href="{{ '/blog/' | url }}">블로그 전체</a>
+  </div>
+
+  <div class="project-grid">
     {% for game in studio.games %}
-      <article class="card">
-        <div class="card-top">
-          <div class="pill">{{ game.status }}</div>
-          <div class="pill alt">{{ game.role }}</div>
+      <article class="project-card">
+        <div class="project-meta">
+          <span class="badge">{{ game.status }}</span>
+          <span class="pill">{{ game.role }}</span>
         </div>
         <h3>{{ game.title }}</h3>
         <p class="muted">{{ game.blurb }}</p>
@@ -53,66 +127,27 @@ description: "게임 devlog, 외주 작업 과정, 글과 잡담까지 모아두
       </article>
     {% endfor %}
   </div>
-</section>
 
-<section class="panel" id="freelance">
-  <div class="section-head">
+  <div class="section-heading slim">
     <div>
       <p class="eyebrow">Freelance</p>
-      <h2>외주 파이프라인</h2>
-      <p>제안 → 제작 → 핸드오프 흐름과 최근 작업들.</p>
+      <h3>최근 외주 기록</h3>
     </div>
-    <div class="ghost">Notion/Slack/Linear 지원</div>
+    <span class="muted">Notion / Slack / Linear 지원</span>
   </div>
-  <div class="split">
-    <div class="timeline">
-      {% for step in studio.freelance.summary %}
-        <div class="timeline-item">
-          <div class="dot"></div>
+  <div class="freelance-grid">
+    {% for job in studio.freelance.jobs %}
+      <div class="job-card">
+        <div class="job-head">
           <div>
-            <h4>{{ step.title }}</h4>
-            <p>{{ step.detail }}</p>
+            <div class="eyebrow">{{ job.year }}</div>
+            <h4>{{ job.client }}</h4>
           </div>
+          <span class="pill">{{ job.status }}</span>
         </div>
-      {% endfor %}
-    </div>
-    <div class="job-list">
-      {% for job in studio.freelance.jobs %}
-        <div class="job-card">
-          <div class="job-head">
-            <div>
-              <div class="eyebrow">{{ job.year }}</div>
-              <h4>{{ job.client }}</h4>
-            </div>
-            <div class="pill">{{ job.status }}</div>
-          </div>
-          <p class="muted">{{ job.work }}</p>
-          <p class="note">{{ job.notes }}</p>
-        </div>
-      {% endfor %}
-      {% include "ad-slot.njk" %}
-    </div>
-  </div>
-</section>
-
-<section class="panel" id="blog">
-  <div class="section-head">
-    <div>
-      <p class="eyebrow">Blog</p>
-      <h2>최신 글</h2>
-      <p>devlog, 외주 회고, 잡담을 카테고리별로 정리.</p>
-    </div>
-    <a class="ghost" href="{{ '/blog/' | url }}">전체 글 보기</a>
-  </div>
-  <div class="post-grid">
-    {% for post in collections.posts | slice(0,6) %}
-      <article class="post-card">
-        <div class="pill">{{ post.data.category | default('notes') }}</div>
-        <h3><a href="{{ post.url | url }}">{{ post.data.title }}</a></h3>
-        <p class="muted">{{ post.data.excerpt }}</p>
-        <div class="meta">{{ post.date | readableDate }} · {{ post.data.readingTime or '3 min' }}</div>
-      </article>
+        <p class="muted">{{ job.work }}</p>
+        <p class="note">{{ job.notes }}</p>
+      </div>
     {% endfor %}
   </div>
-  {% include "ad-slot.njk" %}
 </section>

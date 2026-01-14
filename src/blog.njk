@@ -2,14 +2,58 @@
 layout: layouts/base.njk
 title: 블로그
 ---
-<section class="panel">
-  <div class="section-head">
-    <div>
-      <p class="eyebrow">Archive</p>
-      <h2>블로그 & Devlog</h2>
-      <p>카테고리별로 모아보기.</p>
+<section class="page-hero">
+  <p class="eyebrow">Archive</p>
+  <h1>블로그 & Devlog</h1>
+  <p class="muted">최신순 목록과 카테고리별 모아보기.</p>
+  <div class="hero-actions">
+    <a class="text-link" href="{{ '/' | url }}">홈으로 돌아가기</a>
+  </div>
+</section>
+
+<section class="layout-two archive">
+  <div class="feed">
+    <div class="post-list archive-list">
+      {% for post in collections.posts %}
+        <a class="post-item compact" href="{{ post.url | url }}">
+          <div class="post-item-top">
+            <span class="badge">{{ post.data.category | default('notes') }}</span>
+            <span class="post-meta">{{ post.date | readableDate }} · {{ post.data.readingTime or '읽기' }}</span>
+          </div>
+          <div class="post-item-title">{{ post.data.title }}</div>
+          <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
+        </a>
+      {% endfor %}
     </div>
-    <a class="ghost" href="{{ '/' | url }}">← 홈으로</a>
+  </div>
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="card-title">카테고리</div>
+      <ul class="category-list">
+        {% set labels = {
+          'devlog': 'Devlog',
+          'freelance': 'Freelance',
+          'games': 'Games',
+          'notes': 'Notes'
+        } %}
+        {% for key, posts in collections.byCategory %}
+          <li>
+            <a href="#{{ key }}">{{ labels[key] or key }}</a>
+            <span class="count">{{ posts | length }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% include "ad-slot.njk" %}
+  </aside>
+</section>
+
+<section class="category-panels">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Categories</p>
+      <h2>주제별 모아보기</h2>
+    </div>
   </div>
   <div class="category-grid">
     {% set labels = {
@@ -37,7 +81,6 @@ title: 블로그
           {% endfor %}
         </div>
       </div>
-      {% if loop.index == 2 %}{% include "ad-slot.njk" %}{% endif %}
     {% endfor %}
   </div>
 </section>
