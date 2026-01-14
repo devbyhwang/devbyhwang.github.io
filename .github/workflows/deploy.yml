@@ -27,10 +27,16 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
+      - name: Set PATH_PREFIX
+        run: |
+          REPO_NAME="${{ github.event.repository.name }}"
+          if [[ "$REPO_NAME" == *.github.io ]]; then
+            echo "PATH_PREFIX=/" >> "$GITHUB_ENV"
+          else
+            echo "PATH_PREFIX=/$REPO_NAME/" >> "$GITHUB_ENV"
+          fi
       - name: Build
         run: npm run build
-        env:
-          PATH_PREFIX: "/${{ github.event.repository.name }}/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
