@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="{{ '/styles/main.css' | url }}" />
@@ -21,53 +21,46 @@
     {% endif %}
   </head>
   <body>
-    <div class="page-shell">
-      <div class="bg-grid"></div>
-      <header class="topbar">
-        <div class="brand">
-          <span class="dot"></span>
+    <div class="site-wrap">
+      <header class="site-header">
+        <a class="brand" href="{{ '/' | url }}">
+          <span class="brand-dot"></span>
           <div>
-            <div class="brand-name">{{ site.title }}</div>
-            <div class="brand-tag">{{ site.tagline }}</div>
+            <div class="brand-title">{{ site.title }}</div>
+            <div class="brand-tagline">{{ site.tagline }}</div>
           </div>
-        </div>
-        <button class="nav-toggle" aria-label="Toggle menu">≡</button>
+        </a>
         <nav class="nav">
-          <a href="{{ '/#games' | url }}">게임</a>
-          <a href="{{ '/#freelance' | url }}">외주</a>
-          <a href="{{ '/#blog' | url }}">블로그</a>
-          <a href="{{ '/#contact' | url }}">연락</a>
+          <a href="{{ '/#latest' | url }}">최신 글</a>
+          <a href="{{ '/blog/' | url }}">아카이브</a>
+          <a href="{{ '/#projects' | url }}">프로젝트</a>
+          <a href="{{ '#contact' | url }}">연락</a>
         </nav>
       </header>
 
-      <main>{{ content | safe }}</main>
+      <main class="site-main">{{ content | safe }}</main>
 
       <footer class="footer" id="contact">
-        <div>
-          <div class="eyebrow">Contact</div>
-          <h2>협업, 피드백, 외주 문의</h2>
-          <p>메일이나 DM으로 편하게 연락주세요.</p>
-          <div class="footer-links">
-            {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
-            {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
-            {% if site.socials.itch %}<a href="{{ site.socials.itch }}">itch.io</a>{% endif %}
-            {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
-            {% if site.socials.x %}<a href="{{ site.socials.x }}">X</a>{% endif %}
+        <div class="footer-grid">
+          <div>
+            <div class="eyebrow">Contact</div>
+            <h3>협업, 피드백, 외주 문의</h3>
+            <p>{{ site.description }}</p>
+            <div class="footer-links">
+              {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+              {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
+              {% if site.socials.itch %}<a href="{{ site.socials.itch }}">itch.io</a>{% endif %}
+              {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
+              {% if site.socials.x %}<a href="{{ site.socials.x }}">X</a>{% endif %}
+            </div>
           </div>
-        </div>
-        {% set newest = collections.posts | first %}
-        <div class="footer-meta">
-          <span>© {{ site.author }}{% if newest %} {{ newest.date | readableDate('yyyy') }}{% endif %}</span>
-          <span>Powered by Eleventy · GitHub Pages</span>
+          {% set newest = collections.posts | first %}
+          <div class="footer-meta">
+            <span>© {{ site.author }}{% if newest %} {{ newest.date | readableDate('yyyy') }}{% endif %}</span>
+            <span>Powered by Eleventy · GitHub Pages</span>
+          </div>
         </div>
       </footer>
     </div>
-    <script>
-      const toggle = document.querySelector('.nav-toggle');
-      const nav = document.querySelector('.nav');
-      if (toggle && nav) {
-        toggle.addEventListener('click', () => nav.classList.toggle('open'));
-      }
-    </script>
   </body>
 </html>
