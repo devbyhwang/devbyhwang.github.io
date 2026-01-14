@@ -1,0 +1,13 @@
+---
+layout: layouts/base.njk
+---
+<section class="panel post-body-wrapper">
+  <a class="ghost" href="{{ '/blog/' | url }}">← 블로그로 돌아가기</a>
+  <p class="eyebrow">{{ category or 'notes' }}</p>
+  <h1>{{ title }}</h1>
+  <div class="meta">{{ date | readableDate }} · {{ readingTime or '3 min read' }}</div>
+  <article class="prose">
+    {{ content | safe }}
+  </article>
+  {% include "ad-slot.njk" %}
+</section>

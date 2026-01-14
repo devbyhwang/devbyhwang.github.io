@@ -1,0 +1,15 @@
+{
+  "name": "columbia-blog",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Personal GitHub Pages blog for games, devlogs, freelance work, and writing with Google Ads slots.",
+  "scripts": {
+    "dev": "eleventy --serve --watch",
+    "build": "ELEVENTY_ENV=production eleventy",
+    "clean": "rm -rf _site"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.0.0",
+    "luxon": "^3.4.4"
+  }
+}

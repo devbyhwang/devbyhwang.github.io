@@ -1,0 +1,43 @@
+---
+layout: layouts/base.njk
+title: 블로그
+---
+<section class="panel">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Archive</p>
+      <h2>블로그 & Devlog</h2>
+      <p>카테고리별로 모아보기.</p>
+    </div>
+    <a class="ghost" href="{{ '/' | url }}">← 홈으로</a>
+  </div>
+  <div class="category-grid">
+    {% set labels = {
+      'devlog': 'Devlog',
+      'freelance': 'Freelance',
+      'games': 'Games',
+      'notes': 'Notes'
+    } %}
+    {% for key, posts in collections.byCategory %}
+      <div class="category-block" id="{{ key }}">
+        <div class="block-head">
+          <div class="pill">{{ labels[key] or key }}</div>
+          <h3>{{ labels[key] or key }}</h3>
+        </div>
+        <div class="stack">
+          {% for post in posts %}
+            <a class="stack-item" href="{{ post.url | url }}">
+              <div>
+                <div class="muted">{{ post.date | readableDate }}</div>
+                <div class="stack-title">{{ post.data.title }}</div>
+                <div class="muted">{{ post.data.excerpt }}</div>
+              </div>
+              <span class="tag">{{ post.data.readingTime or '읽기' }}</span>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% if loop.index == 2 %}{% include "ad-slot.njk" %}{% endif %}
+    {% endfor %}
+  </div>
+</section>

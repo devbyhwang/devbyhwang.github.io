@@ -1,0 +1,118 @@
+---
+layout: layouts/base.njk
+title: 홈
+description: "게임 devlog, 외주 작업 과정, 글과 잡담까지 모아두는 블로그 홈"
+---
+<section class="hero" id="top">
+  <div class="hero-text">
+    <p class="eyebrow">{{ site.hero.kicker }}</p>
+    <h1>{{ site.hero.heading }}</h1>
+    <p class="lede">{{ site.hero.subhead }}</p>
+    <div class="actions">
+      {% for action in site.hero.actions %}
+        <a class="btn" href="{{ action.href | url }}">{{ action.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="stat-grid">
+    {% for item in studio.callouts %}
+      <div class="stat-card">
+        <div class="eyebrow">{{ item.title }}</div>
+        <p>{{ item.body }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel" id="games">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Games</p>
+      <h2>만드는 게임들</h2>
+      <p>빌드 로그와 플레이 링크를 묶어두었습니다.</p>
+    </div>
+    <a class="ghost" href="#blog">더 많은 devlog →</a>
+  </div>
+  <div class="card-grid">
+    {% for game in studio.games %}
+      <article class="card">
+        <div class="card-top">
+          <div class="pill">{{ game.status }}</div>
+          <div class="pill alt">{{ game.role }}</div>
+        </div>
+        <h3>{{ game.title }}</h3>
+        <p class="muted">{{ game.blurb }}</p>
+        <div class="tag-row">
+          {% for tag in game.tags %}<span class="tag">#{{ tag }}</span>{% endfor %}
+        </div>
+        <div class="inline-links">
+          {% for link in game.links %}
+            <a href="{{ link.href }}">{{ link.label }}</a>
+          {% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="panel" id="freelance">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Freelance</p>
+      <h2>외주 파이프라인</h2>
+      <p>제안 → 제작 → 핸드오프 흐름과 최근 작업들.</p>
+    </div>
+    <div class="ghost">Notion/Slack/Linear 지원</div>
+  </div>
+  <div class="split">
+    <div class="timeline">
+      {% for step in studio.freelance.summary %}
+        <div class="timeline-item">
+          <div class="dot"></div>
+          <div>
+            <h4>{{ step.title }}</h4>
+            <p>{{ step.detail }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="job-list">
+      {% for job in studio.freelance.jobs %}
+        <div class="job-card">
+          <div class="job-head">
+            <div>
+              <div class="eyebrow">{{ job.year }}</div>
+              <h4>{{ job.client }}</h4>
+            </div>
+            <div class="pill">{{ job.status }}</div>
+          </div>
+          <p class="muted">{{ job.work }}</p>
+          <p class="note">{{ job.notes }}</p>
+        </div>
+      {% endfor %}
+      {% include "ad-slot.njk" %}
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="blog">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Blog</p>
+      <h2>최신 글</h2>
+      <p>devlog, 외주 회고, 잡담을 카테고리별로 정리.</p>
+    </div>
+    <a class="ghost" href="{{ '/blog/' | url }}">전체 글 보기</a>
+  </div>
+  <div class="post-grid">
+    {% for post in collections.posts | slice(0,6) %}
+      <article class="post-card">
+        <div class="pill">{{ post.data.category | default('notes') }}</div>
+        <h3><a href="{{ post.url | url }}">{{ post.data.title }}</a></h3>
+        <p class="muted">{{ post.data.excerpt }}</p>
+        <div class="meta">{{ post.date | readableDate }} · {{ post.data.readingTime or '3 min' }}</div>
+      </article>
+    {% endfor %}
+  </div>
+  {% include "ad-slot.njk" %}
+</section>

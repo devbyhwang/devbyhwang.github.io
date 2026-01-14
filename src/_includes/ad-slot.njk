@@ -1,0 +1,17 @@
+<div class="ad-shell" aria-label="Advertisement">
+  {% if site.googleAds.enable and site.googleAds.client and env.isProd %}
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client="{{ site.googleAds.client }}"
+      data-ad-slot="0000000000"
+      data-ad-format="auto"
+      data-full-width-responsive="true"
+    ></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  {% else %}
+    <div class="ad-placeholder">
+      광고 영역 · Google AdSense client ID 설정 후 활성화됩니다.
+    </div>
+  {% endif %}
+</div>
