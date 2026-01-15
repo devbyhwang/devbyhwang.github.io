@@ -14,8 +14,8 @@ module.exports = {
   },
   googleAds: {
     // 설정 방법: Google AdSense 발급 후 클라이언트 ID를 입력, enable을 true로 설정
-    client: "ca-pub-xxxxxxxxxxxxxxxx",
-    enable: false,
+    client: "ca-pub-8933203312924164",
+    enable: true,
   },
   hero: {
     kicker: "Personal dev notes",
