@@ -5,6 +5,42 @@ description: "게임 제작기와 외주 로그를 한곳에"
 ---
 <section class="layout-two" id="latest">
   <div class="feed">
+    <!-- Playground Cards -->
+    {% set playgroundItems = [] %}
+    {% for project in studio.games %}
+      {% if project.type == 'demo' %}
+        {% set playgroundItems = (playgroundItems.push(project), playgroundItems) %}
+      {% endif %}
+    {% endfor %}
+
+    {% if playgroundItems.length > 0 %}
+    <div class="playground-section">
+      <div class="section-header">
+        <h2>✨ Playground</h2>
+        <p>인터랙티브 데모와 실험</p>
+      </div>
+      <div class="playground-grid">
+        {% for item in playgroundItems %}
+          <article class="playground-card">
+            <div class="card-content">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.blurb }}</p>
+              <div class="card-tags">
+                {% for tag in item.tags %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="card-actions">
+              <a href="{{ item.links[0].href | url }}" class="launch-btn" target="_blank" rel="noopener">
+                Launch →
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
     <!-- Post List (Tistory Style) -->
     <div class="post-list">
       {% for post in collections.posts | slice(0,10) %}
@@ -38,6 +74,29 @@ description: "게임 제작기와 외주 로그를 한곳에"
         {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
         <a href="https://github.com/devbyhwang">GitHub</a>
       </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        <li>
+          <a href="/blog/">전체글</a>
+          <span class="count">({{ collections.posts | length }})</span>
+        </li>
+        {% set labels = {
+          'devlog': '개발일지',
+          'freelance': '외주',
+          'games': '게임',
+          'notes': '노트'
+        } %}
+        {% for key, posts in collections.byCategory %}
+          <li class="sub">
+            <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
+            <span class="count">({{ posts | length }})</span>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
 
     <!-- Visitor Counter -->
@@ -80,29 +139,6 @@ description: "게임 제작기와 외주 로그를 한곳에"
         <a href="#" class="tag">#unity</a>
         <a href="#" class="tag">#hdrp</a>
       </div>
-    </div>
-
-    <!-- Categories -->
-    <div class="sidebar-categories">
-      <div class="sidebar-title">카테고리</div>
-      <ul class="category-tree">
-        <li>
-          <a href="/blog/">전체글</a>
-          <span class="count">({{ collections.posts | length }})</span>
-        </li>
-        {% set labels = {
-          'devlog': '개발일지',
-          'freelance': '외주',
-          'games': '게임',
-          'notes': '노트'
-        } %}
-        {% for key, posts in collections.byCategory %}
-          <li class="sub">
-            <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
-            <span class="count">({{ posts | length }})</span>
-          </li>
-        {% endfor %}
-      </ul>
     </div>
 
     {% include "ad-slot.njk" %}
