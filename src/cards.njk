@@ -1,0 +1,77 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: cards
+  size: 1
+  alias: card
+permalink: "/cards/{{ card.slug }}/"
+eleventyComputed:
+  title: "{{ card.title }}"
+  description: "{{ card.description }}"
+---
+<section class="card-detail">
+  <header class="page-header detail-header">
+    <div class="detail-kicker">{{ card.typeLabel }}</div>
+    <h1>{{ card.title }}</h1>
+    {% if card.subtitle %}
+      <p class="lede">{{ card.subtitle }}</p>
+    {% endif %}
+  <div class="detail-meta">
+    {% if card.status %}<span class="badge">{{ card.status }}</span>{% endif %}
+    {% if card.year %}<span class="pill">{{ card.year }}</span>{% endif %}
+    {% if card.postCategory %}
+      <a class="pill" href="{{ ('/tags/' + (card.postCategory | slugify) + '/') | url }}">#{{ card.postCategory }}</a>
+    {% endif %}
+  </div>
+    <div class="hero-actions">
+      <a class="text-link" href="{{ card.backHref | url }}">← 목록으로</a>
+    </div>
+  </header>
+
+  <div class="detail-preview">
+    <h2>간단 소개</h2>
+    <p>{{ card.description }}</p>
+  </div>
+
+  {% if card.links.length %}
+  <div class="detail-actions">
+    {% for link in card.links %}
+      <a class="action-btn" href="{{ link.href | url }}">{{ link.label }} →</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if card.tags.length %}
+  <div class="detail-tags">
+    {% for tag in card.tags %}
+      <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% set relatedPosts = collections.posts | relatedPosts(card) %}
+  <section class="related-posts">
+    <div class="section-header">
+      <h2>관련 글</h2>
+      <p>같은 태그 또는 카테고리로 묶인 글</p>
+    </div>
+    {% if relatedPosts.length > 0 %}
+      <div class="related-list">
+        {% for post in relatedPosts %}
+          <a class="related-item" href="{{ post.url | url }}">
+            <div class="related-item-top">
+              <span class="badge">{{ post.data.category | default('notes') }}</span>
+              <span class="muted">{{ post.date | readableDate }}</span>
+            </div>
+            <div class="related-title">{{ post.data.title }}</div>
+            {% if post.data.excerpt or post.data.description %}
+              <p class="muted">{{ post.data.excerpt or post.data.description }}</p>
+            {% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">아직 관련 글이 없습니다. 관련 글이 생기면 자동으로 연결됩니다.</p>
+    {% endif %}
+  </section>
+</section>

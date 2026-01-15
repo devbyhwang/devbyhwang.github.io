@@ -6,6 +6,7 @@ module.exports = {
       status: "Prototype",
       blurb: "Lo-fi naval roguelite about charting ghost currents and negotiating with factions.",
       links: [{ label: "Devlog", href: "#blog" }, { label: "Build", href: "https://example.com" }],
+      postCategory: "games",
       tags: ["unity", "roguelite", "PC"],
     },
     {
@@ -14,6 +15,7 @@ module.exports = {
       status: "Alpha",
       blurb: "Cozy puzzle loops about restoring terrariums with procedural plants.",
       links: [{ label: "GIFs", href: "https://example.com" }],
+      postCategory: "games",
       tags: ["godot", "puzzle", "mobile"],
     },
     {
@@ -22,6 +24,7 @@ module.exports = {
       status: "Released",
       blurb: "Microhorror jam entry – first-person deliveries that unravel into folklore.",
       links: [{ label: "Play", href: "https://example.com" }],
+      postCategory: "games",
       tags: ["unreal", "horror", "jam"],
     },
     {
@@ -32,6 +35,7 @@ module.exports = {
       links: [
         { label: "Launch", href: "/demos/embercraft/" },
       ],
+      postCategory: "games",
       tags: ["webgl", "physics", "simulation"],
       type: "demo",
     },
@@ -58,6 +62,7 @@ module.exports = {
         year: "2025",
         status: "In progress",
         notes: "유니티 UI Toolkit 전환, 접근성 점검 포함.",
+        postCategory: "freelance",
       },
       {
         client: "Agency B",
@@ -65,6 +70,7 @@ module.exports = {
         year: "2024",
         status: "Shipped",
         notes: "3주 내 런칭, 크로스 플랫폼 크리에이티브 AB 테스트 지원.",
+        postCategory: "freelance",
       },
       {
         client: "Solo dev C",
@@ -72,6 +78,7 @@ module.exports = {
         year: "2024",
         status: "Completed",
         notes: "스팀 데모 → KPI 측정 → 퍼블리셔 미팅 준비.",
+        postCategory: "freelance",
       },
     ],
   },

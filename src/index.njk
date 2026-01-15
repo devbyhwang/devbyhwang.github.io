@@ -1,7 +1,7 @@
 ---
 layout: layouts/base.njk
 title: 홈
-description: "게임 제작기와 외주 로그를 한곳에"
+description: "개발 기록과 일상 노트를 담는 개인 블로그"
 ---
 <section class="layout-two" id="latest">
   <div class="feed">
@@ -21,13 +21,17 @@ description: "게임 제작기와 외주 로그를 한곳에"
       </div>
       <div class="playground-grid">
         {% for item in playgroundItems %}
-          <article class="playground-card">
+          <article class="playground-card card-link-wrap">
+            {% set cardSlug = item | cardSlug %}
+            {% if cardSlug %}
+              <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ item.title }} 프리뷰 보기"></a>
+            {% endif %}
             <div class="card-content">
               <h3>{{ item.title }}</h3>
               <p>{{ item.blurb }}</p>
               <div class="card-tags">
                 {% for tag in item.tags %}
-                  <span class="tag">{{ tag }}</span>
+                  <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
                 {% endfor %}
               </div>
             </div>
@@ -66,13 +70,15 @@ description: "게임 제작기와 외주 로그를 한곳에"
   <aside class="sidebar">
     <!-- Profile -->
     <div class="sidebar-profile">
-      <div class="profile-img"></div>
+      <img class="profile-img" src="{{ '/assets/profile.jpg' | url }}" alt="Hwang 프로필 사진" width="80" height="80" loading="lazy" />
       <div class="profile-name">{{ site.author }}</div>
-      <p class="profile-bio">Indie games, devlogs, and freelance production notes.</p>
+      <p class="profile-bio">개발 기록, 외주 로그, 일상 메모를 남깁니다.</p>
       <a href="{{ '/about/' | url }}" class="profile-link">프로필 보기 →</a>
       <div class="profile-links">
         {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
-        <a href="https://github.com/devbyhwang">GitHub</a>
+        {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
+        {% if site.socials.kmong %}<a href="{{ site.socials.kmong }}">Kmong</a>{% endif %}
+        {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
       </div>
     </div>
 
@@ -132,12 +138,9 @@ description: "게임 제작기와 외주 로그를 한곳에"
     <div class="sidebar-tags">
       <div class="sidebar-title">태그</div>
       <div class="tag-cloud">
-        <a href="#" class="tag">#devlog</a>
-        <a href="#" class="tag">#freelance</a>
-        <a href="#" class="tag">#games</a>
-        <a href="#" class="tag">#notes</a>
-        <a href="#" class="tag">#unity</a>
-        <a href="#" class="tag">#hdrp</a>
+        {% for tagItem in collections.tagList %}
+          <a class="tag" href="{{ ('/tags/' + tagItem.slug + '/') | url }}">{{ tagItem.name }}</a>
+        {% endfor %}
       </div>
     </div>
 

@@ -11,7 +11,11 @@ description: "클라이언트 작업 이력"
 
   <div class="freelance-grid">
     {% for job in studio.freelance.jobs %}
-      <div class="job-card">
+      <article class="job-card card-link-wrap">
+        {% set cardSlug = job | cardSlug %}
+        {% if cardSlug %}
+          <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ job.client }} 프리뷰 보기"></a>
+        {% endif %}
         <div class="job-head">
           <div>
             <div class="eyebrow">{{ job.year }}</div>
@@ -21,7 +25,7 @@ description: "클라이언트 작업 이력"
         </div>
         <p class="muted">{{ job.work }}</p>
         <p class="note">{{ job.notes }}</p>
-      </div>
+      </article>
     {% endfor %}
   </div>
 </section>

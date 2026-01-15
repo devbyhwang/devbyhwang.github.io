@@ -12,16 +12,22 @@ description: "진행 중인 게임"
   <div class="project-grid">
     {% for project in studio.games %}
       {% if project.type != 'demo' %}
-        <article class="project-card">
-          <div class="project-meta">
-            <span class="badge">{{ project.status }}</span>
-            <span class="pill">{{ project.role }}</span>
-          </div>
+      <article class="project-card card-link-wrap">
+        {% set cardSlug = project | cardSlug %}
+        {% if cardSlug %}
+          <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ project.title }} 프리뷰 보기"></a>
+        {% endif %}
+        <div class="project-meta">
+          <span class="badge">{{ project.status }}</span>
+          <span class="pill">{{ project.role }}</span>
+        </div>
           <h3>{{ project.title }}</h3>
           <p class="muted">{{ project.blurb }}</p>
-          <div class="tag-row">
-            {% for tag in project.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
-          </div>
+        <div class="tag-row">
+          {% for tag in project.tags %}
+            <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
+          {% endfor %}
+        </div>
           <div class="inline-links">
             {% for link in project.links %}
               <a href="{{ link.href | url }}">
