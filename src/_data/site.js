@@ -1,15 +1,16 @@
 module.exports = {
-  title: "Hwang Studio",
-  tagline: "Indie games, devlogs, and freelance production notes.",
+  title: "DevByHwang",
+  tagline: "devlogs · freelance · notes",
   description:
-    "개발 중인 게임, 외주 파이프라인, 그리고 일상적인 글을 담는 GitHub Pages 블로그 템플릿.",
+    "Hwang의 개발 기록, 작업 로그, 일상 메모를 모으는 개인 블로그.",
   author: "Hwang",
-  email: "you@example.com",
+  email: "",
   socials: {
-    github: "https://github.com/your-handle",
-    itch: "https://itch.io/profile/your-handle",
-    youtube: "https://youtube.com/@your-channel",
-    x: "https://x.com/your-handle",
+    github: "https://github.com/devbyhwang",
+    kmong: "https://kmong.com/@DevByHwang",
+    itch: "",
+    youtube: "https://www.youtube.com/@DevByHwang",
+    x: "",
   },
   googleAds: {
     // 설정 방법: Google AdSense 발급 후 클라이언트 ID를 입력, enable을 true로 설정
@@ -17,12 +18,12 @@ module.exports = {
     enable: false,
   },
   hero: {
-    kicker: "Solo dev + freelance",
-    heading: "게임 제작기와 외주 로그를 한곳에",
+    kicker: "Personal dev notes",
+    heading: "작업 기록과 일상 노트를 차곡차곡",
     subhead:
-      "빌드 기록, 아트/코드 노트, 클라이언트 작업 흐름까지 투명하게 공유합니다. 필요하면 광고로 수익까지.",
+      "프로젝트 진행 과정, 외주 경험, 개발 팁과 생각을 느슨하게 기록합니다.",
     actions: [
-      { href: "#games", label: "게임 보기" },
+      { href: "/about/", label: "소개" },
       { href: "#blog", label: "최신 글" },
     ],
   },

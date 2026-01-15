@@ -18,7 +18,11 @@ description: "인터랙티브 데모와 실험"
 
   <div class="playground-grid">
     {% for item in playgroundItems %}
-      <article class="playground-card">
+      <article class="playground-card card-link-wrap">
+        {% set cardSlug = item | cardSlug %}
+        {% if cardSlug %}
+          <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ item.title }} 프리뷰 보기"></a>
+        {% endif %}
         <div class="project-meta">
           <span class="badge">{{ item.status }}</span>
           <span class="pill">{{ item.role }}</span>
@@ -27,7 +31,7 @@ description: "인터랙티브 데모와 실험"
         <p class="muted">{{ item.blurb }}</p>
         <div class="tag-row">
           {% for tag in item.tags %}
-            <span class="tag">{{ tag }}</span>
+            <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
           {% endfor %}
         </div>
         <div class="inline-links">

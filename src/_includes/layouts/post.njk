@@ -19,7 +19,7 @@ layout: layouts/base.njk
     {% if tags %}
     <div class="post-tags">
       {% for tag in tags %}
-        <a class="tag" href="{{ '/tags/' + tag | url }}">#{{ tag }}</a>
+        <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
       {% endfor %}
     </div>
     {% endif %}

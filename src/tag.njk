@@ -1,0 +1,96 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.tagList
+  size: 1
+  alias: tag
+permalink: "/tags/{{ tag.slug }}/"
+eleventyComputed:
+  title: "태그: {{ tag.name }}"
+  description: "{{ tag.name }} 관련 글 모음"
+---
+<section class="page-hero">
+  <h1>#{{ tag.name }}</h1>
+  <p class="muted">해당 태그 또는 카테고리에 속한 글</p>
+  <div class="hero-actions">
+    <a class="text-link" href="{{ '/blog/' | url }}">← 전체 글</a>
+  </div>
+</section>
+
+{% set taggedPosts = collections.posts | postsByTag(tag) %}
+{% set taggedCards = cards | cardsByTag(tag) %}
+
+<section class="layout-two archive">
+  <div class="feed">
+    <div class="post-list archive-list">
+      {% if taggedPosts.length > 0 %}
+        {% for post in taggedPosts %}
+          <a class="post-item compact" href="{{ post.url | url }}">
+            <div class="post-item-top">
+              <span class="badge">{{ post.data.category | default('notes') }}</span>
+              <span class="post-meta">{{ post.date | readableDate }}</span>
+            </div>
+            <div class="post-item-title">{{ post.data.title }}</div>
+            {% if post.data.excerpt or post.data.description %}
+              <div class="post-item-excerpt muted">{{ post.data.excerpt or post.data.description }}</div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      {% else %}
+        <p class="muted">아직 이 태그로 작성된 글이 없습니다.</p>
+      {% endif %}
+    </div>
+  </div>
+  <aside class="sidebar">
+    <div>
+      <div class="sidebar-title">태그</div>
+      <div class="tag-cloud">
+        {% for tagItem in collections.tagList %}
+          <a class="tag" href="{{ ('/tags/' + tagItem.slug + '/') | url }}">{{ tagItem.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</section>
+
+<section class="related-cards">
+  <div class="section-header">
+    <h2>관련 카드</h2>
+    <p>Playground, 프로젝트, 외주 카드 모음</p>
+  </div>
+  {% if taggedCards.length > 0 %}
+    <div class="project-grid">
+      {% for card in taggedCards %}
+        <article class="project-card card-link-wrap">
+          {% if card.slug %}
+            <a class="card-link" href="{{ ('/cards/' + card.slug + '/') | url }}" aria-label="{{ card.title }} 프리뷰 보기"></a>
+          {% endif %}
+          <div class="project-meta">
+            <span class="badge">{{ card.typeLabel }}</span>
+            {% if card.status %}<span class="pill">{{ card.status }}</span>{% endif %}
+          </div>
+          <h3>{{ card.title }}</h3>
+          <p class="muted">{{ card.description }}</p>
+          {% if card.tags.length %}
+          <div class="tag-row">
+            {% for tagItem in card.tags %}
+              <a class="tag" href="{{ ('/tags/' + (tagItem | slugify) + '/') | url }}">{{ tagItem }}</a>
+            {% endfor %}
+          </div>
+          {% endif %}
+          {% if card.links.length %}
+          <div class="inline-links">
+            {% for link in card.links %}
+              <a href="{{ link.href | url }}">
+                {{ link.label }}
+              </a>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">아직 이 태그로 연결된 카드가 없습니다.</p>
+  {% endif %}
+</section>
