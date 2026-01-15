@@ -238,7 +238,7 @@ a:hover {
 
 .layout-two {
   display: grid;
-  grid-template-columns: var(--sidebar-width) 1fr;
+  grid-template-columns: 1fr var(--sidebar-width);
   gap: var(--space-10);
   align-items: start;
   margin-top: var(--space-8);
