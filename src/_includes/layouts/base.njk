@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{% if title %}{{ title }} · {% endif %}{{ site.title }}</title>
     <meta name="description" content="{{ description or site.description }}" />
+
+    <!-- Pretendard Font -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+
+    <!-- JetBrains Mono for Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700&family=Noto+Serif+KR:wght@600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
     <link rel="stylesheet" href="{{ '/styles/main.css' | url }}" />
+
     {% if site.googleAds.enable and site.googleAds.client and env.isProd %}
     <script
       async
@@ -21,46 +26,184 @@
     {% endif %}
   </head>
   <body>
-    <div class="site-wrap">
-      <header class="site-header">
-        <a class="brand" href="{{ '/' | url }}">
-          <span class="brand-dot"></span>
-          <div>
-            <div class="brand-title">{{ site.title }}</div>
-            <div class="brand-tagline">{{ site.tagline }}</div>
-          </div>
-        </a>
-        <nav class="nav">
-          <a href="{{ '/#latest' | url }}">최신 글</a>
-          <a href="{{ '/blog/' | url }}">아카이브</a>
-          <a href="{{ '/#projects' | url }}">프로젝트</a>
-          <a href="{{ '#contact' | url }}">연락</a>
-        </nav>
-      </header>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
+    <!-- Mobile Sidebar Drawer -->
+    <aside class="sidebar-drawer" id="sidebar-drawer">
+      <button class="drawer-close" id="drawer-close" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <nav class="drawer-nav">
+        <a href="{{ '/' | url }}">홈</a>
+        <a href="{{ '/blog/' | url }}">전체글</a>
+        <a href="{{ '/#projects' | url }}">프로젝트</a>
+        <a href="#contact">방명록</a>
+      </nav>
+      <div class="drawer-categories">
+        <div class="card-title">카테고리</div>
+        <ul class="category-list">
+          {% set labels = {
+            'devlog': '개발일지',
+            'freelance': '외주',
+            'games': '게임',
+            'notes': '노트'
+          } %}
+          {% for key, posts in collections.byCategory %}
+            <li>
+              <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
+              <span class="count">({{ posts | length }})</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </aside>
+
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+        <a class="brand" href="{{ '/' | url }}">
+          <div class="brand-title">{{ site.title }}</div>
+          <div class="brand-tagline">{{ site.tagline }}</div>
+        </a>
+
+        <nav class="nav">
+          <a href="{{ '/' | url }}" {% if page.url == '/' %}class="active"{% endif %}>홈</a>
+          <a href="{{ '/about/' | url }}" {% if '/about/' in page.url %}class="active"{% endif %}>소개</a>
+          <a href="{{ '/projects/' | url }}" {% if '/projects/' in page.url %}class="active"{% endif %}>프로젝트</a>
+          <a href="{{ '/freelance/' | url }}" {% if '/freelance/' in page.url %}class="active"{% endif %}>외주</a>
+          <a href="{{ '/blog/' | url }}" {% if '/blog/' in page.url %}class="active"{% endif %}>태그</a>
+        </nav>
+
+        <button class="menu-btn" id="menu-btn" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="site-wrap">
       <main class="site-main">{{ content | safe }}</main>
 
       <footer class="footer" id="contact">
-        <div class="footer-grid">
-          <div>
-            <div class="eyebrow">Contact</div>
-            <h3>협업, 피드백, 외주 문의</h3>
-            <p>{{ site.description }}</p>
-            <div class="footer-links">
-              {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
-              {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
-              {% if site.socials.itch %}<a href="{{ site.socials.itch }}">itch.io</a>{% endif %}
-              {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
-              {% if site.socials.x %}<a href="{{ site.socials.x }}">X</a>{% endif %}
-            </div>
-          </div>
-          {% set newest = collections.posts | first %}
-          <div class="footer-meta">
-            <span>© {{ site.author }}{% if newest %} {{ newest.date | readableDate('yyyy') }}{% endif %}</span>
-            <span>Powered by Eleventy · GitHub Pages</span>
-          </div>
+        <h3>{{ site.author }}</h3>
+        <p>{{ site.description }}</p>
+        <div class="footer-links">
+          {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
+          {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
+          {% if site.socials.itch %}<a href="{{ site.socials.itch }}">itch.io</a>{% endif %}
+          {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
+          {% if site.socials.x %}<a href="{{ site.socials.x }}">X</a>{% endif %}
         </div>
+        {% set newest = collections.posts | first %}
+        <div class="footer-meta">
+          <span>© {{ site.author }}{% if newest %} {{ newest.date | readableDate('yyyy') }}{% endif %}</span>
+          <span>Powered by Eleventy</span>
+        </div>
+        <button class="back-to-top" id="back-to-top">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+          맨 위로
+        </button>
       </footer>
     </div>
+
+    <script>
+      // Headroom effect - hide header on scroll down, show on scroll up
+      (function() {
+        const header = document.getElementById('site-header');
+        let lastScrollY = 0;
+        let ticking = false;
+
+        function updateHeader() {
+          const scrollY = window.scrollY;
+
+          if (scrollY > 100) {
+            header.classList.add('scrolled');
+          } else {
+            header.classList.remove('scrolled');
+          }
+
+          if (scrollY > lastScrollY && scrollY > 200) {
+            header.classList.add('hidden');
+          } else {
+            header.classList.remove('hidden');
+          }
+
+          lastScrollY = scrollY;
+          ticking = false;
+        }
+
+        window.addEventListener('scroll', function() {
+          if (!ticking) {
+            window.requestAnimationFrame(updateHeader);
+            ticking = true;
+          }
+        });
+      })();
+
+      // Mobile drawer
+      (function() {
+        const menuBtn = document.getElementById('menu-btn');
+        const drawerClose = document.getElementById('drawer-close');
+        const sidebarDrawer = document.getElementById('sidebar-drawer');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function openDrawer() {
+          sidebarDrawer.classList.add('open');
+          sidebarOverlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+          sidebarDrawer.classList.remove('open');
+          sidebarOverlay.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+        if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeDrawer);
+      })();
+
+      // Back to top
+      (function() {
+        const backToTop = document.getElementById('back-to-top');
+        if (backToTop) {
+          backToTop.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      })();
+
+      // Code copy button
+      (function() {
+        document.querySelectorAll('.prose pre').forEach(function(pre) {
+          const btn = document.createElement('button');
+          btn.className = 'code-copy-btn';
+          btn.textContent = 'Copy';
+          btn.addEventListener('click', function() {
+            const code = pre.querySelector('code');
+            if (code) {
+              navigator.clipboard.writeText(code.textContent).then(function() {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(function() {
+                  btn.textContent = 'Copy';
+                  btn.classList.remove('copied');
+                }, 2000);
+              });
+            }
+          });
+          pre.appendChild(btn);
+        });
+      })();
+    </script>
   </body>
 </html>

@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+title: 외주 기록
+description: "클라이언트 작업 이력"
+---
+<section class="freelance-page">
+  <header class="page-header">
+    <h1>외주 기록</h1>
+    <p class="lede">클라이언트 작업 이력</p>
+  </header>
+
+  <div class="freelance-grid">
+    {% for job in studio.freelance.jobs %}
+      <div class="job-card">
+        <div class="job-head">
+          <div>
+            <div class="eyebrow">{{ job.year }}</div>
+            <h4>{{ job.client }}</h4>
+          </div>
+          <span class="pill">{{ job.status }}</span>
+        </div>
+        <p class="muted">{{ job.work }}</p>
+        <p class="note">{{ job.notes }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>

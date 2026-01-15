@@ -1,0 +1,26 @@
+---
+layout: layouts/base.njk
+title: 소개
+description: "게임 제작기와 외주 로그를 한곳에"
+---
+<article class="about-page">
+  <header class="page-header">
+    <h1>게임 제작기와 외주 로그를 한곳에</h1>
+  </header>
+
+  <section class="about-content">
+    <h2>이 블로그에 대하여</h2>
+    <p>빌드 기록, 아트/코드 노트, 클라이언트 작업 흐름까지 투명하게 공유합니다. 필요하면 광고로 수익까지.</p>
+
+    <h3>카테고리</h3>
+    <ul>
+      <li><strong>개발일지</strong>: 게임 제작 과정, 빌드 기록, 기술 노트</li>
+      <li><strong>외주</strong>: 클라이언트 작업 흐름, 프로젝트 진행 상황</li>
+      <li><strong>노트</strong>: 아트/코드 노트, 개발 팁</li>
+    </ul>
+
+    <h3>연락처</h3>
+    <p>{% if site.email %}Email: {{ site.email }}<br>{% endif %}
+    GitHub: <a href="https://github.com/devbyhwang">@devbyhwang</a></p>
+  </section>
+</article>
