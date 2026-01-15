@@ -1,153 +1,137 @@
 ---
 layout: layouts/base.njk
 title: 홈
-description: "게임 devlog, 외주 작업 과정, 글과 잡담까지 모아두는 블로그 홈"
+description: "게임 제작기와 외주 로그를 한곳에"
 ---
-{% set newest = collections.posts | first %}
-<section class="intro">
-  <div>
-    <p class="eyebrow">{{ site.hero.kicker }}</p>
-    <h1>{{ site.hero.heading }}</h1>
-    <p class="lede">{{ site.hero.subhead }}</p>
-    <div class="intro-actions">
-      {% for action in site.hero.actions %}
-        <a class="link-pill" href="{{ action.href | url }}">{{ action.label }}</a>
-      {% endfor %}
-      <a class="link-pill" href="{{ '/blog/' | url }}">아카이브</a>
-    </div>
-  </div>
-  <div class="intro-meta">
-    {% if newest %}
-      <div class="meta-block">
-        <span class="badge accent">Latest</span>
-        <div class="meta-title">{{ newest.data.title }}</div>
-        <div class="meta-sub">{{ newest.date | readableDate }} · {{ newest.data.readingTime or '읽기' }}</div>
-      </div>
-    {% endif %}
-    <div class="meta-block">
-      <span class="badge">Devlog · Freelance</span>
-      <div class="meta-title">게임 제작 + 외주 기록</div>
-      <div class="meta-sub">Hwang Studio — GitHub Pages & Eleventy</div>
-    </div>
-  </div>
-</section>
-
 <section class="layout-two" id="latest">
   <div class="feed">
-    {% if newest %}
-      <article class="featured-post">
-        <div class="badge accent">{{ newest.data.category or 'notes' }}</div>
-        <h2><a href="{{ newest.url | url }}">{{ newest.data.title }}</a></h2>
-        <p class="muted">{{ newest.data.excerpt }}</p>
-        <div class="post-meta">{{ newest.date | readableDate }} · {{ newest.data.readingTime or '읽기' }}</div>
-      </article>
-    {% endif %}
+    <!-- Post List (Tistory Style) -->
     <div class="post-list">
-      {% for post in collections.posts | slice(1,7) %}
-        <a class="post-item" href="{{ post.url | url }}">
-          <div class="post-item-top">
-            <span class="badge">{{ post.data.category | default('notes') }}</span>
-            <span class="post-meta">{{ post.date | readableDate }} · {{ post.data.readingTime or '읽기' }}</span>
-          </div>
-          <div class="post-item-title">{{ post.data.title }}</div>
-          <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
-        </a>
+      {% for post in collections.posts | slice(0,10) %}
+        <article class="post-item">
+          <a href="{{ post.url | url }}">
+            <div class="post-thumb">
+              <div class="post-thumb-placeholder"></div>
+            </div>
+            <div class="post-info">
+              <span class="post-category">{{ post.data.category | default('notes') }}</span>
+              <h2 class="post-title">{{ post.data.title }}</h2>
+              <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
+              <span class="post-date">{{ post.date | readableDate }}</span>
+            </div>
+          </a>
+        </article>
       {% endfor %}
     </div>
+
     {% include "ad-slot.njk" %}
   </div>
+
   <aside class="sidebar">
-    <div class="sidebar-card profile-card">
-      <div class="avatar-dot"></div>
-      <div>
-        <div class="profile-name">{{ site.author }}</div>
-        <p class="muted">{{ site.tagline }}</p>
-        {% if site.email %}<a class="text-link" href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+    <!-- Profile -->
+    <div class="sidebar-profile">
+      <div class="profile-img"></div>
+      <div class="profile-name">{{ site.author }}</div>
+      <p class="profile-bio">Indie games, devlogs, and freelance production notes.</p>
+      <a href="{{ '/about/' | url }}" class="profile-link">프로필 보기 →</a>
+      <div class="profile-links">
+        {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
+        <a href="https://github.com/devbyhwang">GitHub</a>
       </div>
     </div>
-    <div class="sidebar-card">
-      <div class="card-title">카테고리</div>
-      <ul class="category-list">
+
+    <!-- Visitor Counter -->
+    <div class="sidebar-counter">
+      <div class="counter-label">방문자</div>
+      <div class="counter-row">
+        <span>TODAY</span><span>—</span>
+      </div>
+      <div class="counter-row">
+        <span>TOTAL</span><span>—</span>
+      </div>
+    </div>
+
+    <!-- Recent/Popular Posts Tabs -->
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        {% for post in collections.posts | slice(0, 5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        {% for post in collections.posts | slice(0, 5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Tags -->
+    <div class="sidebar-tags">
+      <div class="sidebar-title">태그</div>
+      <div class="tag-cloud">
+        <a href="#" class="tag">#devlog</a>
+        <a href="#" class="tag">#freelance</a>
+        <a href="#" class="tag">#games</a>
+        <a href="#" class="tag">#notes</a>
+        <a href="#" class="tag">#unity</a>
+        <a href="#" class="tag">#hdrp</a>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        <li>
+          <a href="/blog/">전체글</a>
+          <span class="count">({{ collections.posts | length }})</span>
+        </li>
         {% set labels = {
-          'devlog': 'Devlog',
-          'freelance': 'Freelance',
-          'games': 'Games',
-          'notes': 'Notes'
+          'devlog': '개발일지',
+          'freelance': '외주',
+          'games': '게임',
+          'notes': '노트'
         } %}
         {% for key, posts in collections.byCategory %}
-          <li>
+          <li class="sub">
             <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
-            <span class="count">{{ posts | length }}</span>
+            <span class="count">({{ posts | length }})</span>
           </li>
         {% endfor %}
       </ul>
     </div>
-    <div class="sidebar-card">
-      <div class="card-title">콜아웃</div>
-      <ul class="callout-list">
-        {% for item in studio.callouts %}
-          <li>
-            <span class="badge light">{{ item.title }}</span>
-            <p class="muted">{{ item.body }}</p>
-          </li>
-        {% endfor %}
-      </ul>
-    </div>
+
     {% include "ad-slot.njk" %}
   </aside>
 </section>
 
-<section class="projects" id="projects">
-  <div class="section-heading">
-    <div>
-      <p class="eyebrow">Projects</p>
-      <h2>게임 & 외주</h2>
-      <p class="muted">진행 중인 게임과 외주 작업을 티스토리식 카드로 묶었습니다.</p>
-    </div>
-    <a class="text-link" href="{{ '/blog/' | url }}">블로그 전체</a>
-  </div>
+<script>
+  // Sidebar Tabs (Recent/Popular Posts)
+  (function() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.post-list-tab');
 
-  <div class="project-grid">
-    {% for game in studio.games %}
-      <article class="project-card">
-        <div class="project-meta">
-          <span class="badge">{{ game.status }}</span>
-          <span class="pill">{{ game.role }}</span>
-        </div>
-        <h3>{{ game.title }}</h3>
-        <p class="muted">{{ game.blurb }}</p>
-        <div class="tag-row">
-          {% for tag in game.tags %}<span class="tag">#{{ tag }}</span>{% endfor %}
-        </div>
-        <div class="inline-links">
-          {% for link in game.links %}
-            <a href="{{ link.href }}">{{ link.label }}</a>
-          {% endfor %}
-        </div>
-      </article>
-    {% endfor %}
-  </div>
+    tabButtons.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        const tabName = this.dataset.tab;
 
-  <div class="section-heading slim">
-    <div>
-      <p class="eyebrow">Freelance</p>
-      <h3>최근 외주 기록</h3>
-    </div>
-    <span class="muted">Notion / Slack / Linear 지원</span>
-  </div>
-  <div class="freelance-grid">
-    {% for job in studio.freelance.jobs %}
-      <div class="job-card">
-        <div class="job-head">
-          <div>
-            <div class="eyebrow">{{ job.year }}</div>
-            <h4>{{ job.client }}</h4>
-          </div>
-          <span class="pill">{{ job.status }}</span>
-        </div>
-        <p class="muted">{{ job.work }}</p>
-        <p class="note">{{ job.notes }}</p>
-      </div>
-    {% endfor %}
-  </div>
-</section>
+        // Update active button
+        tabButtons.forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+
+        // Show/hide tab content
+        tabContents.forEach(function(content) {
+          if (content.dataset.content === tabName) {
+            content.classList.add('active');
+          } else {
+            content.classList.remove('active');
+          }
+        });
+      });
+    });
+  })();
+</script>

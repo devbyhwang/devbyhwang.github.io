@@ -1,13 +1,12 @@
 ---
 layout: layouts/base.njk
-title: 블로그
+title: 전체글
 ---
 <section class="page-hero">
-  <p class="eyebrow">Archive</p>
-  <h1>블로그 & Devlog</h1>
-  <p class="muted">최신순 목록과 카테고리별 모아보기.</p>
+  <h1>전체글</h1>
+  <p class="muted">최신순으로 정렬된 모든 글</p>
   <div class="hero-actions">
-    <a class="text-link" href="{{ '/' | url }}">홈으로 돌아가기</a>
+    <a class="text-link" href="{{ '/' | url }}">← 홈으로</a>
   </div>
 </section>
 
@@ -18,7 +17,7 @@ title: 블로그
         <a class="post-item compact" href="{{ post.url | url }}">
           <div class="post-item-top">
             <span class="badge">{{ post.data.category | default('notes') }}</span>
-            <span class="post-meta">{{ post.date | readableDate }} · {{ post.data.readingTime or '읽기' }}</span>
+            <span class="post-meta">{{ post.date | readableDate }}</span>
           </div>
           <div class="post-item-title">{{ post.data.title }}</div>
           <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
@@ -31,15 +30,15 @@ title: 블로그
       <div class="card-title">카테고리</div>
       <ul class="category-list">
         {% set labels = {
-          'devlog': 'Devlog',
-          'freelance': 'Freelance',
-          'games': 'Games',
-          'notes': 'Notes'
+          'devlog': '개발일지',
+          'freelance': '외주',
+          'games': '게임',
+          'notes': '노트'
         } %}
         {% for key, posts in collections.byCategory %}
           <li>
             <a href="#{{ key }}">{{ labels[key] or key }}</a>
-            <span class="count">{{ posts | length }}</span>
+            <span class="count">({{ posts | length }})</span>
           </li>
         {% endfor %}
       </ul>
@@ -51,32 +50,29 @@ title: 블로그
 <section class="category-panels">
   <div class="section-heading">
     <div>
-      <p class="eyebrow">Categories</p>
-      <h2>주제별 모아보기</h2>
+      <h2>카테고리별 보기</h2>
     </div>
   </div>
   <div class="category-grid">
     {% set labels = {
-      'devlog': 'Devlog',
-      'freelance': 'Freelance',
-      'games': 'Games',
-      'notes': 'Notes'
+      'devlog': '개발일지',
+      'freelance': '외주',
+      'games': '게임',
+      'notes': '노트'
     } %}
     {% for key, posts in collections.byCategory %}
       <div class="category-block" id="{{ key }}">
         <div class="block-head">
-          <div class="pill">{{ labels[key] or key }}</div>
           <h3>{{ labels[key] or key }}</h3>
+          <span class="count muted">({{ posts | length }})</span>
         </div>
         <div class="stack">
           {% for post in posts %}
             <a class="stack-item" href="{{ post.url | url }}">
               <div>
-                <div class="muted">{{ post.date | readableDate }}</div>
                 <div class="stack-title">{{ post.data.title }}</div>
-                <div class="muted">{{ post.data.excerpt }}</div>
+                <div class="muted">{{ post.date | readableDate }}</div>
               </div>
-              <span class="tag">{{ post.data.readingTime or '읽기' }}</span>
             </a>
           {% endfor %}
         </div>

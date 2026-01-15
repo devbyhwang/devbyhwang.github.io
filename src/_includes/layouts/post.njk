@@ -1,18 +1,29 @@
 ---
 layout: layouts/base.njk
 ---
-<section class="post-shell">
-  <a class="back-link" href="{{ '/blog/' | url }}">← 블로그로 돌아가기</a>
-  <div class="post-header">
-    <span class="badge">{{ category or 'notes' }}</span>
-    <h1>{{ title }}</h1>
-    <div class="post-meta">{{ date | readableDate }} · {{ readingTime or '3 min read' }}</div>
-  </div>
-  <article class="prose">
+<article class="post">
+  <header class="post-header">
+    <span class="post-category">{{ category or 'notes' }}</span>
+    <h1 class="post-title">{{ title }}</h1>
+    <div class="post-meta">
+      <span class="post-date">{{ date | readableDate }}</span>
+      <span class="post-author">by {{ site.author }}</span>
+    </div>
+  </header>
+
+  <div class="post-content">
     {{ content | safe }}
-  </article>
-  <div class="post-footer">
-    <div class="muted">Powered by Eleventy · GitHub Pages</div>
   </div>
+
+  <footer class="post-footer">
+    {% if tags %}
+    <div class="post-tags">
+      {% for tag in tags %}
+        <a class="tag" href="{{ '/tags/' + tag | url }}">#{{ tag }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </footer>
+
   {% include "ad-slot.njk" %}
-</section>
+</article>
