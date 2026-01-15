@@ -122,9 +122,13 @@ description: "게임 제작기와 외주 로그를 한곳에"
         {% endfor %}
       </ul>
       <ul class="post-list-tab" data-content="popular">
-        {% for post in collections.posts | slice(0, 5) %}
-          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
-        {% endfor %}
+        {% if collections.popularPosts and (collections.popularPosts | length) %}
+          {% for post in collections.popularPosts | slice(0, 5) %}
+            <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+          {% endfor %}
+        {% else %}
+          <li class="muted">인기글이 아직 지정되지 않았어요.</li>
+        {% endif %}
       </ul>
     </div>
 
