@@ -1,0 +1,43 @@
+---
+layout: layouts/base.njk
+title: Playground
+description: "인터랙티브 데모와 실험"
+---
+<section class="playground-page">
+  <header class="page-header">
+    <h1>✨ Playground</h1>
+    <p class="lede">인터랙티브 데모와 실험</p>
+  </header>
+
+  {% set playgroundItems = [] %}
+  {% for project in studio.games %}
+    {% if project.type == 'demo' %}
+      {% set playgroundItems = (playgroundItems.push(project), playgroundItems) %}
+    {% endif %}
+  {% endfor %}
+
+  <div class="playground-grid">
+    {% for item in playgroundItems %}
+      <article class="playground-card">
+        <div class="project-meta">
+          <span class="badge">{{ item.status }}</span>
+          <span class="pill">{{ item.role }}</span>
+        </div>
+        <h3>{{ item.title }}</h3>
+        <p class="muted">{{ item.blurb }}</p>
+        <div class="tag-row">
+          {% for tag in item.tags %}
+            <span class="tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        <div class="inline-links">
+          {% for link in item.links %}
+            <a href="{{ link.href | url }}" target="_blank" rel="noopener">
+              {{ link.label }} →
+            </a>
+          {% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>

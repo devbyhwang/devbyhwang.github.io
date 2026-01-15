@@ -40,7 +40,8 @@
       <nav class="drawer-nav">
         <a href="{{ '/' | url }}">홈</a>
         <a href="{{ '/blog/' | url }}">전체글</a>
-        <a href="{{ '/#projects' | url }}">프로젝트</a>
+        <a href="{{ '/projects/' | url }}">프로젝트</a>
+        <a href="{{ '/playground/' | url }}">Playground</a>
         <a href="#contact">방명록</a>
       </nav>
       <div class="drawer-categories">
@@ -73,6 +74,7 @@
           <a href="{{ '/' | url }}" {% if page.url == '/' %}class="active"{% endif %}>홈</a>
           <a href="{{ '/about/' | url }}" {% if '/about/' in page.url %}class="active"{% endif %}>소개</a>
           <a href="{{ '/projects/' | url }}" {% if '/projects/' in page.url %}class="active"{% endif %}>프로젝트</a>
+          <a href="{{ '/playground/' | url }}" {% if '/playground/' in page.url %}class="active"{% endif %}>Playground</a>
           <a href="{{ '/freelance/' | url }}" {% if '/freelance/' in page.url %}class="active"{% endif %}>외주</a>
           <a href="{{ '/blog/' | url }}" {% if '/blog/' in page.url %}class="active"{% endif %}>태그</a>
         </nav>

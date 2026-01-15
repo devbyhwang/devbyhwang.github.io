@@ -3,7 +3,9 @@ const { DateTime } = require("luxon");
 module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy({ "src/styles": "styles" });
+  eleventyConfig.addPassthroughCopy({ "src/demos": "demos" });
   eleventyConfig.addWatchTarget("src/styles");
+  eleventyConfig.addWatchTarget("src/demos");
 
   eleventyConfig.addFilter("readableDate", (dateObj, format = "yyyy.MM.dd") =>
     DateTime.fromJSDate(dateObj, { zone: "utc" }).toFormat(format)
