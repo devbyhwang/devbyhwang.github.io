@@ -4,29 +4,6 @@ title: 홈
 description: "게임 제작기와 외주 로그를 한곳에"
 ---
 <section class="layout-two" id="latest">
-  <div class="feed">
-    <!-- Post List (Tistory Style) -->
-    <div class="post-list">
-      {% for post in collections.posts | slice(0,10) %}
-        <article class="post-item">
-          <a href="{{ post.url | url }}">
-            <div class="post-thumb">
-              <div class="post-thumb-placeholder"></div>
-            </div>
-            <div class="post-info">
-              <span class="post-category">{{ post.data.category | default('notes') }}</span>
-              <h2 class="post-title">{{ post.data.title }}</h2>
-              <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
-              <span class="post-date">{{ post.date | readableDate }}</span>
-            </div>
-          </a>
-        </article>
-      {% endfor %}
-    </div>
-
-    {% include "ad-slot.njk" %}
-  </div>
-
   <aside class="sidebar">
     <!-- Profile -->
     <div class="sidebar-profile">
@@ -107,6 +84,29 @@ description: "게임 제작기와 외주 로그를 한곳에"
 
     {% include "ad-slot.njk" %}
   </aside>
+
+  <div class="feed">
+    <!-- Post List (Tistory Style) -->
+    <div class="post-list">
+      {% for post in collections.posts | slice(0,10) %}
+        <article class="post-item">
+          <a href="{{ post.url | url }}">
+            <div class="post-thumb">
+              <div class="post-thumb-placeholder"></div>
+            </div>
+            <div class="post-info">
+              <span class="post-category">{{ post.data.category | default('notes') }}</span>
+              <h2 class="post-title">{{ post.data.title }}</h2>
+              <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
+              <span class="post-date">{{ post.date | readableDate }}</span>
+            </div>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% include "ad-slot.njk" %}
+  </div>
 </section>
 
 <script>
