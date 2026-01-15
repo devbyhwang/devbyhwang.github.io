@@ -11,6 +11,20 @@ title: 전체글
 </section>
 
 <section class="layout-two archive">
+  <div class="feed">
+    <div class="post-list archive-list">
+      {% for post in collections.posts %}
+        <a class="post-item compact" href="{{ post.url | url }}">
+          <div class="post-item-top">
+            <span class="badge">{{ post.data.category | default('notes') }}</span>
+            <span class="post-meta">{{ post.date | readableDate }}</span>
+          </div>
+          <div class="post-item-title">{{ post.data.title }}</div>
+          <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
   <aside class="sidebar">
     <div class="sidebar-card">
       <div class="card-title">카테고리</div>
@@ -31,20 +45,6 @@ title: 전체글
     </div>
     {% include "ad-slot.njk" %}
   </aside>
-  <div class="feed">
-    <div class="post-list archive-list">
-      {% for post in collections.posts %}
-        <a class="post-item compact" href="{{ post.url | url }}">
-          <div class="post-item-top">
-            <span class="badge">{{ post.data.category | default('notes') }}</span>
-            <span class="post-meta">{{ post.date | readableDate }}</span>
-          </div>
-          <div class="post-item-title">{{ post.data.title }}</div>
-          <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
-        </a>
-      {% endfor %}
-    </div>
-  </div>
 </section>
 
 <section class="category-panels">
