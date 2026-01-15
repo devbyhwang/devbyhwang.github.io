@@ -18,7 +18,8 @@
   category: devlog   # devlog | freelance | games | notes 등
   readingTime: 4 min
   excerpt: "한 주 동안의 렌더링 개선 기록"
-  popularRank: 120   # (선택) 숫자가 클수록 인기글 탭에 먼저 노출
+  views: 350         # (선택) 조회수 기반 인기순 정렬에 사용
+  popularRank: 120   # (선택) 조회수 데이터가 없을 때 수동 우선순위
   ---
   본문을 마크다운으로 작성합니다.
   ```

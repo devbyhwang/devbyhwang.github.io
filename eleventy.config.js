@@ -32,6 +32,11 @@ module.exports = function (eleventyConfig) {
       .sort((a, b) => b.date - a.date)
   );
 
+  eleventyConfig.addFilter("head", (items, count) => {
+    if (!Array.isArray(items)) return [];
+    return items.slice(0, count);
+  });
+
   const toNumber = (value) => {
     const num = Number(value);
     return Number.isFinite(num) ? num : null;
@@ -41,14 +46,13 @@ module.exports = function (eleventyConfig) {
     const posts = collectionApi.getFilteredByGlob("src/posts/**/*.{md,njk}");
     return posts
       .map((post) => {
-        const rank = toNumber(post.data.popularRank);
         const views = toNumber(post.data.views);
-        if (rank !== null) return { post, score: rank };
+        const rank = toNumber(post.data.popularRank);
         if (views !== null) return { post, score: views };
+        if (rank !== null) return { post, score: rank };
         if (post.data.popular === true) return { post, score: 1 };
-        return null;
+        return { post, score: 0 };
       })
-      .filter(Boolean)
       .sort((a, b) => b.score - a.score || b.post.date - a.post.date)
       .map(({ post }) => post);
   });
