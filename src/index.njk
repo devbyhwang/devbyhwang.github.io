@@ -43,7 +43,7 @@ description: "게임 제작기와 외주 로그를 한곳에"
     {% endif %}
     <!-- Post List (Tistory Style) -->
     <div class="post-list">
-      {% for post in collections.posts | slice(0,10) %}
+      {% for post in collections.posts | head(10) %}
         <article class="post-item">
           <a href="{{ post.url | url }}">
             <div class="post-thumb">
@@ -117,13 +117,13 @@ description: "게임 제작기와 외주 로그를 한곳에"
         <button class="tab-btn" data-tab="popular">인기글</button>
       </div>
       <ul class="post-list-tab active" data-content="recent">
-        {% for post in collections.posts | slice(0, 5) %}
+        {% for post in collections.posts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
       </ul>
       <ul class="post-list-tab" data-content="popular">
         {% if collections.popularPosts and (collections.popularPosts | length) %}
-          {% for post in collections.popularPosts | slice(0, 5) %}
+          {% for post in collections.popularPosts | head(5) %}
             <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
           {% endfor %}
         {% else %}
