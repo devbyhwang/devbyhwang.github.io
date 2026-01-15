@@ -32,6 +32,27 @@ module.exports = function (eleventyConfig) {
       .sort((a, b) => b.date - a.date)
   );
 
+  const toNumber = (value) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : null;
+  };
+
+  eleventyConfig.addCollection("popularPosts", (collectionApi) => {
+    const posts = collectionApi.getFilteredByGlob("src/posts/**/*.{md,njk}");
+    return posts
+      .map((post) => {
+        const rank = toNumber(post.data.popularRank);
+        const views = toNumber(post.data.views);
+        if (rank !== null) return { post, score: rank };
+        if (views !== null) return { post, score: views };
+        if (post.data.popular === true) return { post, score: 1 };
+        return null;
+      })
+      .filter(Boolean)
+      .sort((a, b) => b.score - a.score || b.post.date - a.post.date)
+      .map(({ post }) => post);
+  });
+
   eleventyConfig.addCollection("byCategory", (collectionApi) => {
     const grouped = {};
     collectionApi.getFilteredByGlob("src/posts/**/*.{md,njk}").forEach((item) => {
