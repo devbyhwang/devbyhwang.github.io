@@ -1291,6 +1291,50 @@ a:hover {
   margin-bottom: var(--space-2);
 }
 
+.detail-header {
+  position: relative;
+  margin-bottom: var(--space-4);
+}
+
+.detail-header.has-preview {
+  overflow: hidden;
+}
+
+.detail-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.28;
+  filter: saturate(0.9) contrast(1.05);
+  pointer-events: none;
+  z-index: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 18%, #000 82%, transparent 100%);
+}
+
+.detail-hero-bg::before,
+.detail-hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.detail-hero-bg::before {
+  background: linear-gradient(180deg, rgba(17, 24, 32, 0.55), rgba(17, 24, 32, 0.12));
+}
+
+.detail-hero-bg::after {
+  background: linear-gradient(90deg, rgba(17, 24, 32, 0.5) 0%, rgba(17, 24, 32, 0.1) 40%, rgba(17, 24, 32, 0.1) 60%, rgba(17, 24, 32, 0.5) 100%);
+}
+
+.detail-header > *:not(.detail-hero-bg) {
+  position: relative;
+  z-index: 1;
+}
+
 .detail-meta {
   display: flex;
   flex-wrap: wrap;
@@ -1298,41 +1342,47 @@ a:hover {
   margin-top: var(--space-3);
 }
 
-.detail-preview {
-  padding: var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-}
-
-.detail-preview h2 {
-  font-size: var(--text-md);
-  margin-bottom: var(--space-2);
-}
-
-.detail-actions {
+.detail-cta {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3);
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--color-border);
+  justify-content: center;
 }
 
-.action-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  background: var(--color-primary);
-  color: white;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  transition: all var(--transition-fast);
+.detail-cta .launch-btn {
+  min-height: 52px;
 }
 
-.action-btn:hover {
-  background: var(--color-primary-hover);
-  transform: translateX(2px);
+
+.detail-summary {
+  margin-top: 0;
+  padding-bottom: var(--space-4);
+  border-bottom: 0;
+}
+
+.detail-summary-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.detail-summary-text {
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text);
+  margin: 0;
+  max-width: 70ch;
+}
+
+@media (max-width: 640px) {
+  .detail-cta .launch-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .detail-tags {
@@ -1343,6 +1393,8 @@ a:hover {
 
 .related-posts {
   margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
 }
 
 .related-cards {
@@ -1769,6 +1821,15 @@ a:hover {
   margin-top: var(--space-4);
 }
 
+.detail-header .hero-actions {
+  position: absolute;
+  top: var(--space-10);
+  left: 0;
+  margin: 0;
+  text-align: left;
+  z-index: 2;
+}
+
 /* Category Panels */
 .category-panels {
   margin-top: var(--space-12);
@@ -2013,20 +2074,36 @@ a:hover {
 .launch-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-6);
-  background: var(--color-primary);
-  color: white;
-  font-size: var(--text-sm);
-  font-weight: var(--weight-medium);
-  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-8);
+  background: #314a66;
+  color: #f7f9fc;
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.02em;
+  border: 1px solid #203042;
+  border-radius: var(--radius-sm);
   text-decoration: none;
-  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .launch-btn:hover {
-  background: var(--color-primary-hover);
-  transform: translateX(2px);
+  background: #1f2f44;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.launch-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.launch-btn:focus-visible {
+  outline: 2px solid #35506e;
+  outline-offset: 2px;
 }
 
 /* ===========================================
