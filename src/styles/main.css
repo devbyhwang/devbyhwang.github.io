@@ -227,6 +227,18 @@ a:hover {
   border: 0;
 }
 
+/* Canvas/WebGL touch handling */
+canvas,
+.webgl-container,
+.demo-container {
+  touch-action: none;
+}
+
+.card-preview iframe,
+.demo-frame {
+  touch-action: pan-y;
+}
+
 /* ===========================================
    5. Layout
    =========================================== */
@@ -1779,11 +1791,20 @@ a:hover {
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
   text-align: center;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ad-placeholder {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
+}
+
+.adsbygoogle {
+  display: block;
+  min-height: inherit;
 }
 
 /* ===========================================
@@ -2066,13 +2087,21 @@ a:hover {
 /* Tablet (768px - 1024px) */
 @media (max-width: 1024px) {
   .layout-two {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-8);
   }
 
   .sidebar {
-    border-top: 1px solid var(--color-border);
-    padding-top: var(--space-8);
+    order: -1;
+    border-top: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-top: 0;
+    padding-bottom: var(--space-8);
+  }
+
+  .feed {
+    order: 0;
   }
 
   .intro {
@@ -2100,6 +2129,26 @@ a:hover {
 
   .playground-page .playground-grid {
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+/* Navigation horizontal scroll (900px-769px) */
+@media (max-width: 900px) and (min-width: 769px) {
+  .nav {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-right: var(--space-2);
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav a {
+    flex-shrink: 0;
+    white-space: nowrap;
   }
 }
 
@@ -2211,6 +2260,87 @@ a:hover {
 
   .playground-page .playground-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Code blocks - full width with smaller font */
+  .prose pre {
+    margin-left: calc(var(--space-4) * -1);
+    margin-right: calc(var(--space-4) * -1);
+    border-radius: 0;
+    padding: var(--space-4);
+  }
+
+  .prose pre code {
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  /* Playground image height constraints */
+  .card-preview {
+    max-height: 250px;
+    overflow: hidden;
+  }
+
+  .card-preview img {
+    max-height: 250px;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Content horizontal padding */
+  .post-content,
+  .prose,
+  .about-content,
+  .card-detail {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .about-page,
+  .projects-page,
+  .playground-page,
+  .freelance-page,
+  .post {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .playground-card {
+    padding: var(--space-4);
+  }
+
+  /* Enhanced touch targets for tags */
+  .tag,
+  .pill,
+  .badge {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    min-height: 32px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tag-row,
+  .card-tags {
+    gap: var(--space-3);
+  }
+
+  .card-tags .tag {
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .inline-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  /* Mobile ad height */
+  .ad-shell {
+    min-height: 250px;
   }
 }
 
