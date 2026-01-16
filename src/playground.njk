@@ -28,19 +28,23 @@ description: "인터랙티브 데모와 실험"
           <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
         </div>
         {% endif %}
-        <div class="card-content">
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.blurb }}</p>
-          <div class="card-tags">
-            {% for tag in item.tags %}
-              <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
-            {% endfor %}
-          </div>
+        <div class="project-meta">
+          <span class="badge">{{ item.status }}</span>
+          <span class="pill">{{ item.role }}</span>
         </div>
-        <div class="card-actions">
-          <a href="{{ item.links[0].href | url }}" class="launch-btn" target="_blank" rel="noopener">
-            Launch →
-          </a>
+        <h3>{{ item.title }}</h3>
+        <p class="muted">{{ item.blurb }}</p>
+        <div class="tag-row">
+          {% for tag in item.tags %}
+            <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
+          {% endfor %}
+        </div>
+        <div class="inline-links">
+          {% for link in item.links %}
+            <a href="{{ link.href | url }}" target="_blank" rel="noopener">
+              {{ link.label }} →
+            </a>
+          {% endfor %}
         </div>
       </article>
     {% endfor %}
