@@ -1917,6 +1917,22 @@ a:hover {
   transform: translateY(-2px);
 }
 
+.card-preview {
+  width: 100%;
+  margin-bottom: var(--space-4);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #000;
+}
+
+.card-preview img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 16 / 9;
+}
+
 .card-content {
   flex: 1;
   margin-bottom: var(--space-4);
