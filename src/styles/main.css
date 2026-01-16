@@ -1897,14 +1897,14 @@ a:hover {
 
 .playground-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-5);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-4);
 }
 
 .playground-card {
   display: flex;
   flex-direction: column;
-  padding: var(--space-6);
+  padding: var(--space-4);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -1919,7 +1919,7 @@ a:hover {
 
 .card-preview {
   width: 100%;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #000;
@@ -1935,13 +1935,13 @@ a:hover {
 
 .card-content {
   flex: 1;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .playground-card h3 {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--weight-bold);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-2);
   color: var(--color-text);
 }
 
@@ -1949,14 +1949,14 @@ a:hover {
   font-size: var(--text-sm);
   line-height: var(--leading-relaxed);
   color: var(--color-text-muted);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .card-tags .tag {
@@ -1999,8 +1999,8 @@ a:hover {
 
 .playground-page .playground-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-4);
 }
 
 /* ===========================================
@@ -2110,7 +2110,7 @@ a:hover {
 
   /* Playground Cards - Tablet */
   .playground-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--space-4);
   }
 
@@ -2165,6 +2165,16 @@ a:hover {
 
   .intro h1 {
     font-size: var(--text-2xl);
+  }
+
+  /* Playground Cards - Mobile */
+  .playground-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .playground-card {
+    padding: var(--space-4);
   }
 
   .post-item {
