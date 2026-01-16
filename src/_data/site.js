@@ -17,6 +17,13 @@ module.exports = {
     client: "ca-pub-8933203312924164",
     enable: true,
   },
+  visitorCounter: {
+    enable: true,
+    namespace: "devbyhwang-tel-aviv",
+    totalKey: "total",
+    dailyPrefix: "daily",
+    timeZone: "Asia/Seoul",
+  },
   hero: {
     kicker: "Personal dev notes",
     heading: "작업 기록과 일상 노트를 차곡차곡 쌓아가는 곳",
