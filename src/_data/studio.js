@@ -38,6 +38,7 @@ module.exports = {
       postCategory: "games",
       tags: ["webgl", "physics", "simulation"],
       type: "demo",
+      preview: "/assets/embercraft-preview.png",
     },
   ],
   freelance: {

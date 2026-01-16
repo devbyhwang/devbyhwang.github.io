@@ -23,6 +23,11 @@ description: "인터랙티브 데모와 실험"
         {% if cardSlug %}
           <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ item.title }} 프리뷰 보기"></a>
         {% endif %}
+        {% if item.preview %}
+        <div class="card-preview">
+          <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+        </div>
+        {% endif %}
         <div class="project-meta">
           <span class="badge">{{ item.status }}</span>
           <span class="pill">{{ item.role }}</span>

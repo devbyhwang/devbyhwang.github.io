@@ -26,6 +26,11 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
             {% if cardSlug %}
               <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ item.title }} 프리뷰 보기"></a>
             {% endif %}
+            {% if item.preview %}
+            <div class="card-preview">
+              <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+            </div>
+            {% endif %}
             <div class="card-content">
               <h3>{{ item.title }}</h3>
               <p>{{ item.blurb }}</p>
