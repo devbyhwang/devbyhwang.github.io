@@ -10,7 +10,13 @@ eleventyComputed:
   description: "{{ card.description }}"
 ---
 <section class="card-detail">
-  <header class="page-header detail-header">
+  <header class="page-header detail-header{% if card.preview %} has-preview{% endif %}">
+    {% if card.preview %}
+      <div class="detail-hero-bg" style="background-image: url('{{ card.preview | url }}');"></div>
+    {% endif %}
+    <div class="hero-actions">
+      <a class="text-link" href="{{ card.backHref | url }}">← 목록으로</a>
+    </div>
     <div class="detail-kicker">{{ card.typeLabel }}</div>
     <h1>{{ card.title }}</h1>
     {% if card.subtitle %}
@@ -23,20 +29,17 @@ eleventyComputed:
       <a class="pill" href="{{ ('/tags/' + (card.postCategory | slugify) + '/') | url }}">#{{ card.postCategory }}</a>
     {% endif %}
   </div>
-    <div class="hero-actions">
-      <a class="text-link" href="{{ card.backHref | url }}">← 목록으로</a>
-    </div>
   </header>
 
-  <div class="detail-preview">
-    <h2>간단 소개</h2>
-    <p>{{ card.description }}</p>
+  <div class="detail-summary">
+    <div class="detail-summary-label">간단 소개</div>
+    <p class="detail-summary-text">{{ card.description }}</p>
   </div>
 
   {% if card.links.length %}
-  <div class="detail-actions">
+  <div class="detail-cta">
     {% for link in card.links %}
-      <a class="action-btn" href="{{ link.href | url }}">{{ link.label }} →</a>
+      <a class="launch-btn" href="{{ link.href | url }}">{{ link.label }} →</a>
     {% endfor %}
   </div>
   {% endif %}
