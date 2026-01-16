@@ -71,8 +71,10 @@
     const dailyKey = `${dailyPrefix}-${dateKey}`;
     const countedKey = `visitorCounter:${namespace}:lastCountedDate`;
     const hasCountedToday = storage ? storage.getItem(countedKey) === dateKey : false;
+    const mode = node.getAttribute("data-mode");
+    const readOnly = mode === "read" || node.getAttribute("data-readonly") === "true";
 
-    if (!hasUI && hasCountedToday) return;
+    if (!hasUI && hasCountedToday && !readOnly) return;
 
     const urlFor = (counter, action) => {
       const ns = encodeURIComponent(namespace);
@@ -92,13 +94,13 @@
     };
 
     (async () => {
-      const action = hasCountedToday ? "get" : "up";
+      const action = readOnly ? "get" : hasCountedToday ? "get" : "up";
       const [today, total] = await Promise.all([
         fetchCount(dailyKey, action),
         fetchCount(totalKey, action),
       ]);
 
-      if (storage && !hasCountedToday) {
+      if (storage && !hasCountedToday && !readOnly) {
         storage.setItem(countedKey, dateKey);
       }
 

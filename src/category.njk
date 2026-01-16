@@ -27,9 +27,11 @@ eleventyComputed:
         {% for post in categoryPosts %}
           <article class="post-item">
             <a href="{{ post.url | url }}">
+              {% if post.data.image %}
               <div class="post-thumb">
-                <div class="post-thumb-placeholder"></div>
+                <img src="{{ post.data.image | url }}" alt="{{ post.data.title }}" loading="lazy" />
               </div>
+              {% endif %}
               <div class="post-info">
                 <span class="post-category">{{ post.data.category | default('notes') }}</span>
                 <h2 class="post-title">{{ post.data.title }}</h2>

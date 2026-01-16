@@ -39,9 +39,11 @@
       </button>
       <nav class="drawer-nav">
         <a href="{{ '/' | url }}">홈</a>
-        <a href="{{ '/blog/' | url }}">전체글</a>
-        <a href="{{ '/projects/' | url }}">프로젝트</a>
+        <a href="{{ '/about/' | url }}">소개</a>
         <a href="{{ '/playground/' | url }}">Playground</a>
+        <a href="{{ '/projects/' | url }}">프로젝트</a>
+        <a href="{{ '/freelance/' | url }}">외주</a>
+        <a href="{{ '/blog/' | url }}">전체 글</a>
         <a href="#contact">방명록</a>
       </nav>
       <div class="drawer-categories">
@@ -67,10 +69,10 @@
         <nav class="nav">
           <a href="{{ '/' | url }}" {% if page.url == '/' %}class="active"{% endif %}>홈</a>
           <a href="{{ '/about/' | url }}" {% if '/about/' in page.url %}class="active"{% endif %}>소개</a>
-          <a href="{{ '/projects/' | url }}" {% if '/projects/' in page.url %}class="active"{% endif %}>프로젝트</a>
           <a href="{{ '/playground/' | url }}" {% if '/playground/' in page.url %}class="active"{% endif %}>Playground</a>
+          <a href="{{ '/projects/' | url }}" {% if '/projects/' in page.url %}class="active"{% endif %}>프로젝트</a>
           <a href="{{ '/freelance/' | url }}" {% if '/freelance/' in page.url %}class="active"{% endif %}>외주</a>
-          <a href="{{ '/blog/' | url }}" {% if '/blog/' in page.url %}class="active"{% endif %}>전체글</a>
+          <a href="{{ '/blog/' | url }}" {% if '/blog/' in page.url %}class="active"{% endif %}>전체 글</a>
         </nav>
 
         <button class="menu-btn" id="menu-btn" aria-label="Open menu">
@@ -89,6 +91,9 @@
       <footer class="footer" id="contact">
         <h3>{{ site.author }}</h3>
         <p>{{ site.description }}</p>
+        <p class="footer-legal">
+          콘텐츠는 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>로 공유합니다.
+        </p>
         <div class="footer-links">
           {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
           {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
@@ -111,16 +116,26 @@
       </footer>
     </div>
 
-    {% if site.visitorCounter and site.visitorCounter.enable and env.isProd %}
-    <script
-      src="{{ '/assets/visitor-counter.js' | url }}"
-      defer
-      data-visitor-counter
-      data-namespace="{{ site.visitorCounter.namespace }}"
-      data-total-key="{{ site.visitorCounter.totalKey }}"
-      data-daily-prefix="{{ site.visitorCounter.dailyPrefix }}"
-      data-timezone="{{ site.visitorCounter.timeZone }}"
-    ></script>
+    {% if env.isProd %}
+      {% if site.visitorCounter and site.visitorCounter.enable %}
+        <div
+          data-visitor-counter
+          data-namespace="{{ site.visitorCounter.namespace }}"
+          data-total-key="{{ site.visitorCounter.totalKey }}"
+          data-daily-prefix="{{ site.visitorCounter.dailyPrefix }}"
+          data-timezone="{{ site.visitorCounter.timeZone }}"
+          data-today-id="visitor-today"
+          data-total-id="visitor-total"
+          hidden
+        ></div>
+      {% endif %}
+
+      {% if site.visitorCounter and site.visitorCounter.enable %}
+      <script
+        src="{{ '/assets/visitor-counter.js' | url }}"
+        defer
+      ></script>
+      {% endif %}
     {% endif %}
 
     <script>

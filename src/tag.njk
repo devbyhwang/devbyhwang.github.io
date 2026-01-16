@@ -19,6 +19,18 @@ eleventyComputed:
 
 {% set taggedPosts = collections.posts | postsByTag(tag) %}
 {% set taggedCards = cards | cardsByTag(tag) %}
+{% set playgroundCards = [] %}
+{% set projectCards = [] %}
+{% set freelanceCards = [] %}
+{% for card in taggedCards %}
+  {% if card.type == 'playground' %}
+    {% set playgroundCards = (playgroundCards.push(card), playgroundCards) %}
+  {% elif card.type == 'freelance' %}
+    {% set freelanceCards = (freelanceCards.push(card), freelanceCards) %}
+  {% else %}
+    {% set projectCards = (projectCards.push(card), projectCards) %}
+  {% endif %}
+{% endfor %}
 
 <section class="layout-two archive">
   <div class="feed">
@@ -36,7 +48,22 @@ eleventyComputed:
             {% endif %}
           </a>
         {% endfor %}
-      {% else %}
+      {% endif %}
+      {% if freelanceCards.length > 0 %}
+        {% for card in freelanceCards %}
+          <a class="post-item compact" href="{{ ('/cards/' + card.slug + '/') | url }}">
+            <div class="post-item-top">
+              <span class="badge">{{ card.typeLabel }}</span>
+              {% if card.year %}<span class="post-meta">{{ card.year }}</span>{% endif %}
+            </div>
+            <div class="post-item-title">{{ card.title }}</div>
+            {% if card.work or card.description %}
+              <div class="post-item-excerpt muted">{{ card.work or card.description }}</div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      {% endif %}
+      {% if taggedPosts.length == 0 and freelanceCards.length == 0 %}
         <p class="muted">아직 이 태그로 작성된 글이 없습니다.</p>
       {% endif %}
     </div>
@@ -59,37 +86,81 @@ eleventyComputed:
     <p>Playground, 프로젝트, 외주 카드 모음</p>
   </div>
   {% if taggedCards.length > 0 %}
-    <div class="project-grid">
-      {% for card in taggedCards %}
-        <article class="project-card card-link-wrap">
-          {% if card.slug %}
-            <a class="card-link" href="{{ ('/cards/' + card.slug + '/') | url }}" aria-label="{{ card.title }} 프리뷰 보기"></a>
-          {% endif %}
-          <div class="project-meta">
-            <span class="badge">{{ card.typeLabel }}</span>
-            {% if card.status %}<span class="pill">{{ card.status }}</span>{% endif %}
-          </div>
-          <h3>{{ card.title }}</h3>
-          <p class="muted">{{ card.description }}</p>
-          {% if card.tags.length %}
-          <div class="tag-row">
-            {% for tagItem in card.tags %}
-              <a class="tag" href="{{ ('/tags/' + (tagItem | slugify) + '/') | url }}">{{ tagItem }}</a>
-            {% endfor %}
-          </div>
-          {% endif %}
-          {% if card.links.length %}
-          <div class="inline-links">
-            {% for link in card.links %}
-              <a href="{{ link.href | url }}">
-                {{ link.label }}
-              </a>
-            {% endfor %}
-          </div>
-          {% endif %}
-        </article>
-      {% endfor %}
-    </div>
+    {% if playgroundCards.length %}
+      <div class="cards-group">
+        <div class="playground-grid">
+          {% for card in playgroundCards %}
+            <article class="playground-card card-link-wrap">
+              {% if card.slug %}
+                <a class="card-link" href="{{ ('/cards/' + card.slug + '/') | url }}" aria-label="{{ card.title }} 프리뷰 보기"></a>
+              {% endif %}
+              {% if card.preview %}
+              <div class="card-preview">
+                <img src="{{ card.preview | url }}" alt="{{ card.title }} 프리뷰" loading="lazy" />
+              </div>
+              {% endif %}
+              <div class="project-meta">
+                {% if card.status %}<span class="badge">{{ card.status }}</span>{% endif %}
+                {% if card.role or card.subtitle %}<span class="pill">{{ card.role or card.subtitle }}</span>{% endif %}
+              </div>
+              <h3>{{ card.title }}</h3>
+              <p class="muted">{{ card.description }}</p>
+              {% if card.tags.length %}
+              <div class="tag-row">
+                {% for tagItem in card.tags %}
+                  <a class="tag" href="{{ ('/tags/' + (tagItem | slugify) + '/') | url }}">{{ tagItem }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% if card.links.length %}
+              <div class="inline-links">
+                {% for link in card.links %}
+                  <a href="{{ link.href | url }}" target="_blank" rel="noopener">
+                    {{ link.label }} →
+                  </a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    {% if projectCards.length %}
+      <div class="cards-group">
+        <div class="project-grid">
+          {% for card in projectCards %}
+            <article class="project-card card-link-wrap">
+              {% if card.slug %}
+                <a class="card-link" href="{{ ('/cards/' + card.slug + '/') | url }}" aria-label="{{ card.title }} 프리뷰 보기"></a>
+              {% endif %}
+              <div class="project-meta">
+                {% if card.status %}<span class="badge">{{ card.status }}</span>{% endif %}
+                {% if card.subtitle %}<span class="pill">{{ card.subtitle }}</span>{% endif %}
+              </div>
+              <h3>{{ card.title }}</h3>
+              <p class="muted">{{ card.description }}</p>
+              {% if card.tags.length %}
+              <div class="tag-row">
+                {% for tagItem in card.tags %}
+                  <a class="tag" href="{{ ('/tags/' + (tagItem | slugify) + '/') | url }}">{{ tagItem }}</a>
+                {% endfor %}
+              </div>
+              {% endif %}
+              {% if card.links.length %}
+              <div class="inline-links">
+                {% for link in card.links %}
+                  <a href="{{ link.href | url }}">
+                    {{ link.label }}
+                  </a>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </article>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   {% else %}
     <p class="muted">아직 이 태그로 연결된 카드가 없습니다.</p>
   {% endif %}

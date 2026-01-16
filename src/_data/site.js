@@ -1,9 +1,22 @@
+const normalizeUrl = (value) => {
+  if (!value) return "";
+  return value.endsWith("/") ? value.slice(0, -1) : value;
+};
+
+const toBool = (value, fallback = false) => {
+  if (value === undefined) return fallback;
+  return value === "true";
+};
+
+const env = process.env;
+
 module.exports = {
   title: "DevByHwang",
   tagline: "devlogs · freelance · notes",
   description:
-    "Hwang이 개발 기록과 외주 로그, 일상 메모를 모아두는 개인 블로그.",
-  author: "Hwang",
+    "개발자 Hwang의 개발 기록과 외주 로그, 기타 글을 모아둔 개인 블로그.",
+  author: "DevByHwang",
+  url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
   email: "",
   socials: {
     github: "https://github.com/devbyhwang",
@@ -14,15 +27,15 @@ module.exports = {
   },
   googleAds: {
     // 설정 방법: Google AdSense 발급 후 클라이언트 ID를 입력, enable을 true로 설정
-    client: "ca-pub-8933203312924164",
-    enable: true,
+    client: env.GOOGLE_ADS_CLIENT || "",
+    enable: toBool(env.GOOGLE_ADS_ENABLE, false),
   },
   visitorCounter: {
-    enable: true,
-    namespace: "devbyhwang-tel-aviv",
-    totalKey: "total",
-    dailyPrefix: "daily",
-    timeZone: "Asia/Seoul",
+    enable: toBool(env.VISITOR_COUNTER_ENABLE, true),
+    namespace: env.VISITOR_COUNTER_NAMESPACE || "devbyhwang-tel-aviv",
+    totalKey: env.VISITOR_COUNTER_TOTAL_KEY || "total",
+    dailyPrefix: env.VISITOR_COUNTER_DAILY_PREFIX || "daily",
+    timeZone: env.VISITOR_COUNTER_TIMEZONE || "Asia/Seoul",
   },
   hero: {
     kicker: "Personal dev notes",

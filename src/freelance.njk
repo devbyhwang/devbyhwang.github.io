@@ -9,22 +9,28 @@ description: "클라이언트 작업 이력"
     <p class="lede">클라이언트 작업 이력</p>
   </header>
 
-  <div class="freelance-grid">
+  <div class="post-list">
     {% for job in studio.freelance.jobs %}
-      <article class="job-card card-link-wrap">
-        {% set cardSlug = job | cardSlug %}
-        {% if cardSlug %}
-          <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ job.client }} 프리뷰 보기"></a>
-        {% endif %}
-        <div class="job-head">
-          <div>
-            <div class="eyebrow">{{ job.year }}</div>
-            <h4>{{ job.client }}</h4>
+      {% set cardSlug = job | cardSlug %}
+      <article class="post-item">
+        <a href="{{ ('/cards/' + cardSlug + '/') | url }}">
+          <div class="post-info">
+            <span class="post-category">외주</span>
+            <h2 class="post-title">{{ job.client }}</h2>
+            <p class="post-excerpt">
+              {% if job.work and job.notes %}
+                {{ job.work }} · {{ job.notes }}
+              {% elif job.work %}
+                {{ job.work }}
+              {% elif job.notes %}
+                {{ job.notes }}
+              {% endif %}
+            </p>
+            {% if job.year %}
+              <span class="post-date">{{ job.year }}</span>
+            {% endif %}
           </div>
-          <span class="pill">{{ job.status }}</span>
-        </div>
-        <p class="muted">{{ job.work }}</p>
-        <p class="note">{{ job.notes }}</p>
+        </a>
       </article>
     {% endfor %}
   </div>
