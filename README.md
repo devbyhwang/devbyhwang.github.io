@@ -1,6 +1,18 @@
-# Columbia blog (Eleventy + GitHub Pages)
+# DevByHwang Blog (Eleventy + GitHub Pages)
 
-개발 중인 게임, devlog, 외주 작업기, 일반 글을 올리는 정적 블로그 템플릿입니다. Eleventy로 빌드하고 GitHub Pages로 배포합니다.
+A personal Eleventy blog for devlogs, freelance notes, and misc writing.
+Primary language: Korean.
+Code is MIT licensed; content is CC BY-NC-SA 4.0.
+
+## 소개
+개발 기록, 외주 로그, 게임 제작, 기타 글을 정리하는 개인 블로그입니다.
+Eleventy로 빌드해 GitHub Pages로 배포합니다.
+
+## 주요 섹션
+- 글: `src/posts/`
+- Playground: `src/_data/studio.js`의 `games` 중 `type: demo`
+- 프로젝트/외주 카드: `src/_data/studio.js`
+- 디자인/레이아웃: `src/styles/main.css`
 
 ## 빠른 시작
 1. Node 18+ 설치
@@ -8,7 +20,7 @@
 3. 개발 서버: `npm run dev` (http://localhost:8080)
 4. 프로덕션 빌드: `npm run build` → 결과물은 `_site/`
 
-## 글 작성 방법
+## 글 작성 규칙
 - 위치: `src/posts/YYYY-MM-DD-title.md`
 - 프론트매터 예시:
   ```md
@@ -23,18 +35,16 @@
   ---
   본문을 마크다운으로 작성합니다.
   ```
-- 목록/카테고리 페이지는 자동으로 갱신됩니다.
+- 태그(`tags`)는 선택이며, 카테고리는 자동으로 태그 목록에도 포함됩니다.
 
-## 섹션 데이터 수정
-- `src/_data/site.js`: 블로그 타이틀, 소개, 소셜 링크, Google Ads 설정
-- `src/_data/studio.js`: 게임 카드, 외주 파이프라인, 콜아웃 문구
-- 색상/레이아웃: `src/styles/main.css`
+## 운영 메모
+- 글/이미지 출처가 필요한 경우 본문 하단에 명시합니다.
+- 개인 의견/회고 성격의 글은 외부 수정 제안을 받지 않습니다.
+- 설정 변경은 `src/_data/site.js`, 카드/섹션 구성은 `src/_data/studio.js`에서 관리합니다.
 
-## Google Ads 추가
-1. AdSense에서 발급받은 클라이언트 ID를 `src/_data/site.js`의 `googleAds.client`에 입력
-2. `googleAds.enable`을 `true`로 변경
-3. 광고 슬롯 ID를 바꾸고 싶다면 `src/_includes/ad-slot.njk`의 `data-ad-slot` 값을 수정
-4. `ELEVENTY_ENV=production`에서만 스크립트가 로드되어 로컬 개발 시 경고가 없습니다.
+## 라이선스
+- 코드: MIT License (`LICENSE`)
+- 콘텐츠(글/이미지): CC BY-NC-SA 4.0 (`LICENSE-CONTENT`)
 
 ## GitHub Pages 배포
 - 워크플로우: `.github/workflows/deploy.yml`
@@ -44,15 +54,9 @@
     - 워크플로우에서 `PATH_PREFIX`를 `/`로 변경하거나 제거하세요.
 - GitHub Settings → Pages에서 배포 대상이 "GitHub Actions"인지 확인
 
-## 구조
-```
-src/
-  _data/        전역 데이터 (사이트 정보, 게임/외주 카드)
-  _includes/    레이아웃과 광고 슬롯
-  posts/        마크다운 포스트
-  styles/       메인 스타일시트
-  index.njk     홈
-  blog.njk      블로그 리스트
-```
+## 기여
+오타 수정/버그 제보/간단한 개선 PR은 환영합니다.
+자세한 규칙은 `CONTRIBUTING.md`를 참고하세요.
 
-필요한 섹션이나 스타일을 자유롭게 변경해도 Eleventy가 자동으로 정적 HTML을 생성합니다.
+## 변경 기록
+- 2026-01-16: 코드 MIT / 콘텐츠 CC BY-NC-SA 4.0 / 기여 오픈으로 정리

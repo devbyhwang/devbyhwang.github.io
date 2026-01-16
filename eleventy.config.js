@@ -1,6 +1,32 @@
+const fs = require("fs");
+const path = require("path");
 const { DateTime } = require("luxon");
 
+const loadEnv = () => {
+  const envPath = path.join(__dirname, ".env");
+  if (!fs.existsSync(envPath)) return;
+  const content = fs.readFileSync(envPath, "utf8");
+  content.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) return;
+    const eqIndex = trimmed.indexOf("=");
+    if (eqIndex === -1) return;
+    const key = trimmed.slice(0, eqIndex).trim();
+    let value = trimmed.slice(eqIndex + 1).trim();
+    if (
+      (value.startsWith("\"") && value.endsWith("\"")) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (process.env[key] === undefined) {
+      process.env[key] = value;
+    }
+  });
+};
+
 module.exports = function (eleventyConfig) {
+  loadEnv();
   const slugify = (value) => {
     if (!value) return "";
     return value
@@ -32,6 +58,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addFilter("readableDate", (dateObj, format = "yyyy.MM.dd") =>
     DateTime.fromJSDate(dateObj, { zone: "utc" }).toFormat(format)
+  );
+
+  eleventyConfig.addFilter("isoDate", (dateObj) =>
+    DateTime.fromJSDate(dateObj, { zone: "utc" }).toISODate()
   );
 
   eleventyConfig.addCollection("posts", (collectionApi) =>
@@ -208,6 +238,16 @@ module.exports = function (eleventyConfig) {
     if (!categoryKey) return [];
     return cards.filter((card) => {
       return card.postCategory === categoryKey;
+    });
+  });
+
+  eleventyConfig.addFilter("sitemapFilter", (items) => {
+    if (!Array.isArray(items)) return [];
+    return items.filter((item) => {
+      if (!item || !item.url) return false;
+      if (item.data && item.data.sitemap === false) return false;
+      if (item.url === "/sitemap.xml" || item.url === "/robots.txt") return false;
+      return true;
     });
   });
 

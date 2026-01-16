@@ -15,9 +15,8 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
 
     {% if playgroundItems.length > 0 %}
     <div class="playground-section">
-      <div class="section-header">
-        <h2>✨ Playground</h2>
-        <p>인터랙티브 데모와 실험</p>
+      <div class="playground-header">
+        <h2 class="section-label">Playground</h2>
       </div>
       <div class="playground-grid">
         {% for item in playgroundItems %}
@@ -83,7 +82,7 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
     <div class="sidebar-profile">
       <img class="profile-img" src="{{ '/assets/profile.jpg' | url }}" alt="Hwang 프로필 사진" width="80" height="80" loading="lazy" />
       <div class="profile-name">{{ site.author }}</div>
-      <p class="profile-bio">개발 기록과 외주 로그, 일상 메모를 남깁니다.</p>
+      <p class="profile-bio">개발자 Hwang의 개발 기록과 외주 로그, 기타 글을 모아둔 개인 블로그.</p>
       <a href="{{ '/about/' | url }}" class="profile-link">프로필 보기 →</a>
       <div class="profile-links">
         {% if site.email %}<a href="mailto:{{ site.email }}">Email</a>{% endif %}
@@ -111,15 +110,17 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
     </div>
 
     <!-- Visitor Counter -->
-    <div class="sidebar-counter">
-      <div class="counter-label">방문자</div>
-      <div class="counter-row">
-        <span>TODAY</span><span id="visitor-today">—</span>
+    {% if site.visitorCounter and site.visitorCounter.enable %}
+      <div class="sidebar-counter">
+        <div class="counter-label">방문자</div>
+        <div class="counter-row">
+          <span>TODAY</span><span id="visitor-today">—</span>
+        </div>
+        <div class="counter-row">
+          <span>TOTAL</span><span id="visitor-total">—</span>
+        </div>
       </div>
-      <div class="counter-row">
-        <span>TOTAL</span><span id="visitor-total">—</span>
-      </div>
-    </div>
+    {% endif %}
 
     <!-- Recent/Popular Posts Tabs -->
     <div class="sidebar-posts">
@@ -152,6 +153,7 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
         {% endfor %}
       </div>
     </div>
+
 
     {% include "ad-slot.njk" %}
   </aside>

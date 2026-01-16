@@ -35,6 +35,15 @@ jobs:
           else
             echo "PATH_PREFIX=/$REPO_NAME/" >> "$GITHUB_ENV"
           fi
+      - name: Set SITE_URL
+        run: |
+          REPO_NAME="${{ github.event.repository.name }}"
+          OWNER="${{ github.repository_owner }}"
+          if [[ "$REPO_NAME" == *.github.io ]]; then
+            echo "SITE_URL=https://$REPO_NAME" >> "$GITHUB_ENV"
+          else
+            echo "SITE_URL=https://$OWNER.github.io" >> "$GITHUB_ENV"
+          fi
       - name: Build
         run: npm run build
       - name: Upload artifact
