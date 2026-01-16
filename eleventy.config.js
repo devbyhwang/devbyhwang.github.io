@@ -110,6 +110,16 @@ module.exports = function (eleventyConfig) {
     );
   });
 
+  eleventyConfig.addCollection("categoryList", (collectionApi) => {
+    const categories = [
+      { key: "devlog", name: "개발일지" },
+      { key: "freelance", name: "외주" },
+      { key: "games", name: "게임" },
+      { key: "notes", name: "노트" }
+    ];
+    return categories;
+  });
+
   eleventyConfig.addFilter("cardSlug", (item) => {
     if (!item) return "";
     if (item.slug) return item.slug;
@@ -166,6 +176,25 @@ module.exports = function (eleventyConfig) {
       if (Array.isArray(card.tags)) values.push(...card.tags);
       if (card.postCategory) values.push(card.postCategory);
       return values.some((value) => slugify(value) === tagSlug);
+    });
+  });
+
+  eleventyConfig.addFilter("postsByCategory", (posts, category) => {
+    if (!Array.isArray(posts)) return [];
+    const categoryKey = typeof category === "string" ? category : category && category.key;
+    if (!categoryKey) return [];
+    return posts.filter((post) => {
+      const postCategory = post.data.category || "notes";
+      return postCategory === categoryKey;
+    });
+  });
+
+  eleventyConfig.addFilter("cardsByCategory", (cards, category) => {
+    if (!Array.isArray(cards)) return [];
+    const categoryKey = typeof category === "string" ? category : category && category.key;
+    if (!categoryKey) return [];
+    return cards.filter((card) => {
+      return card.postCategory === categoryKey;
     });
   });
 

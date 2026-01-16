@@ -105,7 +105,7 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
         } %}
         {% for key, posts in collections.byCategory %}
           <li class="sub">
-            <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
+            <a href="{{ ('/categories/' + key + '/') | url }}">{{ labels[key] or key }}</a>
             <span class="count">({{ posts | length }})</span>
           </li>
         {% endfor %}
