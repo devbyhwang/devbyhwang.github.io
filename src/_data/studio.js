@@ -33,7 +33,7 @@ module.exports = {
       status: "Live",
       blurb: "Three.js와 Cannon.js로 만든 실시간 장작불 시뮬레이션. 물리 기반 파티클, 동적 오디오, 절차적 불꽃 생성.",
       links: [
-        { label: "Launch", href: "/demos/embercraft/" },
+        { label: "Launch", href: "/playground/embercraft/" },
       ],
       postCategory: "games",
       tags: ["webgl", "physics", "simulation"],
