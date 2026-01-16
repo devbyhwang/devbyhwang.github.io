@@ -21,30 +21,25 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
       </div>
       <div class="playground-grid">
         {% for item in playgroundItems %}
-          <article class="playground-card card-link-wrap">
+          <article class="playground-item">
             {% set cardSlug = item | cardSlug %}
-            {% if cardSlug %}
-              <a class="card-link" href="{{ ('/cards/' + cardSlug + '/') | url }}" aria-label="{{ item.title }} 프리뷰 보기"></a>
-            {% endif %}
-            {% if item.preview %}
-            <div class="card-preview">
-              <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
-            </div>
-            {% endif %}
-            <div class="card-content">
-              <h3>{{ item.title }}</h3>
-              <p>{{ item.blurb }}</p>
-              <div class="card-tags">
-                {% for tag in item.tags %}
-                  <a class="tag" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
-                {% endfor %}
+            <a href="{{ ('/cards/' + cardSlug + '/') | url }}">
+              {% if item.preview %}
+              <div class="playground-thumb">
+                <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
               </div>
-            </div>
-            <div class="card-actions">
-              <a href="{{ item.links[0].href | url }}" class="launch-btn" target="_blank" rel="noopener">
-                Launch →
-              </a>
-            </div>
+              {% endif %}
+              <div class="playground-info">
+                <span class="playground-category">Playground</span>
+                <h2 class="playground-title">{{ item.title }}</h2>
+                <p class="playground-excerpt">{{ item.blurb }}</p>
+                <div class="playground-tags">
+                  {% for tag in item.tags %}
+                    <span class="tag-label">{{ tag }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            </a>
           </article>
         {% endfor %}
       </div>
