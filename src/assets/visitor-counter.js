@@ -1,17 +1,6 @@
 (function () {
-  const script = document.querySelector("script[data-visitor-counter]");
-  if (!script) return;
-
-  const namespace = script.getAttribute("data-namespace");
-  if (!namespace) return;
-
-  const totalKey = script.getAttribute("data-total-key") || "total";
-  const dailyPrefix = script.getAttribute("data-daily-prefix") || "daily";
-  const timeZone = script.getAttribute("data-timezone") || "Asia/Seoul";
-
-  const todayEl = document.getElementById("visitor-today");
-  const totalEl = document.getElementById("visitor-total");
-  const hasUI = Boolean(todayEl || totalEl);
+  const configs = document.querySelectorAll("[data-visitor-counter]");
+  if (!configs.length) return;
 
   const storage = (() => {
     try {
@@ -24,7 +13,24 @@
     }
   })();
 
-  const dateKey = (() => {
+  const baseUrl = "https://api.counterapi.dev/v1";
+  const fmt = (value) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num.toLocaleString("ko-KR") : "—";
+  };
+
+  const setText = (el, value) => {
+    if (el) el.textContent = value;
+  };
+
+  const isLocalHost = (hostname) =>
+    !hostname ||
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname === "[::1]";
+
+  const buildDateKey = (timeZone) => {
     try {
       return new Intl.DateTimeFormat("en-CA", {
         timeZone,
@@ -39,54 +45,66 @@
       const day = String(now.getDate()).padStart(2, "0");
       return `${year}-${month}-${day}`;
     }
-  })();
-
-  const dailyKey = `${dailyPrefix}-${dateKey}`;
-  const countedKey = `visitorCounter:${namespace}:lastCountedDate`;
-  const hasCountedToday = storage ? storage.getItem(countedKey) === dateKey : false;
-
-  if (!hasUI && hasCountedToday) return;
-
-  const baseUrl = "https://api.counterapi.dev/v1";
-  const fmt = (value) => {
-    const num = Number(value);
-    return Number.isFinite(num) ? num.toLocaleString("ko-KR") : "—";
   };
 
-  const setText = (el, value) => {
-    if (el) el.textContent = value;
-  };
+  configs.forEach((node) => {
+    const namespace = node.getAttribute("data-namespace");
+    if (!namespace) return;
 
-  const urlFor = (counter, action) => {
-    const ns = encodeURIComponent(namespace);
-    const key = encodeURIComponent(counter);
-    if (action === "up") return `${baseUrl}/${ns}/${key}/up`;
-    return `${baseUrl}/${ns}/${key}/`;
-  };
+    const allowLocal = node.getAttribute("data-allow-local") === "true";
+    const hostname = window.location.hostname;
+    if (isLocalHost(hostname) && !allowLocal) return;
 
-  const fetchCount = async (counter, action) => {
-    const res = await fetch(urlFor(counter, action), { cache: "no-store" });
-    if (!res.ok) {
-      if (action === "get") return 0;
-      throw new Error(`CounterAPI ${action} failed (${res.status})`);
-    }
-    const data = await res.json();
-    return typeof data?.count === "number" ? data.count : 0;
-  };
+    const totalKey = node.getAttribute("data-total-key") || "total";
+    const dailyPrefix = node.getAttribute("data-daily-prefix") || "daily";
+    const timeZone = node.getAttribute("data-timezone") || "Asia/Seoul";
 
-  (async () => {
-    const action = hasCountedToday ? "get" : "up";
-    const [today, total] = await Promise.all([
-      fetchCount(dailyKey, action),
-      fetchCount(totalKey, action),
-    ]);
+    const todayIdAttr = node.getAttribute("data-today-id");
+    const totalIdAttr = node.getAttribute("data-total-id");
+    const todayId = todayIdAttr === null ? "visitor-today" : todayIdAttr;
+    const totalId = totalIdAttr === null ? "visitor-total" : totalIdAttr;
+    const todayEl = todayId ? document.getElementById(todayId) : null;
+    const totalEl = totalId ? document.getElementById(totalId) : null;
+    const hasUI = Boolean(todayEl || totalEl);
 
-    if (storage && !hasCountedToday) {
-      storage.setItem(countedKey, dateKey);
-    }
+    const dateKey = buildDateKey(timeZone);
+    const dailyKey = `${dailyPrefix}-${dateKey}`;
+    const countedKey = `visitorCounter:${namespace}:lastCountedDate`;
+    const hasCountedToday = storage ? storage.getItem(countedKey) === dateKey : false;
 
-    setText(todayEl, fmt(today));
-    setText(totalEl, fmt(total));
-  })().catch(() => {
+    if (!hasUI && hasCountedToday) return;
+
+    const urlFor = (counter, action) => {
+      const ns = encodeURIComponent(namespace);
+      const key = encodeURIComponent(counter);
+      if (action === "up") return `${baseUrl}/${ns}/${key}/up`;
+      return `${baseUrl}/${ns}/${key}/`;
+    };
+
+    const fetchCount = async (counter, action) => {
+      const res = await fetch(urlFor(counter, action), { cache: "no-store" });
+      if (!res.ok) {
+        if (action === "get") return 0;
+        throw new Error(`CounterAPI ${action} failed (${res.status})`);
+      }
+      const data = await res.json();
+      return typeof data?.count === "number" ? data.count : 0;
+    };
+
+    (async () => {
+      const action = hasCountedToday ? "get" : "up";
+      const [today, total] = await Promise.all([
+        fetchCount(dailyKey, action),
+        fetchCount(totalKey, action),
+      ]);
+
+      if (storage && !hasCountedToday) {
+        storage.setItem(countedKey, dateKey);
+      }
+
+      setText(todayEl, fmt(today));
+      setText(totalEl, fmt(total));
+    })().catch(() => {
+    });
   });
 })();
