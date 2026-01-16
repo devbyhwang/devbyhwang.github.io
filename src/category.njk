@@ -51,7 +51,7 @@ eleventyComputed:
         {% for cat in collections.categoryList %}
           <li{% if cat.key == category.key %} class="active"{% endif %}>
             <a href="{{ ('/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
-            <span class="count">({{ collections.byCategory[cat.key] | length }})</span>
+            <span class="count">({{ cat.count }})</span>
           </li>
         {% endfor %}
       </ul>

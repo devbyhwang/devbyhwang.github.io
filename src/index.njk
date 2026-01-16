@@ -97,16 +97,10 @@ description: "개발 기록과 일상 노트를 모아두는 개인 블로그"
           <a href="/blog/">전체글</a>
           <span class="count">({{ collections.posts | length }})</span>
         </li>
-        {% set labels = {
-          'devlog': '개발일지',
-          'freelance': '외주',
-          'games': '게임',
-          'notes': '노트'
-        } %}
-        {% for key, posts in collections.byCategory %}
+        {% for cat in collections.categoryList %}
           <li class="sub">
-            <a href="{{ ('/categories/' + key + '/') | url }}">{{ labels[key] or key }}</a>
-            <span class="count">({{ posts | length }})</span>
+            <a href="{{ ('/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+            <span class="count">({{ cat.count }})</span>
           </li>
         {% endfor %}
       </ul>
