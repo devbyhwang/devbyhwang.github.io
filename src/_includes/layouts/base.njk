@@ -55,7 +55,7 @@
           } %}
           {% for key, posts in collections.byCategory %}
             <li>
-              <a href="{{ '/blog/#' + key | url }}">{{ labels[key] or key }}</a>
+              <a href="{{ ('/categories/' + key + '/') | url }}">{{ labels[key] or key }}</a>
               <span class="count">({{ posts | length }})</span>
             </li>
           {% endfor %}

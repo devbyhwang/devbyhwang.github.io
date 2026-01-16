@@ -37,7 +37,7 @@ title: 전체글
         } %}
         {% for key, posts in collections.byCategory %}
           <li>
-            <a href="#{{ key }}">{{ labels[key] or key }}</a>
+            <a href="{{ ('/categories/' + key + '/') | url }}">{{ labels[key] or key }}</a>
             <span class="count">({{ posts | length }})</span>
           </li>
         {% endfor %}
@@ -45,38 +45,4 @@ title: 전체글
     </div>
     {% include "ad-slot.njk" %}
   </aside>
-</section>
-
-<section class="category-panels">
-  <div class="section-heading">
-    <div>
-      <h2>카테고리별 보기</h2>
-    </div>
-  </div>
-  <div class="category-grid">
-    {% set labels = {
-      'devlog': '개발일지',
-      'freelance': '외주',
-      'games': '게임',
-      'notes': '노트'
-    } %}
-    {% for key, posts in collections.byCategory %}
-      <div class="category-block" id="{{ key }}">
-        <div class="block-head">
-          <h3>{{ labels[key] or key }}</h3>
-          <span class="count muted">({{ posts | length }})</span>
-        </div>
-        <div class="stack">
-          {% for post in posts %}
-            <a class="stack-item" href="{{ post.url | url }}">
-              <div>
-                <div class="stack-title">{{ post.data.title }}</div>
-                <div class="muted">{{ post.date | readableDate }}</div>
-              </div>
-            </a>
-          {% endfor %}
-        </div>
-      </div>
-    {% endfor %}
-  </div>
 </section>
