@@ -14,7 +14,7 @@ module.exports = {
   title: "DevByHwang",
   tagline: "devlogs · freelance · notes",
   description:
-    "개발자 Hwang의 개발 기록과 외주 로그, 기타 글을 모아둔 개인 블로그.",
+    "개발자 Hwang의 개발 기록과 외주 로그, 기타 글을 모아둔 블로그.",
   author: "DevByHwang",
   url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
   email: "",

@@ -5,7 +5,7 @@ Primary language: Korean.
 Code is MIT licensed; content is CC BY-NC-SA 4.0.
 
 ## 소개
-개발 기록, 외주 로그, 게임 제작, 기타 글을 정리하는 개인 블로그입니다.
+개발 기록, 외주 로그, 게임 제작, 기타 글을 정리하는 블로그입니다.
 Eleventy로 빌드해 GitHub Pages로 배포합니다.
 
 ## 주요 섹션
