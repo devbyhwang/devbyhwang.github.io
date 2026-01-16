@@ -1,33 +1,6 @@
 module.exports = {
   games: [
     {
-      title: "Starless Harbor",
-      role: "Solo dev",
-      status: "Prototype",
-      blurb: "Lo-fi naval roguelite about charting ghost currents and negotiating with factions.",
-      links: [{ label: "Devlog", href: "#blog" }, { label: "Build", href: "https://example.com" }],
-      postCategory: "games",
-      tags: ["unity", "roguelite", "PC"],
-    },
-    {
-      title: "Mossglass",
-      role: "Design / Code",
-      status: "Alpha",
-      blurb: "Cozy puzzle loops about restoring terrariums with procedural plants.",
-      links: [{ label: "GIFs", href: "https://example.com" }],
-      postCategory: "games",
-      tags: ["godot", "puzzle", "mobile"],
-    },
-    {
-      title: "Night Courier",
-      role: "Producer",
-      status: "Released",
-      blurb: "Microhorror jam entry – first-person deliveries that unravel into folklore.",
-      links: [{ label: "Play", href: "https://example.com" }],
-      postCategory: "games",
-      tags: ["unreal", "horror", "jam"],
-    },
-    {
       title: "Embercraft Fireplace",
       role: "Playground",
       status: "Live",
@@ -56,32 +29,7 @@ module.exports = {
         detail: "빌드/소스/가이드 문서를 깔끔하게 정리해 전달하고 피드백 라운드 진행.",
       },
     ],
-    jobs: [
-      {
-        client: "Indie Studio A",
-        work: "UI/UX overhaul + live ops HUD",
-        year: "2025",
-        status: "In progress",
-        notes: "유니티 UI Toolkit 전환, 접근성 점검 포함.",
-        postCategory: "freelance",
-      },
-      {
-        client: "Agency B",
-        work: "Playable ad / mini-game 제작",
-        year: "2024",
-        status: "Shipped",
-        notes: "3주 내 런칭, 크로스 플랫폼 크리에이티브 AB 테스트 지원.",
-        postCategory: "freelance",
-      },
-      {
-        client: "Solo dev C",
-        work: "컨설팅: 마켓 테스트 로드맵",
-        year: "2024",
-        status: "Completed",
-        notes: "스팀 데모 → KPI 측정 → 퍼블리셔 미팅 준비.",
-        postCategory: "freelance",
-      },
-    ],
+    jobs: [],
   },
   callouts: [
     {
