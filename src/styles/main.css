@@ -323,52 +323,8 @@ a:hover {
 }
 
 /* ===========================================
-   7. Intro Section (Tistory Style)
+   7. Page Header & Lede
    =========================================== */
-.blog-intro {
-  max-width: var(--container-max);
-  margin: 0 auto;
-  padding: var(--space-10) var(--space-5);
-}
-
-.intro-box {
-  text-align: center;
-  padding: var(--space-8) var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-}
-
-.intro-box h2 {
-  font-size: 22px;
-  font-weight: var(--weight-bold);
-  color: var(--color-text);
-  margin-bottom: var(--space-4);
-}
-
-.intro-box p {
-  font-size: 15px;
-  color: var(--color-text-secondary);
-  line-height: 1.7;
-  margin-bottom: var(--space-5);
-}
-
-.intro-link {
-  display: inline-block;
-  font-size: 14px;
-  color: var(--color-primary);
-  text-decoration: none;
-  padding: 8px 20px;
-  border: 1px solid var(--color-primary);
-  border-radius: 4px;
-  transition: all var(--transition-fast);
-}
-
-.intro-link:hover {
-  background: var(--color-primary);
-  color: white;
-}
-
 .lede {
   font-size: var(--text-md);
   color: var(--color-text-secondary);
@@ -607,13 +563,6 @@ a:hover {
   height: 150px;
 }
 
-.post-thumb-placeholder {
-  width: 100%;
-  height: 100%;
-  background: var(--color-surface);
-  border-radius: 4px;
-}
-
 .post-info {
   flex: 1;
   display: flex;
@@ -653,112 +602,46 @@ a:hover {
   margin-top: 4px;
 }
 
-/* Card View */
-.post-grid {
-  display: none;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-6);
-}
-
-.post-grid.active {
-  display: grid;
-}
-
-.post-card {
+/* Archive List */
+.archive-list {
   display: flex;
   flex-direction: column;
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
 }
 
-.post-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-}
-
-.post-card-image {
-  aspect-ratio: 16/9;
-  width: 100%;
-  object-fit: cover;
-  background: var(--color-border);
-  transition: transform var(--transition-normal);
-}
-
-.post-card:hover .post-card-image {
-  transform: scale(1.05);
-}
-
-.post-card-body {
-  padding: var(--space-4);
+/* Compact Post Item (Archive View) */
+.post-item.compact {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  padding: var(--space-4) 0;
 }
 
-.post-card-title {
+.post-item-top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.post-item-title {
   font-size: var(--text-md);
   font-weight: var(--weight-semibold);
+  color: var(--color-text);
   line-height: var(--leading-tight);
+  transition: color var(--transition-fast);
 }
 
-.post-card:hover .post-card-title {
+.post-item.compact:hover .post-item-title {
   color: var(--color-primary);
 }
 
-.post-card-excerpt {
+.post-item-excerpt {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-/* Masonry View */
-.post-masonry {
-  display: none;
-  column-count: 3;
-  column-gap: var(--space-5);
-}
-
-.post-masonry.active {
-  display: block;
-}
-
-.post-masonry .post-card {
-  break-inside: avoid;
-  margin-bottom: var(--space-5);
-}
-
-.post-masonry .post-card-image {
-  aspect-ratio: auto;
-  max-height: 300px;
-}
-
-/* Featured Post */
-.featured-post {
-  padding: var(--space-6);
-  background: linear-gradient(135deg, var(--color-primary-bg), var(--color-surface));
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--space-6);
-  border: 1px solid var(--color-border);
-}
-
-.featured-post h2 {
-  font-size: var(--text-xl);
-  margin: var(--space-2) 0;
-}
-
-.featured-post h2 a:hover {
-  color: var(--color-primary);
-}
-
-.featured-post p {
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-3);
 }
 
 /* ===========================================
@@ -1003,10 +886,6 @@ a:hover {
   font-size: 12px;
   color: var(--color-text-muted);
   margin-left: var(--space-2);
-}
-
-/* Playground */
-.sidebar-playground {
 }
 
 .playground-list {
@@ -2201,14 +2080,6 @@ a:hover {
     gap: var(--space-6);
   }
 
-  .post-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .post-masonry {
-    column-count: 2;
-  }
-
   .related-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -2297,14 +2168,6 @@ a:hover {
   .post-item-thumb {
     width: 100%;
     height: 180px;
-  }
-
-  .post-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .post-masonry {
-    column-count: 1;
   }
 
   .view-switcher {
