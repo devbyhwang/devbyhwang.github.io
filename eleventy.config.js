@@ -12,6 +12,13 @@ module.exports = function (eleventyConfig) {
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-");
   };
+  const CATEGORY_LABELS = {
+    devlog: "개발일지",
+    freelance: "외주",
+    games: "게임",
+    notes: "노트",
+  };
+  const CATEGORY_ORDER = ["devlog", "freelance", "games", "notes"];
   const studio = require("./src/_data/studio");
 
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
@@ -58,7 +65,7 @@ module.exports = function (eleventyConfig) {
       .map(({ post }) => post);
   });
 
-  eleventyConfig.addCollection("byCategory", (collectionApi) => {
+  const buildCategoryGroups = (collectionApi) => {
     const grouped = {};
     collectionApi.getFilteredByGlob("src/posts/**/*.{md,njk}").forEach((item) => {
       const category = item.data.category || "notes";
@@ -67,7 +74,9 @@ module.exports = function (eleventyConfig) {
     });
     Object.keys(grouped).forEach((key) => grouped[key].sort((a, b) => b.date - a.date));
     return grouped;
-  });
+  };
+
+  eleventyConfig.addCollection("byCategory", (collectionApi) => buildCategoryGroups(collectionApi));
 
   eleventyConfig.addCollection("tagList", (collectionApi) => {
     const tagMap = new Map();
@@ -111,13 +120,17 @@ module.exports = function (eleventyConfig) {
   });
 
   eleventyConfig.addCollection("categoryList", (collectionApi) => {
-    const categories = [
-      { key: "devlog", name: "개발일지" },
-      { key: "freelance", name: "외주" },
-      { key: "games", name: "게임" },
-      { key: "notes", name: "노트" }
+    const grouped = buildCategoryGroups(collectionApi);
+    const keys = Object.keys(grouped);
+    const orderedKeys = [
+      ...CATEGORY_ORDER.filter((key) => keys.includes(key)),
+      ...keys.filter((key) => !CATEGORY_ORDER.includes(key)).sort(),
     ];
-    return categories;
+    return orderedKeys.map((key) => ({
+      key,
+      name: CATEGORY_LABELS[key] || key,
+      count: grouped[key].length,
+    }));
   });
 
   eleventyConfig.addFilter("cardSlug", (item) => {
