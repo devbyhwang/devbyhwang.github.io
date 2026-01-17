@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>네모게임 (NEMO GAME) · Hwang's Studio</title>
+    <style>
+        :root {
+            --bg: #090909;
+            --panel: #151515;
+            --cell-size: 38px;
+            --gap: 4px;
+            --accent: #00ff88;
+            --timer: #ffcc00;
+            --fail: #ff0055;
+
+            --c-easy: #00ff88;
+            --c-norm: #00ccff;
+            --c-hard: #ff0055;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: #fff;
+            font-family: 'Consolas', sans-serif;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100vh; margin: 0; overflow: hidden;
+            user-select: none; touch-action: none;
+        }
+
+        /* Back Navigation Link */
+        .back-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-family: 'Consolas', sans-serif;
+            font-size: 14px;
+            z-index: 10000;
+            transition: background 0.2s, transform 0.1s;
+            border: 1px solid #333;
+        }
+        .back-link:hover {
+            background: rgba(0, 0, 0, 0.9);
+            border-color: var(--accent);
+            transform: translateX(-2px);
+        }
+
+        /* --- SCREENS --- */
+        .screen {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: var(--bg); z-index: 100;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            transition: opacity 0.3s;
+        }
+        .screen.hidden { opacity: 0; pointer-events: none; z-index: -1; }
+
+        /* HOME SCREEN */
+        .title { font-size: 3.5rem; font-weight: 900; letter-spacing: 5px; margin-bottom: 5px; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.2); }
+        .subtitle { font-size: 1.1rem; color: #777; margin-bottom: 40px; letter-spacing: 2px; }
+
+        .tutorial-box {
+            width: 100px; height: 100px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+            margin-bottom: 40px;
+        }
+        .t-cell { background: #222; border-radius: 2px; }
+        .t-sq { animation: show-sq 4s infinite; }
+        .t-dia { animation: show-dia 4s infinite; }
+
+        @keyframes show-sq {
+            0%, 45% { background: var(--accent); transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
+            50%, 100% { background: #222; transform: scale(1); box-shadow: none; }
+        }
+        @keyframes show-dia {
+            0%, 45% { background: #222; transform: scale(1); box-shadow: none; }
+            50%, 95% { background: var(--accent); transform: scale(1.1); box-shadow: 0 0 10px var(--accent); }
+            100% { background: #222; transform: scale(1); box-shadow: none; }
+        }
+
+        /* Buttons */
+        .btn-group { display: flex; flex-direction: column; gap: 15px; width: 220px; }
+        .btn-mode {
+            padding: 15px; font-size: 1.1rem; font-weight: 800;
+            border: 1px solid #333; background: #111; color: #fff;
+            cursor: pointer; border-radius: 4px; transition: 0.2s;
+            text-align: center; letter-spacing: 2px;
+        }
+        .btn-mode:active { transform: scale(0.95); }
+        .btn-mode span { font-size: 0.8rem; font-weight: normal; color: #555; display: block; margin-top: 4px; }
+
+        .btn-easy:hover { border-color: var(--c-easy); color: var(--c-easy); box-shadow: 0 0 15px rgba(0,255,136,0.2); }
+        .btn-norm:hover { border-color: var(--c-norm); color: var(--c-norm); box-shadow: 0 0 15px rgba(0,204,255,0.2); }
+        .btn-hard:hover { border-color: var(--c-hard); color: var(--c-hard); box-shadow: 0 0 15px rgba(255,0,85,0.2); }
+
+        /* GAME UI */
+        #game-ui {
+            display: flex; flex-direction: column; align-items: center;
+            opacity: 0; transition: opacity 0.5s; pointer-events: none;
+        }
+        #game-ui.active { opacity: 1; pointer-events: all; }
+
+        .header {
+            width: 100%; max-width: 500px;
+            display: flex; justify-content: center;
+            margin-bottom: 20px;
+        }
+        .score-display { font-size: 2.5rem; font-weight: 900; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+        .timer-bar {
+            width: 100%; max-width: 500px; height: 8px;
+            background: #222; margin-bottom: 25px;
+            border-radius: 4px; overflow: hidden;
+        }
+        .timer-fill {
+            height: 100%; width: 100%; background: var(--timer);
+            transition: width 0.1s linear;
+        }
+        .timer-bar.infinite { opacity: 0.2; }
+
+        /* BOARD & CELLS */
+        .game-board {
+            position: relative; padding: 12px;
+            background: #111; border-radius: 8px;
+            border: 1px solid #222;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+        .shake { animation: shake-anim 0.3s ease-in-out; }
+        @keyframes shake-anim {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-3px, 3px); }
+            50% { transform: translate(3px, -3px); }
+            75% { transform: translate(-3px, -3px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        .grid { display: grid; gap: var(--gap); }
+
+        .cell {
+            width: var(--cell-size); height: var(--cell-size);
+            border-radius: 4px; position: relative;
+            background-color: #1a1a1a;
+            transition: transform 0.1s;
+        }
+
+        .c-0 { background: #ff0055; box-shadow: 0 0 5px #ff0055; }
+        .c-1 { background: #00ccff; box-shadow: 0 0 5px #00ccff; }
+        .c-2 { background: #00ff99; box-shadow: 0 0 5px #00ff99; }
+        .c-3 { background: #ffea00; box-shadow: 0 0 5px #ffea00; }
+        .c-4 { background: #aa00ff; box-shadow: 0 0 5px #aa00ff; }
+
+        .cell.stacked::after {
+            content: ''; position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 2px;
+        }
+        .cell.deep::after {
+            border: 2px solid rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .cell.highlight {
+            z-index: 100 !important; transform: scale(1.15) !important;
+            box-shadow: 0 0 0 3px #fff, 0 0 15px rgba(255,255,255,0.5) !important;
+        }
+        .cell.vanished {
+            background-color: #000 !important;
+            box-shadow: none !important;
+            transform: scale(0.5); opacity: 0;
+            transition: 0.2s;
+        }
+
+        #svg-layer {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; pointer-events: none; z-index: 50;
+        }
+        .guide-line { stroke: rgba(255,255,255,0.2); stroke-width: 2; stroke-dasharray: 4; }
+        .preview-poly { fill: rgba(255,255,255,0.1); stroke: #fff; stroke-width: 2; display: none; }
+        .preview-poly.valid { stroke: var(--accent); fill: rgba(0, 255, 136, 0.2); filter: drop-shadow(0 0 8px var(--accent)); }
+
+        .hint-poly {
+            fill: none; stroke: #ff0055; stroke-width: 6; stroke-dasharray: 10;
+            filter: drop-shadow(0 0 15px #ff0055);
+            animation: dash 0.5s linear infinite; display: none;
+        }
+        @keyframes dash { to { stroke-dashoffset: -40; } }
+
+        #loader {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(0,0,0,0.95);
+            display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .loader-txt { color: var(--accent); font-weight: bold; margin-bottom: 15px; }
+
+        .footer-controls {
+            width: 100%; max-width: 500px;
+            display: flex; justify-content: space-between; margin-top: 20px;
+        }
+        .btn-hint {
+            background: #222; color: #fff; flex: 1; margin-right: 15px;
+            border: 1px solid #444; padding: 14px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; border-radius: 6px; font-size: 1rem;
+        }
+        .btn-hint:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-hint:not(:disabled):active { background: #ff0055; color: #fff; box-shadow: 0 0 15px #ff0055; }
+
+        .btn-giveup {
+            background: #222; color: #666; padding: 14px;
+            border: 1px solid #333; cursor: pointer; border-radius: 6px;
+        }
+
+        #result-screen { background: rgba(0,0,0,0.95); z-index: 3000; }
+        #result-title { font-size: 3rem; font-weight: 900; margin-bottom: 20px; }
+        .win { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
+        .lose { color: var(--fail); text-shadow: 0 0 20px var(--fail); }
+        #result-score { font-size: 1.5rem; margin-bottom: 40px; color: #fff; }
+        .btn-main {
+            background: #fff; color: #000;
+            padding: 16px 60px; font-size: 1.2rem; font-weight: 800;
+            border: none; border-radius: 4px; cursor: pointer;
+        }
+
+        /* --- ✨ IMPROVED STACK INSPECTOR --- */
+        #stack-tooltip {
+            position: absolute; display: none; flex-direction: column;
+            gap: 4px; /* 간격 넓힘 */
+            padding: 10px;
+            /* 배경 진하게, 테두리 추가 */
+            background: #222;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            pointer-events: none; z-index: 2000;
+            transform: translate(-50%, -120%);
+            /* 크기 키움 */
+            min-width: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+
+        /* 툴팁 화살표 (선택 사항, 필요 없으면 제거 가능) */
+        #stack-tooltip::after {
+            content: ''; position: absolute;
+            bottom: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+            width: 10px; height: 10px;
+            background: #222; border-right: 2px solid #fff; border-bottom: 2px solid #fff;
+        }
+
+        .mini-block {
+            width: 44px; /* 너비 대폭 증가 */
+            height: 14px; /* 높이 대폭 증가 */
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.3);
+            opacity: 1; /* 투명도 제거해서 선명하게 */
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* 입체감 */
+        }
+
+        /* 맨 위 블록 강조 */
+        .mini-block.top-item {
+            height: 18px; /* 더 두껍게 */
+            border: 2px solid #fff;
+            margin-bottom: 4px; /* 아래 블록들과 거리 두기 */
+        }
+
+        /* --- VISUAL EFFECTS --- */
+        .particle {
+            position: absolute; width: 6px; height: 6px; border-radius: 50%;
+            pointer-events: none; z-index: 999;
+            animation: pop-particle 0.6s ease-out forwards;
+        }
+        @keyframes pop-particle {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        .float-score {
+            position: absolute; color: #fff; font-weight: 900; font-size: 1.5rem;
+            pointer-events: none; z-index: 999; text-shadow: 0 2px 4px #000;
+            animation: float-up 0.8s ease-out forwards;
+        }
+        @keyframes float-up {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="../" class="back-link">← Playground</a>
+
+    <div id="home-screen" class="screen">
+        <div class="title">SQUARE</div>
+        <div class="subtitle">CONNECT 4 SAME COLORS</div>
+
+        <div class="tutorial-box">
+            <div class="t-cell t-sq"></div>  <div class="t-cell t-dia"></div> <div class="t-cell t-sq"></div>
+            <div class="t-cell t-dia"></div> <div class="t-cell t-bg"></div>  <div class="t-cell t-dia"></div>
+            <div class="t-cell t-sq"></div>  <div class="t-cell t-dia"></div> <div class="t-cell t-sq"></div>
+        </div>
+
+        <div class="btn-group">
+            <div class="btn-mode btn-easy" onclick="selectDifficulty('EASY')">
+                EASY
+                <span>5x5 / NO TIMER</span>
+            </div>
+            <div class="btn-mode btn-norm" onclick="selectDifficulty('NORMAL')">
+                NORMAL
+                <span>6x7 / 90 SEC</span>
+            </div>
+            <div class="btn-mode btn-hard" onclick="selectDifficulty('HARD')">
+                HARD
+                <span>7x9 / 110 SEC</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="loader">
+        <div class="loader-txt">GENERATING PUZZLE...</div>
+    </div>
+
+    <div id="game-ui">
+        <div class="timer-bar"><div class="timer-fill" id="time-bar"></div></div>
+
+        <div class="header">
+            <div class="score-display" id="score-val">0</div>
+        </div>
+
+        <div class="game-board" id="board">
+            <svg id="svg-layer">
+                <line id="guide-line" class="guide-line" />
+                <polygon id="hint-poly" class="hint-poly" />
+                <polygon id="preview-poly" class="preview-poly" />
+            </svg>
+            <div class="grid" id="grid"></div>
+        </div>
+
+        <div class="footer-controls">
+            <button class="btn-hint" id="btn-hint" onclick="useHint()">HINT (3)</button>
+            <button class="btn-giveup" onclick="endGame(false)">GIVE UP</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="screen hidden">
+        <div id="result-title"></div>
+        <div id="result-score"></div>
+        <button class="btn-main" onclick="goHome()">HOME</button>
+    </div>
+
+    <div id="stack-tooltip"></div>
+
+<script>
+    // --- Levels ---
+    const LEVELS = {
+        EASY:   { rows: 5, cols: 5,  target: 10, time: 9999, stack: 2, size: 50 },
+        NORMAL: { rows: 6, cols: 7,  target: 18, time: 90,   stack: 2, size: 42 },
+        HARD:   { rows: 7, cols: 9,  target: 26, time: 110,  stack: 3, size: 36 }
+    };
+
+    const COLORS = ['c-0', 'c-1', 'c-2', 'c-3', 'c-4'];
+    const MAX_HINTS = 3;
+
+    let config = LEVELS.NORMAL;
+    let grid = [];
+    let historyStack = [];
+    let score = 0;
+    let timeLeft = 0;
+    let timerId = null;
+    let isPlaying = false;
+    let hintsLeft = MAX_HINTS;
+
+    let isDragging = false;
+    let startCell = null;
+    let currCell = null;
+
+    const gridEl = document.getElementById('grid');
+    const boardEl = document.getElementById('board');
+    const timeBar = document.querySelector('.timer-bar');
+    const timeFill = document.getElementById('time-bar');
+    const loader = document.getElementById('loader');
+
+    const homeScreen = document.getElementById('home-screen');
+    const gameUI = document.getElementById('game-ui');
+    const resultScreen = document.getElementById('result-screen');
+    const resultTitle = document.getElementById('result-title');
+    const resultScore = document.getElementById('result-score');
+    const scoreEl = document.getElementById('score-val');
+    const btnHint = document.getElementById('btn-hint');
+    const tooltipEl = document.getElementById('stack-tooltip');
+
+    const guideLine = document.getElementById('guide-line');
+    const previewPoly = document.getElementById('preview-poly');
+    const hintPoly = document.getElementById('hint-poly');
+
+    function goHome() {
+        resultScreen.classList.add('hidden');
+        gameUI.classList.remove('active');
+        homeScreen.classList.remove('hidden');
+        tooltipEl.style.display = 'none';
+        document.querySelectorAll('.particle').forEach(el => el.remove());
+        document.querySelectorAll('.float-score').forEach(el => el.remove());
+    }
+
+    function selectDifficulty(mode) {
+        config = LEVELS[mode];
+        gridEl.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
+        document.documentElement.style.setProperty('--cell-size', `${config.size}px`);
+
+        if (config.time > 1000) {
+            timeBar.classList.add('infinite');
+            timeFill.classList.add('infinite');
+        } else {
+            timeBar.classList.remove('infinite');
+            timeFill.classList.remove('infinite');
+        }
+
+        homeScreen.classList.add('hidden');
+        loader.style.display = 'flex';
+
+        setTimeout(() => initGameLogic(), 100);
+    }
+
+    function initGameLogic() {
+        let success = false;
+        let attempts = 0;
+
+        while (!success && attempts < 50) {
+            success = generateAndVerify();
+            attempts++;
+        }
+
+        if (success) {
+            startGame();
+        } else {
+            alert("Error: Map generation failed.");
+            goHome();
+        }
+    }
+
+    function generateAndVerify() {
+        const tempGrid = Array(config.rows).fill(null).map(() => Array(config.cols).fill(null).map(() => []));
+        const tempHistory = [];
+        let placed = 0;
+        let idCounter = 0;
+        let loops = 0;
+
+        while ((hasGaps(tempGrid) || placed < config.target) && loops < 10000) {
+            loops++;
+            let r, c;
+            const empties = getEmpties(tempGrid);
+
+            if (empties.length > 0) {
+                const pick = empties[Math.floor(Math.random() * empties.length)];
+                r = pick.r; c = pick.c;
+            } else {
+                if (placed >= config.target) break;
+                r = Math.floor(Math.random() * config.rows);
+                c = Math.floor(Math.random() * config.cols);
+            }
+
+            const sq = findGeometry(r, c);
+            if (sq) {
+                const isTooHigh = sq.some(p => tempGrid[p.r][p.c].length >= config.stack);
+                const isGapFill = sq.some(p => tempGrid[p.r][p.c].length === 0);
+
+                if (!isTooHigh || isGapFill) {
+                    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                    const sqId = ++idCounter;
+                    sq.forEach(p => tempGrid[p.r][p.c].push({ color, id: sqId }));
+                    tempHistory.push({ id: sqId, points: sq, active: true });
+                    placed++;
+                }
+            }
+        }
+        if (hasGaps(tempGrid)) return false;
+        if (!simulateSolve(tempGrid, tempHistory)) return false;
+
+        grid = tempGrid;
+        historyStack = tempHistory;
+        return true;
+    }
+
+    function simulateSolve(simGrid, simHistory) {
+        const testGrid = JSON.parse(JSON.stringify(simGrid));
+        const testHistory = JSON.parse(JSON.stringify(simHistory));
+        let clearedCount = 0;
+        const total = testHistory.length;
+
+        for (let step = 0; step < total; step++) {
+            let foundMove = false;
+            for (let i = testHistory.length - 1; i >= 0; i--) {
+                const item = testHistory[i];
+                if (!item.active) continue;
+                const isExposed = item.points.every(p => {
+                    const s = testGrid[p.r][p.c];
+                    return s.length > 0 && s[s.length - 1].id === item.id;
+                });
+                if (isExposed) {
+                    item.points.forEach(p => testGrid[p.r][p.c].pop());
+                    item.active = false;
+                    foundMove = true;
+                    clearedCount++;
+                    break;
+                }
+            }
+            if (!foundMove) break;
+        }
+        return clearedCount === total;
+    }
+
+    function startGame() {
+        score = 0;
+        timeLeft = config.time;
+        hintsLeft = MAX_HINTS;
+        isPlaying = true;
+
+        updateUI();
+        renderGrid();
+        loader.style.display = 'none';
+        gameUI.classList.add('active');
+
+        if(timerId) clearInterval(timerId);
+        timerId = setInterval(() => {
+            if(!isPlaying) return;
+            if(config.time < 1000) {
+                timeLeft -= 0.1;
+                timeFill.style.width = (timeLeft / config.time * 100) + "%";
+                if(timeLeft <= 0) endGame(false);
+            }
+        }, 100);
+    }
+
+    function useHint() {
+        if(!isPlaying || hintsLeft <= 0) return;
+
+        let hintPoints = null;
+        for (let i = historyStack.length - 1; i >= 0; i--) {
+            const target = historyStack[i];
+            if (!target.active) continue;
+            const isExposed = target.points.every(p => {
+                const s = grid[p.r][p.c];
+                if (s.length === 0) return false;
+                return s[s.length - 1].id === target.id;
+            });
+            if (isExposed) {
+                hintPoints = target.points;
+                break;
+            }
+        }
+        if (!hintPoints) hintPoints = findAnyValidSquareOnBoard();
+
+        if (hintPoints) {
+            hintsLeft--;
+            showHintPoly(hintPoints);
+            updateUI();
+        }
+    }
+
+    function findAnyValidSquareOnBoard() {
+        const topBlocks = [];
+        for(let r=0; r<config.rows; r++){
+            for(let c=0; c<config.cols; c++){
+                if(grid[r][c].length > 0) {
+                    topBlocks.push({r, c, color: grid[r][c][grid[r][c].length-1].color});
+                }
+            }
+        }
+        for(let i=0; i<topBlocks.length; i++) {
+            for(let j=i+1; j<topBlocks.length; j++) {
+                const p1 = topBlocks[i];
+                const p3 = topBlocks[j];
+                if(p1.color !== p3.color) continue;
+                const sq = getSquarePoints(p1, p3);
+                if(sq) {
+                    const p2Stack = grid[sq[1].r][sq[1].c];
+                    const p4Stack = grid[sq[3].r][sq[3].c];
+                    if(p2Stack.length > 0 && p4Stack.length > 0) {
+                        const c2 = p2Stack[p2Stack.length-1].color;
+                        const c4 = p4Stack[p4Stack.length-1].color;
+                        if(c2 === p1.color && c4 === p1.color) return sq;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    function checkAndRemove(points) {
+        const blocks = points.map(p => {
+            const s = grid[p.r][p.c];
+            return s.length > 0 ? s[s.length - 1] : null;
+        });
+        if (blocks.includes(null)) return false;
+
+        const firstColor = blocks[0].color;
+        const allSameColor = blocks.every(b => b.color === firstColor);
+        if (!allSameColor) return false;
+
+        const idsToDeactivate = new Set(blocks.map(b => b.id).filter(id => id > 0));
+        if (idsToDeactivate.size > 0) {
+            for (let i = 0; i < historyStack.length; i++) {
+                if (historyStack[i].active && idsToDeactivate.has(historyStack[i].id)) {
+                    historyStack[i].active = false;
+                }
+            }
+        }
+
+        boardEl.classList.remove('shake');
+        void boardEl.offsetWidth;
+        boardEl.classList.add('shake');
+
+        const bRect = boardEl.getBoundingClientRect();
+        points.forEach(p => {
+            const cell = document.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`);
+            if(cell) {
+                const cRect = cell.getBoundingClientRect();
+                const centerX = cRect.left + cRect.width/2;
+                const centerY = cRect.top + cRect.height/2;
+                spawnParticles(centerX, centerY, firstColor);
+                if(p === points[0]) showFloatingText(centerX, centerY);
+            }
+            grid[p.r][p.c].pop();
+            updateCellVisual(p.r, p.c);
+        });
+
+        tooltipEl.style.display = 'none';
+
+        score += 100;
+        if(config.time < 1000) {
+            timeLeft = Math.min(config.time, timeLeft + 4);
+        }
+        updateUI();
+
+        if (isGridEmpty()) endGame(true);
+        return true;
+    }
+
+    function spawnParticles(x, y, colorClass) {
+        const colors = {
+            'c-0': '#ff0055', 'c-1': '#00ccff', 'c-2': '#00ff99',
+            'c-3': '#ffea00', 'c-4': '#aa00ff'
+        };
+        const colorHex = colors[colorClass] || '#fff';
+
+        for(let i=0; i<6; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.backgroundColor = colorHex;
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
+
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 30 + Math.random() * 40;
+            p.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+            p.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 600);
+        }
+    }
+
+    function showFloatingText(x, y) {
+        const el = document.createElement('div');
+        el.className = 'float-score';
+        el.innerText = '+100';
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 800);
+    }
+
+    function isGridEmpty() {
+        for(let r=0; r<config.rows; r++) for(let c=0; c<config.cols; c++) if(grid[r][c].length > 0) return false;
+        return true;
+    }
+
+    function endGame(win) {
+        isPlaying = false;
+        clearInterval(timerId);
+        tooltipEl.style.display = 'none';
+
+        resultTitle.innerText = win ? "ALL CLEAR!" : "TIME OVER";
+        resultTitle.className = win ? "win" : "lose";
+        resultScore.innerText = `SCORE: ${score}`;
+
+        resultScreen.classList.remove('hidden');
+    }
+
+    function renderGrid() {
+        gridEl.innerHTML = '';
+        for(let r=0; r<config.rows; r++){
+            for(let c=0; c<config.cols; c++){
+                const cell = document.createElement('div');
+                const stack = grid[r][c];
+                if(stack.length > 0) {
+                    const top = stack[stack.length-1];
+                    cell.className = `cell ${top.color}`;
+                    if(stack.length > 1) cell.classList.add('stacked');
+                    if(stack.length > 2) cell.classList.add('deep');
+                } else {
+                    cell.className = 'cell vanished';
+                }
+                cell.dataset.r = r; cell.dataset.c = c;
+                gridEl.appendChild(cell);
+            }
+        }
+        bindEvents();
+    }
+
+    function updateCellVisual(r, c) {
+        const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+        const stack = grid[r][c];
+        cell.className = 'cell';
+        if(stack.length > 0) {
+            const top = stack[stack.length-1];
+            cell.classList.add(top.color);
+            if(stack.length > 1) cell.classList.add('stacked');
+            if(stack.length > 2) cell.classList.add('deep');
+        } else {
+            cell.classList.add('vanished');
+        }
+    }
+
+    function getEmpties(g) {
+        const a = [];
+        for(let r=0;r<config.rows;r++) for(let c=0;c<config.cols;c++) if(g[r][c].length===0) a.push({r,c});
+        return a;
+    }
+    function hasGaps(g) { return getEmpties(g).length > 0; }
+
+    function findGeometry(r, c) {
+        const range = Math.max(config.rows, config.cols);
+        for(let i=0; i<20; i++) {
+            const dr = Math.floor(Math.random()*(range*2)) - range;
+            const dc = Math.floor(Math.random()*(range*2)) - range;
+            if(dr===0&&dc===0) continue;
+            if((Math.abs(dr)+Math.abs(dc))%2!==0) continue;
+            const p1 = {r, c};
+            const p3 = {r:r+fdr(dr,dc), c:c+dc};
+            const sq = getSquarePoints(p1, p3);
+            if(sq) return sq;
+        }
+        return null;
+    }
+    function fdr(dr,dc){ let f=dr; if((Math.abs(f)+Math.abs(dc))%2!==0) f++; return f; }
+
+    function getSquarePoints(p1, p3) {
+        if(p1.r===p3.r && p1.c===p3.c) return null;
+        const dx = p3.c - p1.c;
+        const dy = p3.r - p1.r;
+        if((Math.abs(dx)+Math.abs(dy))%2 !== 0) return null;
+        const midR = (p1.r+p3.r)/2;
+        const midC = (p1.c+p3.c)/2;
+        const hdx = dx/2;
+        const hdy = dy/2;
+        const p2 = {r: midR - hdx, c: midC + hdy};
+        const p4 = {r: midR + hdx, c: midC - hdy};
+        const pts = [p1, p2, p3, p4];
+        if(pts.every(p => p.r>=0 && p.r<config.rows && p.c>=0 && p.c<config.cols)) return pts;
+        return null;
+    }
+
+    function showHintPoly(pts) {
+        const rect = boardEl.getBoundingClientRect();
+        const str = pts.map(p => {
+            const el = document.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`);
+            const r = el.getBoundingClientRect();
+            return `${r.left+r.width/2 - rect.left},${r.top+r.height/2 - rect.top}`;
+        }).join(' ');
+        hintPoly.setAttribute('points', str);
+        hintPoly.style.display = 'block';
+        setTimeout(() => hintPoly.style.display='none', 3000);
+    }
+
+    function updateUI() {
+        scoreEl.innerText = score;
+        btnHint.innerText = `HINT (${hintsLeft})`;
+        btnHint.disabled = hintsLeft <= 0;
+    }
+
+    function bindEvents() {
+        const start = (e) => {
+            if(!isPlaying) return;
+            const t = e.target.closest('.cell');
+            if(!t || t.classList.contains('vanished')) return;
+            tooltipEl.style.display = 'none';
+            isDragging = true;
+            startCell = {r: parseInt(t.dataset.r), c: parseInt(t.dataset.c)};
+            currCell = startCell;
+            updatePreview();
+        };
+
+        const move = (e) => {
+            if(!isDragging) return;
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const t = document.elementFromPoint(clientX, clientY);
+            if(t && t.classList.contains('cell')) {
+                const r = parseInt(t.dataset.r);
+                const c = parseInt(t.dataset.c);
+                if(r !== currCell.r || c !== currCell.c) {
+                    currCell = {r,c};
+                    updatePreview();
+                }
+            }
+        };
+
+        const end = () => {
+            if(!isDragging) return;
+            isDragging = false;
+            const sq = getSquarePoints(startCell, currCell);
+            if(sq) checkAndRemove(sq);
+            guideLine.style.display = 'none';
+            previewPoly.style.display = 'none';
+            previewPoly.classList.remove('valid');
+            document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+        };
+
+        const hoverEnter = (e) => {
+            if (isDragging || ('ontouchstart' in window && e.pointerType === 'touch')) return;
+            const t = e.target.closest('.cell');
+            if (!t || t.classList.contains('vanished')) {
+                tooltipEl.style.display = 'none';
+                return;
+            }
+            const r = parseInt(t.dataset.r);
+            const c = parseInt(t.dataset.c);
+            const stack = grid[r][c];
+            if (stack.length <= 1) {
+                tooltipEl.style.display = 'none';
+                return;
+            }
+
+            // 툴팁 구성
+            tooltipEl.innerHTML = '';
+            for (let i = stack.length - 1; i >= 0; i--) {
+                const item = stack[i];
+                const div = document.createElement('div');
+                div.className = `mini-block ${item.color}`;
+                if (i === stack.length - 1) div.classList.add('top-item');
+                tooltipEl.appendChild(div);
+            }
+
+            // 툴팁 위치 조정
+            const rect = t.getBoundingClientRect();
+            tooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
+            tooltipEl.style.top = rect.top + 'px';
+            tooltipEl.style.display = 'flex';
+        };
+
+        const hoverLeave = () => {
+            tooltipEl.style.display = 'none';
+        };
+
+        boardEl.onmousedown = start;
+        boardEl.ontouchstart = start;
+        window.onmousemove = move;
+        window.ontouchmove = move;
+        window.onmouseup = end;
+        window.ontouchend = end;
+
+        document.querySelectorAll('.cell').forEach(cell => {
+            cell.onmouseenter = hoverEnter;
+            cell.onmouseleave = hoverLeave;
+        });
+    }
+
+    function updatePreview() {
+        document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
+        if(!startCell || !currCell) return;
+
+        const bRect = boardEl.getBoundingClientRect();
+        const r1 = document.querySelector(`.cell[data-r="${startCell.r}"][data-c="${startCell.c}"]`).getBoundingClientRect();
+        const r2 = document.querySelector(`.cell[data-r="${currCell.r}"][data-c="${currCell.c}"]`).getBoundingClientRect();
+
+        guideLine.setAttribute('x1', r1.left+r1.width/2 - bRect.left);
+        guideLine.setAttribute('y1', r1.top+r1.height/2 - bRect.top);
+        guideLine.setAttribute('x2', r2.left+r2.width/2 - bRect.left);
+        guideLine.setAttribute('y2', r2.top+r2.height/2 - bRect.top);
+        guideLine.style.display = 'block';
+
+        const sq = getSquarePoints(startCell, currCell);
+        if(sq) {
+            const str = sq.map(p => {
+                const el = document.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`);
+                const rect = el.getBoundingClientRect();
+                return `${rect.left+rect.width/2 - bRect.left},${rect.top+rect.height/2 - bRect.top}`;
+            }).join(' ');
+
+            previewPoly.setAttribute('points', str);
+            previewPoly.style.display = 'block';
+
+            const blocks = sq.map(p => {
+                const st = grid[p.r][p.c];
+                return st.length > 0 ? st[st.length-1] : null;
+            });
+
+            if(!blocks.includes(null) && blocks.every(b => b.color === blocks[0].color)) {
+                previewPoly.classList.add('valid');
+                sq.forEach(p => document.querySelector(`.cell[data-r="${p.r}"][data-c="${p.c}"]`).classList.add('highlight'));
+            } else {
+                previewPoly.classList.remove('valid');
+            }
+        } else {
+            previewPoly.style.display = 'none';
+            previewPoly.classList.remove('valid');
+        }
+    }
+</script>
+
+<!-- Visitor Counter -->
+<script
+    src="../../assets/visitor-counter.js"
+    defer
+    data-visitor-counter
+    data-namespace="devbyhwang-tel-aviv-playground"
+    data-total-key="total"
+    data-daily-prefix="daily"
+    data-timezone="Asia/Seoul"
+></script>
+<div
+    data-visitor-counter
+    data-namespace="devbyhwang-tel-aviv-playground-nemo"
+    data-total-key="nemo-total"
+    data-daily-prefix="nemo-daily"
+    data-timezone="Asia/Seoul"
+    data-today-id=""
+    data-total-id=""
+    hidden
+></div>
+
+</body>
+</html>
