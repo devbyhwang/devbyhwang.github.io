@@ -13,6 +13,19 @@ module.exports = {
       type: "demo",
       preview: "/assets/embercraft-preview.png",
     },
+    {
+      title: "네모게임 (NEMO GAME)",
+      slug: "nemo-game",
+      role: "Playground",
+      status: "Live",
+      blurb: "100% 풀이 가능한 논리 퍼즐. 역설계 맵 생성과 기하학 알고리즘으로 완벽한 해결 보장.",
+      links: [
+        { label: "Play", href: "/playground/nemo-game/" },
+      ],
+      postCategory: "games",
+      tags: ["canvas", "game", "puzzle", "algorithm", "geometry"],
+      type: "demo",
+    },
   ],
   freelance: {
     summary: [
