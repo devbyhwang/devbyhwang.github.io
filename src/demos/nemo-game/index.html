@@ -378,11 +378,6 @@
     let startCell = null;
     let currCell = null;
 
-    // Long-press detection for mobile
-    let longPressTimer = null;
-    let longPressStartPos = null;  // {x, y, r, c}
-    let isLongPressing = false;
-
     const gridEl = document.getElementById('grid');
     const boardEl = document.getElementById('board');
     const timeBar = document.querySelector('.timer-bar');
@@ -788,15 +783,18 @@
         btnHint.disabled = hintsLeft <= 0;
     }
 
-    function showTooltip(r, c) {
+    // [추가] 툴팁을 그리고 위치를 잡는 공통 함수
+    function renderTooltip(r, c, targetEl) {
         const stack = grid[r][c];
-        if (stack.length <= 1) {
+
+        // 블록이 2개 미만이면 굳이 보여줄 필요 없으면 리턴 (원하시면 제거 가능)
+        if (!stack || stack.length <= 1) {
             tooltipEl.style.display = 'none';
             return;
         }
 
-        // 툴팁 구성
         tooltipEl.innerHTML = '';
+        // 위에서부터 아래로 쌓기 (Top이 맨 위)
         for (let i = stack.length - 1; i >= 0; i--) {
             const item = stack[i];
             const div = document.createElement('div');
@@ -805,9 +803,9 @@
             tooltipEl.appendChild(div);
         }
 
-        // 툴팁 위치 조정
-        const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-        const rect = cell.getBoundingClientRect();
+        // 위치 설정
+        const rect = targetEl.getBoundingClientRect();
+        // 툴팁을 셀의 정중앙 상단에 위치
         tooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
         tooltipEl.style.top = rect.top + 'px';
         tooltipEl.style.display = 'flex';
@@ -815,11 +813,6 @@
 
     function hideTooltip() {
         tooltipEl.style.display = 'none';
-        if (longPressTimer) {
-            clearTimeout(longPressTimer);
-            longPressTimer = null;
-        }
-        isLongPressing = false;
     }
 
     function bindEvents() {
@@ -828,63 +821,19 @@
             const t = e.target.closest('.cell');
             if(!t || t.classList.contains('vanished')) return;
 
+            // 터치 시작 시 기존 툴팁 숨김
             hideTooltip();
 
-            const r = parseInt(t.dataset.r);
-            const c = parseInt(t.dataset.c);
-
-            // Detect touch vs mouse
-            const isTouch = e.touches !== undefined;
-
-            if (isTouch) {
-                // Mobile: Start long-press timer
-                longPressStartPos = {
-                    x: e.touches[0].clientX,
-                    y: e.touches[0].clientY,
-                    r: r,
-                    c: c
-                };
-
-                longPressTimer = setTimeout(() => {
-                    // Long-press confirmed
-                    isLongPressing = true;
-                    showTooltip(r, c);
-                }, 400);
-            } else {
-                // Desktop: Immediate drag
-                isDragging = true;
-                startCell = {r, c};
-                currCell = startCell;
-                updatePreview();
-            }
+            isDragging = true;
+            startCell = {r: parseInt(t.dataset.r), c: parseInt(t.dataset.c)};
+            currCell = startCell; // 시작할 때 현재 셀도 초기화
+            updatePreview();
         };
 
         const move = (e) => {
+            if(!isDragging) return;
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-            // Check if long-press should be cancelled
-            if (longPressTimer && longPressStartPos) {
-                const dx = clientX - longPressStartPos.x;
-                const dy = clientY - longPressStartPos.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance > 10) {
-                    // Movement detected - cancel long-press, start drag
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
-                    hideTooltip();
-
-                    // Start drag
-                    isDragging = true;
-                    startCell = {r: longPressStartPos.r, c: longPressStartPos.c};
-                    currCell = startCell;
-                    longPressStartPos = null;
-                    updatePreview();
-                }
-            }
-
-            if(!isDragging) return;
 
             const t = document.elementFromPoint(clientX, clientY);
             if(t && t.classList.contains('cell')) {
@@ -897,24 +846,26 @@
             }
         };
 
-        const end = () => {
-            // Clean up long-press state
-            if (longPressTimer) {
-                clearTimeout(longPressTimer);
-                longPressTimer = null;
-            }
+        const end = (e) => {
+            if(!isDragging) return;
+            isDragging = false;
 
-            if (isLongPressing) {
-                // Just hide tooltip, don't process drag
-                hideTooltip();
-                longPressStartPos = null;
+            // [수정됨] 드래그가 아니라 제자리 클릭(탭)인 경우 -> 툴팁 표시
+            if (startCell && currCell && startCell.r === currCell.r && startCell.c === currCell.c) {
+                // 현재 터치된 요소 찾기
+                const targetEl = document.querySelector(`.cell[data-r="${startCell.r}"][data-c="${startCell.c}"]`);
+                if (targetEl) {
+                    renderTooltip(startCell.r, startCell.c, targetEl);
+                }
+                // 가이드라인 제거
+                guideLine.style.display = 'none';
+                previewPoly.style.display = 'none';
+                previewPoly.classList.remove('valid');
+                document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
                 return;
             }
 
-            longPressStartPos = null;
-
-            if(!isDragging) return;
-            isDragging = false;
+            // 드래그였다면 기존 로직 수행
             const sq = getSquarePoints(startCell, currCell);
             if(sq) checkAndRemove(sq);
             guideLine.style.display = 'none';
@@ -923,6 +874,7 @@
             document.querySelectorAll('.highlight').forEach(el => el.classList.remove('highlight'));
         };
 
+        // --- PC용 마우스 호버 이벤트 (기존 유지하되 함수 호출로 변경) ---
         const hoverEnter = (e) => {
             if (isDragging || ('ontouchstart' in window && e.pointerType === 'touch')) return;
             const t = e.target.closest('.cell');
@@ -932,7 +884,7 @@
             }
             const r = parseInt(t.dataset.r);
             const c = parseInt(t.dataset.c);
-            showTooltip(r, c);
+            renderTooltip(r, c, t);
         };
 
         const hoverLeave = () => {
