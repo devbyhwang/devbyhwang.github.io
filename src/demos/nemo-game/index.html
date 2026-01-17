@@ -378,6 +378,11 @@
     let startCell = null;
     let currCell = null;
 
+    // Long-press detection for mobile
+    let longPressTimer = null;
+    let longPressStartPos = null;  // {x, y, r, c}
+    let isLongPressing = false;
+
     const gridEl = document.getElementById('grid');
     const boardEl = document.getElementById('board');
     const timeBar = document.querySelector('.timer-bar');
@@ -401,7 +406,7 @@
         resultScreen.classList.add('hidden');
         gameUI.classList.remove('active');
         homeScreen.classList.remove('hidden');
-        tooltipEl.style.display = 'none';
+        hideTooltip();
         document.querySelectorAll('.particle').forEach(el => el.remove());
         document.querySelectorAll('.float-score').forEach(el => el.remove());
     }
@@ -628,7 +633,7 @@
             updateCellVisual(p.r, p.c);
         });
 
-        tooltipEl.style.display = 'none';
+        hideTooltip();
 
         score += 100;
         if(config.time < 1000) {
@@ -682,7 +687,7 @@
     function endGame(win) {
         isPlaying = false;
         clearInterval(timerId);
-        tooltipEl.style.display = 'none';
+        hideTooltip();
 
         resultTitle.innerText = win ? "ALL CLEAR!" : "TIME OVER";
         resultTitle.className = win ? "win" : "lose";
@@ -783,22 +788,104 @@
         btnHint.disabled = hintsLeft <= 0;
     }
 
+    function showTooltip(r, c) {
+        const stack = grid[r][c];
+        if (stack.length <= 1) {
+            tooltipEl.style.display = 'none';
+            return;
+        }
+
+        // 툴팁 구성
+        tooltipEl.innerHTML = '';
+        for (let i = stack.length - 1; i >= 0; i--) {
+            const item = stack[i];
+            const div = document.createElement('div');
+            div.className = `mini-block ${item.color}`;
+            if (i === stack.length - 1) div.classList.add('top-item');
+            tooltipEl.appendChild(div);
+        }
+
+        // 툴팁 위치 조정
+        const cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+        const rect = cell.getBoundingClientRect();
+        tooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
+        tooltipEl.style.top = rect.top + 'px';
+        tooltipEl.style.display = 'flex';
+    }
+
+    function hideTooltip() {
+        tooltipEl.style.display = 'none';
+        if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+        }
+        isLongPressing = false;
+    }
+
     function bindEvents() {
         const start = (e) => {
             if(!isPlaying) return;
             const t = e.target.closest('.cell');
             if(!t || t.classList.contains('vanished')) return;
-            tooltipEl.style.display = 'none';
-            isDragging = true;
-            startCell = {r: parseInt(t.dataset.r), c: parseInt(t.dataset.c)};
-            currCell = startCell;
-            updatePreview();
+
+            hideTooltip();
+
+            const r = parseInt(t.dataset.r);
+            const c = parseInt(t.dataset.c);
+
+            // Detect touch vs mouse
+            const isTouch = e.touches !== undefined;
+
+            if (isTouch) {
+                // Mobile: Start long-press timer
+                longPressStartPos = {
+                    x: e.touches[0].clientX,
+                    y: e.touches[0].clientY,
+                    r: r,
+                    c: c
+                };
+
+                longPressTimer = setTimeout(() => {
+                    // Long-press confirmed
+                    isLongPressing = true;
+                    showTooltip(r, c);
+                }, 400);
+            } else {
+                // Desktop: Immediate drag
+                isDragging = true;
+                startCell = {r, c};
+                currCell = startCell;
+                updatePreview();
+            }
         };
 
         const move = (e) => {
-            if(!isDragging) return;
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            // Check if long-press should be cancelled
+            if (longPressTimer && longPressStartPos) {
+                const dx = clientX - longPressStartPos.x;
+                const dy = clientY - longPressStartPos.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 10) {
+                    // Movement detected - cancel long-press, start drag
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                    hideTooltip();
+
+                    // Start drag
+                    isDragging = true;
+                    startCell = {r: longPressStartPos.r, c: longPressStartPos.c};
+                    currCell = startCell;
+                    longPressStartPos = null;
+                    updatePreview();
+                }
+            }
+
+            if(!isDragging) return;
+
             const t = document.elementFromPoint(clientX, clientY);
             if(t && t.classList.contains('cell')) {
                 const r = parseInt(t.dataset.r);
@@ -811,6 +898,21 @@
         };
 
         const end = () => {
+            // Clean up long-press state
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+
+            if (isLongPressing) {
+                // Just hide tooltip, don't process drag
+                hideTooltip();
+                longPressStartPos = null;
+                return;
+            }
+
+            longPressStartPos = null;
+
             if(!isDragging) return;
             isDragging = false;
             const sq = getSquarePoints(startCell, currCell);
@@ -825,36 +927,16 @@
             if (isDragging || ('ontouchstart' in window && e.pointerType === 'touch')) return;
             const t = e.target.closest('.cell');
             if (!t || t.classList.contains('vanished')) {
-                tooltipEl.style.display = 'none';
+                hideTooltip();
                 return;
             }
             const r = parseInt(t.dataset.r);
             const c = parseInt(t.dataset.c);
-            const stack = grid[r][c];
-            if (stack.length <= 1) {
-                tooltipEl.style.display = 'none';
-                return;
-            }
-
-            // 툴팁 구성
-            tooltipEl.innerHTML = '';
-            for (let i = stack.length - 1; i >= 0; i--) {
-                const item = stack[i];
-                const div = document.createElement('div');
-                div.className = `mini-block ${item.color}`;
-                if (i === stack.length - 1) div.classList.add('top-item');
-                tooltipEl.appendChild(div);
-            }
-
-            // 툴팁 위치 조정
-            const rect = t.getBoundingClientRect();
-            tooltipEl.style.left = (rect.left + rect.width / 2) + 'px';
-            tooltipEl.style.top = rect.top + 'px';
-            tooltipEl.style.display = 'flex';
+            showTooltip(r, c);
         };
 
         const hoverLeave = () => {
-            tooltipEl.style.display = 'none';
+            hideTooltip();
         };
 
         boardEl.onmousedown = start;
