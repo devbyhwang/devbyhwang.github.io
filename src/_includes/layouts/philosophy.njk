@@ -1,0 +1,39 @@
+---
+layout: layouts/base.njk
+---
+<article class="philosophy-note">
+  <header class="note-header">
+    <div class="note-kicker">황라투스트라의 놀이터</div>
+    <h1 class="note-title">{{ title }}</h1>
+    {% if description %}
+    <p class="note-description">{{ description }}</p>
+    {% endif %}
+    <div class="note-meta">
+      <span class="note-date">{{ date | readableDate }}</span>
+      <span class="note-author">by {{ site.author }}</span>
+    </div>
+  </header>
+
+  <div class="note-content prose">
+    {{ content | safe }}
+  </div>
+
+  <footer class="note-footer">
+    {% if tags %}
+    <div class="note-tags">
+      {% for tag in tags %}
+        <a class="tag tag-philosophy" href="{{ ('/tags/' + (tag | slugify) + '/') | url }}">{{ tag }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </footer>
+
+  <!-- GitHub Discussions Integration -->
+  {% if discussion !== false %}
+  <section class="note-discussions">
+    <h2>사유의 공간</h2>
+    <p class="discussions-intro">이 글에 대한 생각을 자유롭게 나눠주세요. 질문, 반론, 보완 모두 환영합니다. 💭</p>
+    {% include "giscus-comments.njk" %}
+  </section>
+  {% endif %}
+</article>
