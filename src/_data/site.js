@@ -41,7 +41,7 @@ module.exports = {
     enable: toBool(env.GISCUS_ENABLE, true),
     repo: env.GISCUS_REPO || "devbyhwang/devbyhwang.github.io",
     repoId: env.GISCUS_REPO_ID || "",
-    category: env.GISCUS_CATEGORY || "Hwang-rathustra's Playground",
+    category: env.GISCUS_CATEGORY || "Announcements",
     categoryId: env.GISCUS_CATEGORY_ID || "",
     mapping: "pathname",
     strict: "1",
