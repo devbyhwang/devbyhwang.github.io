@@ -2377,15 +2377,72 @@ canvas,
   cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23667eea" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'), auto;
 }
 
-/* Philosophy Hero */
+/* Philosophy Hero - Starry Night Sky */
 .philosophy-hero {
-  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
-  color: var(--color-text);
-  padding: var(--space-12) var(--space-8);
+  position: relative;
+  background: linear-gradient(to bottom, #0a0e27 0%, #1a1f3a 50%, #0f1420 100%);
+  color: #ffffff;
+  padding: var(--space-16) var(--space-8);
   border-radius: var(--radius-lg);
   margin-bottom: var(--space-8);
   text-align: center;
-  border: 1px solid var(--color-border);
+  border: none;
+  overflow: hidden;
+  min-height: 320px;
+}
+
+/* Stars Layer 1 - Small distant stars */
+.philosophy-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(1px 1px at 15% 15%, white, transparent),
+    radial-gradient(2px 2px at 70% 40%, white, transparent);
+  background-size: 200% 200%;
+  background-position: 0 0, 40% 60%, 130% 270%, 70% 100%;
+  opacity: 0.5;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+/* Stars Layer 2 - Larger twinkling stars */
+.philosophy-hero::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(3px 3px at 40% 20%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(2px 2px at 75% 45%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(3px 3px at 25% 65%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 85% 85%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(3px 3px at 10% 40%, rgba(255, 255, 255, 0.9), transparent);
+  background-size: 250% 250%;
+  animation: twinkle 3s ease-in-out infinite reverse;
+  opacity: 0.6;
+}
+
+/* Twinkling animation */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
 }
 
 .philosophy-hero .hero-content {
@@ -2397,14 +2454,16 @@ canvas,
   font-size: var(--text-3xl);
   font-weight: var(--weight-bold);
   margin-bottom: var(--space-4);
-  color: var(--color-text);
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 .philosophy-hero .lede {
   font-size: var(--text-lg);
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: var(--space-6);
   line-height: var(--leading-relaxed);
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
 }
 
 .philosophy-hero .hero-actions {
@@ -2416,12 +2475,13 @@ canvas,
 }
 
 .philosophy-hero .hero-link {
-  color: var(--color-primary);
+  color: rgba(255, 255, 255, 0.8);
   opacity: 0.9;
   font-weight: var(--weight-medium);
 }
 
 .philosophy-hero .hero-link:hover {
+  color: #ffffff;
   opacity: 1;
   text-decoration: underline;
 }
@@ -2643,6 +2703,7 @@ canvas,
 @media (max-width: 768px) {
   .philosophy-hero {
     padding: var(--space-12) var(--space-6);
+    min-height: 280px;
   }
 
   .philosophy-hero h1 {
@@ -2651,6 +2712,12 @@ canvas,
 
   .philosophy-hero .lede {
     font-size: var(--text-base);
+  }
+
+  /* Reduce animation intensity on mobile for performance */
+  .philosophy-hero::before,
+  .philosophy-hero::after {
+    animation-duration: 6s;
   }
 
   .philosophy-note {
@@ -2773,4 +2840,31 @@ canvas,
 
 .contribute-card .muted:last-of-type {
   margin-bottom: 0;
+}
+
+/* Philosophy Hero Button Overrides */
+.philosophy-hero .btn-primary {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.philosophy-hero .btn-primary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.philosophy-hero .btn-secondary {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.philosophy-hero .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
