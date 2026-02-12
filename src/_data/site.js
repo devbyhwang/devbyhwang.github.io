@@ -39,7 +39,7 @@ module.exports = {
   },
   giscus: {
     enable: toBool(env.GISCUS_ENABLE, true),
-    repo: env.GISCUS_REPO || "devbyhwang/devbyhwanghub.io",
+    repo: env.GISCUS_REPO || "devbyhwang/devbyhwang.github.io",
     repoId: env.GISCUS_REPO_ID || "",
     category: env.GISCUS_CATEGORY || "Hwang-rathustra's Playground",
     categoryId: env.GISCUS_CATEGORY_ID || "",
