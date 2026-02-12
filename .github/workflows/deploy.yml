@@ -46,6 +46,7 @@ jobs:
           fi
       - name: Build
         env:
+          ELEVENTY_ENV: production
           GISCUS_ENABLE: true
           GISCUS_REPO: devbyhwang/devbyhwang.github.io
           GISCUS_REPO_ID: ${{ secrets.GISCUS_REPO_ID }}
