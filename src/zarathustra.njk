@@ -1,0 +1,90 @@
+---
+layout: layouts/base.njk
+title: 황라투스트라의 놀이터
+description: "철학적 단상과 질문들. 사유의 흔적을 기록하고 대화를 나누는 공간."
+permalink: /zarathustra/
+---
+<section class="page-hero philosophy-hero">
+  <div class="hero-content">
+    <h1>황라투스트라의 놀이터</h1>
+    <p class="lede">{{ description }}</p>
+    <div class="hero-actions">
+      <a class="text-link hero-link" href="{{ '/' | url }}">← 홈으로</a>
+    </div>
+  </div>
+</section>
+
+<section class="layout-two archive philosophy-archive">
+  <div class="feed">
+    <div class="post-list philosophy-list">
+      {% if collections.philosophy.length > 0 %}
+        {% for note in collections.philosophy %}
+          <a class="post-item philosophy-item" href="{{ note.url | url }}">
+            <div class="post-item-top">
+              <span class="badge badge-philosophy">철학 노트</span>
+              <span class="post-meta">{{ note.date | readableDate }}</span>
+            </div>
+            <div class="post-item-title">{{ note.data.title }}</div>
+            {% if note.data.description %}
+            <div class="post-item-excerpt muted">{{ note.data.description }}</div>
+            {% endif %}
+            {% if note.data.tags %}
+            <div class="tag-row">
+              {% for tag in note.data.tags | head(3) %}
+                <span class="tag-mini">{{ tag }}</span>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </a>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <p class="muted">아직 작성된 노트가 없습니다. 첫 번째 사유를 시작해보세요.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-card philosophy-about">
+      <div class="card-title">이 공간에 대하여</div>
+      <blockquote class="philosophy-quote-sidebar">
+        "인간은 극복되어야 할 그 무엇이다."
+        <cite>— 프리드리히 니체, 《차라투스트라는 이렇게 말했다》</cite>
+      </blockquote>
+      <p class="muted">니체의 차라투스트라와 사유의 경계를 넘나드는 개인 놀이터입니다.</p>
+      <p class="muted">생각의 파편과 질문을 기록하고, 함께 대화를 나눕니다.</p>
+    </div>
+
+    <div class="sidebar-card contribute-card">
+      <div class="card-title">기여하기</div>
+      <p class="muted">당신의 철학적 단상을 공유하고 싶으신가요?</p>
+      <p class="muted">GitHub Pull Request로 노트를 제출할 수 있습니다.</p>
+      <div class="contribute-actions">
+        <a class="btn btn-primary" href="https://github.com/devbyhwang/devbyhwanghub.io/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">
+          기여 가이드 보기 →
+        </a>
+      </div>
+    </div>
+
+    {% if collections.philosophy.length > 0 %}
+    <div class="sidebar-card">
+      <div class="card-title">철학 태그</div>
+      <div class="tag-cloud">
+        {% set uniqueTags = [] %}
+        {% for note in collections.philosophy %}
+          {% if note.data.tags %}
+            {% for tag in note.data.tags %}
+              {% set tagSlug = tag | slugify %}
+              {% if tagSlug not in uniqueTags %}
+                {% set temp = uniqueTags.push(tagSlug) %}
+                <a class="tag tag-philosophy" href="{{ ('/tags/' + tagSlug + '/') | url }}">{{ tag }}</a>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </aside>
+</section>

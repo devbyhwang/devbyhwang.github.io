@@ -43,8 +43,9 @@ module.exports = function (eleventyConfig) {
     freelance: "외주",
     games: "게임",
     notes: "노트",
+    philosophy: "철학 노트",
   };
-  const CATEGORY_ORDER = ["devlog", "freelance", "games", "notes"];
+  const CATEGORY_ORDER = ["devlog", "freelance", "games", "notes", "philosophy"];
   const studio = require("./src/_data/studio");
 
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
@@ -69,6 +70,21 @@ module.exports = function (eleventyConfig) {
       .getFilteredByGlob("src/posts/**/*.{md,njk}")
       .sort((a, b) => b.date - a.date)
   );
+
+  eleventyConfig.addCollection("philosophy", (collectionApi) =>
+    collectionApi
+      .getFilteredByGlob("src/zarathustra/**/*.md")
+      .sort((a, b) => b.date - a.date)
+  );
+
+  // Filter for main feed: includes posts and philosophy notes with showInMainFeed: true
+  eleventyConfig.addCollection("mainFeed", (collectionApi) => {
+    const posts = collectionApi.getFilteredByGlob("src/posts/**/*.{md,njk}");
+    const philosophy = collectionApi
+      .getFilteredByGlob("src/zarathustra/**/*.md")
+      .filter((item) => item.data.showInMainFeed === true);
+    return [...posts, ...philosophy].sort((a, b) => b.date - a.date);
+  });
 
   eleventyConfig.addFilter("head", (items, count) => {
     if (!Array.isArray(items)) return [];
@@ -124,6 +140,13 @@ module.exports = function (eleventyConfig) {
         post.data.tags.forEach(addTag);
       }
       addTag(post.data.category);
+    });
+
+    collectionApi.getFilteredByGlob("src/zarathustra/**/*.md").forEach((note) => {
+      if (Array.isArray(note.data.tags)) {
+        note.data.tags.forEach(addTag);
+      }
+      addTag(note.data.category);
     });
 
     if (studio && Array.isArray(studio.games)) {
