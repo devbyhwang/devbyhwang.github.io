@@ -2379,30 +2379,13 @@ canvas,
 
 /* Philosophy Hero */
 .philosophy-hero {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: var(--space-16) var(--space-8);
-  border-radius: var(--radius-xl);
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  color: var(--color-text);
+  padding: var(--space-12) var(--space-8);
+  border-radius: var(--radius-lg);
   margin-bottom: var(--space-8);
   text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.philosophy-hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  animation: float 20s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) rotate(0deg); }
-  50% { transform: translate(-10%, -10%) rotate(5deg); }
+  border: 1px solid var(--color-border);
 }
 
 .philosophy-hero .hero-content {
@@ -2414,18 +2397,18 @@ canvas,
   font-size: var(--text-3xl);
   font-weight: var(--weight-bold);
   margin-bottom: var(--space-4);
-  text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  color: var(--color-text);
 }
 
 .philosophy-hero .lede {
   font-size: var(--text-lg);
-  opacity: 0.95;
+  color: var(--color-text-secondary);
   margin-bottom: var(--space-6);
   line-height: var(--leading-relaxed);
 }
 
 .philosophy-hero .hero-link {
-  color: white;
+  color: var(--color-primary);
   opacity: 0.9;
   font-weight: var(--weight-medium);
 }
@@ -2460,16 +2443,14 @@ canvas,
 
 /* Philosophy List - Post-it Note Style */
 .philosophy-list .post-item {
-  background: linear-gradient(135deg, #fef9e7 0%, #fcf3cf 100%);
-  border: 1px solid #f9e79f;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: var(--space-6);
   margin-bottom: var(--space-5);
   position: relative;
   transition: all var(--transition-normal);
-  box-shadow:
-    2px 2px 4px rgba(0,0,0,0.05),
-    inset 0 0 0 1px rgba(255,255,255,0.8);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 
 .philosophy-list .post-item::before {
@@ -2479,30 +2460,13 @@ canvas,
   right: var(--space-6);
   font-size: var(--text-lg);
   transform: rotate(15deg);
+  opacity: 0.6;
 }
 
 .philosophy-list .post-item:hover {
-  transform: translateY(-2px) rotate(0.5deg);
-  box-shadow:
-    4px 6px 12px rgba(0,0,0,0.1),
-    inset 0 0 0 1px rgba(255,255,255,0.9);
-  border-color: #f4d03f;
-}
-
-/* Alternate colors for variety */
-.philosophy-list .post-item:nth-child(3n+1) {
-  background: linear-gradient(135deg, #e8f8f5 0%, #d1f2eb 100%);
-  border-color: #a3e4d7;
-}
-
-.philosophy-list .post-item:nth-child(3n+2) {
-  background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%);
-  border-color: #f8c471;
-}
-
-.philosophy-list .post-item:nth-child(3n+3) {
-  background: linear-gradient(135deg, #f4ecf7 0%, #e8daef 100%);
-  border-color: #d7bde2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  border-color: var(--color-primary);
 }
 
 /* Philosophy Note Page */
@@ -2523,13 +2487,9 @@ canvas,
   font-size: var(--text-sm);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--color-text-muted);
+  color: var(--color-primary);
   margin-bottom: var(--space-4);
   font-weight: var(--weight-semibold);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .note-title {
@@ -2577,7 +2537,7 @@ canvas,
 /* Philosophy Badges and Tags */
 .badge-philosophy,
 .tag-philosophy {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary);
   color: white;
   border: none;
 }
@@ -2615,10 +2575,7 @@ canvas,
 .note-discussions h2 {
   font-size: var(--text-2xl);
   margin-bottom: var(--space-3);
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--color-text);
 }
 
 .discussions-intro {
@@ -2651,8 +2608,9 @@ canvas,
 
 /* Sidebar - Philosophy About */
 .philosophy-about {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-  border-left: 3px solid #667eea;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-primary);
 }
 
 .philosophy-about p {
@@ -2771,8 +2729,8 @@ canvas,
    ============================================ */
 
 .contribute-card {
-  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-  border: 2px dashed var(--color-border);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   margin-top: var(--space-6);
 }
 
@@ -2791,13 +2749,14 @@ canvas,
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--color-primary);
   color: white;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .contribute-card .muted {
