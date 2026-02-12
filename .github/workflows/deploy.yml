@@ -45,6 +45,12 @@ jobs:
             echo "SITE_URL=https://$OWNER.github.io" >> "$GITHUB_ENV"
           fi
       - name: Build
+        env:
+          GISCUS_ENABLE: true
+          GISCUS_REPO: devbyhwang/devbyhwang.github.io
+          GISCUS_REPO_ID: ${{ secrets.GISCUS_REPO_ID }}
+          GISCUS_CATEGORY: "Hwang-rathustra's Playground"
+          GISCUS_CATEGORY_ID: ${{ secrets.GISCUS_CATEGORY_ID }}
         run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
