@@ -2407,6 +2407,14 @@ canvas,
   line-height: var(--leading-relaxed);
 }
 
+.philosophy-hero .hero-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .philosophy-hero .hero-link {
   color: var(--color-primary);
   opacity: 0.9;
