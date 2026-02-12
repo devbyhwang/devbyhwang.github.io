@@ -2474,14 +2474,6 @@ canvas,
   flex-wrap: wrap;
 }
 
-.philosophy-hero .hero-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
 .philosophy-hero .hero-link {
   color: rgba(255, 255, 255, 0.8);
   opacity: 0.9;
