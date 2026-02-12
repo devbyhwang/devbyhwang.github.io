@@ -46,10 +46,11 @@ jobs:
           fi
       - name: Build
         env:
+          ELEVENTY_ENV: production
           GISCUS_ENABLE: true
           GISCUS_REPO: devbyhwang/devbyhwang.github.io
           GISCUS_REPO_ID: ${{ secrets.GISCUS_REPO_ID }}
-          GISCUS_CATEGORY: "Hwang-rathustra's Playground"
+          GISCUS_CATEGORY: "Announcements"
           GISCUS_CATEGORY_ID: ${{ secrets.GISCUS_CATEGORY_ID }}
         run: npm run build
       - name: Upload artifact
