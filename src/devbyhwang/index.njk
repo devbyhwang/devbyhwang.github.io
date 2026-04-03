@@ -1,0 +1,124 @@
+---
+layout: layouts/base.njk
+brand: devbyhwang
+title: 홈
+description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
+---
+{% set playgroundItems = [] %}
+{% for project in studio.games %}
+  {% if project.type == 'demo' %}
+    {% set playgroundItems = (playgroundItems.push(project), playgroundItems) %}
+  {% endif %}
+{% endfor %}
+
+<section class="page-hero">
+  <h1>Playground</h1>
+</section>
+
+<section class="layout-two" id="latest">
+  <div class="feed">
+    {% if playgroundItems.length > 0 %}
+    <div class="playground-section playground-section-home">
+      <div class="playground-grid home-playground-grid">
+        {% for item in playgroundItems %}
+          {% set launch = item.links | first %}
+          <article class="playground-card">
+            {% if item.preview %}
+            <div class="card-preview">
+              <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+            </div>
+            {% endif %}
+            <div class="project-meta">
+              {% if item.status %}<span class="badge">{{ item.status }}</span>{% endif %}
+              {% if item.role %}<span class="pill">{{ item.role }}</span>{% endif %}
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p class="muted">{{ item.blurb }}</p>
+            {% if launch %}
+            <div class="inline-links">
+              <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
+            </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="section-header">
+      <h2>최신 글</h2>
+    </div>
+    <div class="post-list home-latest-posts">
+      {% for post in collections.devPosts | head(6) %}
+        <article class="post-item">
+          <a href="{{ post.url | url }}">
+            {% if post.data.image %}
+            <div class="post-thumb">
+              <img src="{{ post.data.image | url }}" alt="{{ post.data.title }}" loading="lazy" />
+            </div>
+            {% endif %}
+            <div class="post-info">
+              <span class="post-category">{{ post.data.category | default('devlog') }}</span>
+              <h2 class="post-title">{{ post.data.title }}</h2>
+              {% if post.data.excerpt or post.data.description %}
+              <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
+              {% endif %}
+              <span class="post-date">{{ post.date | readableDate }}</span>
+            </div>
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+
+    {% include "ad-slot.njk" %}
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        <li>
+          <a href="{{ '/devbyhwang/blog/' | url }}">전체글</a>
+          <span class="count">({{ collections.devPosts | length }})</span>
+        </li>
+        {% for cat in collections.devCategoryList %}
+          <li class="sub">
+            <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+            <span class="count">({{ cat.count }})</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% if site.visitorCounter and site.visitorCounter.enable %}
+      <div class="sidebar-counter">
+        <div class="counter-label">방문자</div>
+        <div class="counter-row">
+          <span>TODAY</span><span id="visitor-today">—</span>
+        </div>
+        <div class="counter-row">
+          <span>TOTAL</span><span id="visitor-total">—</span>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        {% for post in collections.devPosts | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        {% for post in collections.devPopularPosts | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% include "ad-slot.njk" %}
+  </aside>
+</section>

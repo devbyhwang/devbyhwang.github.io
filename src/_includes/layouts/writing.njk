@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+brand: dodoes
+---
+<article class="writing-note">
+  <header class="writing-header">
+    <div class="writing-kicker">{{ category or 'notes' }}</div>
+    <h1 class="writing-title">{{ title }}</h1>
+    {% if description %}
+    <p class="writing-description">{{ description }}</p>
+    {% endif %}
+    <div class="writing-meta">
+      <span class="writing-date">{{ date | readableDate }}</span>
+      <span class="writing-author">by {{ brands.dodoes.displayName }}</span>
+    </div>
+  </header>
+
+  <div class="writing-content prose">
+    {{ content | safe }}
+  </div>
+</article>
+
+<section class="related-posts writing-related-posts">
+  <div class="section-header">
+    <h2>Underground Novel의 다른 글</h2>
+  </div>
+  <div class="related-list">
+    {% set shown = 0 %}
+    {% for post in collections.dodoesWriting %}
+      {% if post.url != page.url and shown < 3 %}
+        {% set shown = shown + 1 %}
+        <a class="related-item" href="{{ post.url | url }}">
+          <div class="related-item-top">
+            <span class="badge">{{ post.data.category | default('notes') }}</span>
+            <span class="muted">{{ post.date | readableDate }}</span>
+          </div>
+          <div class="related-title">{{ post.data.title }}</div>
+          {% if post.data.excerpt or post.data.description %}
+          <p class="muted">{{ post.data.excerpt or post.data.description }}</p>
+          {% endif %}
+        </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>

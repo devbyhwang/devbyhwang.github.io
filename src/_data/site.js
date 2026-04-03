@@ -11,11 +11,10 @@ const toBool = (value, fallback = false) => {
 const env = process.env;
 
 module.exports = {
-  title: "DevByHwang",
-  tagline: "devlogs · freelance · notes",
-  description:
-    "개발자 Hwang의 개발 기록과 외주 로그, 기타 글을 모아둔 개인 블로그.",
-  author: "DevByHwang",
+  title: "Auckland",
+  tagline: "two blogs",
+  description: "개발자 브랜드 DevByHwang와 작가 브랜드 Underground Novel를 위한 블로그.",
+  author: "Hwang",
   url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
   email: "",
   socials: {
@@ -26,7 +25,6 @@ module.exports = {
     x: "",
   },
   googleAds: {
-    // 설정 방법: Google AdSense 발급 후 클라이언트 ID를 입력, enable을 true로 설정
     client: env.GOOGLE_ADS_CLIENT || "",
     enable: toBool(env.GOOGLE_ADS_ENABLE, false),
   },
@@ -36,30 +34,5 @@ module.exports = {
     totalKey: env.VISITOR_COUNTER_TOTAL_KEY || "total",
     dailyPrefix: env.VISITOR_COUNTER_DAILY_PREFIX || "daily",
     timeZone: env.VISITOR_COUNTER_TIMEZONE || "Asia/Seoul",
-  },
-  giscus: {
-    enable: toBool(env.GISCUS_ENABLE, true),
-    repo: env.GISCUS_REPO || "devbyhwang/devbyhwang.github.io",
-    repoId: env.GISCUS_REPO_ID || "",
-    category: env.GISCUS_CATEGORY || "Announcements",
-    categoryId: env.GISCUS_CATEGORY_ID || "",
-    mapping: "pathname",
-    strict: "1",
-    theme: "preferred_color_scheme",
-    lang: "ko",
-    reactionsEnabled: true,
-    emitMetadata: false,
-    inputPosition: "bottom",
-    loading: "lazy",
-  },
-  hero: {
-    kicker: "Personal dev notes",
-    heading: "작업 기록과 일상 노트를 차곡차곡 쌓아가는 곳",
-    subhead:
-      "프로젝트 진행 과정, 외주 경험, 개발 팁과 생각을 편하게 기록합니다.",
-    actions: [
-      { href: "/about/", label: "소개" },
-      { href: "#blog", label: "최신 글" },
-    ],
   },
 };

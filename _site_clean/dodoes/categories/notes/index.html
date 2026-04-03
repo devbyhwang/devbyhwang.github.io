@@ -1,28 +1,20 @@
-{% if brand and brands[brand] %}
-  {% set activeBrand = brands[brand] %}
-{% else %}
-  {% set activeBrand = null %}
-{% endif %}
-{% if activeBrand %}
-  {% set themeClass = activeBrand.themeClass %}
-{% else %}
-  {% set themeClass = 'theme-hub' %}
-{% endif %}
-{% if activeBrand and brand == 'devbyhwang' %}
-  {% set footerNewest = collections.devPosts | first %}
-{% elif activeBrand and brand == 'dodoes' %}
-  {% set footerNewest = collections.dodoesWriting | first %}
-{% else %}
-  {% set footerNewest = (collections.devPosts | first) or (collections.dodoesWriting | first) %}
-{% endif %}
+
+  
+
+
+  
+
+
+  
+
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% if title %}{{ title }} · {% endif %}{{ activeBrand.displayName if activeBrand else site.title }}</title>
-    <meta name="description" content="{{ description or (activeBrand and activeBrand.description) or site.description }}" />
-    <link rel="canonical" href="{{ canonicalUrl or (site.url + (page.url | url)) }}" />
+    <title>노트 · 두더즈</title>
+    <meta name="description" content="노트 카테고리 글 모음" />
+    <link rel="canonical" href="http://localhost:8080/dodoes/categories/notes/" />
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
@@ -31,18 +23,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{{ '/styles/main.css' | url }}" />
+    <link rel="stylesheet" href="/styles/main.css" />
 
-    {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd %}
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.googleAds.client }}"
-      crossorigin="anonymous"
-    ></script>
-    {% endif %}
+    
   </head>
-  <body class="{{ themeClass }}">
-    {% if activeBrand %}
+  <body class="theme-dodoes">
+    
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar-drawer" id="sidebar-drawer">
       <button class="drawer-close" id="drawer-close" aria-label="Close menu">
@@ -52,30 +38,42 @@
         </svg>
       </button>
       <nav class="drawer-nav">
-        {% for item in activeBrand.nav %}
-        <a href="{{ item.href | url }}">{{ item.label }}</a>
-        {% endfor %}
+        
+        <a href="/dodoes/">홈</a>
+        
+        <a href="/dodoes/about/">소개</a>
+        
+        <a href="/dodoes/writing/">글</a>
+        
       </nav>
     </aside>
-    {% endif %}
+    
 
-    <header class="site-header{% if not activeBrand %} hub-header{% endif %}" id="site-header">
+    <header class="site-header" id="site-header">
       <div class="header-inner">
-        <a class="brand" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
-          <div class="brand-title">{{ activeBrand.displayName if activeBrand else site.title }}</div>
-          {% if (activeBrand and activeBrand.tagline) or (not activeBrand and site.tagline) %}
-          <div class="brand-tagline">{{ activeBrand.tagline if activeBrand else site.tagline }}</div>
-          {% endif %}
+        <a class="brand" href="/dodoes/">
+          <div class="brand-title">두더즈</div>
+          <div class="brand-tagline">novel · notes</div>
         </a>
 
-        {% if activeBrand %}
+        
         <nav class="nav">
-          {% for item in activeBrand.nav %}
+          
           <a
-            href="{{ item.href | url }}"
-            {% if page.url == item.href or (item.matchPrefix and page.url.startsWith(item.matchPrefix)) %}class="active"{% endif %}
-          >{{ item.label }}</a>
-          {% endfor %}
+            href="/dodoes/"
+            
+          >홈</a>
+          
+          <a
+            href="/dodoes/about/"
+            
+          >소개</a>
+          
+          <a
+            href="/dodoes/writing/"
+            
+          >글</a>
+          
         </nav>
 
         <button class="menu-btn" id="menu-btn" aria-label="Open menu">
@@ -85,40 +83,83 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        {% else %}
-        <nav class="nav hub-nav">
-          <a href="{{ '/devbyhwang/' | url }}">DevByHwang</a>
-          <a href="{{ '/dodoes/' | url }}">Underground Novel</a>
-        </nav>
-        {% endif %}
+        
       </div>
     </header>
 
     <div class="site-wrap">
-      <main class="site-main">{{ content | safe }}</main>
+      <main class="site-main">
+
+<section class="page-hero page-hero-dodoes">
+  <h1>노트</h1>
+</section>
+
+<section class="layout-two dodoes-layout archive">
+  <div class="feed">
+    <div class="post-list archive-list dodoes-feed-list">
+      
+        
+        <a class="post-item compact dodoes-feed-item" href="/dodoes/writing/2026-02-12-first-note/">
+          <div class="post-item-top">
+            <span class="badge">notes</span>
+            <span class="post-meta">2026.02.12</span>
+          </div>
+          <div class="post-item-title">첫 번째 생각</div>
+          
+          <div class="post-item-excerpt muted">두더즈를 시작하며, 왜 느린 문장과 사유의 기록이 필요한지 적어둔 첫 글.</div>
+          
+        </a>
+        
+      
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        
+          <li>
+            <a href="/dodoes/categories/novel/">소설</a>
+            <span class="count">(0)</span>
+          </li>
+        
+          <li class="active">
+            <a href="/dodoes/categories/notes/">노트</a>
+            <span class="count">(1)</span>
+          </li>
+        
+      </ul>
+    </div>
+
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        
+          <li><a href="/dodoes/writing/2026-02-12-first-note/">첫 번째 생각</a></li>
+        
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        
+          <li><a href="/dodoes/writing/2026-02-12-first-note/">첫 번째 생각</a></li>
+        
+      </ul>
+    </div>
+  </aside>
+</section>
+</main>
 
       <footer class="footer footer-minimal">
         <div class="footer-meta">
-          <span>© {{ activeBrand.displayName if activeBrand else site.author }}{% if footerNewest %} {{ footerNewest.date | readableDate('yyyy') }}{% endif %}</span>
+          <span>© 두더즈 2026</span>
         </div>
       </footer>
     </div>
 
-    {% if activeBrand and activeBrand.features.visitorCounter and env.isProd %}
-      {% if site.visitorCounter and site.visitorCounter.enable %}
-        <div
-          data-visitor-counter
-          data-namespace="{{ site.visitorCounter.namespace }}"
-          data-total-key="{{ site.visitorCounter.totalKey }}"
-          data-daily-prefix="{{ site.visitorCounter.dailyPrefix }}"
-          data-timezone="{{ site.visitorCounter.timeZone }}"
-          data-today-id="visitor-today"
-          data-total-id="visitor-total"
-          hidden
-        ></div>
-        <script src="{{ '/assets/visitor-counter.js' | url }}" defer></script>
-      {% endif %}
-    {% endif %}
+    
 
     <script>
       (function() {

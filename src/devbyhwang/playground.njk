@@ -1,0 +1,43 @@
+---
+layout: layouts/base.njk
+brand: devbyhwang
+title: Playground
+description: "실험과 데모를 모아둔 Playground"
+permalink: /devbyhwang/playground/
+---
+{% set playgroundItems = [] %}
+{% for project in studio.games %}
+  {% if project.type == 'demo' %}
+    {% set playgroundItems = (playgroundItems.push(project), playgroundItems) %}
+  {% endif %}
+{% endfor %}
+
+<section class="page-hero">
+  <h1>Playground</h1>
+</section>
+
+<section class="playground-page">
+  <div class="playground-grid">
+    {% for item in playgroundItems %}
+      {% set launch = item.links | first %}
+      <article class="playground-card">
+        {% if item.preview %}
+        <div class="card-preview">
+          <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+        </div>
+        {% endif %}
+        <div class="project-meta">
+          {% if item.status %}<span class="badge">{{ item.status }}</span>{% endif %}
+          {% if item.role %}<span class="pill">{{ item.role }}</span>{% endif %}
+        </div>
+        <h3>{{ item.title }}</h3>
+        <p class="muted">{{ item.blurb }}</p>
+        {% if launch %}
+        <div class="inline-links">
+          <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
+        </div>
+        {% endif %}
+      </article>
+    {% endfor %}
+  </div>
+</section>

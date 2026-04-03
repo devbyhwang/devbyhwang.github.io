@@ -1,28 +1,20 @@
-{% if brand and brands[brand] %}
-  {% set activeBrand = brands[brand] %}
-{% else %}
-  {% set activeBrand = null %}
-{% endif %}
-{% if activeBrand %}
-  {% set themeClass = activeBrand.themeClass %}
-{% else %}
-  {% set themeClass = 'theme-hub' %}
-{% endif %}
-{% if activeBrand and brand == 'devbyhwang' %}
-  {% set footerNewest = collections.devPosts | first %}
-{% elif activeBrand and brand == 'dodoes' %}
-  {% set footerNewest = collections.dodoesWriting | first %}
-{% else %}
-  {% set footerNewest = (collections.devPosts | first) or (collections.dodoesWriting | first) %}
-{% endif %}
+
+  
+
+
+  
+
+
+  
+
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% if title %}{{ title }} · {% endif %}{{ activeBrand.displayName if activeBrand else site.title }}</title>
-    <meta name="description" content="{{ description or (activeBrand and activeBrand.description) or site.description }}" />
-    <link rel="canonical" href="{{ canonicalUrl or (site.url + (page.url | url)) }}" />
+    <title>Playground · DevByHwang</title>
+    <meta name="description" content="실험과 데모를 모아둔 Playground" />
+    <link rel="canonical" href="http://localhost:8080/devbyhwang/playground/" />
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
@@ -31,18 +23,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{{ '/styles/main.css' | url }}" />
+    <link rel="stylesheet" href="/styles/main.css" />
 
-    {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd %}
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.googleAds.client }}"
-      crossorigin="anonymous"
-    ></script>
-    {% endif %}
+    
   </head>
-  <body class="{{ themeClass }}">
-    {% if activeBrand %}
+  <body class="theme-devbyhwang">
+    
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar-drawer" id="sidebar-drawer">
       <button class="drawer-close" id="drawer-close" aria-label="Close menu">
@@ -52,30 +38,49 @@
         </svg>
       </button>
       <nav class="drawer-nav">
-        {% for item in activeBrand.nav %}
-        <a href="{{ item.href | url }}">{{ item.label }}</a>
-        {% endfor %}
+        
+        <a href="/devbyhwang/">홈</a>
+        
+        <a href="/devbyhwang/about/">소개</a>
+        
+        <a href="/devbyhwang/playground/">Playground</a>
+        
+        <a href="/devbyhwang/blog/">글</a>
+        
       </nav>
     </aside>
-    {% endif %}
+    
 
-    <header class="site-header{% if not activeBrand %} hub-header{% endif %}" id="site-header">
+    <header class="site-header" id="site-header">
       <div class="header-inner">
-        <a class="brand" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
-          <div class="brand-title">{{ activeBrand.displayName if activeBrand else site.title }}</div>
-          {% if (activeBrand and activeBrand.tagline) or (not activeBrand and site.tagline) %}
-          <div class="brand-tagline">{{ activeBrand.tagline if activeBrand else site.tagline }}</div>
-          {% endif %}
+        <a class="brand" href="/devbyhwang/">
+          <div class="brand-title">DevByHwang</div>
+          <div class="brand-tagline">playground · devlog</div>
         </a>
 
-        {% if activeBrand %}
+        
         <nav class="nav">
-          {% for item in activeBrand.nav %}
+          
           <a
-            href="{{ item.href | url }}"
-            {% if page.url == item.href or (item.matchPrefix and page.url.startsWith(item.matchPrefix)) %}class="active"{% endif %}
-          >{{ item.label }}</a>
-          {% endfor %}
+            href="/devbyhwang/"
+            
+          >홈</a>
+          
+          <a
+            href="/devbyhwang/about/"
+            
+          >소개</a>
+          
+          <a
+            href="/devbyhwang/playground/"
+            class="active"
+          >Playground</a>
+          
+          <a
+            href="/devbyhwang/blog/"
+            
+          >글</a>
+          
         </nav>
 
         <button class="menu-btn" id="menu-btn" aria-label="Open menu">
@@ -85,40 +90,91 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        {% else %}
-        <nav class="nav hub-nav">
-          <a href="{{ '/devbyhwang/' | url }}">DevByHwang</a>
-          <a href="{{ '/dodoes/' | url }}">Underground Novel</a>
-        </nav>
-        {% endif %}
+        
       </div>
     </header>
 
     <div class="site-wrap">
-      <main class="site-main">{{ content | safe }}</main>
+      <main class="site-main">
+
+  
+    
+  
+
+  
+    
+  
+
+
+<section class="page-hero">
+  <h1>Playground</h1>
+</section>
+
+<section class="playground-page">
+  <div class="playground-grid">
+    
+      
+      <article class="playground-card">
+        
+        <div class="card-preview">
+          <img src="/assets/embercraft-preview.png" alt="Embercraft Fireplace 프리뷰" loading="lazy" />
+        </div>
+        
+        <div class="project-meta">
+          <span class="badge">Live</span>
+          <span class="pill">Playground</span>
+        </div>
+        <h3>Embercraft Fireplace</h3>
+        <p class="muted">Three.js와 Cannon.js로 만든 실시간 장작불 시뮬레이션. 물리 기반 파티클, 동적 오디오, 절차적 불꽃 생성.</p>
+        
+        <div class="inline-links">
+          <a href="/playground/embercraft/">Launch →</a>
+        </div>
+        
+      </article>
+    
+      
+      <article class="playground-card">
+        
+        <div class="project-meta">
+          <span class="badge">Live</span>
+          <span class="pill">Playground</span>
+        </div>
+        <h3>네모게임 (NEMO GAME)</h3>
+        <p class="muted">100% 풀이 가능한 논리 퍼즐. 역설계 맵 생성과 기하학 알고리즘으로 완벽한 해결 보장.</p>
+        
+        <div class="inline-links">
+          <a href="/playground/nemo-game/">Play →</a>
+        </div>
+        
+      </article>
+    
+  </div>
+</section>
+</main>
 
       <footer class="footer footer-minimal">
         <div class="footer-meta">
-          <span>© {{ activeBrand.displayName if activeBrand else site.author }}{% if footerNewest %} {{ footerNewest.date | readableDate('yyyy') }}{% endif %}</span>
+          <span>© DevByHwang 2026</span>
         </div>
       </footer>
     </div>
 
-    {% if activeBrand and activeBrand.features.visitorCounter and env.isProd %}
-      {% if site.visitorCounter and site.visitorCounter.enable %}
+    
+      
         <div
           data-visitor-counter
-          data-namespace="{{ site.visitorCounter.namespace }}"
-          data-total-key="{{ site.visitorCounter.totalKey }}"
-          data-daily-prefix="{{ site.visitorCounter.dailyPrefix }}"
-          data-timezone="{{ site.visitorCounter.timeZone }}"
+          data-namespace="devbyhwang-tel-aviv"
+          data-total-key="total"
+          data-daily-prefix="daily"
+          data-timezone="Asia/Seoul"
           data-today-id="visitor-today"
           data-total-id="visitor-total"
           hidden
         ></div>
-        <script src="{{ '/assets/visitor-counter.js' | url }}" defer></script>
-      {% endif %}
-    {% endif %}
+        <script src="/assets/visitor-counter.js" defer></script>
+      
+    
 
     <script>
       (function() {

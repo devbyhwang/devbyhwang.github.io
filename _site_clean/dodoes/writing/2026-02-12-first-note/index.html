@@ -1,28 +1,20 @@
-{% if brand and brands[brand] %}
-  {% set activeBrand = brands[brand] %}
-{% else %}
-  {% set activeBrand = null %}
-{% endif %}
-{% if activeBrand %}
-  {% set themeClass = activeBrand.themeClass %}
-{% else %}
-  {% set themeClass = 'theme-hub' %}
-{% endif %}
-{% if activeBrand and brand == 'devbyhwang' %}
-  {% set footerNewest = collections.devPosts | first %}
-{% elif activeBrand and brand == 'dodoes' %}
-  {% set footerNewest = collections.dodoesWriting | first %}
-{% else %}
-  {% set footerNewest = (collections.devPosts | first) or (collections.dodoesWriting | first) %}
-{% endif %}
+
+  
+
+
+  
+
+
+  
+
 <!doctype html>
 <html lang="ko">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% if title %}{{ title }} · {% endif %}{{ activeBrand.displayName if activeBrand else site.title }}</title>
-    <meta name="description" content="{{ description or (activeBrand and activeBrand.description) or site.description }}" />
-    <link rel="canonical" href="{{ canonicalUrl or (site.url + (page.url | url)) }}" />
+    <title>첫 번째 생각 · 두더즈</title>
+    <meta name="description" content="두더즈를 시작하며, 왜 느린 문장과 사유의 기록이 필요한지 적어둔 첫 글." />
+    <link rel="canonical" href="http://localhost:8080/dodoes/writing/2026-02-12-first-note/" />
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
@@ -31,18 +23,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&display=swap" rel="stylesheet" />
 
-    <link rel="stylesheet" href="{{ '/styles/main.css' | url }}" />
+    <link rel="stylesheet" href="/styles/main.css" />
 
-    {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd %}
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.googleAds.client }}"
-      crossorigin="anonymous"
-    ></script>
-    {% endif %}
+    
   </head>
-  <body class="{{ themeClass }}">
-    {% if activeBrand %}
+  <body class="theme-dodoes">
+    
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar-drawer" id="sidebar-drawer">
       <button class="drawer-close" id="drawer-close" aria-label="Close menu">
@@ -52,30 +38,42 @@
         </svg>
       </button>
       <nav class="drawer-nav">
-        {% for item in activeBrand.nav %}
-        <a href="{{ item.href | url }}">{{ item.label }}</a>
-        {% endfor %}
+        
+        <a href="/dodoes/">홈</a>
+        
+        <a href="/dodoes/about/">소개</a>
+        
+        <a href="/dodoes/writing/">글</a>
+        
       </nav>
     </aside>
-    {% endif %}
+    
 
-    <header class="site-header{% if not activeBrand %} hub-header{% endif %}" id="site-header">
+    <header class="site-header" id="site-header">
       <div class="header-inner">
-        <a class="brand" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
-          <div class="brand-title">{{ activeBrand.displayName if activeBrand else site.title }}</div>
-          {% if (activeBrand and activeBrand.tagline) or (not activeBrand and site.tagline) %}
-          <div class="brand-tagline">{{ activeBrand.tagline if activeBrand else site.tagline }}</div>
-          {% endif %}
+        <a class="brand" href="/dodoes/">
+          <div class="brand-title">두더즈</div>
+          <div class="brand-tagline">novel · notes</div>
         </a>
 
-        {% if activeBrand %}
+        
         <nav class="nav">
-          {% for item in activeBrand.nav %}
+          
           <a
-            href="{{ item.href | url }}"
-            {% if page.url == item.href or (item.matchPrefix and page.url.startsWith(item.matchPrefix)) %}class="active"{% endif %}
-          >{{ item.label }}</a>
-          {% endfor %}
+            href="/dodoes/"
+            
+          >홈</a>
+          
+          <a
+            href="/dodoes/about/"
+            
+          >소개</a>
+          
+          <a
+            href="/dodoes/writing/"
+            class="active"
+          >글</a>
+          
         </nav>
 
         <button class="menu-btn" id="menu-btn" aria-label="Open menu">
@@ -85,40 +83,89 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        {% else %}
-        <nav class="nav hub-nav">
-          <a href="{{ '/devbyhwang/' | url }}">DevByHwang</a>
-          <a href="{{ '/dodoes/' | url }}">Underground Novel</a>
-        </nav>
-        {% endif %}
+        
       </div>
     </header>
 
     <div class="site-wrap">
-      <main class="site-main">{{ content | safe }}</main>
+      <main class="site-main"><article class="writing-note">
+  <header class="writing-header">
+    <div class="writing-kicker">notes</div>
+    <h1 class="writing-title">첫 번째 생각</h1>
+    
+    <p class="writing-description">두더즈를 시작하며, 왜 느린 문장과 사유의 기록이 필요한지 적어둔 첫 글.</p>
+    
+    <div class="writing-meta">
+      <span class="writing-date">2026.02.12</span>
+      <span class="writing-author">by 두더즈</span>
+    </div>
+  </header>
+
+  <div class="writing-content prose">
+    <p>여기는 두더즈의 첫 번째 글입니다.</p>
+<p>니체가 말했던 그 문장 하나가
+오래도록 머릿속에 남아 있었어요.</p>
+<p><strong>&quot;인간은 극복되어야 할 무엇이다.&quot;</strong></p>
+<p>그렇다면 우리는 무엇을 극복해야 하는 걸까.
+그리고 그 극복은 어떤 모습으로 일어날 수 있는 걸까.</p>
+<p>이 공간은 그런 질문을 던지고,
+서로의 생각을 조금씩 꺼내놓는 곳으로 만들고 싶었어요.</p>
+<p>'놀이터'라는 이름은 그래서 붙였습니다.
+철학이 꼭 엄숙하고 무거운 의무가 아니라,
+마음이 가는 대로 걸어 다니며 생각을 시험해보는 장소여도 된다고 믿기 때문입니다.</p>
+<hr>
+<p>개발을 하다 보면
+기술적인 문제보다 더 자주 떠오르는 게
+그 너머의 질문들이더라고요.</p>
+<p>이 기능을 왜 만드는가.
+이게 누군가의 삶에 어떤 차이를 만드는가.
+우리가 만드는 것이 결국 어떤 세계를 향하고 있는가.</p>
+<p>그런 생각들이 쌓이다 보니
+완성된 답을 내놓기보다는
+지금 이 순간의 생각을 그대로 적어두고 싶어졌어요.</p>
+<p>그리고 누군가 다른 길로 걷고 있는 사람의 말이
+내 길을 조금 비추어줄 수도 있지 않을까 해서.</p>
+<hr>
+<p>여기서는 몇 가지를 서로 지키면 좋겠습니다.</p>
+<ul>
+<li>질문하는 것을 망설이지 않기</li>
+<li>완성된 답을 강요하거나 요구하지 않기</li>
+<li>서로 다른 생각을 있는 그대로 두기</li>
+<li>너무 굳이 진지해지려 애쓰지 않기</li>
+</ul>
+<hr>
+<p>앞으로 이곳에는
+일상 속에서 스치듯 떠오른 생각들,
+책 한 구절이 남긴 흔적,
+기술과 인간이 마주치는 지점들,
+삶과 죽음 사이를 오가는 사색들이
+조용히, 혹은 가끔은 활기차게 올라올 거예요.</p>
+<p>이 공간이 조금씩 우리 모두의 것이 되었으면 합니다.</p>
+
+  </div>
+</article>
+
+<section class="related-posts writing-related-posts">
+  <div class="section-header">
+    <h2>두더즈의 다른 글</h2>
+  </div>
+  <div class="related-list">
+    
+    
+      
+    
+  </div>
+</section>
+</main>
 
       <footer class="footer footer-minimal">
         <div class="footer-meta">
-          <span>© {{ activeBrand.displayName if activeBrand else site.author }}{% if footerNewest %} {{ footerNewest.date | readableDate('yyyy') }}{% endif %}</span>
+          <span>© 두더즈 2026</span>
         </div>
       </footer>
     </div>
 
-    {% if activeBrand and activeBrand.features.visitorCounter and env.isProd %}
-      {% if site.visitorCounter and site.visitorCounter.enable %}
-        <div
-          data-visitor-counter
-          data-namespace="{{ site.visitorCounter.namespace }}"
-          data-total-key="{{ site.visitorCounter.totalKey }}"
-          data-daily-prefix="{{ site.visitorCounter.dailyPrefix }}"
-          data-timezone="{{ site.visitorCounter.timeZone }}"
-          data-today-id="visitor-today"
-          data-total-id="visitor-total"
-          hidden
-        ></div>
-        <script src="{{ '/assets/visitor-counter.js' | url }}" defer></script>
-      {% endif %}
-    {% endif %}
+    
 
     <script>
       (function() {

@@ -1,0 +1,63 @@
+---
+layout: layouts/base.njk
+brand: dodoes
+title: 홈
+description: "Underground Novel 최신 글"
+---
+<section class="page-hero">
+  <h1>최신 글</h1>
+</section>
+
+<section class="layout-two">
+  <div class="feed">
+    <div class="post-list archive-list dodoes-feed-list">
+      {% for post in collections.dodoesWriting | head(8) %}
+      <a class="post-item compact dodoes-feed-item" href="{{ post.url | url }}">
+        <div class="post-item-top">
+          <span class="badge">{{ post.data.category | default('notes') }}</span>
+          <span class="post-meta">{{ post.date | readableDate }}</span>
+        </div>
+        <div class="post-item-title">{{ post.data.title }}</div>
+        {% if post.data.excerpt or post.data.description %}
+        <div class="post-item-excerpt muted">{{ post.data.excerpt or post.data.description }}</div>
+        {% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        <li>
+          <a href="{{ '/dodoes/writing/' | url }}">전체글</a>
+          <span class="count">({{ collections.dodoesWriting | length }})</span>
+        </li>
+        {% for cat in collections.dodoesCategoryList %}
+          <li class="sub">
+            <a href="{{ ('/dodoes/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+            <span class="count">({{ cat.count }})</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        {% for post in collections.dodoesWriting | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        {% for post in collections.dodoesPopularPosts | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+</section>

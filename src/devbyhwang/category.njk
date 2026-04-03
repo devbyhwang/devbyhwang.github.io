@@ -1,0 +1,115 @@
+---
+layout: layouts/base.njk
+brand: devbyhwang
+pagination:
+  data: collections.devCategoryList
+  size: 1
+  alias: category
+permalink: "/devbyhwang/categories/{{ category.key }}/"
+eleventyComputed:
+  title: "{{ category.name }}"
+  description: "{{ category.name }} 카테고리 글 모음"
+---
+{% set categoryPosts = collections.devPosts | postsByCategory(category) %}
+{% set gamesPlayground = [] %}
+{% if category.key == 'games' %}
+  {% for project in studio.games %}
+    {% if project.type == 'demo' %}
+      {% set gamesPlayground = (gamesPlayground.push(project), gamesPlayground) %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+<section class="page-hero">
+  <h1>{{ category.name }}</h1>
+</section>
+
+<section class="layout-two archive">
+  <div class="feed">
+    <div class="post-list">
+      {% if categoryPosts.length > 0 %}
+        {% for post in categoryPosts %}
+          <article class="post-item">
+            <a href="{{ post.url | url }}">
+              {% if post.data.image %}
+              <div class="post-thumb">
+                <img src="{{ post.data.image | url }}" alt="{{ post.data.title }}" loading="lazy" />
+              </div>
+              {% endif %}
+              <div class="post-info">
+                <span class="post-category">{{ post.data.category | default('devlog') }}</span>
+                <h2 class="post-title">{{ post.data.title }}</h2>
+                {% if post.data.excerpt or post.data.description %}
+                <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
+                {% endif %}
+                <span class="post-date">{{ post.date | readableDate }}</span>
+              </div>
+            </a>
+          </article>
+        {% endfor %}
+      {% else %}
+        <p class="muted">아직 이 카테고리에 작성된 글이 없습니다.</p>
+      {% endif %}
+    </div>
+
+    {% if gamesPlayground.length > 0 %}
+    <section class="related-cards">
+      <div class="section-header">
+        <h2>Playground</h2>
+      </div>
+      <div class="playground-grid">
+        {% for item in gamesPlayground %}
+          {% set launch = item.links | first %}
+          <article class="playground-card">
+            {% if item.preview %}
+            <div class="card-preview">
+              <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+            </div>
+            {% endif %}
+            <div class="project-meta">
+              {% if item.status %}<span class="badge">{{ item.status }}</span>{% endif %}
+              {% if item.role %}<span class="pill">{{ item.role }}</span>{% endif %}
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p class="muted">{{ item.blurb }}</p>
+            {% if launch %}
+            <div class="inline-links">
+              <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
+            </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+  <aside class="sidebar">
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        {% for cat in collections.devCategoryList %}
+          <li{% if cat.key == category.key %} class="active"{% endif %}>
+            <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+            <span class="count">({{ cat.count }})</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        {% for post in collections.devPosts | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        {% for post in collections.devPopularPosts | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+</section>
