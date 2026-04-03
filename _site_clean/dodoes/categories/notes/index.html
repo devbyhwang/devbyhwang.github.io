@@ -1,0 +1,234 @@
+
+  
+
+
+  
+
+
+  
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>노트 · 두더즈</title>
+    <meta name="description" content="노트 카테고리 글 모음" />
+    <link rel="canonical" href="http://localhost:8080/dodoes/categories/notes/" />
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/styles/main.css" />
+
+    
+  </head>
+  <body class="theme-dodoes">
+    
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar-drawer" id="sidebar-drawer">
+      <button class="drawer-close" id="drawer-close" aria-label="Close menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <nav class="drawer-nav">
+        
+        <a href="/dodoes/">홈</a>
+        
+        <a href="/dodoes/about/">소개</a>
+        
+        <a href="/dodoes/writing/">글</a>
+        
+      </nav>
+    </aside>
+    
+
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/dodoes/">
+          <div class="brand-title">두더즈</div>
+          <div class="brand-tagline">novel · notes</div>
+        </a>
+
+        
+        <nav class="nav">
+          
+          <a
+            href="/dodoes/"
+            
+          >홈</a>
+          
+          <a
+            href="/dodoes/about/"
+            
+          >소개</a>
+          
+          <a
+            href="/dodoes/writing/"
+            
+          >글</a>
+          
+        </nav>
+
+        <button class="menu-btn" id="menu-btn" aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        
+      </div>
+    </header>
+
+    <div class="site-wrap">
+      <main class="site-main">
+
+<section class="page-hero page-hero-dodoes">
+  <h1>노트</h1>
+</section>
+
+<section class="layout-two dodoes-layout archive">
+  <div class="feed">
+    <div class="post-list archive-list dodoes-feed-list">
+      
+        
+        <a class="post-item compact dodoes-feed-item" href="/dodoes/writing/2026-02-12-first-note/">
+          <div class="post-item-top">
+            <span class="badge">notes</span>
+            <span class="post-meta">2026.02.12</span>
+          </div>
+          <div class="post-item-title">첫 번째 생각</div>
+          
+          <div class="post-item-excerpt muted">두더즈를 시작하며, 왜 느린 문장과 사유의 기록이 필요한지 적어둔 첫 글.</div>
+          
+        </a>
+        
+      
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        
+          <li>
+            <a href="/dodoes/categories/novel/">소설</a>
+            <span class="count">(0)</span>
+          </li>
+        
+          <li class="active">
+            <a href="/dodoes/categories/notes/">노트</a>
+            <span class="count">(1)</span>
+          </li>
+        
+      </ul>
+    </div>
+
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        
+          <li><a href="/dodoes/writing/2026-02-12-first-note/">첫 번째 생각</a></li>
+        
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        
+          <li><a href="/dodoes/writing/2026-02-12-first-note/">첫 번째 생각</a></li>
+        
+      </ul>
+    </div>
+  </aside>
+</section>
+</main>
+
+      <footer class="footer footer-minimal">
+        <div class="footer-meta">
+          <span>© 두더즈 2026</span>
+        </div>
+      </footer>
+    </div>
+
+    
+
+    <script>
+      (function() {
+        const menuBtn = document.getElementById('menu-btn');
+        const drawerClose = document.getElementById('drawer-close');
+        const sidebarDrawer = document.getElementById('sidebar-drawer');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function openDrawer() {
+          if (!sidebarDrawer || !sidebarOverlay) return;
+          sidebarDrawer.classList.add('open');
+          sidebarOverlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+          if (!sidebarDrawer || !sidebarOverlay) return;
+          sidebarDrawer.classList.remove('open');
+          sidebarOverlay.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+        if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeDrawer);
+      })();
+
+      (function() {
+        document.querySelectorAll('.tab-buttons').forEach(function(group) {
+          const tabButtons = group.querySelectorAll('.tab-btn');
+          const container = group.parentElement;
+          if (!container) return;
+          const tabContents = container.querySelectorAll('.post-list-tab[data-content]');
+
+          tabButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              const tabName = this.dataset.tab;
+              tabButtons.forEach(function(button) {
+                button.classList.remove('active');
+              });
+              tabContents.forEach(function(content) {
+                content.classList.toggle('active', content.dataset.content === tabName);
+              });
+              this.classList.add('active');
+            });
+          });
+        });
+      })();
+
+      (function() {
+        document.querySelectorAll('.prose pre').forEach(function(pre) {
+          const btn = document.createElement('button');
+          btn.className = 'code-copy-btn';
+          btn.textContent = 'Copy';
+          btn.addEventListener('click', function() {
+            const code = pre.querySelector('code');
+            if (!code) return;
+            navigator.clipboard.writeText(code.textContent).then(function() {
+              btn.textContent = 'Copied!';
+              btn.classList.add('copied');
+              setTimeout(function() {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+              }, 2000);
+            });
+          });
+          pre.appendChild(btn);
+        });
+      })();
+    </script>
+  </body>
+</html>

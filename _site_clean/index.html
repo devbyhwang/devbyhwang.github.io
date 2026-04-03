@@ -1,0 +1,145 @@
+
+  
+
+
+  
+
+
+  
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>홈 · Auckland</title>
+    <meta name="description" content="DevByHwang와 두더즈로 이동하는 홈." />
+    <link rel="canonical" href="http://localhost:8080/" />
+
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/styles/main.css" />
+
+    
+  </head>
+  <body class="theme-hub">
+    
+
+    <header class="site-header hub-header" id="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/">
+          <div class="brand-title">Auckland</div>
+          <div class="brand-tagline">two blogs</div>
+        </a>
+
+        
+        <nav class="nav hub-nav">
+          <a href="/devbyhwang/">DevByHwang</a>
+          <a href="/dodoes/">두더즈</a>
+        </nav>
+        
+      </div>
+    </header>
+
+    <div class="site-wrap">
+      <main class="site-main"><section class="page-hero landing-hero">
+  <h1>Auckland</h1>
+</section>
+
+<section class="brand-index">
+  <a class="brand-entry" href="/devbyhwang/">
+    <span class="badge accent">DevByHwang</span>
+    <strong>개발 블로그</strong>
+  </a>
+  <a class="brand-entry" href="/dodoes/">
+    <span class="badge">두더즈</span>
+    <strong>작가 블로그</strong>
+  </a>
+</section>
+</main>
+
+      <footer class="footer footer-minimal">
+        <div class="footer-meta">
+          <span>© Hwang 2026</span>
+        </div>
+      </footer>
+    </div>
+
+    
+
+    <script>
+      (function() {
+        const menuBtn = document.getElementById('menu-btn');
+        const drawerClose = document.getElementById('drawer-close');
+        const sidebarDrawer = document.getElementById('sidebar-drawer');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function openDrawer() {
+          if (!sidebarDrawer || !sidebarOverlay) return;
+          sidebarDrawer.classList.add('open');
+          sidebarOverlay.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeDrawer() {
+          if (!sidebarDrawer || !sidebarOverlay) return;
+          sidebarDrawer.classList.remove('open');
+          sidebarOverlay.classList.remove('open');
+          document.body.style.overflow = '';
+        }
+
+        if (menuBtn) menuBtn.addEventListener('click', openDrawer);
+        if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+        if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeDrawer);
+      })();
+
+      (function() {
+        document.querySelectorAll('.tab-buttons').forEach(function(group) {
+          const tabButtons = group.querySelectorAll('.tab-btn');
+          const container = group.parentElement;
+          if (!container) return;
+          const tabContents = container.querySelectorAll('.post-list-tab[data-content]');
+
+          tabButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              const tabName = this.dataset.tab;
+              tabButtons.forEach(function(button) {
+                button.classList.remove('active');
+              });
+              tabContents.forEach(function(content) {
+                content.classList.toggle('active', content.dataset.content === tabName);
+              });
+              this.classList.add('active');
+            });
+          });
+        });
+      })();
+
+      (function() {
+        document.querySelectorAll('.prose pre').forEach(function(pre) {
+          const btn = document.createElement('button');
+          btn.className = 'code-copy-btn';
+          btn.textContent = 'Copy';
+          btn.addEventListener('click', function() {
+            const code = pre.querySelector('code');
+            if (!code) return;
+            navigator.clipboard.writeText(code.textContent).then(function() {
+              btn.textContent = 'Copied!';
+              btn.classList.add('copied');
+              setTimeout(function() {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+              }, 2000);
+            });
+          });
+          pre.appendChild(btn);
+        });
+      })();
+    </script>
+  </body>
+</html>
