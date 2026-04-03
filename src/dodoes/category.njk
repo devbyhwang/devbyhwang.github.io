@@ -1,0 +1,71 @@
+---
+layout: layouts/base.njk
+brand: dodoes
+pagination:
+  data: collections.dodoesCategoryList
+  size: 1
+  alias: category
+permalink: "/dodoes/categories/{{ category.key }}/"
+eleventyComputed:
+  title: "{{ category.name }}"
+  description: "Underground Novel {{ category.name }} 글 모음"
+---
+{% set categoryPosts = collections.dodoesWriting | postsByCategory(category) %}
+
+<section class="page-hero">
+  <h1>{{ category.name }}</h1>
+</section>
+
+<section class="layout-two archive">
+  <div class="feed">
+    <div class="post-list archive-list dodoes-feed-list">
+      {% if categoryPosts.length > 0 %}
+        {% for post in categoryPosts %}
+        <a class="post-item compact dodoes-feed-item" href="{{ post.url | url }}">
+          <div class="post-item-top">
+            <span class="badge">{{ post.data.category | default('notes') }}</span>
+            <span class="post-meta">{{ post.date | readableDate }}</span>
+          </div>
+          <div class="post-item-title">{{ post.data.title }}</div>
+          {% if post.data.description or post.data.excerpt %}
+          <div class="post-item-excerpt muted">{{ post.data.excerpt or post.data.description }}</div>
+          {% endif %}
+        </a>
+        {% endfor %}
+      {% else %}
+        <p class="muted">아직 이 카테고리에 작성된 글이 없습니다.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-categories">
+      <div class="sidebar-title">카테고리</div>
+      <ul class="category-tree">
+        {% for cat in collections.dodoesCategoryList %}
+          <li{% if cat.key == category.key %} class="active"{% endif %}>
+            <a href="{{ ('/dodoes/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+            <span class="count">({{ cat.count }})</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="sidebar-posts">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="recent">최근글</button>
+        <button class="tab-btn" data-tab="popular">인기글</button>
+      </div>
+      <ul class="post-list-tab active" data-content="recent">
+        {% for post in collections.dodoesWriting | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+      <ul class="post-list-tab" data-content="popular">
+        {% for post in collections.dodoesPopularPosts | head(5) %}
+          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
+</section>

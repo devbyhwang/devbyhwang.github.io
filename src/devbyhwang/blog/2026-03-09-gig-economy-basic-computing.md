@@ -1,10 +1,12 @@
 ---
 layout: layouts/post.njk
+brand: devbyhwang
 title: "2026년 긱 이코노미 플랫폼 기반 기초 컴퓨팅 기술 활용 고수익 비즈니스 모델 분석"
 description: "화이트칼라 축소와 마이크로 창업 확산 속에서, 기초 컴퓨팅 역량으로 수익을 만드는 3가지 플랫폼 모델을 정리한 보고서."
 excerpt: "기초 컴퓨팅 역량만으로도 디지털 플랫폼에서 고수익 구조를 만들 수 있는 이유와 실행 전략을 분석합니다."
 date: 2026-03-09
 category: freelance
+legacyUrl: /posts/2026-03-09-gig-economy-basic-computing/
 tags:
   - 긱이코노미
   - 프리랜서

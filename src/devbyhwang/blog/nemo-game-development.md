@@ -1,9 +1,11 @@
 ---
 layout: layouts/post.njk
+brand: devbyhwang
 title: "'네모게임(NEMO GAME)': 100% 클리어 가능한 논리 퍼즐 개발기"
 description: "무작위 생성의 함정을 피하고, 순수 웹 기술로 구현한 기하학 알고리즘과 타격감"
 date: 2026-01-17
 category: games
+legacyUrl: /posts/nemo-game-development/
 tags:
   - 게임개발
   - 알고리즘

@@ -26,19 +26,6 @@ module.exports = {
       tags: ["canvas", "game", "puzzle", "algorithm", "geometry"],
       type: "demo",
     },
-    {
-      title: "황라투스트라의 놀이터",
-      role: "Philosophy",
-      status: "Live",
-      blurb: "철학적 단상과 질문들. 완성된 답이 아닌, 진행 중인 생각의 궤적을 남기는 공간.",
-      links: [
-        { label: "Enter", href: "/zarathustra/" },
-      ],
-      postCategory: "philosophy",
-      tags: ["philosophy", "사유", "철학"],
-      type: "demo",
-      preview: "/assets/zarathustra-preview.png",
-    },
   ],
   freelance: {
     summary: [
@@ -67,8 +54,8 @@ module.exports = {
       body: "클라이언트 워크플로우와 체크리스트를 투명하게 기록.",
     },
     {
-      title: "Writing",
-      body: "게임 외에도 창업/생활 글과 잡담을 아카이브.",
+      title: "Playground",
+      body: "짧은 실험과 게임 프로토타입을 바로 공개합니다.",
     },
   ],
 };

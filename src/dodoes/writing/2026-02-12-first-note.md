@@ -1,18 +1,13 @@
 ---
-layout: layouts/philosophy.njk
-title: "놀이터의 첫 번째 생각"
-description: "황라투스트라의 놀이터를 시작하며 - 왜 우리는 사유의 공간이 필요한가"
+layout: layouts/writing.njk
+brand: dodoes
+title: "첫 번째 생각"
+description: "Underground Novel을 시작하며, 왜 느린 문장과 사유의 기록이 필요한지 적어둔 첫 글."
 date: 2026-02-12
-category: philosophy
-tags:
-  - 시작
-  - 사유
-  - 철학
-discussion: true
-showInMainFeed: true
+category: notes
+views: 1
 ---
-
-여기는 황라투스트라의 놀이터입니다.
+여기는 Underground Novel의 첫 번째 글입니다.
 
 니체가 말했던 그 문장 하나가
 오래도록 머릿속에 남아 있었어요.
