@@ -3,6 +3,7 @@ const RATE_TTL_SECONDS = 60 * 60 * 24 * 2;
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MANUSCRIPT_MAX_CHARS = 12000;
+const OWNER_BYPASS_HEADER = "X-Owner-Key";
 
 export default {
   async fetch(request, env) {
@@ -64,8 +65,22 @@ export default {
     }
 
     const payload = parsed.value;
+
+    // TEST_ONLY_OWNER_BYPASS_START
+    const ownerBypassEnabled = env.ENABLE_OWNER_BYPASS === "true";
+    const ownerBypassSecret =
+      typeof env.OWNER_BYPASS_KEY === "string" ? env.OWNER_BYPASS_KEY.trim() : "";
+    const ownerBypassCandidate = (request.headers.get(OWNER_BYPASS_HEADER) || "").trim();
+    const isOwnerBypass = Boolean(
+      ownerBypassEnabled &&
+        ownerBypassSecret &&
+        ownerBypassCandidate &&
+        ownerBypassCandidate === ownerBypassSecret
+    );
+    // TEST_ONLY_OWNER_BYPASS_END
+
     const turnstileToken = typeof payload.turnstileToken === "string" ? payload.turnstileToken.trim() : "";
-    if (!turnstileToken) {
+    if (!isOwnerBypass && !turnstileToken) {
       return json(
         { error: { code: "BAD_REQUEST", message: "turnstileToken is required" } },
         400,
@@ -74,7 +89,7 @@ export default {
       );
     }
 
-    if (!env.TURNSTILE_SECRET_KEY) {
+    if (!isOwnerBypass && !env.TURNSTILE_SECRET_KEY) {
       console.error("Missing TURNSTILE_SECRET_KEY secret");
       return json(
         { error: { code: "UPSTREAM_ERROR", message: "보안 검증 구성이 잘못되었습니다." } },
@@ -85,18 +100,20 @@ export default {
     }
 
     const clientId = request.headers.get("CF-Connecting-IP") || "unknown";
-    const turnstileOk = await verifyTurnstileToken({
-      secret: env.TURNSTILE_SECRET_KEY,
-      token: turnstileToken,
-      remoteIp: clientId,
-    });
-    if (!turnstileOk) {
-      return json(
-        { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
-        403,
-        origin,
-        allowedOrigin
-      );
+    if (!isOwnerBypass) {
+      const turnstileOk = await verifyTurnstileToken({
+        secret: env.TURNSTILE_SECRET_KEY,
+        token: turnstileToken,
+        remoteIp: clientId,
+      });
+      if (!turnstileOk) {
+        return json(
+          { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
+          403,
+          origin,
+          allowedOrigin
+        );
+      }
     }
 
     const manuscript = typeof payload.manuscript === "string" ? payload.manuscript.trim() : "";
@@ -125,32 +142,35 @@ export default {
     const preset = typeof payload.preset === "string" ? payload.preset : "";
     const meta = payload.meta && typeof payload.meta === "object" ? payload.meta : {};
 
-    const today = new Date().toISOString().slice(0, 10);
-    const rateKey = `novel:${today}:${clientId}`;
-    const limit = await consumeRateLimit(env, {
-      key: rateKey,
-      limit: LIMIT_PER_DAY,
-      ttlSec: RATE_TTL_SECONDS,
-    });
-    if (!limit.ok) {
-      console.error("Rate limiter error", limit.reason || "unknown");
-      return json(
-        { error: { code: "UPSTREAM_ERROR", message: "요청 제한 처리에 실패했습니다." } },
-        502,
-        origin,
-        allowedOrigin
-      );
-    }
-    if (!limit.allowed) {
-      return json(
-        {
-          error: { code: "RATE_LIMITED", message: "오늘 사용 횟수를 모두 사용했습니다." },
-          usage: { remainingToday: 0, limitPerDay: LIMIT_PER_DAY },
-        },
-        429,
-        origin,
-        allowedOrigin
-      );
+    let limit = { remainingToday: null };
+    if (!isOwnerBypass) {
+      const today = new Date().toISOString().slice(0, 10);
+      const rateKey = `novel:${today}:${clientId}`;
+      limit = await consumeRateLimit(env, {
+        key: rateKey,
+        limit: LIMIT_PER_DAY,
+        ttlSec: RATE_TTL_SECONDS,
+      });
+      if (!limit.ok) {
+        console.error("Rate limiter error", limit.reason || "unknown");
+        return json(
+          { error: { code: "UPSTREAM_ERROR", message: "요청 제한 처리에 실패했습니다." } },
+          502,
+          origin,
+          allowedOrigin
+        );
+      }
+      if (!limit.allowed) {
+        return json(
+          {
+            error: { code: "RATE_LIMITED", message: "오늘 사용 횟수를 모두 사용했습니다." },
+            usage: { remainingToday: 0, limitPerDay: LIMIT_PER_DAY },
+          },
+          429,
+          origin,
+          allowedOrigin
+        );
+      }
     }
 
     if (!env.OPENAI_API_KEY) {
@@ -236,8 +256,11 @@ export default {
       {
         ...normalized,
         usage: {
-          remainingToday: Math.max(0, limit.remainingToday),
-          limitPerDay: LIMIT_PER_DAY,
+          remainingToday:
+            isOwnerBypass || !Number.isFinite(Number(limit.remainingToday))
+              ? null
+              : Math.max(0, Number(limit.remainingToday)),
+          limitPerDay: isOwnerBypass ? null : LIMIT_PER_DAY,
         },
       },
       200,
@@ -336,7 +359,7 @@ function isJsonRequest(request) {
 function corsHeaders(origin, allowedOrigin) {
   const headers = {
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": `Content-Type, ${OWNER_BYPASS_HEADER}`,
     "Vary": "Origin",
   };
 

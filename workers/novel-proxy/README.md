@@ -8,6 +8,7 @@ Cloudflare Worker for `POST /v1/novel-feedback`.
 - Turnstile token verification (required)
 - Daily rate limit (2/day) via Durable Object (atomic)
 - Manuscript length limit (max 12,000 chars)
+- Optional owner-only bypass for temporary testing (`ENABLE_OWNER_BYPASS`, `OWNER_BYPASS_KEY`)
 
 ## Files
 - `src/index.js`: Worker handler
@@ -29,8 +30,10 @@ export CLOUDFLARE_API_TOKEN=your_token_here
 ```bash
 npx wrangler secret put OPENAI_API_KEY
 npx wrangler secret put TURNSTILE_SECRET_KEY
+npx wrangler secret put OWNER_BYPASS_KEY
 ```
 `ALLOWED_ORIGIN` is already set in `wrangler.jsonc` as `https://devbyhwang.github.io`.
+`ENABLE_OWNER_BYPASS` is set to `"false"` by default in `wrangler.jsonc`.
 
 4. Turnstile setup:
 - Cloudflare Turnstile에서 위젯을 생성하고 도메인에 `devbyhwang.github.io`를 등록합니다.
@@ -56,6 +59,14 @@ After deploy, use:
   "meta": { "lang": "ko", "version": "v1" }
 }
 ```
+
+## Optional request header (test-only owner bypass)
+- `X-Owner-Key: <owner key>`
+- Works only when:
+  - `ENABLE_OWNER_BYPASS === "true"`
+  - request `Origin` matches `ALLOWED_ORIGIN`
+  - header matches `OWNER_BYPASS_KEY`
+- When active, Turnstile and daily limit are bypassed for that request.
 
 ## Success response
 ```json
@@ -87,3 +98,20 @@ After deploy, use:
 - `PAYLOAD_TOO_LARGE`
 - `UNSUPPORTED_MEDIA_TYPE`
 - `UPSTREAM_ERROR`
+
+## Test-only bypass lifecycle
+1. Enable for testing:
+```bash
+npx wrangler secret put OWNER_BYPASS_KEY
+```
+Set `ENABLE_OWNER_BYPASS` to `"true"` and deploy.
+
+2. Disable immediately after testing:
+Set `ENABLE_OWNER_BYPASS` back to `"false"` and deploy.
+
+3. Remove permanently:
+Delete `// TEST_ONLY_OWNER_BYPASS_START` ~ `// TEST_ONLY_OWNER_BYPASS_END` blocks from:
+- `workers/novel-proxy/src/index.js`
+- `src/demos/novel-assistant/index.html`
+
+Then remove related docs/config entries.
