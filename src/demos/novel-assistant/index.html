@@ -316,6 +316,11 @@
     let turnstileToken = "";
     let turnstileWidgetId = null;
 
+    function setRunButtonVisible(isVisible) {
+      runBtnEl.style.display = isVisible ? "" : "none";
+      runBtnEl.disabled = !isVisible;
+    }
+
     function selectedChecks() {
       return checks.filter((item) => item.checked);
     }
@@ -436,12 +441,15 @@
         sitekey: TURNSTILE_SITE_KEY,
         callback(token) {
           turnstileToken = token || "";
+          setRunButtonVisible(Boolean(turnstileToken));
         },
         "expired-callback"() {
           turnstileToken = "";
+          setRunButtonVisible(false);
         },
         "error-callback"() {
           turnstileToken = "";
+          setRunButtonVisible(false);
           setStatus("보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.", "error");
         },
       });
@@ -542,6 +550,7 @@
             if (window.turnstile && turnstileWidgetId !== null) {
               window.turnstile.reset(turnstileWidgetId);
             }
+            setRunButtonVisible(false);
           } else if (code === "PAYLOAD_TOO_LARGE") {
             message = "원고는 최대 12,000자까지 입력할 수 있습니다.";
           }
@@ -554,6 +563,7 @@
         if (window.turnstile && turnstileWidgetId !== null) {
           window.turnstile.reset(turnstileWidgetId);
         }
+        setRunButtonVisible(false);
         setStatus("분석이 완료되었습니다.", "ok");
       } catch (err) {
         setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
@@ -565,15 +575,12 @@
     runBtnEl.addEventListener("click", runAnalysis);
     renderChecks();
     mergePresetIntoTextarea();
-    runBtnEl.disabled = true;
+    setRunButtonVisible(false);
 
     const turnstileInitTimer = setInterval(() => {
       tryRenderTurnstile();
       if (turnstileWidgetId !== null || !TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
         clearInterval(turnstileInitTimer);
-      }
-      if (turnstileWidgetId !== null) {
-        runBtnEl.disabled = false;
       }
     }, 200);
   </script>
