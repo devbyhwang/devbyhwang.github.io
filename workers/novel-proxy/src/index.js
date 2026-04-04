@@ -4,6 +4,7 @@ const OPENAI_URL = "https://api.openai.com/v1/responses";
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MANUSCRIPT_MAX_CHARS = 12000;
 const OWNER_BYPASS_HEADER = "X-Owner-Key";
+const DEFAULT_TURNSTILE_ACTION = "novel_feedback";
 
 export default {
   async fetch(request, env) {
@@ -101,12 +102,58 @@ export default {
 
     const clientId = request.headers.get("CF-Connecting-IP") || "unknown";
     if (!isOwnerBypass) {
-      const turnstileOk = await verifyTurnstileToken({
+      const expectedHostname = resolveExpectedTurnstileHostname({
+        explicitHostname: env.TURNSTILE_EXPECTED_HOSTNAME,
+        allowedOrigin,
+      });
+      const expectedAction = resolveExpectedTurnstileAction(env.TURNSTILE_EXPECTED_ACTION);
+
+      if (!expectedHostname) {
+        console.error("Missing TURNSTILE_EXPECTED_HOSTNAME and ALLOWED_ORIGIN hostname fallback");
+        return json(
+          { error: { code: "UPSTREAM_ERROR", message: "보안 검증 구성이 잘못되었습니다." } },
+          502,
+          origin,
+          allowedOrigin
+        );
+      }
+
+      const turnstileResult = await verifyTurnstileToken({
         secret: env.TURNSTILE_SECRET_KEY,
         token: turnstileToken,
         remoteIp: clientId,
       });
-      if (!turnstileOk) {
+      if (!turnstileResult.ok) {
+        console.error("Turnstile verification failed", {
+          reason: turnstileResult.reason,
+          errors: turnstileResult.errorCodes,
+        });
+        return json(
+          { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
+          403,
+          origin,
+          allowedOrigin
+        );
+      }
+
+      if (turnstileResult.hostname !== expectedHostname) {
+        console.error("Turnstile hostname mismatch", {
+          expected: expectedHostname,
+          actual: turnstileResult.hostname || "",
+        });
+        return json(
+          { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
+          403,
+          origin,
+          allowedOrigin
+        );
+      }
+
+      if (turnstileResult.action !== expectedAction) {
+        console.error("Turnstile action mismatch", {
+          expected: expectedAction,
+          actual: turnstileResult.action || "",
+        });
         return json(
           { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
           403,
@@ -525,13 +572,55 @@ async function verifyTurnstileToken({ secret, token, remoteIp }) {
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body,
     });
-    if (!response.ok) return false;
+    if (!response.ok) {
+      return {
+        ok: false,
+        reason: `http_${response.status}`,
+        hostname: "",
+        action: "",
+        errorCodes: [],
+      };
+    }
     const data = await response.json();
-    return data?.success === true;
+    const hostname = typeof data?.hostname === "string" ? data.hostname : "";
+    const action = typeof data?.action === "string" ? data.action : "";
+    const errorCodes = Array.isArray(data?.["error-codes"])
+      ? data["error-codes"].filter((code) => typeof code === "string")
+      : [];
+    return {
+      ok: data?.success === true,
+      reason: data?.success === true ? "ok" : "unsuccessful",
+      hostname,
+      action,
+      errorCodes,
+    };
   } catch (error) {
     console.error("Turnstile verify failed", summarizeError(error));
-    return false;
+    return {
+      ok: false,
+      reason: "network_error",
+      hostname: "",
+      action: "",
+      errorCodes: [],
+    };
   }
+}
+
+function resolveExpectedTurnstileHostname({ explicitHostname, allowedOrigin }) {
+  const explicit = typeof explicitHostname === "string" ? explicitHostname.trim() : "";
+  if (explicit) return explicit;
+
+  try {
+    if (!allowedOrigin) return "";
+    return new URL(allowedOrigin).hostname;
+  } catch {
+    return "";
+  }
+}
+
+function resolveExpectedTurnstileAction(value) {
+  const action = typeof value === "string" ? value.trim() : "";
+  return action || DEFAULT_TURNSTILE_ACTION;
 }
 
 async function consumeRateLimit(env, { key, limit, ttlSec }) {
