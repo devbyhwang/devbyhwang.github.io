@@ -3126,9 +3126,66 @@ canvas,
   font-family: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
 }
 
+.theme-hub .brand.is-empty {
+  pointer-events: none;
+  width: 0;
+  min-width: 0;
+}
+
+.theme-hub .site-main {
+  min-height: clamp(680px, calc(100svh - 150px), 1120px);
+  display: flex;
+}
+
+.theme-hub .hub-landing {
+  flex: 1;
+  margin: 0;
+  padding: var(--space-4) 0 var(--space-8);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.theme-hub .hub-brand-entry {
+  border-radius: var(--radius-lg);
+  min-height: clamp(320px, 62vh, 740px);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: clamp(2.5rem, 8vw, 6.5rem) var(--space-8);
+}
+
+.theme-hub .hub-brand-entry strong {
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.theme-hub .hub-brand-entry:hover {
+  border-color: var(--color-primary);
+}
+
 @media (max-width: 768px) {
   .brand-index {
     grid-template-columns: 1fr;
+  }
+
+  .theme-hub .site-main {
+    min-height: calc(100svh - 130px);
+  }
+
+  .theme-hub .hub-landing {
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-6);
+  }
+
+  .theme-hub .hub-brand-entry {
+    min-height: clamp(240px, 42vh, 420px);
+    padding: clamp(2rem, 8vw, 3rem) var(--space-6);
+  }
+
+  .theme-hub .hub-brand-entry strong {
+    font-size: clamp(1.75rem, 8vw, 2.5rem);
   }
 
   .playground-section-home .playground-grid {
