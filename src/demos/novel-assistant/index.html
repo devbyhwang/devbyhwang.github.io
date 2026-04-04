@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>소설 작성 어시스턴트 · DevByHwang</title>
+  <style>
+    :root {
+      --bg: #f4f0e8;
+      --ink: #1b1a17;
+      --paper: #fffdf8;
+      --line: #d9cfbf;
+      --accent: #8a4f2a;
+      --accent-soft: #f2e6db;
+      --danger: #ad3e30;
+      --ok: #2f6f46;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #fbf6ed 0%, transparent 28%),
+        radial-gradient(circle at 90% 100%, #efe2d2 0%, transparent 30%),
+        var(--bg);
+      font-family: "Iowan Old Style", "Times New Roman", serif;
+    }
+
+    .shell {
+      width: min(1240px, 100% - 32px);
+      margin: 24px auto;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(255, 253, 248, 0.92);
+      box-shadow: 0 14px 30px rgba(77, 54, 32, 0.08);
+    }
+
+    .head {
+      margin-bottom: 18px;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(24px, 3.3vw, 35px);
+      letter-spacing: 0.01em;
+    }
+
+    .sub {
+      margin-top: 8px;
+      color: #5b564d;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.45fr 1fr;
+      gap: 16px;
+      min-height: 66vh;
+    }
+
+    .pane {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pane h2 {
+      margin: 0;
+      font-size: 17px;
+      letter-spacing: 0.01em;
+    }
+
+    label {
+      font-size: 12px;
+      color: #6f6659;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    textarea {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 12px;
+      line-height: 1.55;
+      font-size: 15px;
+      resize: vertical;
+      min-height: 280px;
+      font-family: "Iowan Old Style", "Times New Roman", serif;
+    }
+
+    .status {
+      font-size: 13px;
+      min-height: 20px;
+      color: #5b564d;
+    }
+
+    .status.error { color: var(--danger); }
+    .status.ok { color: var(--ok); }
+
+    .result {
+      min-height: 180px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: #fff;
+      overflow: auto;
+    }
+
+    .placeholder {
+      color: #6f6659;
+      font-size: 14px;
+    }
+
+    .result h3 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .card {
+      border-top: 1px dashed var(--line);
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .card:first-of-type {
+      border-top: 0;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .card ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+    }
+
+    .controls {
+      display: grid;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .check {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      display: grid;
+      grid-template-columns: 18px 1fr;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .check input { margin-top: 2px; }
+
+    .check-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .check-desc {
+      font-size: 12px;
+      color: #5b564d;
+      line-height: 1.4;
+    }
+
+    .run {
+      margin-top: auto;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .run:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .usage {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #5b564d;
+    }
+
+    .captcha-wrap {
+      margin-top: 8px;
+      padding: 10px;
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .shell { margin: 12px auto; padding: 16px; }
+      .pane { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="head">
+      <h1>소설 작성 어시스턴트</h1>
+      <p class="sub">왼쪽에 원고를 입력하고, 오른쪽 점검 항목을 선택해 분석하세요.</p>
+    </header>
+
+    <section class="layout">
+      <article class="pane">
+        <h2>원고 입력</h2>
+        <label for="manuscript">초안 텍스트</label>
+        <textarea id="manuscript" placeholder="분석할 소설 원고를 입력하세요."></textarea>
+
+        <label>피드백 결과</label>
+        <div id="result" class="result">
+          <p class="placeholder">아직 분석 결과가 없습니다.</p>
+        </div>
+
+        <p id="status" class="status"></p>
+      </article>
+
+      <aside class="pane">
+        <h2>점검 항목 선택</h2>
+        <div id="checkList" class="controls"></div>
+        <button id="runBtn" class="run">분석 실행</button>
+        <p class="usage">무료 플랜 기준: 하루 2회</p>
+        <div class="captcha-wrap">
+          <div id="turnstileBox"></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+  <script>
+    const API_ENDPOINT = "https://novel-proxy.devbyhwang.workers.dev/v1/novel-feedback";
+    const TURNSTILE_SITE_KEY = "0x4AAAAAAC0mnz1HYP-CjAKi";
+
+    const PRESET_START = "[[PRESET_START]]";
+    const PRESET_END = "[[PRESET_END]]";
+
+    const checks = [
+      {
+        id: "overall_review",
+        label: "전체 진단",
+        description: "플롯 흐름, 몰입도, 가독성을 종합 점검합니다.",
+        template: [
+          "핵심 플롯 요약:",
+          "긴장감이 떨어지는 장면:",
+          "독자가 궁금해할 질문:",
+        ].join("\n"),
+        checked: true,
+      },
+      {
+        id: "character_consistency",
+        label: "캐릭터 일관성",
+        description: "인물 동기와 행동의 일관성을 확인합니다.",
+        template: [
+          "캐릭터 성격:",
+          "캐릭터 내면 강박:",
+          "캐릭터가 절대 포기하지 못하는 목표:",
+          "최근 행동/대사 샘플:",
+        ].join("\n"),
+      },
+      {
+        id: "style_and_rhythm",
+        label: "문체/리듬",
+        description: "문장 길이, 반복, 리듬 단조 구간을 찾습니다.",
+        template: [
+          "원하는 문체 키워드:",
+          "문장이 늘어진 구간:",
+          "어휘 반복이 많은 표현:",
+        ].join("\n"),
+      },
+    ];
+
+    const manuscriptEl = document.getElementById("manuscript");
+    const checkListEl = document.getElementById("checkList");
+    const runBtnEl = document.getElementById("runBtn");
+    const resultEl = document.getElementById("result");
+    const statusEl = document.getElementById("status");
+    const turnstileBoxEl = document.getElementById("turnstileBox");
+
+    let turnstileToken = "";
+    let turnstileWidgetId = null;
+
+    function selectedChecks() {
+      return checks.filter((item) => item.checked);
+    }
+
+    function composePresetText(items) {
+      const lines = [];
+      lines.push(PRESET_START);
+      lines.push("[점검 프리셋]");
+
+      if (items.length === 0) {
+        lines.push("- 전체 진단");
+      } else {
+        items.forEach((item) => {
+          lines.push("");
+          lines.push(`[${item.label}]`);
+          lines.push(item.template);
+        });
+      }
+
+      lines.push("");
+      lines.push("---");
+      lines.push("[원고 본문]");
+      lines.push(PRESET_END);
+      return lines.join("\n");
+    }
+
+    function splitPresetAndBody(text) {
+      const startIdx = text.indexOf(PRESET_START);
+      const endIdx = text.indexOf(PRESET_END);
+
+      if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) {
+        return { preset: "", body: text.trim() };
+      }
+
+      const body = text.slice(endIdx + PRESET_END.length).trimStart();
+      const preset = text.slice(startIdx, endIdx + PRESET_END.length);
+      return { preset, body };
+    }
+
+    function extractUserBody(text) {
+      return splitPresetAndBody(text).body.trim();
+    }
+
+    function mergePresetIntoTextarea() {
+      const { body } = splitPresetAndBody(manuscriptEl.value);
+      const presetText = composePresetText(selectedChecks());
+      manuscriptEl.value = `${presetText}\n\n${body}`.trimEnd();
+    }
+
+    function buildPresetForRequest() {
+      const picked = selectedChecks();
+      const lines = [
+        "당신은 한국어 소설 편집자입니다.",
+        "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
+      ];
+
+      if (picked.length === 0) {
+        lines.push("전체 진단 기준으로 서사 흐름을 점검하세요.");
+      } else {
+        lines.push("점검 항목:");
+        picked.forEach((item, idx) => {
+          lines.push(`${idx + 1}. ${item.label}`);
+        });
+      }
+
+      return lines.join("\n");
+    }
+
+    function renderChecks() {
+      checkListEl.innerHTML = "";
+      checks.forEach((item) => {
+        const wrap = document.createElement("label");
+        wrap.className = "check";
+        wrap.innerHTML = `
+          <input type="checkbox" ${item.checked ? "checked" : ""} />
+          <span>
+            <span class="check-title">${item.label}</span>
+            <span class="check-desc">${item.description}</span>
+          </span>
+        `;
+
+        const input = wrap.querySelector("input");
+        input.addEventListener("change", (e) => {
+          item.checked = e.target.checked;
+          mergePresetIntoTextarea();
+        });
+
+        checkListEl.appendChild(wrap);
+      });
+    }
+
+    function setStatus(message, type) {
+      statusEl.textContent = message || "";
+      statusEl.className = "status";
+      if (type) statusEl.classList.add(type);
+    }
+
+    function escapeHtml(value) {
+      return value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function tryRenderTurnstile() {
+      if (turnstileWidgetId !== null) return;
+      if (!window.turnstile) return;
+
+      if (!TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
+        setStatus("Turnstile 사이트키가 설정되지 않았습니다.", "error");
+        runBtnEl.disabled = true;
+        return;
+      }
+
+      turnstileWidgetId = window.turnstile.render(turnstileBoxEl, {
+        sitekey: TURNSTILE_SITE_KEY,
+        callback(token) {
+          turnstileToken = token || "";
+        },
+        "expired-callback"() {
+          turnstileToken = "";
+        },
+        "error-callback"() {
+          turnstileToken = "";
+          setStatus("보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.", "error");
+        },
+      });
+    }
+
+    function renderResult(payload) {
+      const parts = [];
+
+      if (typeof payload.overallScore === "number") {
+        parts.push(`<div class="score">종합 점수 ${payload.overallScore.toFixed(1)} / 10</div>`);
+      }
+
+      if (payload.summary) {
+        parts.push(`<h3>요약</h3><p>${escapeHtml(payload.summary)}</p>`);
+      }
+
+      if (Array.isArray(payload.items) && payload.items.length > 0) {
+        payload.items.forEach((item) => {
+          const evidence = Array.isArray(item.evidence)
+            ? `<ul>${item.evidence.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`
+            : "";
+
+          parts.push(`
+            <section class="card">
+              <h3>${escapeHtml(item.label || item.id || "점검")}</h3>
+              ${typeof item.score === "number" ? `<p><strong>점수:</strong> ${item.score} / 10</p>` : ""}
+              ${evidence}
+              ${item.suggestion ? `<p><strong>수정안:</strong> ${escapeHtml(item.suggestion)}</p>` : ""}
+            </section>
+          `);
+        });
+      }
+
+      if (payload.usage && typeof payload.usage.remainingToday === "number") {
+        parts.push(
+          `<section class="card"><p><strong>남은 횟수:</strong> ${payload.usage.remainingToday} / ${payload.usage.limitPerDay}</p></section>`
+        );
+      }
+
+      resultEl.innerHTML = parts.length > 0
+        ? parts.join("")
+        : "<p class=\"placeholder\">응답을 해석하지 못했습니다.</p>";
+    }
+
+    async function runAnalysis() {
+      const manuscript = manuscriptEl.value.trim();
+      if (!manuscript) {
+        setStatus("원고 텍스트를 먼저 입력하세요.", "error");
+        manuscriptEl.focus();
+        return;
+      }
+
+      const userBody = extractUserBody(manuscript);
+      if (!userBody) {
+        setStatus("프리셋 항목 또는 원고 본문을 입력하세요.", "error");
+        manuscriptEl.focus();
+        return;
+      }
+
+      if (!turnstileToken) {
+        setStatus("보안 검증을 완료한 뒤 다시 시도하세요.", "error");
+        return;
+      }
+
+      const selected = selectedChecks();
+      const payload = {
+        manuscript,
+        preset: buildPresetForRequest(),
+        checks: selected.length > 0 ? selected.map((x) => x.id) : ["overall_review"],
+        turnstileToken,
+        meta: {
+          lang: "ko",
+          version: "v1",
+        },
+      };
+
+      setStatus("분석 요청 중...", null);
+      runBtnEl.disabled = true;
+
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const code = data?.error?.code;
+          let message = data?.error?.message || "요청 처리 중 오류가 발생했습니다.";
+
+          if (code === "INVALID_CAPTCHA") {
+            message = "보안 검증이 만료되었거나 유효하지 않습니다. 다시 검증해 주세요.";
+            turnstileToken = "";
+            if (window.turnstile && turnstileWidgetId !== null) {
+              window.turnstile.reset(turnstileWidgetId);
+            }
+          } else if (code === "PAYLOAD_TOO_LARGE") {
+            message = "원고는 최대 12,000자까지 입력할 수 있습니다.";
+          }
+
+          throw new Error(message);
+        }
+
+        renderResult(data);
+        turnstileToken = "";
+        if (window.turnstile && turnstileWidgetId !== null) {
+          window.turnstile.reset(turnstileWidgetId);
+        }
+        setStatus("분석이 완료되었습니다.", "ok");
+      } catch (err) {
+        setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
+      } finally {
+        runBtnEl.disabled = false;
+      }
+    }
+
+    runBtnEl.addEventListener("click", runAnalysis);
+    renderChecks();
+    mergePresetIntoTextarea();
+    runBtnEl.disabled = true;
+
+    const turnstileInitTimer = setInterval(() => {
+      tryRenderTurnstile();
+      if (turnstileWidgetId !== null || !TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
+        clearInterval(turnstileInitTimer);
+      }
+      if (turnstileWidgetId !== null) {
+        runBtnEl.disabled = false;
+      }
+    }, 200);
+  </script>
+  <script
+    src="../../assets/visitor-counter.js"
+    defer
+    data-visitor-counter
+    data-namespace="devbyhwang-tel-aviv"
+    data-total-key="total"
+    data-daily-prefix="daily"
+    data-timezone="Asia/Seoul"
+  ></script>
+  <div
+    data-visitor-counter
+    data-namespace="devbyhwang-tel-aviv-playground"
+    data-total-key="total"
+    data-daily-prefix="daily"
+    data-timezone="Asia/Seoul"
+    data-today-id=""
+    data-total-id=""
+    hidden
+  ></div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "novel-proxy",
+  "main": "src/index.js",
+  "compatibility_date": "2026-04-04",
+  "vars": {
+    "ALLOWED_ORIGIN": "https://devbyhwang.github.io"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "RATE_LIMITER",
+        "class_name": "RateLimiterDO"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["RateLimiterDO"]
+    }
+  ]
+}
