@@ -2528,25 +2528,28 @@ canvas,
 
 .theme-dodoes {
   --font-sans: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
-  --color-bg: #E1D4C2;
-  --color-surface: #BEB5A9;
-  --color-surface-hover: #A78D78;
-  --color-text: #291C0E;
-  --color-text-secondary: #6E473B;
-  --color-text-muted: #A78D78;
-  --color-border: #A78D78;
-  --color-border-light: #BEB5A9;
-  --color-primary: #6E473B;
-  --color-primary-dark: #291C0E;
-  --color-primary-light: #BEB5A9;
-  --color-primary-bg: rgba(110, 71, 59, 0.12);
+  --color-bg: #F7F3EF;
+  --color-surface: #E8DED6;
+  --color-surface-hover: #DDD1C8;
+  --color-text: #2C2C2C;
+  --color-text-secondary: #5B524C;
+  --color-text-muted: #7A7068;
+  --color-border: #D9CEC5;
+  --color-border-light: #ECE2DA;
+  --color-primary: #C97C5D;
+  --color-primary-dark: #B56B4D;
+  --color-primary-light: #D99A81;
+  --color-primary-bg: rgba(201, 124, 93, 0.14);
+  --color-on-primary: #F7F3EF;
+  --color-on-primary-muted: rgba(247, 243, 239, 0.86);
+  --color-on-primary-soft: rgba(247, 243, 239, 0.74);
   background:
-    radial-gradient(circle at top left, rgba(110, 71, 59, 0.1), transparent 34rem),
-    linear-gradient(180deg, #E1D4C2 0%, #d8c9b6 100%);
+    radial-gradient(circle at top left, rgba(201, 124, 93, 0.10), transparent 34rem),
+    linear-gradient(180deg, #F7F3EF 0%, #F1E9E2 100%);
 }
 
 .theme-dodoes .footer {
-  border-top: 1px solid rgba(32, 26, 21, 0.08);
+  border-top: 1px solid rgba(247, 243, 239, 0.24);
 }
 
 .writing-kicker {
@@ -2632,10 +2635,21 @@ canvas,
 }
 
 .theme-dodoes {
-  --color-primary: #6E473B;
-  --color-primary-dark: #291C0E;
-  --color-primary-light: #BEB5A9;
-  --color-primary-bg: rgba(110, 71, 59, 0.12);
+  --color-bg: #F7F3EF;
+  --color-surface: #E8DED6;
+  --color-surface-hover: #DDD1C8;
+  --color-text: #2C2C2C;
+  --color-text-secondary: #5B524C;
+  --color-text-muted: #7A7068;
+  --color-border: #D9CEC5;
+  --color-border-light: #ECE2DA;
+  --color-primary: #C97C5D;
+  --color-primary-dark: #B56B4D;
+  --color-primary-light: #D99A81;
+  --color-primary-bg: rgba(201, 124, 93, 0.14);
+  --color-on-primary: #F7F3EF;
+  --color-on-primary-muted: rgba(247, 243, 239, 0.86);
+  --color-on-primary-soft: rgba(247, 243, 239, 0.74);
 }
 
 .theme-dodoes,
@@ -2662,7 +2676,7 @@ canvas,
 .theme-dodoes .brand-tagline {
   display: block;
   margin-top: 2px;
-  color: rgba(225, 212, 194, 0.72);
+  color: var(--color-on-primary-soft);
   letter-spacing: 0.04em;
 }
 
@@ -2671,20 +2685,20 @@ canvas,
 .theme-dodoes .feed,
 .theme-dodoes .about-content,
 .theme-dodoes .writing-related-posts {
-  background: #E1D4C2;
+  background: var(--color-bg);
 }
 
 .theme-dodoes .site-header,
 .theme-dodoes .footer {
-  background: #6E473B;
-  border-color: #A78D78;
+  background: var(--color-primary);
+  border-color: var(--color-primary-dark);
 }
 
 .theme-dodoes .sidebar > div,
 .theme-dodoes .related-item,
 .theme-dodoes .brand-entry {
-  background: #BEB5A9;
-  border-color: #A78D78;
+  background: var(--color-surface);
+  border-color: var(--color-border);
 }
 
 .theme-dodoes .brand-title,
@@ -2694,11 +2708,11 @@ canvas,
 .theme-dodoes .footer a,
 .theme-dodoes .footer .footer-meta,
 .theme-dodoes .footer .footer-meta span {
-  color: #E1D4C2;
+  color: var(--color-on-primary);
 }
 
 .theme-dodoes .nav a {
-  color: rgba(225, 212, 194, 0.82);
+  color: var(--color-on-primary-muted);
 }
 
 .theme-dodoes .post-meta,
@@ -2712,11 +2726,11 @@ canvas,
 .theme-dodoes .nav a:hover,
 .theme-dodoes .nav a.active,
 .theme-dodoes .menu-btn:hover {
-  color: #E1D4C2;
+  color: var(--color-on-primary);
 }
 
 .theme-dodoes .badge {
-  background: rgba(190, 181, 169, 0.5);
+  background: var(--color-primary-bg);
   color: var(--color-primary-dark);
 }
 
@@ -2738,7 +2752,7 @@ canvas,
 
 .theme-dodoes .related-item:hover {
   border-color: var(--color-primary);
-  box-shadow: 0 10px 26px rgba(41, 28, 14, 0.08);
+  box-shadow: 0 10px 26px rgba(44, 44, 44, 0.08);
 }
 
 .theme-dodoes,
@@ -2782,18 +2796,18 @@ canvas,
 }
 
 .theme-dodoes .sidebar-title {
-  border-bottom-color: #6E473B;
+  border-bottom-color: var(--color-primary);
 }
 
 .theme-dodoes .post-list-tab li,
 .theme-dodoes .category-tree li,
 .theme-dodoes .playground-list li {
-  border-color: #A78D78;
+  border-color: var(--color-border);
 }
 
 .theme-dodoes .prose blockquote {
-  background: rgba(110, 71, 59, 0.08);
-  border-left-color: #6E473B;
+  background: var(--color-primary-bg);
+  border-left-color: var(--color-primary);
   color: var(--color-text-secondary);
 }
 
