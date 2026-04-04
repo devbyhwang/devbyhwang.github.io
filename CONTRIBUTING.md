@@ -1,108 +1,78 @@
 # Contributing
 
-Thanks for your interest! There are two ways to contribute:
+기여에 관심 가져주셔서 감사합니다. 이 저장소의 기여는 크게 두 가지입니다.
 
-1. **Technical improvements** (bug fixes, build improvements)
-2. **Philosophy notes** (contribute to 황라투스트라의 놀이터)
+1. 기술 기여 (버그 수정, 빌드/설정/문서 개선)
+2. 콘텐츠 기여 (브랜드별 새 글 추가)
 
----
+## 공통 원칙
+- 변경 목적과 범위를 PR 설명에 명확히 작성해주세요.
+- 큰 변경은 먼저 이슈로 방향을 합의한 뒤 진행해주세요.
+- 기존 글의 의견/논지 자체를 바꾸는 PR은 받지 않습니다.
 
-## 황라투스트라의 놀이터에 기여하기
+## 1) 기술 기여
 
-철학적 단상과 질문을 함께 나누는 공간입니다. 누구나 자신의 사유를 제출할 수 있습니다.
+### 환영하는 변경
+- 오타, 깨진 링크, 레이아웃/스타일 오류
+- Eleventy 설정/빌드 파이프라인 개선
+- 문서 정확성 개선
 
-### 기여 방법
+### 권장 절차
+1. 이슈로 문제/개선점을 공유
+2. 브랜치에서 수정 후 PR 제출
+3. UI 변경이 있으면 스크린샷 첨부
 
-#### 1. 준비
-- GitHub 계정 필요
-- 마크다운 문법 기본 이해
-- 철학적 단상, 질문, 독서 노트 등 짧은 글 (500-2000자 권장)
+### 체크 포인트
+- 변경은 최소 범위로 유지
+- 무거운 신규 의존성 추가는 지양
+- 필요 시 `npm run build`로 빌드 검증
 
-#### 2. 노트 작성
+## 2) 콘텐츠 기여 (새 글 추가)
 
-**2.1. 저장소 포크**
-1. 이 저장소를 Fork합니다
-2. 로컬에 클론: `git clone https://github.com/YOUR_USERNAME/devbyhwanghub.io.git`
+### A. DevByHwang 글
+- 경로: `src/devbyhwang/blog/YYYY-MM-DD-title.md`
+- 레이아웃: `layouts/post.njk`
+- 카테고리: `devlog | freelance | games`
 
-**2.2. 파일 생성**
-- 경로: `src/zarathustra/YYYY-MM-DD-제목.md`
-- 파일명 규칙: 날짜-제목 (예: `2026-02-15-존재와-시간.md`)
-
-**2.3. 프론트매터 작성**
 ```yaml
 ---
-layout: layouts/philosophy.njk
-title: "당신의 글 제목"
-description: "짧은 요약 (한 줄)"
-date: YYYY-MM-DD
-category: philosophy
-tags:
-  - 태그1
-  - 태그2
-discussion: true
-showInMainFeed: false
+layout: layouts/post.njk
+title: "글 제목"
+date: 2026-04-04
+category: devlog
+excerpt: "한 줄 요약"
 ---
 ```
 
-**2.4. 내용 작성**
-- 마크다운 형식
-- 짧고 명확한 사유
-- 개인적 경험, 질문, 독서 노트 환영
-- 완성된 논문보다 진행 중인 생각을 선호
+### B. Underground Novel 글
+- 경로: `src/dodoes/writing/YYYY-MM-DD-title.md`
+- 레이아웃: `layouts/writing.njk`
+- 카테고리: `novel | notes`
 
-#### 3. Pull Request 제출
+```yaml
+---
+layout: layouts/writing.njk
+title: "글 제목"
+date: 2026-04-04
+category: notes
+description: "짧은 요약"
+---
+```
+
+### 콘텐츠 작성 가이드
+- 마크다운 형식 사용
+- 인용/참고 자료가 있으면 출처 명시
+- `tags`, `excerpt`, `views` 등 추가 메타데이터는 선택
+
+## PR 제출 예시
 
 ```bash
-git add src/zarathustra/YYYY-MM-DD-제목.md
-git commit -m "Add: 제목"
-git push origin main
+git add README.md CONTRIBUTING.md
+# 또는
+# git add src/devbyhwang/blog/YYYY-MM-DD-title.md
+# git add src/dodoes/writing/YYYY-MM-DD-title.md
+git commit -m "docs: sync markdown docs with current structure"
+git push origin <your-branch>
 ```
 
-GitHub에서 Pull Request를 생성하고 템플릿을 작성합니다.
-
-### 가이드라인
-
-**✅ 환영하는 글**
-- 철학적 질문과 사색
-- 독서 노트 (철학/인문 서적)
-- 일상에서 발견한 철학적 통찰
-- 개인적 경험의 성찰
-
-**❌ 적합하지 않은 글**
-- 정치적 선동
-- 타인 비방
-- 광고/홍보
-- 비철학적 일상 기록
-
-**📏 형식 규칙**
-- 길이: 500-2000자 권장
-- 인용 출처: 반드시 명시
-- 태그: 3-5개 권장
-
----
-
-## Technical Contributions
-
-For bug fixes, build improvements, and technical changes:
-
-### What I accept
-- Typos, broken links, and layout bugs
-- Build/config fixes
-- Small quality-of-life improvements
-
-### Content policy
-- Personal blog posts are not open for edits to meaning or opinions
-- If you spot factual errors or typos in a post, open an issue first
-- Please do not submit PRs that rewrite posts without prior agreement
-
-### How to contribute
-1. Open an issue describing the problem or suggestion
-2. If approved, submit a PR with a clear summary and screenshots when relevant
-
-### Style
-- Keep changes minimal and consistent with existing patterns
-- Avoid adding heavy dependencies
-
----
-
-Thanks for helping!
+PR 생성 후 템플릿 체크리스트를 채워주세요.
