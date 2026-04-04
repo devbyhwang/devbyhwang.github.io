@@ -11,8 +11,8 @@ const toBool = (value, fallback = false) => {
 const env = process.env;
 
 module.exports = {
-  title: "Auckland",
-  tagline: "two blogs",
+  title: "",
+  tagline: "",
   description: "개발자 브랜드 DevByHwang와 작가 브랜드 Underground Novel를 위한 블로그.",
   author: "Hwang",
   url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
