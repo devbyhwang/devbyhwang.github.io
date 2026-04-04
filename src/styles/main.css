@@ -2612,6 +2612,7 @@ canvas,
   --font-sans: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
   --color-bg: #FAF7F2;
   --color-panel-highlight: #FEFBF6;
+  --color-panel-border: #E9DED2;
   --color-surface: #F3ECE3;
   --color-surface-hover: #ECE3D8;
   --color-text: #2F2B26;
@@ -2732,10 +2733,16 @@ canvas,
 
 .theme-dodoes .site-header {
   background: var(--color-panel-highlight);
+  border-bottom-color: var(--color-panel-border);
 }
 
 .theme-dodoes .sidebar > div {
   background: var(--color-panel-highlight);
+  border-color: var(--color-panel-border);
+}
+
+.theme-dodoes .sidebar-categories .sidebar-title {
+  border-bottom-color: var(--color-panel-border);
 }
 
 .home-sidebar .brand-box,
