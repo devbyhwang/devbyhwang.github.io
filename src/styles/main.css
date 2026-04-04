@@ -2526,32 +2526,6 @@ canvas,
   color: inherit;
 }
 
-.theme-dodoes {
-  --font-sans: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
-  --color-bg: #F7F3EF;
-  --color-surface: #E8DED6;
-  --color-surface-hover: #DDD1C8;
-  --color-text: #2C2C2C;
-  --color-text-secondary: #5B524C;
-  --color-text-muted: #7A7068;
-  --color-border: #D9CEC5;
-  --color-border-light: #ECE2DA;
-  --color-primary: #C97C5D;
-  --color-primary-dark: #B56B4D;
-  --color-primary-light: #D99A81;
-  --color-primary-bg: rgba(201, 124, 93, 0.14);
-  --color-on-primary: #F7F3EF;
-  --color-on-primary-muted: rgba(247, 243, 239, 0.86);
-  --color-on-primary-soft: rgba(247, 243, 239, 0.74);
-  background:
-    radial-gradient(circle at top left, rgba(201, 124, 93, 0.10), transparent 34rem),
-    linear-gradient(180deg, #F7F3EF 0%, #F1E9E2 100%);
-}
-
-.theme-dodoes .footer {
-  border-top: 1px solid rgba(247, 243, 239, 0.24);
-}
-
 .writing-kicker {
   display: inline-flex;
   align-items: center;
@@ -2635,21 +2609,19 @@ canvas,
 }
 
 .theme-dodoes {
-  --color-bg: #F7F3EF;
-  --color-surface: #E8DED6;
-  --color-surface-hover: #DDD1C8;
-  --color-text: #2C2C2C;
-  --color-text-secondary: #5B524C;
-  --color-text-muted: #7A7068;
-  --color-border: #D9CEC5;
-  --color-border-light: #ECE2DA;
-  --color-primary: #C97C5D;
-  --color-primary-dark: #B56B4D;
-  --color-primary-light: #D99A81;
-  --color-primary-bg: rgba(201, 124, 93, 0.14);
-  --color-on-primary: #F7F3EF;
-  --color-on-primary-muted: rgba(247, 243, 239, 0.86);
-  --color-on-primary-soft: rgba(247, 243, 239, 0.74);
+  --font-sans: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
+  --color-bg: #FAF7F2;
+  --color-surface: #F3ECE3;
+  --color-surface-hover: #ECE3D8;
+  --color-text: #2F2B26;
+  --color-text-secondary: #665F56;
+  --color-text-muted: #8A8176;
+  --color-border: #E5DBCF;
+  --color-border-light: #EFE7DE;
+  --color-primary: #B98A6A;
+  --color-primary-dark: #9F7357;
+  --color-primary-light: #CDA88F;
+  --color-primary-bg: rgba(185, 138, 106, 0.10);
 }
 
 .theme-dodoes,
@@ -2676,83 +2648,7 @@ canvas,
 .theme-dodoes .brand-tagline {
   display: block;
   margin-top: 2px;
-  color: var(--color-on-primary-soft);
   letter-spacing: 0.04em;
-}
-
-.theme-dodoes .site-main,
-.theme-dodoes .writing-note,
-.theme-dodoes .feed,
-.theme-dodoes .about-content,
-.theme-dodoes .writing-related-posts {
-  background: var(--color-bg);
-}
-
-.theme-dodoes .site-header,
-.theme-dodoes .footer {
-  background: var(--color-primary);
-  border-color: var(--color-primary-dark);
-}
-
-.theme-dodoes .sidebar > div,
-.theme-dodoes .related-item,
-.theme-dodoes .brand-entry {
-  background: var(--color-surface);
-  border-color: var(--color-border);
-}
-
-.theme-dodoes .brand-title,
-.theme-dodoes .nav a,
-.theme-dodoes .menu-btn,
-.theme-dodoes .footer,
-.theme-dodoes .footer a,
-.theme-dodoes .footer .footer-meta,
-.theme-dodoes .footer .footer-meta span {
-  color: var(--color-on-primary);
-}
-
-.theme-dodoes .nav a {
-  color: var(--color-on-primary-muted);
-}
-
-.theme-dodoes .post-meta,
-.theme-dodoes .writing-meta,
-.theme-dodoes .post-item-excerpt,
-.theme-dodoes .muted,
-.theme-dodoes .count {
-  color: var(--color-text-secondary);
-}
-
-.theme-dodoes .nav a:hover,
-.theme-dodoes .nav a.active,
-.theme-dodoes .menu-btn:hover {
-  color: var(--color-on-primary);
-}
-
-.theme-dodoes .badge {
-  background: var(--color-primary-bg);
-  color: var(--color-primary-dark);
-}
-
-.theme-dodoes .pill,
-.theme-dodoes .tab-btn.active {
-  color: var(--color-primary-dark);
-}
-
-.theme-dodoes .tab-btn.active {
-  border-bottom-color: var(--color-primary-dark);
-}
-
-.theme-dodoes .post-item.compact:hover .post-item-title,
-.theme-dodoes .related-item:hover .related-title,
-.theme-dodoes .category-tree li a:hover,
-.theme-dodoes .post-list-tab li a:hover {
-  color: var(--color-primary-dark);
-}
-
-.theme-dodoes .related-item:hover {
-  border-color: var(--color-primary);
-  box-shadow: 0 10px 26px rgba(44, 44, 44, 0.08);
 }
 
 .theme-dodoes,
@@ -2793,22 +2689,6 @@ canvas,
 .theme-dodoes .prose,
 .theme-dodoes .writing-content {
   line-height: 1.85;
-}
-
-.theme-dodoes .sidebar-title {
-  border-bottom-color: var(--color-primary);
-}
-
-.theme-dodoes .post-list-tab li,
-.theme-dodoes .category-tree li,
-.theme-dodoes .playground-list li {
-  border-color: var(--color-border);
-}
-
-.theme-dodoes .prose blockquote {
-  background: var(--color-primary-bg);
-  border-left-color: var(--color-primary);
-  color: var(--color-text-secondary);
 }
 
 .portal-hero {
