@@ -73,14 +73,23 @@
       <div class="header-inner">
         {% set brandTitleText = activeBrand.displayName if activeBrand else site.title %}
         {% set brandTaglineText = activeBrand.tagline if activeBrand else site.tagline %}
-        <a class="brand{% if not brandTitleText and not brandTaglineText %} is-empty{% endif %}" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
-          {% if brandTitleText %}
-          <div class="brand-title">{{ brandTitleText }}</div>
+        <div class="brand{% if not brandTitleText and not brandTaglineText %} is-empty{% endif %}">
+          <a class="brand-home" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
+            {% if brandTitleText %}
+            <div class="brand-title">{{ brandTitleText }}</div>
+            {% endif %}
+            {% if brandTaglineText %}
+            <div class="brand-tagline">{{ brandTaglineText }}</div>
+            {% endif %}
+          </a>
+          {% if activeBrand and activeBrand.crossLink %}
+          <a
+            class="brand-cross-link"
+            href="{{ activeBrand.crossLink.href | url }}"
+            aria-label="{{ activeBrand.crossLink.label }}로 이동"
+          >{{ activeBrand.crossLink.label }}</a>
           {% endif %}
-          {% if brandTaglineText %}
-          <div class="brand-tagline">{{ brandTaglineText }}</div>
-          {% endif %}
-        </a>
+        </div>
 
         {% if activeBrand %}
         <nav class="nav">

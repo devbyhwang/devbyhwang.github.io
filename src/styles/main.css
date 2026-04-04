@@ -282,7 +282,12 @@ canvas,
 .brand {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.brand-home {
+  display: block;
 }
 
 .brand-title {
@@ -294,6 +299,18 @@ canvas,
 
 .brand-tagline {
   display: none;
+}
+
+.brand-cross-link {
+  display: inline-block;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.brand-cross-link:hover {
+  color: var(--color-primary);
 }
 
 .nav {
