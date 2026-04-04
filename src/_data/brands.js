@@ -15,6 +15,10 @@ module.exports = {
       },
       { label: "글", href: "/devbyhwang/blog/", matchPrefix: "/devbyhwang/blog/" },
     ],
+    crossLink: {
+      label: "Underground Novel",
+      href: "/dodoes/",
+    },
     themeClass: "theme-devbyhwang",
     features: {
       ads: true,
@@ -32,6 +36,10 @@ module.exports = {
       { label: "소개", href: "/dodoes/about/", matchPrefix: "/dodoes/about/" },
       { label: "글", href: "/dodoes/writing/", matchPrefix: "/dodoes/writing/" },
     ],
+    crossLink: {
+      label: "DevByHwang",
+      href: "/devbyhwang/",
+    },
     themeClass: "theme-dodoes",
     features: {
       ads: false,
