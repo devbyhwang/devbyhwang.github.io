@@ -2609,7 +2609,7 @@ canvas,
 }
 
 .theme-dodoes {
-  --font-sans: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
+  --font-sans: "Newsreader", "Noto Serif KR", "Nanum Myeongjo", "AppleMyungjo", "Batang", "Iowan Old Style", serif;
   --color-bg: #FAF7F2;
   --color-panel-highlight: #FEFBF6;
   --color-panel-border: #E9DED2;
@@ -2640,7 +2640,7 @@ canvas,
 .theme-dodoes .post-item-title,
 .theme-dodoes .related-title,
 .theme-dodoes .sidebar-title {
-  font-family: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
+  font-family: var(--font-sans);
 }
 
 .theme-dodoes .brand-title {
@@ -3033,7 +3033,7 @@ canvas,
 
 .theme-dodoes .writing-title,
 .theme-dodoes .post-item-title {
-  font-family: "Newsreader", "Iowan Old Style", "Apple SD Gothic Neo", serif;
+  font-family: var(--font-sans);
 }
 
 .theme-hub .brand.is-empty {
