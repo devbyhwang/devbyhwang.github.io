@@ -255,7 +255,17 @@
         <h2>점검 항목 선택</h2>
         <div id="checkList" class="controls"></div>
         <button id="runBtn" class="run">분석 실행</button>
-        <p class="usage">무료 플랜 기준: 하루 2회</p>
+        <p class="usage">기본 무료 플랜: 하루 2회 (Owner 모드 제외)</p>
+        <!-- TEST_ONLY_OWNER_BYPASS_START -->
+        <div class="check">
+          <span>
+            <span class="check-title">Owner Key (테스트 전용)</span>
+            <span class="check-desc">저장 시 Turnstile 없이 실행 가능 (서버 토글 ON일 때만 유효)</span>
+          </span>
+          <input id="ownerKeyInput" type="password" placeholder="Owner Key 입력" autocomplete="off" />
+          <button id="ownerKeyClearBtn" type="button">키 지우기</button>
+        </div>
+        <!-- TEST_ONLY_OWNER_BYPASS_END -->
         <div class="captcha-wrap">
           <div id="turnstileBox"></div>
         </div>
@@ -312,6 +322,12 @@
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
     const turnstileBoxEl = document.getElementById("turnstileBox");
+    // TEST_ONLY_OWNER_BYPASS_START
+    const ownerKeyInputEl = document.getElementById("ownerKeyInput");
+    const ownerKeyClearBtnEl = document.getElementById("ownerKeyClearBtn");
+    const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
+    const OWNER_BYPASS_HEADER = "X-Owner-Key";
+    // TEST_ONLY_OWNER_BYPASS_END
 
     let turnstileToken = "";
     let turnstileWidgetId = null;
@@ -320,6 +336,21 @@
       runBtnEl.style.display = isVisible ? "" : "none";
       runBtnEl.disabled = !isVisible;
     }
+
+    // TEST_ONLY_OWNER_BYPASS_START
+    function getOwnerKey() {
+      if (!ownerKeyInputEl) return "";
+      return ownerKeyInputEl.value.trim();
+    }
+
+    function hasOwnerKey() {
+      return Boolean(getOwnerKey());
+    }
+
+    function refreshRunButtonVisibility() {
+      setRunButtonVisible(Boolean(turnstileToken || hasOwnerKey()));
+    }
+    // TEST_ONLY_OWNER_BYPASS_END
 
     function selectedChecks() {
       return checks.filter((item) => item.checked);
@@ -441,15 +472,15 @@
         sitekey: TURNSTILE_SITE_KEY,
         callback(token) {
           turnstileToken = token || "";
-          setRunButtonVisible(Boolean(turnstileToken));
+          refreshRunButtonVisibility();
         },
         "expired-callback"() {
           turnstileToken = "";
-          setRunButtonVisible(false);
+          refreshRunButtonVisibility();
         },
         "error-callback"() {
           turnstileToken = "";
-          setRunButtonVisible(false);
+          refreshRunButtonVisibility();
           setStatus("보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.", "error");
         },
       });
@@ -509,7 +540,7 @@
         return;
       }
 
-      if (!turnstileToken) {
+      if (!turnstileToken && !hasOwnerKey()) {
         setStatus("보안 검증을 완료한 뒤 다시 시도하세요.", "error");
         return;
       }
@@ -530,11 +561,17 @@
       runBtnEl.disabled = true;
 
       try {
+        const headers = {
+          "Content-Type": "application/json",
+        };
+        const ownerKey = getOwnerKey();
+        if (ownerKey) {
+          headers[OWNER_BYPASS_HEADER] = ownerKey;
+        }
+
         const response = await fetch(API_ENDPOINT, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
           body: JSON.stringify(payload),
         });
 
@@ -550,7 +587,7 @@
             if (window.turnstile && turnstileWidgetId !== null) {
               window.turnstile.reset(turnstileWidgetId);
             }
-            setRunButtonVisible(false);
+            refreshRunButtonVisibility();
           } else if (code === "PAYLOAD_TOO_LARGE") {
             message = "원고는 최대 12,000자까지 입력할 수 있습니다.";
           }
@@ -563,7 +600,7 @@
         if (window.turnstile && turnstileWidgetId !== null) {
           window.turnstile.reset(turnstileWidgetId);
         }
-        setRunButtonVisible(false);
+        refreshRunButtonVisibility();
         setStatus("분석이 완료되었습니다.", "ok");
       } catch (err) {
         setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
@@ -573,9 +610,33 @@
     }
 
     runBtnEl.addEventListener("click", runAnalysis);
+    // TEST_ONLY_OWNER_BYPASS_START
+    if (ownerKeyInputEl && ownerKeyClearBtnEl) {
+      const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
+      if (savedOwnerKey) {
+        ownerKeyInputEl.value = savedOwnerKey;
+      }
+
+      ownerKeyInputEl.addEventListener("input", () => {
+        const value = getOwnerKey();
+        if (value) {
+          localStorage.setItem(OWNER_BYPASS_STORAGE_KEY, value);
+        } else {
+          localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
+        }
+        refreshRunButtonVisibility();
+      });
+
+      ownerKeyClearBtnEl.addEventListener("click", () => {
+        ownerKeyInputEl.value = "";
+        localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
+        refreshRunButtonVisibility();
+      });
+    }
+    // TEST_ONLY_OWNER_BYPASS_END
     renderChecks();
     mergePresetIntoTextarea();
-    setRunButtonVisible(false);
+    refreshRunButtonVisibility();
 
     const turnstileInitTimer = setInterval(() => {
       tryRenderTurnstile();

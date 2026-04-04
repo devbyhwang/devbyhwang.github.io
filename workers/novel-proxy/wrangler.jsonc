@@ -4,7 +4,8 @@
   "main": "src/index.js",
   "compatibility_date": "2026-04-04",
   "vars": {
-    "ALLOWED_ORIGIN": "https://devbyhwang.github.io"
+    "ALLOWED_ORIGIN": "https://devbyhwang.github.io",
+    "ENABLE_OWNER_BYPASS": "true"
   },
   "durable_objects": {
     "bindings": [

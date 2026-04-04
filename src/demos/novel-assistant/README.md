@@ -19,6 +19,10 @@
 }
 ```
 
+## 선택 헤더 (테스트 전용)
+- `X-Owner-Key: <owner key>`
+- 워커에서 `ENABLE_OWNER_BYPASS=true` + `OWNER_BYPASS_KEY` 일치 시에만 적용됩니다.
+
 ## 응답 예시
 ```json
 {
@@ -46,3 +50,4 @@
 - 브라우저 코드/리포지토리에 키 저장 금지
 - 프록시에 Origin 제한 + Turnstile 검증 + Durable Object 기반 원자적 rate limit 적용
 - `manuscript`는 최대 12,000자까지 허용
+- 테스트 종료 후 `ENABLE_OWNER_BYPASS=false`로 즉시 비활성화하고 관련 코드 블록 삭제 권장
