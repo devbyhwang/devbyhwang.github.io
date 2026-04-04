@@ -192,6 +192,25 @@
       line-height: 1.4;
     }
 
+    .owner-key-box {
+      margin-top: 6px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+    }
+
+    .owner-key-box input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 10px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
     .run {
       margin-top: auto;
       border: 0;
@@ -257,13 +276,8 @@
         <button id="runBtn" class="run">분석 실행</button>
         <p class="usage">기본 무료 플랜: 하루 2회 (Owner 모드 제외)</p>
         <!-- TEST_ONLY_OWNER_BYPASS_START -->
-        <div class="check">
-          <span>
-            <span class="check-title">Owner Key (테스트 전용)</span>
-            <span class="check-desc">저장 시 Turnstile 없이 실행 가능 (서버 토글 ON일 때만 유효)</span>
-          </span>
-          <input id="ownerKeyInput" type="password" placeholder="Owner Key 입력" autocomplete="off" />
-          <button id="ownerKeyClearBtn" type="button">키 지우기</button>
+        <div class="owner-key-box">
+          <input id="ownerKeyInput" type="password" autocomplete="off" />
         </div>
         <!-- TEST_ONLY_OWNER_BYPASS_END -->
         <div class="captcha-wrap">
@@ -325,7 +339,6 @@
     const turnstileBoxEl = document.getElementById("turnstileBox");
     // TEST_ONLY_OWNER_BYPASS_START
     const ownerKeyInputEl = document.getElementById("ownerKeyInput");
-    const ownerKeyClearBtnEl = document.getElementById("ownerKeyClearBtn");
     const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
     const OWNER_BYPASS_HEADER = "X-Owner-Key";
     // TEST_ONLY_OWNER_BYPASS_END
@@ -613,7 +626,7 @@
 
     runBtnEl.addEventListener("click", runAnalysis);
     // TEST_ONLY_OWNER_BYPASS_START
-    if (ownerKeyInputEl && ownerKeyClearBtnEl) {
+    if (ownerKeyInputEl) {
       const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
       if (savedOwnerKey) {
         ownerKeyInputEl.value = savedOwnerKey;
@@ -626,12 +639,6 @@
         } else {
           localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
         }
-        refreshRunButtonVisibility();
-      });
-
-      ownerKeyClearBtnEl.addEventListener("click", () => {
-        ownerKeyInputEl.value = "";
-        localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
         refreshRunButtonVisibility();
       });
     }
