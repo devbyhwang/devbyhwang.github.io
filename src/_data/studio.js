@@ -25,6 +25,7 @@ module.exports = {
       postCategory: "games",
       tags: ["canvas", "game", "puzzle", "algorithm", "geometry"],
       type: "demo",
+      preview: "/assets/nemo-game-preview.png",
     },
   ],
   freelance: {
