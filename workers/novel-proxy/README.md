@@ -5,7 +5,7 @@ Cloudflare Worker for `POST /v1/novel-feedback`.
 ## Features
 - OpenAI Responses API proxy (server key only)
 - CORS allowlist via `ALLOWED_ORIGIN`
-- Turnstile token verification (required)
+- Turnstile token verification (required: success + hostname + action)
 - Daily rate limit (2/day) via Durable Object (atomic)
 - Manuscript length limit (max 12,000 chars)
 - Optional owner-only bypass for temporary testing (`ENABLE_OWNER_BYPASS`, `OWNER_BYPASS_KEY`)
@@ -33,12 +33,15 @@ npx wrangler secret put TURNSTILE_SECRET_KEY
 npx wrangler secret put OWNER_BYPASS_KEY
 ```
 `ALLOWED_ORIGIN` is already set in `wrangler.jsonc` as `https://devbyhwang.github.io`.
+`TURNSTILE_EXPECTED_HOSTNAME` is set to `devbyhwang.github.io`.
+`TURNSTILE_EXPECTED_ACTION` is set to `novel_feedback`.
 `ENABLE_OWNER_BYPASS` is set to `"false"` by default in `wrangler.jsonc`.
 
 4. Turnstile setup:
 - Cloudflare Turnstile에서 위젯을 생성하고 도메인에 `devbyhwang.github.io`를 등록합니다.
 - 발급받은 Secret Key는 `TURNSTILE_SECRET_KEY`로 저장합니다.
 - 발급받은 Site Key는 `src/demos/novel-assistant/index.html`의 `TURNSTILE_SITE_KEY` 값으로 설정합니다.
+- 위젯 action은 `novel_feedback`으로 설정되며, 워커는 hostname/action 검증이 일치해야 통과합니다.
 
 5. Durable Object migration + deploy:
 ```bash

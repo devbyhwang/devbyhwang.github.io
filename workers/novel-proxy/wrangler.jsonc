@@ -5,7 +5,9 @@
   "compatibility_date": "2026-04-04",
   "vars": {
     "ALLOWED_ORIGIN": "https://devbyhwang.github.io",
-    "ENABLE_OWNER_BYPASS": "true"
+    "ENABLE_OWNER_BYPASS": "true",
+    "TURNSTILE_EXPECTED_HOSTNAME": "devbyhwang.github.io",
+    "TURNSTILE_EXPECTED_ACTION": "novel_feedback"
   },
   "durable_objects": {
     "bindings": [

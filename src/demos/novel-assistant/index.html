@@ -277,6 +277,7 @@
   <script>
     const API_ENDPOINT = "https://novel-proxy.devbyhwang.workers.dev/v1/novel-feedback";
     const TURNSTILE_SITE_KEY = "0x4AAAAAAC0mnz1HYP-CjAKi";
+    const TURNSTILE_ACTION = "novel_feedback";
 
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
@@ -470,6 +471,7 @@
 
       turnstileWidgetId = window.turnstile.render(turnstileBoxEl, {
         sitekey: TURNSTILE_SITE_KEY,
+        action: TURNSTILE_ACTION,
         callback(token) {
           turnstileToken = token || "";
           refreshRunButtonVisibility();
@@ -605,7 +607,7 @@
       } catch (err) {
         setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
       } finally {
-        runBtnEl.disabled = false;
+        refreshRunButtonVisibility();
       }
     }
 
