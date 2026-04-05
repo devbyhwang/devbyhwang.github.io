@@ -2894,6 +2894,16 @@ canvas,
   .feed {
     order: 0;
   }
+
+  .theme-dodoes .layout-two .sidebar {
+    align-self: stretch;
+    width: 100%;
+  }
+
+  .theme-dodoes .layout-two .sidebar > div {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @media (max-width: 768px) {
