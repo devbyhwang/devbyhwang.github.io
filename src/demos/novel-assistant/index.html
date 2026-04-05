@@ -107,42 +107,6 @@
       overflow-wrap: anywhere;
     }
 
-    .manuscript-guide {
-      border: 1px dashed var(--line);
-      border-radius: 12px;
-      padding: 12px;
-      background: #fff9f2;
-      color: #524a3f;
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .manuscript-guide p {
-      margin: 0 0 6px;
-      font-weight: 700;
-      color: #4c4338;
-    }
-
-    .manuscript-guide ol {
-      margin: 0;
-      padding-left: 18px;
-    }
-
-    .manuscript-guide li + li {
-      margin-top: 4px;
-    }
-
-    .manuscript-meta {
-      margin: -2px 0 2px;
-      font-size: 12px;
-      color: #6f6659;
-    }
-
-    .manuscript-meta.over {
-      color: var(--danger);
-      font-weight: 700;
-    }
-
     .status {
       font-size: 13px;
       min-height: 20px;
@@ -237,68 +201,6 @@
       overflow-wrap: anywhere;
     }
 
-    .selected-summary {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 10px;
-      background: #fff;
-      display: grid;
-      gap: 8px;
-      min-width: 0;
-    }
-
-    .selected-summary h3 {
-      margin: 0;
-      font-size: 12px;
-      color: #6f6659;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .selected-summary-empty {
-      margin: 0;
-      font-size: 13px;
-      color: #5b564d;
-    }
-
-    .selected-check-card {
-      border-top: 1px dashed var(--line);
-      padding-top: 8px;
-    }
-
-    .selected-check-card:first-of-type {
-      border-top: 0;
-      padding-top: 0;
-    }
-
-    .selected-check-head {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .selected-check-title {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .selected-check-chapter {
-      font-size: 12px;
-      color: #6f6659;
-      white-space: nowrap;
-    }
-
-    .selected-check-detail {
-      margin: 0;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #4f463b;
-      overflow-wrap: anywhere;
-    }
-
     .owner-key-box {
       margin-top: 6px;
       border: 1px solid var(--line);
@@ -382,23 +284,14 @@
   <main class="shell">
     <header class="head">
       <h1>소설 작성 어시스턴트</h1>
-      <p class="sub">원고를 붙여넣고, 점검 항목 1~2개를 고른 뒤 피드백을 받아보세요.</p>
+      <p class="sub">왼쪽에 원고를 입력하고, 오른쪽 점검 항목을 선택해 분석하세요.</p>
     </header>
 
     <section class="layout">
       <article class="pane">
         <h2>원고 입력</h2>
-        <div id="manuscriptGuide" class="manuscript-guide">
-          <p>사용 방법</p>
-          <ol>
-            <li>분석받을 원고 본문만 입력하거나 붙여넣으세요.</li>
-            <li>오른쪽에서 점검 항목을 1~2개 선택하세요.</li>
-            <li>보안 검증 후 피드백 받기를 눌러 결과를 확인하세요.</li>
-          </ol>
-        </div>
-        <label for="manuscript">분석할 원고</label>
-        <textarea id="manuscript" placeholder="예시)\n새벽 2시, 지훈은 폐역 플랫폼 끝에서 한 번 더 전광판을 올려다봤다.\n분명 마지막 열차는 끊겼는데, 선로 건너편에서 누군가 손전등 신호를 보내고 있었다."></textarea>
-        <p id="manuscriptMeta" class="manuscript-meta">현재 0자 / 12,000자</p>
+        <label for="manuscript">초안 텍스트</label>
+        <textarea id="manuscript" placeholder="분석할 소설 원고를 입력하세요."></textarea>
 
         <label>피드백 결과</label>
         <div id="result" class="result">
@@ -411,8 +304,7 @@
       <aside class="pane">
         <h2>점검 항목 선택</h2>
         <div id="checkList" class="controls"></div>
-        <section id="selectedChecksSummary" class="selected-summary" aria-live="polite"></section>
-        <button id="runBtn" class="run">피드백 받기</button>
+        <button id="runBtn" class="run">분석 실행</button>
         <p class="usage">기본 무료 플랜: 하루 2회 (Owner 모드 제외)</p>
         <!-- TEST_ONLY_OWNER_BYPASS_START -->
         <div class="owner-key-box">
@@ -432,12 +324,9 @@
     const TURNSTILE_SITE_KEY = "0x4AAAAAAC0mnz1HYP-CjAKi";
     const TURNSTILE_ACTION = "novel_feedback";
 
+    const PRESET_START = "[[PRESET_START]]";
+    const PRESET_END = "[[PRESET_END]]";
     const MAX_SELECTED_CHECKS = 2;
-    const MANUSCRIPT_MAX_CHARS = 12000;
-    const LEGACY_PRESET_START = "[[PRESET_START]]";
-    const LEGACY_PRESET_END = "[[PRESET_END]]";
-    const MAX_CHECKS_MESSAGE = `점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`;
-    const MANUSCRIPT_TOO_LONG_MESSAGE = `원고는 최대 ${MANUSCRIPT_MAX_CHARS.toLocaleString("en-US")}자까지 입력할 수 있습니다.`;
 
     const checks = [
       {
@@ -731,9 +620,7 @@
     ];
 
     const manuscriptEl = document.getElementById("manuscript");
-    const manuscriptMetaEl = document.getElementById("manuscriptMeta");
     const checkListEl = document.getElementById("checkList");
-    const selectedChecksSummaryEl = document.getElementById("selectedChecksSummary");
     const runBtnEl = document.getElementById("runBtn");
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
@@ -773,78 +660,51 @@
         .sort((a, b) => a.recommendedOrder - b.recommendedOrder);
     }
 
-    function stripLegacyPresetBlock(text) {
-      const source = typeof text === "string" ? text : "";
-      const trimmed = source.trimStart();
-      if (!trimmed.startsWith(LEGACY_PRESET_START)) {
-        return { body: source, hadLegacyBlock: false };
+    function composePresetText(items) {
+      const lines = [];
+      lines.push(PRESET_START);
+      lines.push("[점검 프리셋]");
+
+      if (items.length === 0) {
+        lines.push("- 점검 항목을 선택하세요.");
+      } else {
+        items.forEach((item) => {
+          lines.push("");
+          lines.push(`[${item.chapter} | ${item.label}]`);
+          lines.push(`목표: ${item.goal}`);
+          lines.push(`통과 기준: ${item.passRule}`);
+          lines.push(item.template);
+        });
       }
 
-      const startIdx = source.indexOf(LEGACY_PRESET_START);
-      const endIdx = source.indexOf(LEGACY_PRESET_END, startIdx + LEGACY_PRESET_START.length);
+      lines.push("");
+      lines.push("---");
+      lines.push("[원고 본문]");
+      lines.push(PRESET_END);
+      return lines.join("\n");
+    }
+
+    function splitPresetAndBody(text) {
+      const startIdx = text.indexOf(PRESET_START);
+      const endIdx = text.indexOf(PRESET_END);
+
       if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) {
-        return { body: source, hadLegacyBlock: false };
+        return { preset: "", body: text.trim() };
       }
 
-      return {
-        body: source.slice(endIdx + LEGACY_PRESET_END.length).trimStart(),
-        hadLegacyBlock: true,
-      };
+      const body = text.slice(endIdx + PRESET_END.length).trimStart();
+      const preset = text.slice(startIdx, endIdx + PRESET_END.length);
+      return { preset, body };
     }
 
-    function updateManuscriptMeta() {
-      const count = manuscriptEl.value.length;
-      manuscriptMetaEl.textContent = `현재 ${count.toLocaleString("en-US")}자 / ${MANUSCRIPT_MAX_CHARS.toLocaleString("en-US")}자`;
-      manuscriptMetaEl.classList.toggle("over", count > MANUSCRIPT_MAX_CHARS);
-      return count;
+    function extractUserBody(text) {
+      return splitPresetAndBody(text).body.trim();
     }
 
-    function syncManuscriptInput(options = {}) {
-      const { notifyLegacyCleanup = false } = options;
-      const { body, hadLegacyBlock } = stripLegacyPresetBlock(manuscriptEl.value);
-      if (hadLegacyBlock) {
-        manuscriptEl.value = body;
-        if (notifyLegacyCleanup) {
-          setStatus("이전 입력 포맷 안내 블록을 제거하고 원고 본문만 남겼습니다.", null);
-        }
-      }
-
-      const count = updateManuscriptMeta();
-      if (count > MANUSCRIPT_MAX_CHARS) {
-        setStatus(MANUSCRIPT_TOO_LONG_MESSAGE, "error");
-      } else if (
-        statusEl.classList.contains("error")
-        && statusEl.textContent === MANUSCRIPT_TOO_LONG_MESSAGE
-      ) {
-        setStatus("", null);
-      }
-
-      return manuscriptEl.value;
-    }
-
-    function renderSelectedCheckSummary() {
-      const picked = selectedChecks();
-
-      if (picked.length === 0) {
-        selectedChecksSummaryEl.innerHTML = [
-          "<h3>선택한 항목 요약</h3>",
-          "<p class=\"selected-summary-empty\">아직 선택한 점검 항목이 없습니다.</p>",
-        ].join("");
-        return;
-      }
-
-      const cards = picked.map((item) => `
-        <section class="selected-check-card">
-          <div class="selected-check-head">
-            <span class="selected-check-title">${escapeHtml(item.label)}</span>
-            <span class="selected-check-chapter">${escapeHtml(item.chapter)}</span>
-          </div>
-          <p class="selected-check-detail"><strong>목표:</strong> ${escapeHtml(item.goal)}</p>
-          <p class="selected-check-detail"><strong>통과 기준:</strong> ${escapeHtml(item.passRule)}</p>
-        </section>
-      `);
-
-      selectedChecksSummaryEl.innerHTML = `<h3>선택한 항목 요약</h3>${cards.join("")}`;
+    function mergePresetIntoTextarea() {
+      const { body } = splitPresetAndBody(manuscriptEl.value);
+      const presetText = composePresetText(selectedChecks());
+      manuscriptEl.value = `${presetText}\n\n${body}`.trimEnd();
     }
 
     function buildPresetForRequest() {
@@ -886,18 +746,15 @@
           input.addEventListener("change", (e) => {
             if (e.target.checked && selectedChecks().length >= MAX_SELECTED_CHECKS) {
               e.target.checked = false;
-              setStatus(MAX_CHECKS_MESSAGE, "error");
+              setStatus(`점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`, "error");
               return;
             }
 
             item.checked = e.target.checked;
-            if (
-              statusEl.classList.contains("error")
-              && statusEl.textContent === MAX_CHECKS_MESSAGE
-            ) {
+            if (statusEl.textContent.includes("최대") && statusEl.classList.contains("error")) {
               setStatus("", null);
             }
-            renderSelectedCheckSummary();
+            mergePresetIntoTextarea();
           });
 
           checkListEl.appendChild(wrap);
@@ -989,27 +846,27 @@
     }
 
     async function runAnalysis() {
-      const normalizedManuscript = syncManuscriptInput({ notifyLegacyCleanup: true });
-      const manuscript = normalizedManuscript.trim();
+      const manuscript = manuscriptEl.value.trim();
       if (!manuscript) {
-        setStatus("원고를 입력해 주세요.", "error");
+        setStatus("원고 텍스트를 먼저 입력하세요.", "error");
         manuscriptEl.focus();
         return;
       }
 
-      if (manuscript.length > MANUSCRIPT_MAX_CHARS) {
-        setStatus(MANUSCRIPT_TOO_LONG_MESSAGE, "error");
+      const userBody = extractUserBody(manuscript);
+      if (!userBody) {
+        setStatus("프리셋 항목 또는 원고 본문을 입력하세요.", "error");
         manuscriptEl.focus();
         return;
       }
 
       const selected = selectedChecks();
       if (selected.length === 0) {
-        setStatus("점검 항목을 1개 이상 선택해 주세요.", "error");
+        setStatus("점검 항목을 1개 이상 선택하세요.", "error");
         return;
       }
       if (selected.length > MAX_SELECTED_CHECKS) {
-        setStatus(MAX_CHECKS_MESSAGE, "error");
+        setStatus(`점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`, "error");
         return;
       }
 
@@ -1029,7 +886,7 @@
         },
       };
 
-      setStatus("피드백을 생성하고 있어요...", null);
+      setStatus("분석 요청 중...", null);
       runBtnEl.disabled = true;
 
       try {
@@ -1061,7 +918,7 @@
             }
             refreshRunButtonVisibility();
           } else if (code === "PAYLOAD_TOO_LARGE") {
-            message = MANUSCRIPT_TOO_LONG_MESSAGE;
+            message = "원고는 최대 12,000자까지 입력할 수 있습니다.";
           }
 
           throw new Error(message);
@@ -1073,7 +930,7 @@
           window.turnstile.reset(turnstileWidgetId);
         }
         refreshRunButtonVisibility();
-        setStatus("피드백 준비가 끝났습니다.", "ok");
+        setStatus("분석이 완료되었습니다.", "ok");
       } catch (err) {
         setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
       } finally {
@@ -1082,9 +939,6 @@
     }
 
     runBtnEl.addEventListener("click", runAnalysis);
-    manuscriptEl.addEventListener("input", () => {
-      syncManuscriptInput();
-    });
     // TEST_ONLY_OWNER_BYPASS_START
     if (ownerKeyInputEl) {
       const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
@@ -1104,8 +958,7 @@
     }
     // TEST_ONLY_OWNER_BYPASS_END
     renderChecks();
-    renderSelectedCheckSummary();
-    syncManuscriptInput();
+    mergePresetIntoTextarea();
     refreshRunButtonVisibility();
 
     const turnstileInitTimer = setInterval(() => {
