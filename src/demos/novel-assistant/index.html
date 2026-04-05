@@ -329,36 +329,18 @@
 
     const checks = [
       {
-        id: "overall_review",
-        label: "전체 진단",
-        description: "플롯 흐름, 몰입도, 가독성을 종합 점검합니다.",
+        id: "lock_training",
+        label: "LOCK 훈련",
+        description: "LOCK(Lead, Objective, Confrontation, Knockout) 기반 반복 훈련 항목입니다.",
         template: [
-          "핵심 플롯 요약:",
-          "긴장감이 떨어지는 장면:",
-          "독자가 궁금해할 질문:",
+          "L(Lead): 독자가 따라가고 싶은 주인공의 매력/결함",
+          "O(Objective): 얻거나 피하려는 단일 핵심 목표",
+          "C(Confrontation): 목표를 막는 주요 장애물/대립",
+          "K(Knockout): 결말의 결정타(성공/실패와 대가)",
+          "오늘의 4줄 LOCK 요약:",
+          "다음 리라이트 액션 1개:",
         ].join("\n"),
-        checked: true,
-      },
-      {
-        id: "character_consistency",
-        label: "캐릭터 일관성",
-        description: "인물 동기와 행동의 일관성을 확인합니다.",
-        template: [
-          "캐릭터 성격:",
-          "캐릭터 내면 강박:",
-          "캐릭터가 절대 포기하지 못하는 목표:",
-          "최근 행동/대사 샘플:",
-        ].join("\n"),
-      },
-      {
-        id: "style_and_rhythm",
-        label: "문체/리듬",
-        description: "문장 길이, 반복, 리듬 단조 구간을 찾습니다.",
-        template: [
-          "원하는 문체 키워드:",
-          "문장이 늘어진 구간:",
-          "어휘 반복이 많은 표현:",
-        ].join("\n"),
+        checked: false,
       },
     ];
 
@@ -407,7 +389,7 @@
       lines.push("[점검 프리셋]");
 
       if (items.length === 0) {
-        lines.push("- 전체 진단");
+        lines.push("- 점검 항목을 선택하세요.");
       } else {
         items.forEach((item) => {
           lines.push("");
@@ -453,9 +435,7 @@
         "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
       ];
 
-      if (picked.length === 0) {
-        lines.push("전체 진단 기준으로 서사 흐름을 점검하세요.");
-      } else {
+      if (picked.length > 0) {
         lines.push("점검 항목:");
         picked.forEach((item, idx) => {
           lines.push(`${idx + 1}. ${item.label}`);
@@ -587,16 +567,21 @@
         return;
       }
 
+      const selected = selectedChecks();
+      if (selected.length === 0) {
+        setStatus("점검 항목을 1개 이상 선택하세요.", "error");
+        return;
+      }
+
       if (!turnstileToken && !hasOwnerKey()) {
         setStatus("보안 검증을 완료한 뒤 다시 시도하세요.", "error");
         return;
       }
 
-      const selected = selectedChecks();
       const payload = {
         manuscript,
         preset: buildPresetForRequest(),
-        checks: selected.length > 0 ? selected.map((x) => x.id) : ["overall_review"],
+        checks: selected.map((x) => x.id),
         turnstileToken,
         meta: {
           lang: "ko",
