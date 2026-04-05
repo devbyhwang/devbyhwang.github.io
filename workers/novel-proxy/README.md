@@ -57,7 +57,7 @@ After deploy, use:
 {
   "manuscript": "...",
   "preset": "...",
-  "checks": ["overall_review"],
+  "checks": ["lock_training"],
   "turnstileToken": "...",
   "meta": { "lang": "ko", "version": "v1" }
 }
@@ -78,8 +78,8 @@ After deploy, use:
   "summary": "...",
   "items": [
     {
-      "id": "overall_review",
-      "label": "전체 진단",
+      "id": "lock_training",
+      "label": "LOCK 훈련",
       "score": 8,
       "evidence": ["..."],
       "suggestion": "..."
