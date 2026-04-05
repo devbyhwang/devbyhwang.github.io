@@ -10,6 +10,7 @@
             --panel: #151515;
             --cell-size: 38px;
             --gap: 4px;
+            --ui-max-width: 500px;
             --accent: #00ff88;
             --timer: #ffcc00;
             --fail: #ff0055;
@@ -26,7 +27,7 @@
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             height: 100vh; margin: 0; overflow: hidden;
-            user-select: none; touch-action: none;
+            user-select: none; touch-action: manipulation;
         }
 
         /* Back Navigation Link */
@@ -103,18 +104,21 @@
         #game-ui {
             display: flex; flex-direction: column; align-items: center;
             opacity: 0; transition: opacity 0.5s; pointer-events: none;
+            width: min(100%, calc(var(--ui-max-width) + 24px));
+            padding: 0 12px 12px;
+            min-width: 0;
         }
         #game-ui.active { opacity: 1; pointer-events: all; }
 
         .header {
-            width: 100%; max-width: 500px;
+            width: min(100%, var(--ui-max-width));
             display: flex; justify-content: center;
             margin-bottom: 20px;
         }
         .score-display { font-size: 2.5rem; font-weight: 900; color: #fff; text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
 
         .timer-bar {
-            width: 100%; max-width: 500px; height: 8px;
+            width: min(100%, var(--ui-max-width)); height: 8px;
             background: #222; margin-bottom: 25px;
             border-radius: 4px; overflow: hidden;
         }
@@ -131,6 +135,7 @@
             border: 1px solid #222;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             transition: transform 0.1s;
+            touch-action: none;
         }
         .shake { animation: shake-anim 0.3s ease-in-out; }
         @keyframes shake-anim {
@@ -201,7 +206,7 @@
         .loader-txt { color: var(--accent); font-weight: bold; margin-bottom: 15px; }
 
         .footer-controls {
-            width: 100%; max-width: 500px;
+            width: min(100%, var(--ui-max-width));
             display: flex; justify-content: space-between; margin-top: 20px;
         }
         .btn-hint {
@@ -287,6 +292,89 @@
         @keyframes float-up {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-30px); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --cell-size: 34px;
+                --gap: 3px;
+            }
+
+            .back-link {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            .screen {
+                padding: 16px;
+            }
+
+            .title {
+                font-size: 2.1rem;
+                letter-spacing: 3px;
+            }
+
+            .subtitle {
+                font-size: 0.85rem;
+                letter-spacing: 1px;
+                margin-bottom: 28px;
+                text-align: center;
+            }
+
+            .btn-group {
+                width: min(100%, 280px);
+                gap: 12px;
+            }
+
+            .btn-mode {
+                font-size: 1rem;
+                padding: 13px;
+            }
+
+            .score-display {
+                font-size: 2rem;
+            }
+
+            #result-title {
+                font-size: 2.1rem;
+                text-align: center;
+            }
+
+            #result-score {
+                font-size: 1.2rem;
+                margin-bottom: 28px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            :root {
+                --cell-size: 30px;
+                --gap: 2px;
+            }
+
+            #game-ui {
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+            .game-board {
+                padding: 8px;
+            }
+
+            .footer-controls {
+                margin-top: 14px;
+                gap: 10px;
+            }
+
+            .btn-hint,
+            .btn-giveup {
+                margin-right: 0;
+                padding: 12px 10px;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
         }
     </style>
 </head>
