@@ -5,12 +5,19 @@
 ## 엔드포인트
 - `POST /v1/novel-feedback`
 
+## 점검 항목 규칙
+- 최소 1개, 최대 2개 선택
+- 예시 ID:
+  - `ch01_plot_basics`
+  - `ch04_beginning_hook`
+  - `appendix_critical_points`
+
 ## 요청 예시
 ```json
 {
   "manuscript": "...",
   "preset": "...",
-  "checks": ["lock_training"],
+  "checks": ["ch01_plot_basics", "ch04_beginning_hook"],
   "turnstileToken": "...",
   "meta": {
     "lang": "ko",
@@ -30,8 +37,8 @@
   "summary": "...",
   "items": [
     {
-      "id": "lock_training",
-      "label": "LOCK 훈련",
+      "id": "ch01_plot_basics",
+      "label": "Ch1 플롯의 본질",
       "score": 8,
       "evidence": ["..."],
       "suggestion": "..."
