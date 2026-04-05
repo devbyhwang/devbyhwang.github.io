@@ -171,6 +171,11 @@
       display: grid;
       gap: 8px;
       margin-top: 4px;
+      --checklist-max-height: 440px;
+      max-height: var(--checklist-max-height);
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-gutter: stable;
       min-width: 0;
     }
 
@@ -277,6 +282,9 @@
       h1 { font-size: clamp(21px, 7vw, 30px); }
       .pane { padding: 12px; }
       .pane { min-height: auto; }
+      .controls {
+        max-height: min(var(--checklist-max-height), 380px);
+      }
     }
   </style>
 </head>
@@ -327,6 +335,8 @@
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
     const MAX_SELECTED_CHECKS = 2;
+    const CHECKLIST_VISIBLE_COUNT = 10;
+    const CHECKLIST_HEIGHT_FALLBACK = 440;
 
     const checks = [
       {
@@ -727,6 +737,29 @@
       return lines.join("\n");
     }
 
+    function applyChecklistMaxHeight() {
+      const firstCheck = checkListEl.querySelector(".check");
+      if (!firstCheck) {
+        checkListEl.style.setProperty("--checklist-max-height", `${CHECKLIST_HEIGHT_FALLBACK}px`);
+        return;
+      }
+
+      const checkListStyle = window.getComputedStyle(checkListEl);
+      const gap = Number.parseFloat(checkListStyle.rowGap || checkListStyle.gap || "0");
+      const itemHeight = firstCheck.getBoundingClientRect().height;
+
+      if (!Number.isFinite(itemHeight) || itemHeight <= 0) {
+        checkListEl.style.setProperty("--checklist-max-height", `${CHECKLIST_HEIGHT_FALLBACK}px`);
+        return;
+      }
+
+      const safeGap = Number.isFinite(gap) ? gap : 0;
+      const totalHeight =
+        itemHeight * CHECKLIST_VISIBLE_COUNT + safeGap * Math.max(0, CHECKLIST_VISIBLE_COUNT - 1);
+
+      checkListEl.style.setProperty("--checklist-max-height", `${Math.round(totalHeight)}px`);
+    }
+
     function renderChecks() {
       checkListEl.innerHTML = "";
       [...checks]
@@ -759,6 +792,8 @@
 
           checkListEl.appendChild(wrap);
         });
+
+      requestAnimationFrame(applyChecklistMaxHeight);
     }
 
     function setStatus(message, type) {
@@ -957,6 +992,7 @@
       });
     }
     // TEST_ONLY_OWNER_BYPASS_END
+    window.addEventListener("resize", applyChecklistMaxHeight);
     renderChecks();
     mergePresetIntoTextarea();
     refreshRunButtonVisibility();
