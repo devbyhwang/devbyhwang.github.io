@@ -90,43 +90,6 @@
       letter-spacing: 0.01em;
     }
 
-    .onboarding {
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: #fff;
-      padding: 14px;
-      display: grid;
-      gap: 9px;
-      margin-bottom: 14px;
-    }
-
-    .onboarding h2 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .onboarding-steps {
-      margin: 0;
-      padding-left: 18px;
-      display: grid;
-      gap: 4px;
-      font-size: 13px;
-      color: #4f493f;
-      line-height: 1.5;
-    }
-
-    .onboarding-start {
-      justify-self: start;
-      border: 1px solid var(--accent);
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 999px;
-      padding: 7px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
     label {
       font-size: 12px;
       color: #6f6659;
@@ -777,16 +740,6 @@
       </p>
     </header>
 
-    <section class="onboarding">
-      <h2>처음 시작 가이드</h2>
-      <ol class="onboarding-steps">
-        <li>핵심 4요소(LOCK)에서 항목을 고릅니다.</li>
-        <li>선택한 항목의 입력칸을 채웁니다.</li>
-        <li>분석 실행 후 제안을 반영해 다시 다듬습니다.</li>
-      </ol>
-      <button id="startFirstStepBtn" type="button" class="onboarding-start">첫 단계 시작하기</button>
-    </section>
-
     <section class="layout">
       <section class="pane">
         <h2>구조형 학습 로드맵</h2>
@@ -817,7 +770,7 @@
         <div id="completionControl" class="selected-card"></div>
 
         <button id="runBtn" class="run">분석 실행</button>
-        <p class="usage">기본 무료 플랜: 하루 2회 (관리자 테스트 모드 제외)</p>
+        <p class="usage">기본 무료 플랜: 하루 5회</p>
         <!-- TEST_ONLY_OWNER_BYPASS_START -->
         <div class="owner-key-box">
           <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="Owner Key" aria-label="Owner Key" />
@@ -850,7 +803,6 @@
     const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
     const BODY_STORAGE_KEY = "novel-assistant:body:v2";
-    const ONBOARDING_DISMISSED_STORAGE_KEY = "novel-assistant:onboarding-dismissed:v1";
 
     const stages = [
       {
@@ -1606,8 +1558,6 @@
     const viewTabsEl = document.getElementById("viewTabs");
     const roadmapSvgEl = document.getElementById("roadmapSvg");
     const roadmapScrollEl = document.querySelector(".roadmap-scroll");
-    const onboardingSectionEl = document.querySelector(".onboarding");
-    const startFirstStepBtnEl = document.getElementById("startFirstStepBtn");
     const completionControlEl = document.getElementById("completionControl");
     const runBtnEl = document.getElementById("runBtn");
     const resultEl = document.getElementById("result");
@@ -1692,41 +1642,6 @@
       if (!element) return;
       element.style.height = "auto";
       element.style.height = `${element.scrollHeight}px`;
-    }
-
-    function isOnboardingDismissed() {
-      try {
-        return localStorage.getItem(ONBOARDING_DISMISSED_STORAGE_KEY) === "1";
-      } catch (_error) {
-        return false;
-      }
-    }
-
-    function renderOnboardingVisibility() {
-      if (!onboardingSectionEl) return;
-      onboardingSectionEl.hidden = isOnboardingDismissed();
-    }
-
-    function dismissOnboarding() {
-      try {
-        localStorage.setItem(ONBOARDING_DISMISSED_STORAGE_KEY, "1");
-      } catch (_error) {
-        // localStorage 접근이 제한된 환경에서도 동작이 중단되지 않도록 무시
-      }
-      if (onboardingSectionEl) onboardingSectionEl.hidden = true;
-    }
-
-    function jumpToFirstStep() {
-      dismissOnboarding();
-      setActiveTab("lock");
-      if (getNodeById("s1_lock_lead")) {
-        selectNode("s1_lock_lead");
-      } else if (drills[0]) {
-        selectNode(drills[0].id);
-      }
-      if (roadmapScrollEl) {
-        roadmapScrollEl.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-      }
     }
 
     function setRunLoading(isLoading) {
@@ -2626,14 +2541,10 @@
 
     loadCurriculumState();
     renderStageLegend();
-    renderOnboardingVisibility();
     initBodyDraft();
     initRoadmapPan();
 
     runBtnEl.addEventListener("click", runAnalysis);
-    if (startFirstStepBtnEl) {
-      startFirstStepBtnEl.addEventListener("click", jumpToFirstStep);
-    }
 
     // TEST_ONLY_OWNER_BYPASS_START
     if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {

@@ -55,7 +55,7 @@
 - 각 노드는 `conceptBrief / conceptWhy / writingOutcome / passSignals / failSignals / submissionChecklist`로 작성 기준을 제공합니다.
 
 ## 구조형 학습 흐름
-1. 온보딩의 `첫 단계 시작하기` 또는 상단 로드맵에서 노드를 선택합니다.
+1. 상단 로드맵에서 노드를 선택합니다.
 2. 뷰 탭(`전체/핵심 4요소(LOCK)/시작/중간/끝/수정`)으로 레인 집중도를 바꿉니다.
 3. 선택 노드의 템플릿 입력칸을 채웁니다. (필수)
 4. 필요 시 `원고 본문 (선택)`을 추가합니다.
