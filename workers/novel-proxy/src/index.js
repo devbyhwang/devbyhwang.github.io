@@ -1,10 +1,13 @@
 const LIMIT_PER_DAY = 2;
 const RATE_TTL_SECONDS = 60 * 60 * 24 * 2;
 const OPENAI_URL = "https://api.openai.com/v1/responses";
+const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MANUSCRIPT_MAX_CHARS = 12000;
 const OWNER_BYPASS_HEADER = "X-Owner-Key";
 const DEFAULT_TURNSTILE_ACTION = "novel_feedback";
+const DEFAULT_AI_PROVIDER = "gemini";
+const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
 
 export default {
   async fetch(request, env) {
@@ -220,7 +223,18 @@ export default {
       }
     }
 
-    if (!env.OPENAI_API_KEY) {
+    const prompt = buildPrompt({ manuscript, preset, checks, meta });
+    const provider = resolveAiProvider(env);
+    if (provider === "gemini" && !env.GEMINI_API_KEY) {
+      console.error("Missing GEMINI_API_KEY secret");
+      return json(
+        { error: { code: "UPSTREAM_ERROR", message: "AI 요청 구성이 잘못되었습니다." } },
+        502,
+        origin,
+        allowedOrigin
+      );
+    }
+    if (provider === "openai" && !env.OPENAI_API_KEY) {
       console.error("Missing OPENAI_API_KEY secret");
       return json(
         { error: { code: "UPSTREAM_ERROR", message: "AI 요청 구성이 잘못되었습니다." } },
@@ -230,54 +244,45 @@ export default {
       );
     }
 
-    const prompt = buildPrompt({ manuscript, preset, checks, meta });
-
-    let openAiResponse;
-    try {
-      openAiResponse = await fetch(OPENAI_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(buildOpenAiRequest(prompt)),
+    let result;
+    if (provider === "gemini") {
+      result = await callGemini({
+        apiKey: env.GEMINI_API_KEY,
+        model: resolveGeminiModel(env),
+        prompt,
       });
-    } catch (error) {
-      console.error("OpenAI request failed", summarizeError(error));
-      return json(
-        { error: { code: "UPSTREAM_ERROR", message: "AI 서비스 연결에 실패했습니다." } },
-        502,
-        origin,
-        allowedOrigin
-      );
+    } else {
+      result = await callOpenAi({
+        apiKey: env.OPENAI_API_KEY,
+        prompt,
+      });
     }
 
-    if (!openAiResponse.ok) {
-      console.error("OpenAI upstream status", openAiResponse.status);
-      return json(
-        { error: { code: "UPSTREAM_ERROR", message: "AI 응답 생성에 실패했습니다." } },
-        502,
-        origin,
-        allowedOrigin
-      );
-    }
-
-    let openAiJson;
-    try {
-      openAiJson = await openAiResponse.json();
-    } catch (error) {
-      console.error("OpenAI JSON parse failed", summarizeError(error));
-      return json(
-        { error: { code: "UPSTREAM_ERROR", message: "AI 응답 처리에 실패했습니다." } },
-        502,
-        origin,
-        allowedOrigin
-      );
-    }
-
-    const outputText = extractOutputText(openAiJson);
-    if (!outputText) {
-      console.error("OpenAI output_text missing");
+    if (!result.ok) {
+      if (result.reason === "network") {
+        return json(
+          { error: { code: "UPSTREAM_ERROR", message: "AI 서비스 연결에 실패했습니다." } },
+          502,
+          origin,
+          allowedOrigin
+        );
+      }
+      if (result.reason === "status") {
+        return json(
+          { error: { code: "UPSTREAM_ERROR", message: "AI 응답 생성에 실패했습니다." } },
+          502,
+          origin,
+          allowedOrigin
+        );
+      }
+      if (result.reason === "invalid_json") {
+        return json(
+          { error: { code: "UPSTREAM_ERROR", message: "AI 응답 처리에 실패했습니다." } },
+          502,
+          origin,
+          allowedOrigin
+        );
+      }
       return json(
         { error: { code: "UPSTREAM_ERROR", message: "AI 응답이 비어 있습니다." } },
         502,
@@ -288,7 +293,7 @@ export default {
 
     let normalized;
     try {
-      normalized = normalizeModelPayload(JSON.parse(outputText));
+      normalized = normalizeModelPayload(JSON.parse(result.outputText));
     } catch (error) {
       console.error("Model output parse/normalize failed", summarizeError(error));
       return json(
@@ -450,6 +455,110 @@ function buildPrompt({ manuscript, preset, checks, meta }) {
   ].join("\n");
 }
 
+function resolveAiProvider(env) {
+  const value = typeof env.AI_PROVIDER === "string" ? env.AI_PROVIDER.trim().toLowerCase() : "";
+  if (value === "openai") return "openai";
+  if (value === "gemini") return "gemini";
+  return DEFAULT_AI_PROVIDER;
+}
+
+function resolveGeminiModel(env) {
+  const value = typeof env.GEMINI_MODEL === "string" ? env.GEMINI_MODEL.trim() : "";
+  return value || DEFAULT_GEMINI_MODEL;
+}
+
+async function callGemini({ apiKey, model, prompt }) {
+  let response;
+  const url = `${GEMINI_URL_BASE}/${encodeURIComponent(model)}:generateContent`;
+  try {
+    response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "x-goog-api-key": apiKey,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(buildGeminiRequest(prompt)),
+    });
+  } catch (error) {
+    console.error("Gemini request failed", summarizeError(error));
+    return { ok: false, reason: "network" };
+  }
+
+  if (!response.ok) {
+    console.error("Gemini upstream status", response.status);
+    return { ok: false, reason: "status" };
+  }
+
+  let geminiJson;
+  try {
+    geminiJson = await response.json();
+  } catch (error) {
+    console.error("Gemini JSON parse failed", summarizeError(error));
+    return { ok: false, reason: "invalid_json" };
+  }
+
+  const outputText = extractGeminiText(geminiJson);
+  if (!outputText) {
+    console.error("Gemini output text missing");
+    return { ok: false, reason: "empty_output" };
+  }
+
+  return { ok: true, outputText };
+}
+
+async function callOpenAi({ apiKey, prompt }) {
+  let response;
+  try {
+    response = await fetch(OPENAI_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(buildOpenAiRequest(prompt)),
+    });
+  } catch (error) {
+    console.error("OpenAI request failed", summarizeError(error));
+    return { ok: false, reason: "network" };
+  }
+
+  if (!response.ok) {
+    console.error("OpenAI upstream status", response.status);
+    return { ok: false, reason: "status" };
+  }
+
+  let openAiJson;
+  try {
+    openAiJson = await response.json();
+  } catch (error) {
+    console.error("OpenAI JSON parse failed", summarizeError(error));
+    return { ok: false, reason: "invalid_json" };
+  }
+
+  const outputText = extractOpenAiText(openAiJson);
+  if (!outputText) {
+    console.error("OpenAI output_text missing");
+    return { ok: false, reason: "empty_output" };
+  }
+
+  return { ok: true, outputText };
+}
+
+function buildGeminiRequest(prompt) {
+  return {
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: prompt }],
+      },
+    ],
+    generationConfig: {
+      responseMimeType: "application/json",
+      responseSchema: buildGeminiResponseSchema(),
+    },
+  };
+}
+
 function buildOpenAiRequest(prompt) {
   return {
     model: "gpt-4o-mini",
@@ -458,31 +567,35 @@ function buildOpenAiRequest(prompt) {
       format: {
         type: "json_schema",
         name: "novel_feedback",
-        schema: {
+        schema: buildOpenAiResponseSchema(),
+      },
+    },
+  };
+}
+
+function buildOpenAiResponseSchema() {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: ["overallScore", "summary", "items"],
+    properties: {
+      overallScore: { type: "number" },
+      summary: { type: "string" },
+      items: {
+        type: "array",
+        items: {
           type: "object",
           additionalProperties: false,
-          required: ["overallScore", "summary", "items"],
+          required: ["id", "label", "score", "evidence", "suggestion"],
           properties: {
-            overallScore: { type: "number" },
-            summary: { type: "string" },
-            items: {
+            id: { type: "string" },
+            label: { type: "string" },
+            score: { type: "number" },
+            evidence: {
               type: "array",
-              items: {
-                type: "object",
-                additionalProperties: false,
-                required: ["id", "label", "score", "evidence", "suggestion"],
-                properties: {
-                  id: { type: "string" },
-                  label: { type: "string" },
-                  score: { type: "number" },
-                  evidence: {
-                    type: "array",
-                    items: { type: "string" },
-                  },
-                  suggestion: { type: "string" },
-                },
-              },
+              items: { type: "string" },
             },
+            suggestion: { type: "string" },
           },
         },
       },
@@ -490,7 +603,35 @@ function buildOpenAiRequest(prompt) {
   };
 }
 
-function extractOutputText(openAiJson) {
+function buildGeminiResponseSchema() {
+  return {
+    type: "OBJECT",
+    required: ["overallScore", "summary", "items"],
+    properties: {
+      overallScore: { type: "NUMBER" },
+      summary: { type: "STRING" },
+      items: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          required: ["id", "label", "score", "evidence", "suggestion"],
+          properties: {
+            id: { type: "STRING" },
+            label: { type: "STRING" },
+            score: { type: "NUMBER" },
+            evidence: {
+              type: "ARRAY",
+              items: { type: "STRING" },
+            },
+            suggestion: { type: "STRING" },
+          },
+        },
+      },
+    },
+  };
+}
+
+function extractOpenAiText(openAiJson) {
   if (typeof openAiJson.output_text === "string" && openAiJson.output_text.trim()) {
     return openAiJson.output_text.trim();
   }
@@ -505,6 +646,24 @@ function extractOutputText(openAiJson) {
     for (const content of item.content) {
       if (content?.type === "output_text" && typeof content.text === "string") {
         texts.push(content.text);
+      }
+    }
+  }
+
+  return texts.join("\n").trim();
+}
+
+function extractGeminiText(geminiJson) {
+  if (!Array.isArray(geminiJson?.candidates)) {
+    return "";
+  }
+
+  const texts = [];
+  for (const candidate of geminiJson.candidates) {
+    if (!Array.isArray(candidate?.content?.parts)) continue;
+    for (const part of candidate.content.parts) {
+      if (typeof part?.text === "string") {
+        texts.push(part.text);
       }
     }
   }

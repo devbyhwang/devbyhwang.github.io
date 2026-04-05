@@ -81,7 +81,7 @@ views: 42
 
 ### LLM 데모 보안 원칙
 - GitHub Pages 리포지토리/정적 코드에 API 키를 저장하지 않습니다.
-- 브라우저에서 직접 OpenAI API를 호출하지 않고, 별도 프록시 서버(예: Cloudflare Workers)를 통해 호출합니다.
+- 브라우저에서 직접 LLM API를 호출하지 않고, 별도 프록시 서버(예: Cloudflare Workers)를 통해 호출합니다.
 - 프록시 서버에만 서버 키를 저장하고, CORS Origin 제한 + Turnstile 검증을 적용합니다.
 - rate limit은 KV 대신 Durable Object 등 원자적 카운터로 강제합니다.
 

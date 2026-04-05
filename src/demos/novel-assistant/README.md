@@ -5,6 +5,7 @@
 
 ## 엔드포인트
 - `POST /v1/novel-feedback`
+- 백엔드 AI 제공자 기본값: Gemini (`AI_PROVIDER=gemini`)
 
 ## 구조형 학습 흐름
 1. 상단 로드맵(SVG 선형 노드)에서 연습 항목을 선택합니다.
@@ -76,7 +77,7 @@
 
 ## 보안 원칙
 - 개인 API 키 입력 기능 없음 (서버 키 전용)
-- OpenAI 키는 프록시 환경 변수/시크릿에서만 관리
+- LLM API 키는 프록시 환경 변수/시크릿에서만 관리
 - 브라우저 코드/리포지토리에 키 저장 금지
 - 프록시에 Origin 제한 + Turnstile 검증 + Durable Object 기반 원자적 rate limit 적용
 - `manuscript`는 최대 12,000자까지 허용
