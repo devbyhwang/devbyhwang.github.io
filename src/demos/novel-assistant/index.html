@@ -14,6 +14,13 @@
       --accent-soft: #f2e6db;
       --danger: #ad3e30;
       --ok: #2f6f46;
+      --node-drill-r: 18;
+      --node-drill-r-selected: 21;
+      --roadmap-step-x: 192;
+      --roadmap-lane-gap: 102;
+      --soft-shadow: 0 12px 20px rgba(77, 54, 32, 0.12);
+      --focus-ring: 0 0 0 3px rgba(138, 79, 42, 0.16);
+      --pulse-alpha: 0.34;
     }
 
     * { box-sizing: border-box; }
@@ -60,7 +67,7 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 1.25fr 1fr;
+      grid-template-columns: 1fr;
       gap: 16px;
       min-height: 68vh;
       min-width: 0;
@@ -81,6 +88,43 @@
       margin: 0;
       font-size: 17px;
       letter-spacing: 0.01em;
+    }
+
+    .onboarding {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      display: grid;
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .onboarding h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .onboarding-steps {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+      font-size: 13px;
+      color: #4f493f;
+      line-height: 1.5;
+    }
+
+    .onboarding-start {
+      justify-self: start;
+      border: 1px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     label {
@@ -104,6 +148,13 @@
       font-family: "Iowan Old Style", "Times New Roman", serif;
       min-width: 0;
       overflow-wrap: anywhere;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--focus-ring);
     }
 
     .exercise-wrap {
@@ -145,6 +196,26 @@
       font-family: inherit;
     }
 
+    .field-guide {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fffdf9;
+      padding: 8px 10px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .field-guide p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #5b564d;
+    }
+
+    .field-guide strong {
+      color: #3f392f;
+    }
+
     #manuscriptBody {
       min-height: 180px;
     }
@@ -156,6 +227,7 @@
       padding: 10px;
       display: grid;
       gap: 10px;
+      position: relative;
     }
 
     .tabs {
@@ -172,6 +244,7 @@
       padding: 6px 10px;
       font-size: 12px;
       cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
     }
 
     .tab.active {
@@ -197,6 +270,15 @@
       font-size: 11px;
       color: #5b564d;
       background: #fff;
+      cursor: pointer;
+      transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .stage-chip.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-weight: 700;
     }
 
     .stage-dot {
@@ -210,16 +292,101 @@
       border: 1px solid var(--line);
       border-radius: 10px;
       background: #fff;
-      overflow-x: auto;
-      overflow-y: hidden;
+      overflow: auto;
       padding: 4px;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      box-shadow: inset 0 0 0 1px rgba(236, 227, 213, 0.7);
+      scrollbar-width: thin;
+      scrollbar-color: #b59d84 #f1e9dd;
+    }
+
+    .roadmap-scroll.is-dragging {
+      cursor: grabbing;
+    }
+
+    .roadmap-scroll::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    .roadmap-scroll::-webkit-scrollbar-track {
+      background: #f1e9dd;
+      border-radius: 999px;
+    }
+
+    .roadmap-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #c1a489 0%, #a37f61 100%);
+      border-radius: 999px;
+    }
+
+    .roadmap-scroll::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, #cfb299 0%, #b58d6e 100%);
     }
 
     #roadmapSvg {
       display: block;
       width: 100%;
-      min-width: 1600px;
-      height: 180px;
+      min-width: 3300px;
+      height: 620px;
+      font-family: "Iowan Old Style", "Times New Roman", serif;
+    }
+
+    .roadmap-node {
+      transition: opacity 0.16s ease;
+    }
+
+    .roadmap-node .roadmap-node-body {
+      transition: transform 0.18s ease, filter 0.2s ease;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .roadmap-node:hover .roadmap-node-body {
+      transform: scale(1.04);
+    }
+
+    .roadmap-node .node-shape {
+      transition: stroke 0.2s ease, stroke-width 0.2s ease, fill 0.2s ease;
+    }
+
+    .roadmap-node:hover .node-shape {
+      stroke: var(--accent);
+      stroke-width: 2.8;
+    }
+
+    .roadmap-node.node-selected .node-shape {
+      stroke-width: 3.5;
+    }
+
+    .roadmap-node .node-label {
+      font-size: 11px;
+      font-weight: 700;
+      fill: #2e2a24;
+      pointer-events: none;
+    }
+
+    .roadmap-node .node-sub-label {
+      font-size: 11px;
+      font-weight: 600;
+      fill: #4f493f;
+      pointer-events: none;
+    }
+
+    .roadmap-node .node-check {
+      font-size: 12px;
+      font-weight: 700;
+      fill: var(--ok);
+      text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+    }
+
+    .roadmap-lane-label {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      pointer-events: all;
     }
 
     .roadmap-hint {
@@ -239,6 +406,10 @@
       color: #4f493f;
     }
 
+    .selected-card.meta-fade-in {
+      animation: metaFadeIn 0.22s ease;
+    }
+
     .selected-title {
       font-size: 15px;
       font-weight: 700;
@@ -248,6 +419,111 @@
     .selected-row {
       margin: 0;
       line-height: 1.5;
+    }
+
+    .meta-section {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fffdf9;
+      padding: 8px 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .meta-section h4 {
+      margin: 0;
+      font-size: 13px;
+      color: #3f392f;
+    }
+
+    .meta-list {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .signal-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 2px;
+    }
+
+    .node-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .submission-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 2px;
+      list-style: disc;
+    }
+
+    .submission-list li::marker {
+      color: var(--accent);
+    }
+
+    .submission-list li {
+      font-size: 12px;
+      color: #4f493f;
+      line-height: 1.45;
+    }
+
+    .progress-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 12px;
+      color: #5b564d;
+      width: fit-content;
+    }
+
+    .progress-chip strong {
+      color: var(--ink);
+    }
+
+    .progress-chip.auto {
+      border-color: #b7d7bf;
+      background: #f3faf5;
+    }
+
+    .progress-chip.done {
+      border-color: #bddbc4;
+      background: #f5fbf7;
+    }
+
+    .progress-chip.block {
+      border-color: #e8c2bc;
+      background: #fff7f5;
+    }
+
+    .progress-chip.pending {
+      border-color: #d9cfbf;
+      background: #fffdf8;
+    }
+
+    .node-link-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #4f493f;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .node-link-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
     }
 
     .completion-row {
@@ -292,12 +568,36 @@
       overflow: auto;
       min-width: 0;
       overflow-wrap: anywhere;
+      position: relative;
     }
 
     .placeholder {
       color: #6f6659;
       font-size: 14px;
     }
+
+    .result.is-loading {
+      overflow: hidden;
+    }
+
+    .result-skeleton {
+      display: grid;
+      gap: 9px;
+      padding-top: 2px;
+    }
+
+    .result-skeleton .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(217, 207, 191, 0.5) 0%, rgba(255, 255, 255, 0.92) 50%, rgba(217, 207, 191, 0.5) 100%);
+      background-size: 200% 100%;
+      animation: skeletonPulse 1.25s ease-in-out infinite;
+      opacity: var(--pulse-alpha);
+    }
+
+    .result-skeleton .bar.wide { width: 96%; }
+    .result-skeleton .bar.mid { width: 80%; }
+    .result-skeleton .bar.narrow { width: 64%; }
 
     .result h3 {
       margin: 0 0 6px;
@@ -364,11 +664,27 @@
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      transition: filter 0.2s ease, opacity 0.2s ease;
     }
 
     .run:disabled {
       opacity: 0.6;
       cursor: wait;
+    }
+
+    .run.is-loading::before {
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #fff;
+      animation: spin 0.7s linear infinite;
     }
 
     .usage {
@@ -410,6 +726,44 @@
       h1 { font-size: clamp(21px, 7vw, 30px); }
       .pane { padding: 12px; }
       .pane { min-height: auto; }
+      .roadmap-pane {
+        max-height: 70vh;
+        overflow: auto;
+        padding-top: 0;
+      }
+      .stage-legend,
+      .tabs {
+        position: sticky;
+        left: 0;
+        z-index: 5;
+        padding: 8px 0 6px;
+        background: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(255, 253, 248, 0.93));
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+      }
+      .stage-legend { top: 0; }
+      .tabs { top: 42px; }
+      .roadmap-hint { font-size: 11px; }
+      #roadmapSvg {
+        min-width: 3320px;
+        height: 620px;
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes skeletonPulse {
+      0% { background-position: 180% 0; }
+      100% { background-position: -20% 0; }
+    }
+
+    @keyframes metaFadeIn {
+      from { opacity: 0; transform: translateY(3px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -418,12 +772,35 @@
     <header class="head">
       <h1>소설 작성 어시스턴트</h1>
       <p class="sub">
-        Plot &amp; Structure-v2 흐름에 맞춘 단계형 연습 시스템입니다.
-        로드맵 노드를 선택해 기초 LOCK부터 구조/막별 실행/수정까지 순차적으로 훈련하세요.
+        작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다.
+        핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.
       </p>
     </header>
 
+    <section class="onboarding">
+      <h2>처음 시작 가이드</h2>
+      <ol class="onboarding-steps">
+        <li>핵심 4요소(LOCK)에서 항목을 고릅니다.</li>
+        <li>선택한 항목의 입력칸을 채웁니다.</li>
+        <li>분석 실행 후 제안을 반영해 다시 다듬습니다.</li>
+      </ol>
+      <button id="startFirstStepBtn" type="button" class="onboarding-start">첫 단계 시작하기</button>
+    </section>
+
     <section class="layout">
+      <section class="pane">
+        <h2>구조형 학습 로드맵</h2>
+
+        <div class="roadmap-pane">
+          <div id="stageLegend" class="stage-legend"></div>
+          <div id="viewTabs" class="tabs"></div>
+          <p class="roadmap-hint">먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.</p>
+          <div class="roadmap-scroll">
+            <svg id="roadmapSvg" viewBox="0 0 3400 520" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+      </section>
+
       <article class="pane">
         <h2>연습 입력</h2>
 
@@ -437,6 +814,19 @@
         <label for="manuscriptBody">원고 본문 (선택)</label>
         <textarea id="manuscriptBody" placeholder="문맥이 필요할 때만 원고 본문을 추가 입력하세요."></textarea>
 
+        <div id="completionControl" class="selected-card"></div>
+
+        <button id="runBtn" class="run">분석 실행</button>
+        <p class="usage">기본 무료 플랜: 하루 2회 (관리자 테스트 모드 제외)</p>
+        <!-- TEST_ONLY_OWNER_BYPASS_START -->
+        <div class="owner-key-box">
+          <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="Owner Key" aria-label="Owner Key" />
+        </div>
+        <!-- TEST_ONLY_OWNER_BYPASS_END -->
+        <div class="captcha-wrap">
+          <div id="turnstileBox"></div>
+        </div>
+
         <label>피드백 결과</label>
         <div id="result" class="result">
           <p class="placeholder">아직 분석 결과가 없습니다.</p>
@@ -444,32 +834,6 @@
 
         <p id="status" class="status"></p>
       </article>
-
-      <aside class="pane">
-        <h2>구조형 학습 로드맵</h2>
-
-        <div class="roadmap-pane">
-          <div id="stageLegend" class="stage-legend"></div>
-          <div id="viewTabs" class="tabs"></div>
-          <p class="roadmap-hint">원형 노드를 클릭해 연습 항목을 선택하세요. 번호는 추천 순서입니다.</p>
-          <div class="roadmap-scroll">
-            <svg id="roadmapSvg" viewBox="0 0 3400 180" preserveAspectRatio="none"></svg>
-          </div>
-        </div>
-
-        <div id="completionControl" class="selected-card"></div>
-
-        <button id="runBtn" class="run">분석 실행</button>
-        <p class="usage">기본 무료 플랜: 하루 2회 (Owner 모드 제외)</p>
-        <!-- TEST_ONLY_OWNER_BYPASS_START -->
-        <div class="owner-key-box">
-          <input id="ownerKeyInput" type="password" autocomplete="off" />
-        </div>
-        <!-- TEST_ONLY_OWNER_BYPASS_END -->
-        <div class="captcha-wrap">
-          <div id="turnstileBox"></div>
-        </div>
-      </aside>
     </section>
   </main>
 
@@ -481,10 +845,12 @@
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
     const AUTO_DONE_THRESHOLD = 7.5;
+    const ENABLE_OWNER_BYPASS_UI = true;
 
     const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
     const BODY_STORAGE_KEY = "novel-assistant:body:v2";
+    const ONBOARDING_DISMISSED_STORAGE_KEY = "novel-assistant:onboarding-dismissed:v1";
 
     const stages = [
       {
@@ -983,13 +1349,255 @@
       },
     ];
 
+    const laneDefs = [
+      { id: "lock", label: "핵심 4요소(LOCK)", color: "#9f6a49", y: 72 },
+      { id: "beginning", label: "시작 (Act I)", color: "#b87954", y: 174 },
+      { id: "middle", label: "중간 (Act II)", color: "#4b7f82", y: 276 },
+      { id: "ending", label: "끝 (Act III)", color: "#6374aa", y: 378 },
+      { id: "revision", label: "수정 (Revision)", color: "#6f7f4f", y: 480 },
+    ];
+
     const viewTabs = [
       { id: "all", label: "전체" },
-      { id: "macro", label: "거시 구조" },
-      { id: "micro", label: "미시 기술" },
-      { id: "act", label: "막별 실행" },
-      { id: "revision", label: "수정 도구" },
+      { id: "lock", label: "핵심 4요소(LOCK)" },
+      { id: "beginning", label: "시작" },
+      { id: "middle", label: "중간" },
+      { id: "ending", label: "끝" },
+      { id: "revision", label: "수정" },
     ];
+
+    const drillLaneMap = {
+      s1_lock_lead: "lock",
+      s1_lock_objective: "lock",
+      s1_lock_confrontation: "lock",
+      s1_lock_knockout: "lock",
+      s2_reader_empathy_and_likability: "beginning",
+      s2_character_arc_linkage: "middle",
+      s2_scene_goal_conflict_change: "middle",
+      s2_scene_four_chords: "middle",
+      s2_dialogue_voice_distinction: "middle",
+      s2_dialogue_as_confrontation: "middle",
+      s3_three_act_spine: "beginning",
+      s3_disturbance_two_doorways: "beginning",
+      s3_hero_journey_overlay: "middle",
+      s3_plot_points_midpoint: "middle",
+      s3_subplot_thematic_integration: "middle",
+      s4_beginning_hook_entry: "beginning",
+      s4_beginning_world_opposition: "beginning",
+      s4_middle_escalation_pressure: "middle",
+      s4_middle_complications_reversals: "middle",
+      s4_ending_knockout_resolution: "ending",
+      s4_last_page_resonance: "ending",
+      s5_revision_triage: "revision",
+      s5_common_problem_cures: "revision",
+      s5_show_tell_and_precision_tools: "revision",
+    };
+
+    function buildDefaultConceptBrief(drill) {
+      const lane = drillLaneMap[drill.id] || "middle";
+      const laneHint = {
+        lock: "이 단계는 플롯의 중심 축을 흔들리지 않게 고정합니다.",
+        beginning: "이 단계는 독자 진입 장벽을 낮추고 초반 이탈을 막습니다.",
+        middle: "이 단계는 대립과 압박을 누적해 독서 추진력을 만듭니다.",
+        ending: "이 단계는 갈등 회수와 감정 여운을 동시에 완성합니다.",
+        revision: "이 단계는 수정 우선순위를 정해 완성도를 끌어올립니다.",
+      };
+      return laneHint[lane] || "이 단계는 핵심 장면을 실행 가능한 문장으로 만드는 데 집중합니다.";
+    }
+
+    function buildDefaultConceptWhy(drill) {
+      const lane = drillLaneMap[drill.id] || "middle";
+      const whyHint = {
+        lock: "핵심 4요소가 흐리면 이후 장면의 선택 기준이 계속 흔들립니다.",
+        beginning: "초반 이해가 막히면 독자는 갈등이 커지기 전에 이탈합니다.",
+        middle: "중반 리듬이 약하면 좋은 설정도 체감 긴장이 급격히 떨어집니다.",
+        ending: "엔딩 회수가 약하면 전체 이야기의 만족도가 크게 하락합니다.",
+        revision: "수정 기준이 없으면 반복 작업이 늘고 품질 향상이 멈춥니다.",
+      };
+      return whyHint[lane] || "이 단계를 고정해야 다음 반복에서 수정 방향이 선명해집니다.";
+    }
+
+    function buildDefaultWritingOutcome(drill) {
+      const fieldCount = Array.isArray(drill.templateFields) ? drill.templateFields.length : 0;
+      return `이 단계가 끝나면 핵심 입력 ${fieldCount}개가 채워진 실행 가능한 초안을 갖게 됩니다.`;
+    }
+
+    function buildDefaultSubmissionChecklist() {
+      return [
+        "모든 입력칸이 비어 있지 않은가?",
+        "각 문장에 행동 또는 사건이 들어가 있는가?",
+        "다음 리라이트 액션을 바로 실행할 수 있는가?",
+      ];
+    }
+
+    function buildDefaultFieldGuide(field) {
+      const label = field.label || field.key || "입력 항목";
+      const placeholder = field.placeholder || "구체 사건/행동을 포함해 작성";
+      return {
+        howTo: `${label}은(는) 2~4문장으로 쓰고, 사건·행동·대가·시간 중 최소 2개를 포함하세요.`,
+        goodExample: `예: ${placeholder}. 그리고 실패 시 바로 발생하는 손실 1개를 명시한다.`,
+        badExample: "예: 느낌과 의지만 적고 구체 사건이 없다. 이렇게 쓰면 수정 방향이 흐려진다.",
+        checkQuestion: "처음 읽는 사람도 바로 실행할 수 있을 만큼 구체적인가? (예/아니오)",
+      };
+    }
+
+    function applyObjectiveOverrides(drill) {
+      drill.conceptBrief = "지배 목표(Objective)는 이야기 전체를 끌고 가는 단 하나의 중심 목표입니다. 목표는 ‘무언가를 얻기’ 또는 ‘무언가를 피하기’ 형태여야 하며, 실패하면 주인공의 삶이 실질적으로 무너질 만큼 중요해야 합니다.";
+      drill.conceptWhy = "지배 목표가 선명해야 장면 선택, 갈등 설계, 결말 회수가 한 축으로 정렬됩니다.";
+      drill.writingOutcome = "이 단계가 끝나면 주인공의 단일 지배 목표와 Story Question이 결말까지 유지되는 초안을 갖게 됩니다.";
+      drill.passSignals = [
+        "목표가 1문장으로 고정되고 장면마다 같은 축으로 수렴한다.",
+        "목표 실패 시 외적/내적 손실이 명확해 독자가 걱정한다.",
+        "스토리 질문(Will...?)이 결말까지 유지된다.",
+      ];
+      drill.failSignals = [
+        "목표가 여러 개라 장면마다 중심축이 바뀐다.",
+        "목표가 소망 수준(있으면 좋다)이라 실패 대가가 약하다.",
+        "스토리 질문이 모호해 독자가 무엇을 기다려야 하는지 불명확하다.",
+      ];
+      drill.submissionChecklist = [
+        "지배 목표가 1문장으로 고정됐는가?",
+        "실패 대가가 외적/내적으로 분리됐는가?",
+        "Will 질문이 결말에서 성공/실패로 회수 가능한가?",
+      ];
+
+      const byKey = Object.fromEntries((drill.templateFields || []).map((field) => [field.key, field]));
+      if (byKey.objective_one) {
+        byKey.objective_one.howTo = "주인공의 단일 지배 목표를 한 문장으로 씁니다. ‘얻는다/벗어난다’ 동사를 포함하세요.";
+        byKey.objective_one.goodExample = "예: 주인공은 72시간 안에 조작된 재판 기록 원본을 찾아 누명을 벗겨야 한다.";
+        byKey.objective_one.badExample = "예: 주인공은 행복해지고 싶다.";
+        byKey.objective_one.checkQuestion = "누가, 무엇을, 언제까지가 한 문장에 들어가 있는가? (예/아니오)";
+      }
+      if (byKey.objective_reason) {
+        byKey.objective_reason.howTo = "왜 ‘지금’ 이 목표여야 하는지 시간 압박·필연 조건 2개를 적습니다.";
+        byKey.objective_reason.goodExample = "예: 내일 오전 판결 선고 + 증거 폐기 시점이 오늘 밤 11시로 고정되어 있다.";
+        byKey.objective_reason.badExample = "예: 그냥 중요한 일이라서.";
+        byKey.objective_reason.checkQuestion = "독자가 읽고 ‘미룰 수 없네’라고 느낄 근거가 있는가? (예/아니오)";
+      }
+      if (byKey.objective_stakes) {
+        byKey.objective_stakes.howTo = "실패 대가를 외적 1개, 내적 1개로 분리해 작성합니다.";
+        byKey.objective_stakes.goodExample = "예: 외적-종신형 확정 / 내적-딸과의 신뢰 완전 붕괴.";
+        byKey.objective_stakes.badExample = "예: 기분이 좀 안 좋아진다.";
+        byKey.objective_stakes.checkQuestion = "대가가 주인공의 생존·관계·정체성에 치명적인가? (예/아니오)";
+      }
+      if (byKey.objective_story_question) {
+        byKey.objective_story_question.howTo = "Will... 형식으로 결말에서 답이 나는 질문 1개를 적습니다.";
+        byKey.objective_story_question.goodExample = "예: Will 주인공은 판결 전까지 원본 증거를 확보해 무죄를 증명할 수 있을까?";
+        byKey.objective_story_question.badExample = "예: 이야기는 어떻게 될까?";
+        byKey.objective_story_question.checkQuestion = "성공/실패로 결말에서 회수 가능한 질문인가? (예/아니오)";
+      }
+      if (byKey.objective_focus) {
+        byKey.objective_focus.howTo = "지배 목표를 흐리는 하위 목표 2개와 제거/통합 방안을 씁니다.";
+        byKey.objective_focus.goodExample = "예: 로맨스 서브플롯은 ‘증거 확보’에 기여하는 장면만 남기고 2장면 삭제.";
+        byKey.objective_focus.badExample = "예: 일단 다 넣고 나중에 보자.";
+        byKey.objective_focus.checkQuestion = "각 장면이 지배 목표를 전진시키는지 판단 가능한가? (예/아니오)";
+      }
+    }
+
+    function enrichDrillGuides() {
+      drills.forEach((drill) => {
+        if (!drill.conceptBrief) drill.conceptBrief = buildDefaultConceptBrief(drill);
+        if (!drill.conceptWhy) drill.conceptWhy = buildDefaultConceptWhy(drill);
+        if (!drill.writingOutcome) drill.writingOutcome = buildDefaultWritingOutcome(drill);
+        if (!Array.isArray(drill.passSignals) || drill.passSignals.length === 0) {
+          drill.passSignals = ["목표/행동/결과가 장면 단위로 연결된다.", "독자가 다음 장면을 기대할 질문이 남는다."];
+        }
+        if (!Array.isArray(drill.failSignals) || drill.failSignals.length === 0) {
+          drill.failSignals = ["설명은 많지만 사건 변화가 없다.", "무엇을 고쳐야 할지 행동 단위로 보이지 않는다."];
+        }
+        if (!Array.isArray(drill.submissionChecklist) || drill.submissionChecklist.length === 0) {
+          drill.submissionChecklist = buildDefaultSubmissionChecklist();
+        }
+
+        (drill.templateFields || []).forEach((field) => {
+          const guide = buildDefaultFieldGuide(field);
+          field.howTo = field.howTo || guide.howTo;
+          field.goodExample = field.goodExample || guide.goodExample;
+          field.badExample = field.badExample || guide.badExample;
+          field.checkQuestion = field.checkQuestion || guide.checkQuestion;
+        });
+      });
+
+      const objectiveDrill = drills.find((drill) => drill.id === "s1_lock_objective");
+      if (objectiveDrill) applyObjectiveOverrides(objectiveDrill);
+    }
+
+    function replaceUiTerms(value) {
+      if (typeof value !== "string" || !value) return value;
+      const replaceIfNotParenthesized = (text, token, replacement) => text.replace(new RegExp(`\\b${token}\\b`, "g"), (match, offset, full) => {
+        const prev = full[offset - 1];
+        return prev === "(" ? match : replacement;
+      });
+
+      const replacements = [
+        [/LOCK Foundations/g, "핵심 4요소(LOCK) 기초"],
+        [/Character\/Scene\/Dialogue/g, "인물/장면/대사"],
+        [/Macro Structure Models/g, "거시 구조 모델"],
+        [/Act Execution/g, "막별 실행"],
+        [/Revision & Toolbox/g, "수정(Revision) & 도구 상자"],
+        [/LOCK: Lead/g, "핵심 4요소(LOCK): 주인공(Lead)"],
+        [/LOCK: Objective/g, "핵심 4요소(LOCK): 지배 목표(Objective)"],
+        [/LOCK: Confrontation/g, "핵심 4요소(LOCK): 대립(Confrontation)"],
+        [/LOCK: Knockout/g, "핵심 4요소(LOCK): 결정타 결말(Knockout)"],
+        [/Disturbance & Two Doorways/g, "교란 사건(Disturbance) & 문턱 사건 1/2 (Doorway 1/2)"],
+        [/Midpoint Shift/g, "중간 전환점(Midpoint) 변화"],
+        [/ARM Rhythm/g, "장면 리듬 ARM (Action-Reaction-More Action)"],
+        [/Revision Triage/g, "수정 우선순위 분류(Triage)"],
+        [/Show\/Tell/g, "보여주기/말하기(Show/Tell)"],
+        [/Plot Point/g, "전환 사건(Plot Point)"],
+        [/Midpoint/g, "중간 전환점(Midpoint)"],
+        [/Inciting Incident/g, "촉발 사건(Inciting Incident)"],
+        [/Disturbance/g, "교란 사건(Disturbance)"],
+        [/Doorway 1/g, "문턱 사건 1 (Doorway 1)"],
+        [/Doorway 2/g, "문턱 사건 2 (Doorway 2)"],
+      ];
+
+      let localized = value;
+      replacements.forEach(([pattern, to]) => {
+        localized = localized.replace(pattern, to);
+      });
+      localized = replaceIfNotParenthesized(localized, "Objective", "지배 목표(Objective)");
+      localized = replaceIfNotParenthesized(localized, "Confrontation", "대립(Confrontation)");
+      localized = replaceIfNotParenthesized(localized, "Knockout", "결정타 결말(Knockout)");
+      localized = replaceIfNotParenthesized(localized, "Lead", "주인공(Lead)");
+      return localized;
+    }
+
+    function normalizeSentence(value) {
+      return String(value || "")
+        .replaceAll("입니다.입니다.", "입니다.")
+        .replaceAll("..", ".")
+        .trim();
+    }
+
+    function localizeDrill(drill) {
+      drill.title = replaceUiTerms(drill.title);
+      drill.shortLabel = replaceUiTerms(drill.shortLabel);
+      drill.goal = replaceUiTerms(drill.goal);
+      drill.passRule = replaceUiTerms(drill.passRule);
+      drill.repetitionTip = replaceUiTerms(drill.repetitionTip);
+      drill.conceptBrief = normalizeSentence(replaceUiTerms(drill.conceptBrief || ""));
+      drill.conceptWhy = normalizeSentence(replaceUiTerms(drill.conceptWhy || ""));
+      drill.writingOutcome = normalizeSentence(replaceUiTerms(drill.writingOutcome || ""));
+      drill.passSignals = (drill.passSignals || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      drill.failSignals = (drill.failSignals || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      drill.submissionChecklist = (drill.submissionChecklist || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      (drill.templateFields || []).forEach((field) => {
+        field.label = replaceUiTerms(field.label);
+        field.placeholder = replaceUiTerms(field.placeholder);
+        field.howTo = normalizeSentence(replaceUiTerms(field.howTo || ""));
+        field.goodExample = normalizeSentence(replaceUiTerms(field.goodExample || ""));
+        field.badExample = normalizeSentence(replaceUiTerms(field.badExample || ""));
+        field.checkQuestion = normalizeSentence(replaceUiTerms(field.checkQuestion || ""));
+      });
+    }
+
+    enrichDrillGuides();
+    stages.forEach((stage) => {
+      stage.label = replaceUiTerms(stage.label);
+      stage.description = replaceUiTerms(stage.description);
+    });
+    drills.forEach(localizeDrill);
 
     const selectedDrillMetaEl = document.getElementById("selectedDrillMeta");
     const exerciseFieldsEl = document.getElementById("exerciseFields");
@@ -997,36 +1605,60 @@
     const stageLegendEl = document.getElementById("stageLegend");
     const viewTabsEl = document.getElementById("viewTabs");
     const roadmapSvgEl = document.getElementById("roadmapSvg");
+    const roadmapScrollEl = document.querySelector(".roadmap-scroll");
+    const onboardingSectionEl = document.querySelector(".onboarding");
+    const startFirstStepBtnEl = document.getElementById("startFirstStepBtn");
     const completionControlEl = document.getElementById("completionControl");
     const runBtnEl = document.getElementById("runBtn");
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
     const turnstileBoxEl = document.getElementById("turnstileBox");
+    const ownerKeyBoxEl = document.querySelector(".owner-key-box");
+    const RUN_BUTTON_DEFAULT_LABEL = runBtnEl ? runBtnEl.textContent.trim() || "분석 실행" : "분석 실행";
     // TEST_ONLY_OWNER_BYPASS_START
     const ownerKeyInputEl = document.getElementById("ownerKeyInput");
     const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
     const OWNER_BYPASS_HEADER = "X-Owner-Key";
     // TEST_ONLY_OWNER_BYPASS_END
 
+    const drillNodes = drills.map((drill) => ({
+      ...drill,
+      laneId: drillLaneMap[drill.id] || "middle",
+      linkedNodeIds: [],
+      checklist: Array.isArray(drill.submissionChecklist) ? drill.submissionChecklist : [],
+      order: 500 + (Number(drill.roadmapOrder) || 0),
+    }));
+
+    const roadmapNodes = [...drillNodes];
+
     let turnstileToken = "";
     let turnstileWidgetId = null;
     let bodySaveTimer = null;
     let draftSaveTimer = null;
+    let isRunLoading = false;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let originScrollLeft = 0;
+    let originScrollTop = 0;
+    let didDrag = false;
+    let suppressNextNodeClick = false;
 
     const curriculumState = {
-      lastSelectedDrillId: drills[0].id,
-      activeTab: "all",
-      perDrill: {},
+      selectedNodeId: drills[0] ? drills[0].id : (roadmapNodes[0] ? roadmapNodes[0].id : ""),
+      lastSelectedDrillId: drills[0] ? drills[0].id : "",
+      activeTab: "lock",
+      perNode: {},
     };
 
     function setRunButtonVisible(isVisible) {
       runBtnEl.style.display = isVisible ? "" : "none";
-      runBtnEl.disabled = !isVisible;
+      runBtnEl.disabled = !isVisible || isRunLoading;
     }
 
     // TEST_ONLY_OWNER_BYPASS_START
     function getOwnerKey() {
-      if (!ownerKeyInputEl) return "";
+      if (!ENABLE_OWNER_BYPASS_UI || !ownerKeyInputEl) return "";
       return ownerKeyInputEl.value.trim();
     }
 
@@ -1035,7 +1667,9 @@
     }
 
     function refreshRunButtonVisibility() {
-      setRunButtonVisible(Boolean(turnstileToken || hasOwnerKey()));
+      const selected = getSelectedNode();
+      const canRunForNode = Boolean(selected);
+      setRunButtonVisible(Boolean(turnstileToken || hasOwnerKey()) && canRunForNode);
     }
     // TEST_ONLY_OWNER_BYPASS_END
 
@@ -1054,12 +1688,86 @@
       if (type) statusEl.classList.add(type);
     }
 
+    function autoResizeTextarea(element) {
+      if (!element) return;
+      element.style.height = "auto";
+      element.style.height = `${element.scrollHeight}px`;
+    }
+
+    function isOnboardingDismissed() {
+      try {
+        return localStorage.getItem(ONBOARDING_DISMISSED_STORAGE_KEY) === "1";
+      } catch (_error) {
+        return false;
+      }
+    }
+
+    function renderOnboardingVisibility() {
+      if (!onboardingSectionEl) return;
+      onboardingSectionEl.hidden = isOnboardingDismissed();
+    }
+
+    function dismissOnboarding() {
+      try {
+        localStorage.setItem(ONBOARDING_DISMISSED_STORAGE_KEY, "1");
+      } catch (_error) {
+        // localStorage 접근이 제한된 환경에서도 동작이 중단되지 않도록 무시
+      }
+      if (onboardingSectionEl) onboardingSectionEl.hidden = true;
+    }
+
+    function jumpToFirstStep() {
+      dismissOnboarding();
+      setActiveTab("lock");
+      if (getNodeById("s1_lock_lead")) {
+        selectNode("s1_lock_lead");
+      } else if (drills[0]) {
+        selectNode(drills[0].id);
+      }
+      if (roadmapScrollEl) {
+        roadmapScrollEl.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+      }
+    }
+
+    function setRunLoading(isLoading) {
+      isRunLoading = Boolean(isLoading);
+      runBtnEl.classList.toggle("is-loading", isRunLoading);
+      runBtnEl.textContent = isRunLoading ? "분석 중..." : RUN_BUTTON_DEFAULT_LABEL;
+      refreshRunButtonVisibility();
+    }
+
+    function setResultLoading(isLoading) {
+      if (isLoading) {
+        resultEl.classList.add("is-loading");
+        resultEl.innerHTML = `
+          <div class="result-skeleton" aria-hidden="true">
+            <div class="bar wide"></div>
+            <div class="bar mid"></div>
+            <div class="bar wide"></div>
+            <div class="bar narrow"></div>
+          </div>
+        `;
+        return;
+      }
+      resultEl.classList.remove("is-loading");
+    }
+
+    function triggerMetaFadeIn() {
+      selectedDrillMetaEl.classList.remove("meta-fade-in");
+      void selectedDrillMetaEl.offsetWidth;
+      selectedDrillMetaEl.classList.add("meta-fade-in");
+    }
+
     function getStageById(id) {
       return stages.find((stage) => stage.id === id) || null;
     }
 
-    function getDrillById(id) {
-      return drills.find((drill) => drill.id === id) || null;
+    function getLaneById(id) {
+      return laneDefs.find((lane) => lane.id === id) || null;
+    }
+
+    function getNodeById(id) {
+      return roadmapNodes.find((node) => node.id === id) || null;
     }
 
     function createEmptyProgress() {
@@ -1071,17 +1779,11 @@
       };
     }
 
-    function ensureProgress(drillId) {
-      if (!curriculumState.perDrill[drillId] || typeof curriculumState.perDrill[drillId] !== "object") {
-        curriculumState.perDrill[drillId] = createEmptyProgress();
+    function ensureProgress(nodeId) {
+      if (!curriculumState.perNode[nodeId] || typeof curriculumState.perNode[nodeId] !== "object") {
+        curriculumState.perNode[nodeId] = createEmptyProgress();
       }
-      return curriculumState.perDrill[drillId];
-    }
-
-    function getEffectiveDone(progress) {
-      if (progress.manualOverride === true) return true;
-      if (progress.manualOverride === false) return false;
-      return Boolean(progress.autoDone);
+      return curriculumState.perNode[nodeId];
     }
 
     function getCompletionState(progress) {
@@ -1092,12 +1794,21 @@
     }
 
     function saveCurriculumState() {
+      const perDrillCompat = {};
+      drillNodes.forEach((node) => {
+        if (curriculumState.perNode[node.id]) {
+          perDrillCompat[node.id] = curriculumState.perNode[node.id];
+        }
+      });
+
       localStorage.setItem(
         CURRICULUM_STORAGE_KEY,
         JSON.stringify({
+          selectedNodeId: curriculumState.selectedNodeId,
           lastSelectedDrillId: curriculumState.lastSelectedDrillId,
           activeTab: curriculumState.activeTab,
-          perDrill: curriculumState.perDrill,
+          perNode: curriculumState.perNode,
+          perDrill: perDrillCompat,
         })
       );
     }
@@ -1109,28 +1820,44 @@
         const parsed = JSON.parse(raw);
         if (!parsed || typeof parsed !== "object") return;
 
-        if (typeof parsed.lastSelectedDrillId === "string" && getDrillById(parsed.lastSelectedDrillId)) {
+        if (typeof parsed.lastSelectedDrillId === "string" && getNodeById(parsed.lastSelectedDrillId)) {
           curriculumState.lastSelectedDrillId = parsed.lastSelectedDrillId;
         }
+
+        if (typeof parsed.selectedNodeId === "string" && getNodeById(parsed.selectedNodeId)) {
+          curriculumState.selectedNodeId = parsed.selectedNodeId;
+        } else if (typeof parsed.lastSelectedDrillId === "string" && getNodeById(parsed.lastSelectedDrillId)) {
+          curriculumState.selectedNodeId = parsed.lastSelectedDrillId;
+        }
+
         if (typeof parsed.activeTab === "string" && viewTabs.some((tab) => tab.id === parsed.activeTab)) {
           curriculumState.activeTab = parsed.activeTab;
         }
-        if (parsed.perDrill && typeof parsed.perDrill === "object") {
-          curriculumState.perDrill = parsed.perDrill;
+
+        const migrated = {};
+        if (parsed.perNode && typeof parsed.perNode === "object") {
+          Object.entries(parsed.perNode).forEach(([id, progress]) => {
+            if (getNodeById(id) && progress && typeof progress === "object") migrated[id] = progress;
+          });
+        } else if (parsed.perDrill && typeof parsed.perDrill === "object") {
+          Object.entries(parsed.perDrill).forEach(([id, progress]) => {
+            if (getNodeById(id) && progress && typeof progress === "object") migrated[id] = progress;
+          });
         }
+        curriculumState.perNode = migrated;
       } catch {
         // ignore corrupted local storage
       }
     }
 
-    function draftStorageKey(drillId) {
-      return `${DRAFT_STORAGE_KEY_PREFIX}${drillId}:v2`;
+    function draftStorageKey(nodeId) {
+      return `${DRAFT_STORAGE_KEY_PREFIX}${nodeId}:v2`;
     }
 
-    function readDraft(drillId) {
-      if (!drillId) return {};
+    function readDraft(nodeId) {
+      if (!nodeId) return {};
       try {
-        const raw = localStorage.getItem(draftStorageKey(drillId)) || "";
+        const raw = localStorage.getItem(draftStorageKey(nodeId)) || "";
         if (!raw) return {};
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === "object" ? parsed : {};
@@ -1139,18 +1866,18 @@
       }
     }
 
-    function writeDraft(drillId, values) {
-      if (!drillId) return;
-      localStorage.setItem(draftStorageKey(drillId), JSON.stringify(values || {}));
+    function writeDraft(nodeId, values) {
+      if (!nodeId) return;
+      localStorage.setItem(draftStorageKey(nodeId), JSON.stringify(values || {}));
     }
 
-    function getSelectedDrill() {
-      return getDrillById(curriculumState.lastSelectedDrillId) || drills[0];
+    function getSelectedNode() {
+      return getNodeById(curriculumState.selectedNodeId) || getNodeById(curriculumState.lastSelectedDrillId) || roadmapNodes[0] || null;
     }
 
-    function isDrillVisibleInTab(drill, tabId) {
+    function isNodeVisibleInTab(node, tabId) {
       if (tabId === "all") return true;
-      return drill.viewTags.includes(tabId);
+      return node.laneId === tabId;
     }
 
     function collectExerciseValues() {
@@ -1162,29 +1889,34 @@
     }
 
     function persistCurrentDraft() {
-      const selected = getSelectedDrill();
+      const selected = getSelectedNode();
       if (!selected) return;
       writeDraft(selected.id, collectExerciseValues());
     }
 
-    function selectDrill(drillId) {
-      if (!getDrillById(drillId)) return;
+    function selectNode(nodeId) {
+      const node = getNodeById(nodeId);
+      if (!node) return;
       persistCurrentDraft();
-      curriculumState.lastSelectedDrillId = drillId;
+      curriculumState.selectedNodeId = node.id;
+      curriculumState.lastSelectedDrillId = node.id;
       saveCurriculumState();
       renderAll();
+      refreshRunButtonVisibility();
     }
 
     function setActiveTab(tabId) {
       if (!viewTabs.some((tab) => tab.id === tabId)) return;
       curriculumState.activeTab = tabId;
       saveCurriculumState();
-      renderRoadmap();
+      renderStageLegend();
       renderTabs();
+      renderRoadmap();
     }
 
     function setManualOverride(mode) {
-      const selected = getSelectedDrill();
+      const selected = getSelectedNode();
+      if (!selected) return;
       const progress = ensureProgress(selected.id);
       if (mode === "manual_done") {
         progress.manualOverride = true;
@@ -1202,10 +1934,11 @@
 
     function renderStageLegend() {
       stageLegendEl.innerHTML = "";
-      stages.forEach((stage) => {
+      laneDefs.forEach((lane) => {
         const chip = document.createElement("span");
-        chip.className = "stage-chip";
-        chip.innerHTML = `<span class="stage-dot" style="background:${stage.color}"></span>${escapeHtml(stage.label)}`;
+        chip.className = `stage-chip${curriculumState.activeTab === lane.id ? " active" : ""}`;
+        chip.innerHTML = `<span class="stage-dot" style="background:${lane.color}"></span>${escapeHtml(lane.label)}`;
+        chip.addEventListener("click", () => setActiveTab(lane.id));
         stageLegendEl.appendChild(chip);
       });
     }
@@ -1227,88 +1960,238 @@
     function renderRoadmap() {
       const NS = "http://www.w3.org/2000/svg";
       roadmapSvgEl.innerHTML = "";
+      const rootStyle = getComputedStyle(document.documentElement);
+      const stepX = Number.parseFloat(rootStyle.getPropertyValue("--roadmap-step-x")) || 192;
+      const drillRadius = Number.parseFloat(rootStyle.getPropertyValue("--node-drill-r")) || 18;
+      const drillSelectedRadius = Number.parseFloat(rootStyle.getPropertyValue("--node-drill-r-selected")) || 21;
 
-      const sorted = [...drills].sort((a, b) => a.roadmapOrder - b.roadmapOrder);
-      const startX = 80;
-      const step = 135;
-      const y = 74;
-      const points = sorted.map((_, idx) => `${startX + idx * step},${y}`).join(" ");
-
-      const polyline = document.createElementNS(NS, "polyline");
-      polyline.setAttribute("points", points);
-      polyline.setAttribute("fill", "none");
-      polyline.setAttribute("stroke", "#bdaf9b");
-      polyline.setAttribute("stroke-width", "4");
-      roadmapSvgEl.appendChild(polyline);
-
-      sorted.forEach((drill, idx) => {
-        const stage = getStageById(drill.stageId);
-        const progress = ensureProgress(drill.id);
-        const completion = getCompletionState(progress);
-        const visible = isDrillVisibleInTab(drill, curriculumState.activeTab);
-        const selected = curriculumState.lastSelectedDrillId === drill.id;
-        const cx = startX + idx * step;
-
-        const group = document.createElementNS(NS, "g");
-        group.setAttribute("transform", `translate(${cx}, ${y})`);
-        group.style.cursor = "pointer";
-        group.style.opacity = visible ? "1" : "0.3";
-
-        const circle = document.createElementNS(NS, "circle");
-        circle.setAttribute("r", selected ? "22" : "18");
-        circle.setAttribute("stroke", stage ? stage.color : "#888");
-        circle.setAttribute("stroke-width", selected ? "4" : "2");
-
-        if (completion === "manual_done") {
-          circle.setAttribute("fill", stage ? stage.color : "#8a4f2a");
-          circle.setAttribute("stroke-width", selected ? "5" : "4");
-        } else if (completion === "auto_done") {
-          circle.setAttribute("fill", stage ? `${stage.color}55` : "#d9cfbf");
-        } else if (completion === "manual_block") {
-          circle.setAttribute("fill", "#f8d7d1");
-          circle.setAttribute("stroke", "#ad3e30");
-        } else {
-          circle.setAttribute("fill", "#fff");
-        }
-        group.appendChild(circle);
-
-        const text = document.createElementNS(NS, "text");
-        text.setAttribute("text-anchor", "middle");
-        text.setAttribute("dy", "4");
-        text.setAttribute("font-size", "11");
-        text.setAttribute("font-weight", "700");
-        text.setAttribute("fill", completion === "manual_done" ? "#fff" : "#2e2a24");
-        text.textContent = String(drill.roadmapOrder);
-        group.appendChild(text);
-
-        if (completion === "auto_done" || completion === "manual_done") {
-          const check = document.createElementNS(NS, "text");
-          check.setAttribute("text-anchor", "middle");
-          check.setAttribute("x", "13");
-          check.setAttribute("y", "-11");
-          check.setAttribute("font-size", "10");
-          check.setAttribute("font-weight", "700");
-          check.setAttribute("fill", completion === "manual_done" ? "#fff" : "#2f6f46");
-          check.textContent = "✓";
-          group.appendChild(check);
-        }
-
-        const label = document.createElementNS(NS, "text");
-        label.setAttribute("text-anchor", "middle");
-        label.setAttribute("y", "34");
-        label.setAttribute("font-size", "9");
-        label.setAttribute("fill", "#4f493f");
-        label.textContent = drill.shortLabel;
-        group.appendChild(label);
-
-        group.addEventListener("click", () => selectDrill(drill.id));
-        roadmapSvgEl.appendChild(group);
+      const laneNodes = {};
+      laneDefs.forEach((lane) => {
+        laneNodes[lane.id] = roadmapNodes
+          .filter((node) => node.laneId === lane.id)
+          .sort((a, b) => (a.order || 9999) - (b.order || 9999));
       });
+
+      const maxCount = Math.max(...laneDefs.map((lane) => laneNodes[lane.id].length), 1);
+      const startX = 260;
+      const width = Math.max(3400, startX + (maxCount - 1) * stepX + 300);
+      const height = Math.max(620, laneDefs[laneDefs.length - 1].y + 120);
+      roadmapSvgEl.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      const defs = document.createElementNS(NS, "defs");
+      const marker = document.createElementNS(NS, "marker");
+      marker.setAttribute("id", "arrowHead");
+      marker.setAttribute("markerWidth", "12");
+      marker.setAttribute("markerHeight", "10");
+      marker.setAttribute("refX", "10");
+      marker.setAttribute("refY", "5");
+      marker.setAttribute("orient", "auto");
+      const arrowPath = document.createElementNS(NS, "path");
+      arrowPath.setAttribute("d", "M0,1 L10,5 L0,9 L2.2,5 Z");
+      arrowPath.setAttribute("fill", "#8e8477");
+      marker.appendChild(arrowPath);
+      defs.appendChild(marker);
+
+      const baseShadowFilter = document.createElementNS(NS, "filter");
+      baseShadowFilter.setAttribute("id", "nodeBaseShadow");
+      baseShadowFilter.setAttribute("x", "-100%");
+      baseShadowFilter.setAttribute("y", "-100%");
+      baseShadowFilter.setAttribute("width", "300%");
+      baseShadowFilter.setAttribute("height", "300%");
+      const baseShadow = document.createElementNS(NS, "feDropShadow");
+      baseShadow.setAttribute("dx", "0");
+      baseShadow.setAttribute("dy", "2");
+      baseShadow.setAttribute("stdDeviation", "1.8");
+      baseShadow.setAttribute("flood-color", "#7d6751");
+      baseShadow.setAttribute("flood-opacity", "0.16");
+      baseShadowFilter.appendChild(baseShadow);
+      defs.appendChild(baseShadowFilter);
+
+      const selectedFilter = document.createElementNS(NS, "filter");
+      selectedFilter.setAttribute("id", "nodeSelectedFx");
+      selectedFilter.setAttribute("x", "-120%");
+      selectedFilter.setAttribute("y", "-120%");
+      selectedFilter.setAttribute("width", "340%");
+      selectedFilter.setAttribute("height", "340%");
+      const selectedShadow = document.createElementNS(NS, "feDropShadow");
+      selectedShadow.setAttribute("dx", "0");
+      selectedShadow.setAttribute("dy", "4");
+      selectedShadow.setAttribute("stdDeviation", "2.6");
+      selectedShadow.setAttribute("flood-color", "#6d5944");
+      selectedShadow.setAttribute("flood-opacity", "0.26");
+      const selectedGlow = document.createElementNS(NS, "feDropShadow");
+      selectedGlow.setAttribute("dx", "0");
+      selectedGlow.setAttribute("dy", "0");
+      selectedGlow.setAttribute("stdDeviation", "2.3");
+      selectedGlow.setAttribute("flood-color", "#d7bc9f");
+      selectedGlow.setAttribute("flood-opacity", "0.6");
+      selectedFilter.appendChild(selectedShadow);
+      selectedFilter.appendChild(selectedGlow);
+      defs.appendChild(selectedFilter);
+      roadmapSvgEl.appendChild(defs);
+
+      const nodePosition = {};
+      const lanesLayer = document.createElementNS(NS, "g");
+      const connectorLayer = document.createElementNS(NS, "g");
+      const nodesLayer = document.createElementNS(NS, "g");
+
+      const buildVerticalCurve = (x, fromY, toY) => {
+        const midY = (fromY + toY) / 2;
+        return `M ${x} ${fromY} C ${x + 24} ${midY - 18}, ${x - 24} ${midY + 18}, ${x} ${toY}`;
+      };
+
+
+      laneDefs.forEach((lane) => {
+        const y = lane.y;
+        const activeLane = curriculumState.activeTab === "all" || curriculumState.activeTab === lane.id;
+
+        const line = document.createElementNS(NS, "line");
+        line.setAttribute("x1", "180");
+        line.setAttribute("x2", String(width - 120));
+        line.setAttribute("y1", String(y));
+        line.setAttribute("y2", String(y));
+        line.setAttribute("stroke", lane.color);
+        line.setAttribute("stroke-width", activeLane ? "2.3" : "1.35");
+        line.setAttribute("stroke-linecap", "round");
+        line.setAttribute("opacity", activeLane ? "0.36" : "0.17");
+        lanesLayer.appendChild(line);
+
+        const laneLabel = document.createElementNS(NS, "text");
+        laneLabel.setAttribute("class", "roadmap-lane-label");
+        laneLabel.setAttribute("x", "20");
+        laneLabel.setAttribute("y", String(y + 5));
+        laneLabel.setAttribute("fill", activeLane ? lane.color : "#8f8679");
+        laneLabel.style.cursor = "pointer";
+        laneLabel.textContent = `${lane.label} (${laneNodes[lane.id].length})`;
+        laneLabel.addEventListener("click", () => setActiveTab(lane.id));
+        lanesLayer.appendChild(laneLabel);
+
+        laneNodes[lane.id].forEach((node, idx) => {
+          const cx = startX + idx * stepX;
+          const cy = y;
+          nodePosition[node.id] = { x: cx, y: cy, laneId: lane.id };
+
+          const progress = ensureProgress(node.id);
+          const completion = getCompletionState(progress);
+          const visible = isNodeVisibleInTab(node, curriculumState.activeTab);
+          const selected = curriculumState.selectedNodeId === node.id;
+
+          const group = document.createElementNS(NS, "g");
+          group.setAttribute("class", `roadmap-node node-drill${selected ? " node-selected" : ""}`);
+          group.setAttribute("transform", `translate(${cx}, ${cy})`);
+          group.setAttribute("data-node-id", node.id);
+          group.style.opacity = visible ? "1" : "0.3";
+          group.style.cursor = "pointer";
+
+          const body = document.createElementNS(NS, "g");
+          body.setAttribute("class", "roadmap-node-body");
+          body.setAttribute("filter", selected ? "url(#nodeSelectedFx)" : "url(#nodeBaseShadow)");
+
+          const circle = document.createElementNS(NS, "circle");
+          const radius = selected ? drillSelectedRadius : drillRadius;
+          circle.setAttribute("class", "node-shape node-drill");
+          circle.setAttribute("r", String(radius));
+          circle.setAttribute("stroke", lane.color);
+          circle.setAttribute("stroke-width", selected ? "3.2" : "2.1");
+
+          if (completion === "manual_done") {
+            circle.setAttribute("fill", lane.color);
+          } else if (completion === "auto_done") {
+            circle.setAttribute("fill", `${lane.color}66`);
+          } else if (completion === "manual_block") {
+            circle.setAttribute("fill", "#f5d8d2");
+            circle.setAttribute("stroke", "#ad3e30");
+          } else {
+            circle.setAttribute("fill", "#fffefb");
+          }
+          body.appendChild(circle);
+
+          const text = document.createElementNS(NS, "text");
+          text.setAttribute("class", "node-label");
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("dy", "4");
+          text.setAttribute("fill", completion === "manual_done" ? "#fff" : "#2e2a24");
+          text.textContent = String(node.roadmapOrder || "D");
+          body.appendChild(text);
+
+          const label = document.createElementNS(NS, "text");
+          label.setAttribute("class", "node-sub-label");
+          label.setAttribute("text-anchor", "middle");
+          label.setAttribute("y", String(radius + 17));
+          label.textContent = node.shortLabel || node.title;
+          body.appendChild(label);
+
+          if (completion === "auto_done" || completion === "manual_done") {
+            const check = document.createElementNS(NS, "text");
+            check.setAttribute("class", "node-check");
+            check.setAttribute("text-anchor", "middle");
+            check.setAttribute("x", String((selected ? drillSelectedRadius : drillRadius) + 8));
+            check.setAttribute("y", String(-(selected ? drillSelectedRadius : drillRadius) + 5));
+            check.textContent = "✓";
+            body.appendChild(check);
+          }
+
+          group.addEventListener("click", (event) => {
+            if (suppressNextNodeClick) {
+              event.preventDefault();
+              event.stopPropagation();
+              suppressNextNodeClick = false;
+              return;
+            }
+            selectNode(node.id);
+          });
+
+          group.appendChild(body);
+          nodesLayer.appendChild(group);
+        });
+      });
+
+      const progressionPairs = [
+        ["beginning", "middle"],
+        ["middle", "ending"],
+      ];
+      progressionPairs.forEach(([from, to]) => {
+        const fromLane = getLaneById(from);
+        const toLane = getLaneById(to);
+        if (!fromLane || !toLane) return;
+        const connector = document.createElementNS(NS, "path");
+        connector.setAttribute("d", buildVerticalCurve(128, fromLane.y + 16, toLane.y - 16));
+        connector.setAttribute("stroke", "#8e8477");
+        connector.setAttribute("stroke-width", "1.8");
+        connector.setAttribute("fill", "none");
+        connector.setAttribute("stroke-linecap", "round");
+        connector.setAttribute("marker-end", "url(#arrowHead)");
+        connector.setAttribute("opacity", "0.48");
+        connectorLayer.appendChild(connector);
+      });
+
+      const revisionLane = getLaneById("revision");
+      const endingLane = getLaneById("ending");
+      if (revisionLane && endingLane) {
+        const revisionLink = document.createElementNS(NS, "path");
+        revisionLink.setAttribute("d", buildVerticalCurve(156, revisionLane.y - 14, endingLane.y + 14));
+        revisionLink.setAttribute("stroke", "#7f8b5f");
+        revisionLink.setAttribute("stroke-dasharray", "8 6");
+        revisionLink.setAttribute("stroke-width", "1.35");
+        revisionLink.setAttribute("fill", "none");
+        revisionLink.setAttribute("stroke-linecap", "round");
+        revisionLink.setAttribute("opacity", "0.42");
+        connectorLayer.appendChild(revisionLink);
+      }
+
+      roadmapSvgEl.appendChild(lanesLayer);
+      roadmapSvgEl.appendChild(connectorLayer);
+      roadmapSvgEl.appendChild(nodesLayer);
     }
 
     function renderSelectedMeta() {
-      const selected = getSelectedDrill();
-      const stage = getStageById(selected.stageId);
+      const selected = getSelectedNode();
+      if (!selected) {
+        selectedDrillMetaEl.innerHTML = "<p class=\"selected-row\">선택된 노드가 없습니다.</p>";
+        triggerMetaFadeIn();
+        return;
+      }
+
       const progress = ensureProgress(selected.id);
       const completion = getCompletionState(progress);
 
@@ -1317,19 +2200,58 @@
       if (completion === "manual_done") completionText = "수동 완료";
       if (completion === "manual_block") completionText = "수동 해제";
 
+      const passSignalsHtml = Array.isArray(selected.passSignals) && selected.passSignals.length > 0
+        ? `<ul class="signal-list">${selected.passSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const failSignalsHtml = Array.isArray(selected.failSignals) && selected.failSignals.length > 0
+        ? `<ul class="signal-list">${selected.failSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const submissionChecklistHtml = Array.isArray(selected.submissionChecklist) && selected.submissionChecklist.length > 0
+        ? `<ul class="submission-list">${selected.submissionChecklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const progressClass = completion === "auto_done"
+        ? "auto"
+        : completion === "manual_done"
+          ? "done"
+          : completion === "manual_block"
+            ? "block"
+            : "pending";
+
       selectedDrillMetaEl.innerHTML = `
         <div class="selected-title">${escapeHtml(selected.title)}</div>
-        <p class="selected-row"><strong>Stage:</strong> ${escapeHtml(stage ? stage.label : "-")}</p>
-        <p class="selected-row"><strong>목표:</strong> ${escapeHtml(selected.goal)}</p>
-        <p class="selected-row"><strong>통과 기준:</strong> ${escapeHtml(selected.passRule)}</p>
-        <p class="selected-row"><strong>권장 반복 포인트:</strong> ${escapeHtml(selected.repetitionTip)}</p>
-        <p class="selected-row"><strong>참고:</strong> ${escapeHtml(selected.bookRefs)}</p>
-        <p class="selected-row"><strong>완료 상태:</strong> ${escapeHtml(completionText)}</p>
+        <section class="meta-section">
+          <h4>1. 개념 이해</h4>
+          <p class="selected-row">${escapeHtml(selected.conceptBrief || "-")}</p>
+          <p class="selected-row"><strong>왜 중요한가:</strong> ${escapeHtml(selected.conceptWhy || "-")}</p>
+        </section>
+        <section class="meta-section">
+          <h4>2. 지금 작성할 항목</h4>
+          <p class="selected-row"><strong>이번 단계에서 할 일:</strong> ${escapeHtml(selected.goal || "-")}</p>
+          <p class="selected-row"><strong>결과물:</strong> ${escapeHtml(selected.writingOutcome || "-")}</p>
+          <p class="selected-row"><strong>완료 기준:</strong> ${escapeHtml(selected.passRule || "-")}</p>
+          <p class="selected-row"><strong>반복 연습 팁:</strong> ${escapeHtml(selected.repetitionTip || "-")}</p>
+          <p class="selected-row"><strong>잘 쓴 상태:</strong></p>
+          ${passSignalsHtml}
+          <p class="selected-row"><strong>보완 필요 신호:</strong></p>
+          ${failSignalsHtml}
+        </section>
+        <section class="meta-section">
+          <h4>3. 제출 전 체크</h4>
+          ${submissionChecklistHtml}
+          <div class="progress-chip ${progressClass}">
+            <strong>현재 진행 상태:</strong> <span>${escapeHtml(completionText)}</span>
+          </div>
+        </section>
       `;
+      triggerMetaFadeIn();
     }
 
     function renderCompletionControl() {
-      const selected = getSelectedDrill();
+      const selected = getSelectedNode();
+      if (!selected) {
+        completionControlEl.innerHTML = "<p class=\"selected-row\">선택된 노드가 없습니다.</p>";
+        return;
+      }
       const progress = ensureProgress(selected.id);
       const manual = progress.manualOverride;
 
@@ -1349,16 +2271,22 @@
     }
 
     function renderExerciseFields() {
-      const selected = getSelectedDrill();
-      const draft = readDraft(selected.id);
-      exerciseFieldsEl.innerHTML = "";
-
+      const selected = getSelectedNode();
       if (!selected) {
         exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">로드맵에서 연습 항목을 선택하세요.</p>";
         return;
       }
 
-      selected.templateFields.forEach((field) => {
+      const draft = readDraft(selected.id);
+      exerciseFieldsEl.innerHTML = "";
+
+      const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
+      if (fields.length === 0) {
+        exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">이 노드는 입력 템플릿이 없습니다.</p>";
+        return;
+      }
+
+      fields.forEach((field) => {
         const wrap = document.createElement("div");
         wrap.className = "exercise-field";
         wrap.innerHTML = `
@@ -1369,48 +2297,67 @@
             data-field-key="${escapeHtml(field.key)}"
             placeholder="${escapeHtml(field.placeholder || field.label)}"
           >${escapeHtml(draft[field.key] || "")}</textarea>
+          <div class="field-guide">
+            <p><strong>어떻게 쓰나:</strong> ${escapeHtml(field.howTo || "-")}</p>
+            <p><strong>좋은 예:</strong> ${escapeHtml(field.goodExample || "-")}</p>
+            <p><strong>피해야 할 예:</strong> ${escapeHtml(field.badExample || "-")}</p>
+            <p><strong>작성 전 점검:</strong> ${escapeHtml(field.checkQuestion || "-")}</p>
+          </div>
         `;
 
         const input = wrap.querySelector("textarea");
+        autoResizeTextarea(input);
         input.addEventListener("input", () => {
+          autoResizeTextarea(input);
           if (draftSaveTimer) clearTimeout(draftSaveTimer);
           draftSaveTimer = setTimeout(() => {
             writeDraft(selected.id, collectExerciseValues());
           }, 200);
         });
-
         exerciseFieldsEl.appendChild(wrap);
       });
     }
 
     function buildPresetForRequest(selected) {
-      const stage = getStageById(selected.stageId);
+      const stage = selected.stageId ? getStageById(selected.stageId) : null;
+      const lane = getLaneById(selected.laneId);
+      const checklistText = Array.isArray(selected.submissionChecklist) && selected.submissionChecklist.length > 0
+        ? selected.submissionChecklist.join(" / ")
+        : "-";
+
       return [
         "당신은 한국어 소설 편집자입니다.",
         "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
         "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
-        `학습 단계: [${stage ? stage.label : selected.stageId}]`,
-        `선택 연습: ${selected.title} (${selected.id})`,
-        `목표: ${selected.goal}`,
-        `통과 기준: ${selected.passRule}`,
-        `권장 반복 포인트: ${selected.repetitionTip}`,
-      ].join("\n");
+        "노드 유형: 실습 노드",
+        `구조 레인: ${lane ? lane.label : selected.laneId}`,
+        stage ? `원본 Stage: ${stage.label}` : "",
+        `선택 노드: ${selected.title} (${selected.id})`,
+        `목표: ${selected.goal || "-"}`,
+        `통과 기준: ${selected.passRule || "-"}`,
+        `제출 전 체크: ${checklistText}`,
+        `권장 반복 포인트: ${selected.repetitionTip || "-"}`,
+      ].filter(Boolean).join("\n");
     }
 
     function buildStructuredExerciseText(selected, values) {
-      const stage = getStageById(selected.stageId);
+      const lane = getLaneById(selected.laneId);
+      const stage = selected.stageId ? getStageById(selected.stageId) : null;
       const lines = [];
       lines.push(PRESET_START);
       lines.push("[점검 프리셋]");
       lines.push("");
-      lines.push(`[${stage ? stage.label : selected.stageId} | ${selected.title}]`);
+      lines.push(`[${lane ? lane.label : selected.laneId} | ${selected.title}]`);
       lines.push(`ID: ${selected.id}`);
-      lines.push(`목표: ${selected.goal}`);
-      lines.push(`통과 기준: ${selected.passRule}`);
-      lines.push(`권장 반복 포인트: ${selected.repetitionTip}`);
-      lines.push(`참고: ${selected.bookRefs}`);
+      lines.push("노드 유형: 실습 노드");
+      if (stage) lines.push(`원본 Stage: ${stage.label}`);
+      lines.push(`목표: ${selected.goal || "-"}`);
+      lines.push(`통과 기준: ${selected.passRule || "-"}`);
+      lines.push(`권장 반복 포인트: ${selected.repetitionTip || "-"}`);
+      lines.push(`참고: ${selected.bookRefs || "-"}`);
+      lines.push(`제출 전 체크: ${(selected.submissionChecklist || []).join(" / ") || "-"}`);
 
-      selected.templateFields.forEach((field) => {
+      (selected.templateFields || []).forEach((field) => {
         lines.push("");
         lines.push(`${field.label}:`);
         lines.push((values[field.key] || "").trim());
@@ -1429,7 +2376,8 @@
     }
 
     function validateExerciseInput(selected, values) {
-      return selected.templateFields.every((field) => String(values[field.key] || "").trim());
+      const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
+      return fields.every((field) => String(values[field.key] || "").trim());
     }
 
     function tryRenderTurnstile() {
@@ -1463,6 +2411,7 @@
     }
 
     function renderResult(payload) {
+      setResultLoading(false);
       const parts = [];
 
       if (typeof payload.overallScore === "number") {
@@ -1501,12 +2450,12 @@
         : "<p class=\"placeholder\">응답을 해석하지 못했습니다.</p>";
     }
 
-    function applyAutoCompletionFromResponse(selectedDrillId, payload) {
+    function applyAutoCompletionFromResponse(selectedNodeId, payload) {
       if (!payload || !Array.isArray(payload.items)) return;
-      const matched = payload.items.find((item) => item && item.id === selectedDrillId) || payload.items[0];
+      const matched = payload.items.find((item) => item && item.id === selectedNodeId) || payload.items[0];
       if (!matched || typeof matched.score !== "number") return;
 
-      const progress = ensureProgress(selectedDrillId);
+      const progress = ensureProgress(selectedNodeId);
       progress.lastScore = Number(matched.score);
       progress.autoDone = Number(matched.score) >= AUTO_DONE_THRESHOLD;
       progress.lastUpdatedAt = new Date().toISOString();
@@ -1518,7 +2467,7 @@
     }
 
     async function runAnalysis() {
-      const selected = getSelectedDrill();
+      const selected = getSelectedNode();
       if (!selected) {
         setStatus("로드맵에서 연습 항목을 선택하세요.", "error");
         return;
@@ -1548,12 +2497,15 @@
         meta: {
           lang: "ko",
           version: "v2",
-          curriculumStage: selected.stageId,
+          nodeKind: "drill",
+          nodeLane: selected.laneId,
+          curriculumStage: selected.stageId || selected.laneId,
         },
       };
 
       setStatus("분석 요청 중...", null);
-      runBtnEl.disabled = true;
+      setRunLoading(true);
+      setResultLoading(true);
 
       try {
         const headers = {
@@ -1602,12 +2554,16 @@
         setStatus("분석이 완료되었습니다.", "ok");
       } catch (err) {
         setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
+        setResultLoading(false);
+        resultEl.innerHTML = "<p class=\"placeholder\">아직 분석 결과가 없습니다.</p>";
       } finally {
+        setRunLoading(false);
         refreshRunButtonVisibility();
       }
     }
 
     function renderAll() {
+      renderStageLegend();
       renderTabs();
       renderRoadmap();
       renderSelectedMeta();
@@ -1615,11 +2571,52 @@
       renderExerciseFields();
     }
 
+    function initRoadmapPan() {
+      if (!roadmapScrollEl) return;
+
+      roadmapScrollEl.addEventListener("mousedown", (event) => {
+        if (event.button !== 0) return;
+        isDragging = true;
+        didDrag = false;
+        dragStartX = event.clientX;
+        dragStartY = event.clientY;
+        originScrollLeft = roadmapScrollEl.scrollLeft;
+        originScrollTop = roadmapScrollEl.scrollTop;
+        roadmapScrollEl.classList.add("is-dragging");
+        event.preventDefault();
+      });
+
+      window.addEventListener("mousemove", (event) => {
+        if (!isDragging) return;
+        const dx = event.clientX - dragStartX;
+        const dy = event.clientY - dragStartY;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+          didDrag = true;
+        }
+        roadmapScrollEl.scrollLeft = originScrollLeft - dx;
+        roadmapScrollEl.scrollTop = originScrollTop - dy;
+      });
+
+      window.addEventListener("mouseup", () => {
+        if (!isDragging) return;
+        isDragging = false;
+        roadmapScrollEl.classList.remove("is-dragging");
+        if (didDrag) {
+          suppressNextNodeClick = true;
+          setTimeout(() => {
+            suppressNextNodeClick = false;
+          }, 90);
+        }
+      });
+    }
+
     function initBodyDraft() {
       const savedBody = localStorage.getItem(BODY_STORAGE_KEY) || "";
       if (savedBody) manuscriptBodyEl.value = savedBody;
+      autoResizeTextarea(manuscriptBodyEl);
 
       manuscriptBodyEl.addEventListener("input", () => {
+        autoResizeTextarea(manuscriptBodyEl);
         if (bodySaveTimer) clearTimeout(bodySaveTimer);
         bodySaveTimer = setTimeout(() => {
           localStorage.setItem(BODY_STORAGE_KEY, manuscriptBodyEl.value || "");
@@ -1629,12 +2626,20 @@
 
     loadCurriculumState();
     renderStageLegend();
+    renderOnboardingVisibility();
     initBodyDraft();
+    initRoadmapPan();
 
     runBtnEl.addEventListener("click", runAnalysis);
+    if (startFirstStepBtnEl) {
+      startFirstStepBtnEl.addEventListener("click", jumpToFirstStep);
+    }
 
     // TEST_ONLY_OWNER_BYPASS_START
-    if (ownerKeyInputEl) {
+    if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {
+      ownerKeyBoxEl.hidden = true;
+    }
+    if (ENABLE_OWNER_BYPASS_UI && ownerKeyInputEl) {
       const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
       if (savedOwnerKey) ownerKeyInputEl.value = savedOwnerKey;
 
