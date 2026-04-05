@@ -30,7 +30,7 @@
     }
 
     .shell {
-      width: min(1240px, calc(100% - 32px));
+      width: min(1280px, calc(100% - 32px));
       margin: 24px auto;
       padding: 22px;
       border: 1px solid var(--line);
@@ -60,9 +60,9 @@
 
     .layout {
       display: grid;
-      grid-template-columns: 1.45fr 1fr;
+      grid-template-columns: 1.25fr 1fr;
       gap: 16px;
-      min-height: 66vh;
+      min-height: 68vh;
       min-width: 0;
     }
 
@@ -101,10 +101,177 @@
       line-height: 1.55;
       font-size: 15px;
       resize: vertical;
-      min-height: 280px;
       font-family: "Iowan Old Style", "Times New Roman", serif;
       min-width: 0;
       overflow-wrap: anywhere;
+    }
+
+    .exercise-wrap {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .exercise-meta {
+      font-size: 13px;
+      color: #5b564d;
+      line-height: 1.45;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed var(--line);
+    }
+
+    .exercise-empty {
+      margin: 0;
+      color: #6f6659;
+      font-size: 14px;
+    }
+
+    .exercise-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .exercise-field label {
+      font-size: 11px;
+    }
+
+    .exercise-input {
+      min-height: 88px;
+      font-size: 14px;
+      line-height: 1.5;
+      font-family: inherit;
+    }
+
+    #manuscriptBody {
+      min-height: 180px;
+    }
+
+    .roadmap-pane {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tab {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #5b564d;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-weight: 700;
+    }
+
+    .stage-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .stage-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: #5b564d;
+      background: #fff;
+    }
+
+    .stage-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .roadmap-scroll {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 4px;
+    }
+
+    #roadmapSvg {
+      display: block;
+      width: 100%;
+      min-width: 1600px;
+      height: 180px;
+    }
+
+    .roadmap-hint {
+      margin: 0;
+      font-size: 12px;
+      color: #6f6659;
+    }
+
+    .selected-card {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+      display: grid;
+      gap: 7px;
+      font-size: 13px;
+      color: #4f493f;
+    }
+
+    .selected-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .selected-row {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .completion-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .completion-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #4f493f;
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .completion-btn.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 700;
+      background: var(--accent-soft);
     }
 
     .status {
@@ -165,40 +332,6 @@
     .card ul {
       margin: 6px 0 0;
       padding-left: 18px;
-    }
-
-    .controls {
-      display: grid;
-      gap: 8px;
-      margin-top: 4px;
-      min-width: 0;
-    }
-
-    .check {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
-      display: grid;
-      grid-template-columns: 18px 1fr;
-      gap: 10px;
-      align-items: start;
-      min-width: 0;
-    }
-
-    .check input { margin-top: 2px; }
-
-    .check-title {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 2px;
-    }
-
-    .check-desc {
-      font-size: 12px;
-      color: #5b564d;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
     }
 
     .owner-key-box {
@@ -284,14 +417,25 @@
   <main class="shell">
     <header class="head">
       <h1>소설 작성 어시스턴트</h1>
-      <p class="sub">왼쪽에 원고를 입력하고, 오른쪽 점검 항목을 선택해 분석하세요.</p>
+      <p class="sub">
+        Plot &amp; Structure-v2 흐름에 맞춘 단계형 연습 시스템입니다.
+        로드맵 노드를 선택해 기초 LOCK부터 구조/막별 실행/수정까지 순차적으로 훈련하세요.
+      </p>
     </header>
 
     <section class="layout">
       <article class="pane">
-        <h2>원고 입력</h2>
-        <label for="manuscript">초안 텍스트</label>
-        <textarea id="manuscript" placeholder="분석할 소설 원고를 입력하세요."></textarea>
+        <h2>연습 입력</h2>
+
+        <div id="selectedDrillMeta" class="selected-card"></div>
+
+        <label>연습 입력칸</label>
+        <div id="exerciseFields" class="exercise-wrap">
+          <p class="exercise-empty">로드맵에서 연습 항목을 선택하세요.</p>
+        </div>
+
+        <label for="manuscriptBody">원고 본문 (선택)</label>
+        <textarea id="manuscriptBody" placeholder="문맥이 필요할 때만 원고 본문을 추가 입력하세요."></textarea>
 
         <label>피드백 결과</label>
         <div id="result" class="result">
@@ -302,8 +446,19 @@
       </article>
 
       <aside class="pane">
-        <h2>점검 항목 선택</h2>
-        <div id="checkList" class="controls"></div>
+        <h2>구조형 학습 로드맵</h2>
+
+        <div class="roadmap-pane">
+          <div id="stageLegend" class="stage-legend"></div>
+          <div id="viewTabs" class="tabs"></div>
+          <p class="roadmap-hint">원형 노드를 클릭해 연습 항목을 선택하세요. 번호는 추천 순서입니다.</p>
+          <div class="roadmap-scroll">
+            <svg id="roadmapSvg" viewBox="0 0 3400 180" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+
+        <div id="completionControl" class="selected-card"></div>
+
         <button id="runBtn" class="run">분석 실행</button>
         <p class="usage">기본 무료 플랜: 하루 2회 (Owner 모드 제외)</p>
         <!-- TEST_ONLY_OWNER_BYPASS_START -->
@@ -323,304 +478,526 @@
     const API_ENDPOINT = "https://novel-proxy.devbyhwang.workers.dev/v1/novel-feedback";
     const TURNSTILE_SITE_KEY = "0x4AAAAAAC0mnz1HYP-CjAKi";
     const TURNSTILE_ACTION = "novel_feedback";
-
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
-    const MAX_SELECTED_CHECKS = 2;
+    const AUTO_DONE_THRESHOLD = 7.5;
 
-    const checks = [
+    const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
+    const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
+    const BODY_STORAGE_KEY = "novel-assistant:body:v2";
+
+    const stages = [
       {
-        id: "ch01_plot_basics",
-        label: "Ch1 플롯의 본질",
-        description: "LOCK 완결성과 독자 궁금증을 점검합니다.",
-        chapter: "Chapter 1",
-        goal: "Lead/Objective/Confrontation/Knockout를 한 줄로 명확화한다.",
-        passRule: "4요소가 모두 분명하고 목표의 절실함이 드러난다.",
-        recommendedOrder: 1,
-        template: [
-          "Lead(주인공) 한 줄:",
-          "Objective(핵심 목표) 한 줄:",
-          "Confrontation(핵심 대립) 한 줄:",
-          "Knockout(결말의 결정타) 한 줄:",
-          "독자가 계속 읽게 되는 질문 1개:",
-          "이번 버전에서 가장 약한 LOCK 요소 1개:",
-        ].join("\n"),
-        checked: false,
+        id: "s1",
+        order: 1,
+        label: "Stage 1 · LOCK Foundations",
+        description: "Lead/Objective/Confrontation/Knockout의 기반을 구축합니다.",
+        color: "#8a4f2a",
       },
       {
-        id: "ch02_structure_timing",
-        label: "Ch2 구조와 배치",
-        description: "사건 배열과 정보 공개 타이밍을 점검합니다.",
-        chapter: "Chapter 2",
-        goal: "사건 순서를 인과적으로 재배치해 읽기 리듬을 개선한다.",
-        passRule: "순서의 이유가 분명하고 정보 공개 타이밍이 전략적이다.",
-        recommendedOrder: 2,
-        template: [
-          "사건 카드 1~8 (한 줄씩):",
-          "현재 배치 순서 (1->8):",
-          "이 순서를 택한 이유 3가지:",
-          "정보 공개를 늦출 지점 1개:",
-          "정보 공개를 앞당길 지점 1개:",
-          "리듬이 처지는 구간 1개:",
-        ].join("\n"),
-        checked: false,
+        id: "s2",
+        order: 2,
+        label: "Stage 2 · Character/Scene/Dialogue",
+        description: "독자 공감, 장면 구성, 대사 무기를 강화합니다.",
+        color: "#1f6d72",
       },
       {
-        id: "ch03_idea_explosion",
-        label: "Ch3 아이디어 폭발",
-        description: "아이디어 양산 후 상위안을 선별합니다.",
-        chapter: "Chapter 3",
-        goal: "아이디어 풀을 넓힌 뒤 갈등 잠재력이 큰 안을 고른다.",
-        passRule: "선정 이유가 명확하고 확장 가능한 갈등 구조가 보인다.",
-        recommendedOrder: 3,
-        template: [
-          "아이디어 10개(한 줄 리스트):",
-          "최종 후보 A:",
-          "최종 후보 B:",
-          "A 선택 시 갈등 잠재력:",
-          "B 선택 시 갈등 잠재력:",
-          "이번에 실제로 밀어붙일 안:",
-        ].join("\n"),
-        checked: false,
+        id: "s3",
+        order: 3,
+        label: "Stage 3 · Macro Structure Models",
+        description: "3막과 영웅여정을 겹쳐 거시 구조를 설계합니다.",
+        color: "#4a5a9b",
       },
       {
-        id: "ch04_beginning_hook",
-        label: "Ch4 강한 시작",
-        description: "첫 장면 훅과 독자 결속을 강화합니다.",
-        chapter: "Chapter 4",
-        goal: "첫 장면에서 훅, 톤, 대립의 씨앗을 동시에 제시한다.",
-        passRule: "첫 문단이 후킹되고 다음 장면으로의 동력이 분명하다.",
-        recommendedOrder: 4,
-        template: [
-          "첫 장면 초안(약 400자):",
-          "첫 문단 훅 문장 1개:",
-          "주인공에게 바로 드러나는 결핍 1개:",
-          "반대세력/방해요소 힌트 1개:",
-          "장르 톤을 보여주는 디테일 1개:",
-          "다음 장면으로 넘어가게 하는 질문 1개:",
-        ].join("\n"),
-        checked: false,
+        id: "s4",
+        order: 4,
+        label: "Stage 4 · Act Execution",
+        description: "시작/중간/끝과 막 전환을 장면 수준으로 실행합니다.",
+        color: "#7a3f88",
       },
       {
-        id: "ch05_middle_pressure",
-        label: "Ch5 미들 압력",
-        description: "중반부 긴장과 스테이크 상승선을 점검합니다.",
-        chapter: "Chapter 5",
-        goal: "중반부에서 압박을 단계적으로 키워 Act 3로 밀어 넣는다.",
-        passRule: "정체 구간 없이 장애물과 대가가 상승한다.",
-        recommendedOrder: 5,
-        template: [
-          "중반부 핵심 장애물 3개:",
-          "각 장애물의 스테이크 상승 방식:",
-          "주인공이 잃을 것(외적/내적):",
-          "중반부 반전 포인트 1개:",
-          "긴장 저하 장면 1개와 수정 방향:",
-          "Act 3로 밀어 넣는 사건 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch06_ending_knockout",
-        label: "Ch6 엔딩 설계",
-        description: "결말의 회수율과 감정 타격을 점검합니다.",
-        chapter: "Chapter 6",
-        goal: "스토리 질문을 회수하면서 감정적으로 강한 엔딩을 만든다.",
-        passRule: "필연성 있는 결말이며 독자에게 뚜렷한 여운을 남긴다.",
-        recommendedOrder: 6,
-        template: [
-          "결말안 A(승리형):",
-          "결말안 B(대가형/실패형):",
-          "각 결말에서 회수되는 질문:",
-          "독자 감정 타격 포인트 1개:",
-          "필연성을 높일 복선 2개:",
-          "마지막 문장 후보 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch07_scene_power",
-        label: "Ch7 장면 단위 강화",
-        description: "장면의 목표-충돌-변화를 점검합니다.",
-        chapter: "Chapter 7",
-        goal: "각 장면이 플롯을 전진시키는 기능을 갖추게 한다.",
-        passRule: "장면마다 목적과 충돌, 전후 변화가 모두 확인된다.",
-        recommendedOrder: 7,
-        template: [
-          "대상 장면 요약(3문장):",
-          "장면 목표(누가 무엇을 원하는가):",
-          "장면 충돌(무엇이 막는가):",
-          "장면 변화(전/후 상태 차이):",
-          "대사/행동 중 긴장 약한 부분 1개:",
-          "장면 종료 후 다음 장면으로 밀어내는 힘 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch08_complexity_theme",
-        label: "Ch8 복합 플롯/테마",
-        description: "테마 일관성과 서브플롯 연결을 점검합니다.",
-        chapter: "Chapter 8",
-        goal: "복잡도를 통제하면서 테마 중심으로 플롯 층위를 확장한다.",
-        passRule: "메인테마와 서브플롯의 연결 관계가 명확하다.",
-        recommendedOrder: 8,
-        template: [
-          "메인테마 1문장:",
-          "서브플롯 A 요약:",
-          "서브플롯 B 요약:",
-          "각 서브플롯이 메인테마를 강화하는 방식:",
-          "복잡도를 낮춰야 할 요소 1개:",
-          "독자가 따라가기 위한 연결 브리지 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch09_character_arc",
-        label: "Ch9 캐릭터 아크",
-        description: "사건과 내면 변화의 연동을 점검합니다.",
-        chapter: "Chapter 9",
-        goal: "플롯 사건이 주인공의 내면 변화를 유도하도록 설계한다.",
-        passRule: "시작-중간-끝 변화가 사건과 인과적으로 연결된다.",
-        recommendedOrder: 9,
-        template: [
-          "주인공 시작 상태(신념/결핍):",
-          "중간 전환 사건:",
-          "최종 변화 상태:",
-          "변화를 촉발한 핵심 선택 1개:",
-          "변화가 세계/관계에 미친 영향:",
-          "아크가 약해지는 구간 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch10_plotting_system",
-        label: "Ch10 플로팅 시스템",
-        description: "OP/NOP 성향 기반 실행 계획을 점검합니다.",
-        chapter: "Chapter 10",
-        goal: "자신에게 맞는 플로팅 시스템을 정하고 실행 가능성을 높인다.",
-        passRule: "7일 계획이 현실적이고 복구 규칙까지 포함한다.",
-        recommendedOrder: 10,
-        template: [
-          "내 성향 선택: OP(아웃라이너) / NOP(비아웃라이너):",
-          "이번 작품용 하이브리드 플로팅 방식:",
-          "7일 작업 계획(일자별 목표):",
-          "하루 최소 분량/시간 기준:",
-          "계획 이탈 시 복구 규칙 1개:",
-          "이번 주 체크포인트 2개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch11_revision_system",
-        label: "Ch11 플롯 수정",
-        description: "진단 기반 재작성 우선순위를 점검합니다.",
-        chapter: "Chapter 11",
-        goal: "1차 원고의 플롯 문제를 진단하고 수정 순서를 고정한다.",
-        passRule: "문제-우선순위-재작성 액션이 일관된 체계로 제시된다.",
-        recommendedOrder: 11,
-        template: [
-          "1차 원고의 플롯 문제 5개:",
-          "문제별 심각도(상/중/하):",
-          "수정 우선순위(1~5):",
-          "즉시 재작성할 장면 2개:",
-          "삭제/축약할 장면 1개:",
-          "수정 완료 판정 기준 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch12_plot_patterns",
-        label: "Ch12 패턴 적용",
-        description: "패턴 활용과 클리셰 회피를 점검합니다.",
-        chapter: "Chapter 12",
-        goal: "플롯 패턴을 차용하되 원고 맥락에 맞게 변형한다.",
-        passRule: "패턴 적용 이유와 클리셰 회피 장치가 구체적이다.",
-        recommendedOrder: 12,
-        template: [
-          "적용할 플롯 패턴 1개:",
-          "선택 이유:",
-          "원고에 맞게 비틀 변형 포인트 3개:",
-          "클리셰로 보일 위험 1개:",
-          "위험 회피를 위한 장면 장치 1개:",
-          "패턴 적용 후 LOCK 재점검 결과:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch13_problem_cures",
-        label: "Ch13 문제 처방",
-        description: "플롯 문제의 원인 진단과 처방을 점검합니다.",
-        chapter: "Chapter 13",
-        goal: "원고의 대표 문제를 빠르게 진단하고 즉시 수정안을 만든다.",
-        passRule: "문제-원인-처방이 일대일로 매칭되고 실행 가능하다.",
-        recommendedOrder: 13,
-        template: [
-          "현재 원고의 문제 체크(장면 평면/동기 약함/우연 해결 등):",
-          "최우선 문제 1개:",
-          "원인 진단:",
-          "처방(구체 수정 행동 3개):",
-          "24시간 내 적용 가능한 수정 1개:",
-          "재발 방지 규칙 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "ch14_toolbox",
-        label: "Ch14 도구 상자",
-        description: "Show/Tell 교정과 개인 도구화를 점검합니다.",
-        chapter: "Chapter 14",
-        goal: "문장/장면 개선 도구를 추출해 재사용 가능한 규칙으로 만든다.",
-        passRule: "교정 결과가 분명하고 개인 툴셋으로 정리된다.",
-        recommendedOrder: 14,
-        template: [
-          "Show→Tell 교정 대상 문장 5개:",
-          "각 문장의 개선 버전:",
-          "이번 작품에서 쓸 개인 도구 5개:",
-          "도구별 사용 트리거:",
-          "남용 위험 도구 1개와 제한 규칙:",
-          "다음 원고에 이식할 규칙 1개:",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "appendix_critical_points",
-        label: "부록A 핵심 체크",
-        description: "핵심 결손 요소를 체크리스트로 점검합니다.",
-        chapter: "Appendix A",
-        goal: "치명 결손을 빠르게 탐지하고 보완 우선순위를 정한다.",
-        passRule: "LOCK/몰입/대립 기준의 누락 항목과 보완 액션이 제시된다.",
-        recommendedOrder: 15,
-        template: [
-          "LOCK 점검표(Lead/Objective/Confrontation/Knockout):",
-          "독자 몰입 저해 요소 3개:",
-          "반대세력 강도 점검:",
-          "핵심 질문 회수 여부:",
-          "치명 누락 1개와 보완 액션:",
-          "전체 완성도 자체 점수(10점):",
-        ].join("\n"),
-        checked: false,
-      },
-      {
-        id: "appendix_backcover_copy",
-        label: "부록B 백커버 카피",
-        description: "스토리 질문 중심 백커버 카피를 점검합니다.",
-        chapter: "Appendix B",
-        goal: "작품의 후킹 포인트를 한 페이지 카피로 압축한다.",
-        passRule: "리드/갈등/질문/톤이 짧은 카피에 모두 반영된다.",
-        recommendedOrder: 16,
-        template: [
-          "리드 캐릭터 이름/직업:",
-          "돌아올 수 없는 문턱 사건:",
-          "주요 반대세력:",
-          "스토리 질문 1문장:",
-          "분위기 키워드 3개:",
-          "백커버 카피 초안(5~7문장):",
-        ].join("\n"),
-        checked: false,
+        id: "s5",
+        order: 5,
+        label: "Stage 5 · Revision & Toolbox",
+        description: "수정 우선순위와 도구 상자 규칙으로 완성도를 높입니다.",
+        color: "#556b2f",
       },
     ];
 
-    const manuscriptEl = document.getElementById("manuscript");
-    const checkListEl = document.getElementById("checkList");
+    const drills = [
+      {
+        id: "s1_lock_lead",
+        stageId: "s1",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 1,
+        title: "LOCK: Lead",
+        shortLabel: "Lead",
+        goal: "독자가 끝까지 따라갈 Lead의 매력/취약점/관점 진입점을 고정한다.",
+        passRule: "Lead의 욕망과 결핍, 독자 공감 포인트가 동시에 드러난다.",
+        repetitionTip: "Lead 소개 장면을 3버전으로 압축 리라이트한다.",
+        bookRefs: "Ch1",
+        templateFields: [
+          { key: "lead_role", label: "Lead의 역할/정체성 한 줄", placeholder: "예: 몰락 직전의 전직 경찰" },
+          { key: "lead_wound", label: "Lead의 결핍 또는 상처", placeholder: "무엇이 Lead를 불안하게 하는가" },
+          { key: "lead_empathy", label: "독자 공감 장치 2개", placeholder: "취약점, 관계, 윤리 선택 등" },
+          { key: "lead_voice", label: "Lead 시점/목소리 샘플 3문장", placeholder: "고유한 리듬으로 작성" },
+          { key: "lead_risk", label: "Lead가 실패할 때 잃는 것", placeholder: "외적/내적 손실을 분리" },
+        ],
+      },
+      {
+        id: "s1_lock_objective",
+        stageId: "s1",
+        viewTags: ["all", "macro"],
+        roadmapOrder: 2,
+        title: "LOCK: Objective",
+        shortLabel: "Objective",
+        goal: "스토리를 전진시키는 단일 지배 목표를 명료화한다.",
+        passRule: "목표가 구체적이고 필연적이며 스테이크가 충분히 크다.",
+        repetitionTip: "목표 문장을 20자/40자/80자 버전으로 반복한다.",
+        bookRefs: "Ch1",
+        templateFields: [
+          { key: "objective_one", label: "Lead의 지배 목표 1문장", placeholder: "얻거나 벗어나야 하는 핵심" },
+          { key: "objective_reason", label: "왜 지금 이 목표여야 하는가", placeholder: "시간 압박과 필연성" },
+          { key: "objective_stakes", label: "실패 시 대가(외적/내적)", placeholder: "각 1개 이상" },
+          { key: "objective_story_question", label: "스토리 질문(Will ...?)", placeholder: "독자가 붙잡힐 질문 1개" },
+          { key: "objective_focus", label: "목표 분산 요소와 제거 방안", placeholder: "서브목표 정리" },
+        ],
+      },
+      {
+        id: "s1_lock_confrontation",
+        stageId: "s1",
+        viewTags: ["all", "macro"],
+        roadmapOrder: 3,
+        title: "LOCK: Confrontation",
+        shortLabel: "Confrontation",
+        goal: "목표를 가로막는 대립 세력을 층위별로 설계한다.",
+        passRule: "대립이 점증 구조를 이루고 Lead를 적극적으로 압박한다.",
+        repetitionTip: "동일 장면을 대립 강도 3단계로 재작성한다.",
+        bookRefs: "Ch1, Ch5",
+        templateFields: [
+          { key: "opposition_primary", label: "주요 반대세력 1개", placeholder: "인물/시스템/환경" },
+          { key: "opposition_secondary", label: "보조 장애물 3개", placeholder: "각각 다른 성격으로" },
+          { key: "opposition_escalation", label: "압박 상승선(초반-중반-후반)", placeholder: "단계별 사건" },
+          { key: "opposition_counter", label: "Lead 대응 전략과 실패 지점", placeholder: "각 단계 대응" },
+          { key: "opposition_worry", label: "독자가 걱정하게 되는 근거", placeholder: "구체 근거 2개" },
+        ],
+      },
+      {
+        id: "s1_lock_knockout",
+        stageId: "s1",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 4,
+        title: "LOCK: Knockout",
+        shortLabel: "Knockout",
+        goal: "결말에서 감정과 인과가 동시에 타격하는 Knockout을 설계한다.",
+        passRule: "결말이 스토리 질문을 회수하고 여운을 남긴다.",
+        repetitionTip: "결말 A/B/C를 감정 톤만 바꿔 비교한다.",
+        bookRefs: "Ch1, Ch6",
+        templateFields: [
+          { key: "knockout_ending", label: "결말 핵심 사건 1문장", placeholder: "무엇이 결정타인가" },
+          { key: "knockout_resolution", label: "회수되는 질문/복선", placeholder: "최소 2개" },
+          { key: "knockout_cost", label: "승리 또는 실패의 대가", placeholder: "독자가 체감할 가격" },
+          { key: "knockout_resonance", label: "마지막 페이지의 울림 장치", placeholder: "이미지/문장/행동" },
+          { key: "knockout_alt", label: "대안 결말 1개와 비교", placeholder: "현재 결말을 택한 이유" },
+        ],
+      },
+      {
+        id: "s2_reader_empathy_and_likability",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 5,
+        title: "독자 공감 & 호감도 설계",
+        shortLabel: "Empathy",
+        goal: "Lead가 완벽하지 않아도 독자가 정서적으로 붙도록 만든다.",
+        passRule: "공감 유발 장치와 인간적 모순이 균형 있게 제시된다.",
+        repetitionTip: "공감 장치를 삭제/추가한 두 버전을 비교한다.",
+        bookRefs: "Ch1, Ch9",
+        templateFields: [
+          { key: "empathy_hook", label: "독자 공감 트리거 3개", placeholder: "취약성/책임/선의" },
+          { key: "likability_risk", label: "호감도를 해치는 요소", placeholder: "불필요한 반감 포인트" },
+          { key: "human_contradiction", label: "인간적 모순 1개", placeholder: "양면성을 드러내는 장치" },
+          { key: "relationship_anchor", label: "관계 앵커 장면", placeholder: "독자가 감정 투자할 관계" },
+          { key: "revision_action", label: "다음 리라이트 액션", placeholder: "즉시 수정할 문단/장면" },
+        ],
+      },
+      {
+        id: "s2_character_arc_linkage",
+        stageId: "s2",
+        viewTags: ["all", "micro", "act"],
+        roadmapOrder: 6,
+        title: "캐릭터 아크 연동",
+        shortLabel: "Arc",
+        goal: "사건 전개와 내면 변화를 인과로 연결한다.",
+        passRule: "시작-전환-끝의 변화가 사건 선택과 맞물린다.",
+        repetitionTip: "아크 변화만 추린 12줄 로그를 작성한다.",
+        bookRefs: "Ch9",
+        templateFields: [
+          { key: "arc_start", label: "시작 신념/결핍", placeholder: "무엇을 믿고 무엇이 부족한가" },
+          { key: "arc_turn", label: "중간 전환 사건", placeholder: "변화를 강제한 사건" },
+          { key: "arc_choice", label: "결정적 선택", placeholder: "Lead가 스스로 선택한 순간" },
+          { key: "arc_end", label: "끝의 내면 상태", placeholder: "무엇이 달라졌는가" },
+          { key: "arc_evidence", label: "변화 증거 장면 2개", placeholder: "행동/대사 증거" },
+        ],
+      },
+      {
+        id: "s2_scene_goal_conflict_change",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 7,
+        title: "장면 목적-충돌-변화",
+        shortLabel: "Scene GCC",
+        goal: "각 장면이 플롯을 전진시키는 기능을 갖추게 한다.",
+        passRule: "장면마다 목적/충돌/전후 변화가 모두 확인된다.",
+        repetitionTip: "목적만 바꾼 변형 장면 1개를 추가 작성한다.",
+        bookRefs: "Ch7",
+        templateFields: [
+          { key: "scene_summary", label: "대상 장면 요약 3문장", placeholder: "누가/무엇을/왜" },
+          { key: "scene_goal", label: "장면 목표", placeholder: "이번 장면에서 얻으려는 것" },
+          { key: "scene_conflict", label: "장면 충돌", placeholder: "누가/무엇이 막는가" },
+          { key: "scene_change", label: "장면 전후 변화", placeholder: "상태 차이" },
+          { key: "scene_push", label: "다음 장면으로 밀어내는 힘", placeholder: "질문/위기/결정" },
+        ],
+      },
+      {
+        id: "s2_scene_four_chords",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 8,
+        title: "장면 4코드(Action/Reaction/Setup/Deepening)",
+        shortLabel: "4 Chords",
+        goal: "장면을 action 중심으로 설계하되 깊이 코드를 동시 배치한다.",
+        passRule: "한 장면 안에서 4코드가 목적에 맞게 작동한다.",
+        repetitionTip: "동일 장면의 reaction 비율만 높인 버전을 작성한다.",
+        bookRefs: "Ch7",
+        templateFields: [
+          { key: "chord_action", label: "Action 비트", placeholder: "인물이 하는 행동" },
+          { key: "chord_reaction", label: "Reaction 비트", placeholder: "감정/반응" },
+          { key: "chord_setup", label: "Setup 비트", placeholder: "맥락/상황 배치" },
+          { key: "chord_deepening", label: "Deepening 비트", placeholder: "의미 심화" },
+          { key: "chord_balance", label: "코드 균형 점검", placeholder: "과한/부족한 코드 조정" },
+        ],
+      },
+      {
+        id: "s2_dialogue_voice_distinction",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 9,
+        title: "대사 보이스 분화",
+        shortLabel: "Voice",
+        goal: "인물별 말투와 어휘로 대사만 읽어도 화자가 구분되게 한다.",
+        passRule: "핵심 인물 2명 이상이 문장 리듬과 어휘에서 분리된다.",
+        repetitionTip: "같은 정보를 2인 대사 버전으로 재작성한다.",
+        bookRefs: "Ch14",
+        templateFields: [
+          { key: "voice_char_a", label: "인물 A 말투 규칙 3개", placeholder: "길이/어휘/억양" },
+          { key: "voice_char_b", label: "인물 B 말투 규칙 3개", placeholder: "A와 대비" },
+          { key: "voice_sample", label: "대화 샘플 8~12줄", placeholder: "화자 표기 없이 작성" },
+          { key: "voice_check", label: "화자 구분 실패 지점", placeholder: "모호한 줄 수정" },
+          { key: "voice_fix", label: "수정 원칙", placeholder: "다음 대사 작성 규칙" },
+        ],
+      },
+      {
+        id: "s2_dialogue_as_confrontation",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 10,
+        title: "대사 = 대립 무기",
+        shortLabel: "Dialogue Clash",
+        goal: "대사를 정보 전달이 아니라 충돌/압박 도구로 사용한다.",
+        passRule: "대화의 각 턴이 목표 충돌에 기여한다.",
+        repetitionTip: "설명 대사 3줄을 대립형 대사로 치환한다.",
+        bookRefs: "Ch14",
+        templateFields: [
+          { key: "dialogue_goal_a", label: "인물 A의 대화 목표", placeholder: "숨은 목적 포함" },
+          { key: "dialogue_goal_b", label: "인물 B의 대화 목표", placeholder: "A와 충돌되는 목표" },
+          { key: "dialogue_weapon", label: "사용할 언어 무기", placeholder: "회피/비꼼/압박/침묵 등" },
+          { key: "dialogue_exchange", label: "핵심 교환 10줄", placeholder: "턴마다 판세 변화" },
+          { key: "dialogue_shift", label: "대화 후 관계 변화", placeholder: "전/후 차이" },
+        ],
+      },
+      {
+        id: "s3_three_act_spine",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 11,
+        title: "3막 척추 설계",
+        shortLabel: "3-Act",
+        goal: "Act I/II/III의 기능을 분리해 플롯 척추를 만든다.",
+        passRule: "각 막의 목적과 전환점이 명확하게 정의된다.",
+        repetitionTip: "3막 요약을 9문장 버전으로 압축한다.",
+        bookRefs: "Ch2",
+        templateFields: [
+          { key: "act1_function", label: "Act I 기능", placeholder: "도입/설정/교란" },
+          { key: "act2_function", label: "Act II 기능", placeholder: "대립/확장/압박" },
+          { key: "act3_function", label: "Act III 기능", placeholder: "결전/해결/여운" },
+          { key: "act_transitions", label: "막 전환 사건 2개", placeholder: "Act I→II, II→III" },
+          { key: "act_balance", label: "분량/리듬 점검", placeholder: "막별 밀도 조정" },
+        ],
+      },
+      {
+        id: "s3_disturbance_two_doorways",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 12,
+        title: "Disturbance & Two Doorways",
+        shortLabel: "Doorways",
+        goal: "초기 교란과 두 개의 문턱 사건으로 구조 추진력을 만든다.",
+        passRule: "교란-1문턱-2문턱이 인과적으로 연결된다.",
+        repetitionTip: "교란 사건을 크기만 다르게 2안 작성한다.",
+        bookRefs: "Ch2",
+        templateFields: [
+          { key: "disturbance_event", label: "초기 Disturbance", placeholder: "평온을 깨는 사건" },
+          { key: "doorway1", label: "Doorway 1", placeholder: "돌아갈 수 없는 선택" },
+          { key: "doorway2", label: "Doorway 2", placeholder: "최종 결전을 향한 진입" },
+          { key: "doorway_cost", label: "각 문턱의 대가", placeholder: "무엇을 잃는가" },
+          { key: "doorway_chain", label: "인과 체인", placeholder: "A 때문에 B가 발생" },
+        ],
+      },
+      {
+        id: "s3_hero_journey_overlay",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 13,
+        title: "영웅여정 오버레이",
+        shortLabel: "Hero Overlay",
+        goal: "3막 구조 위에 영웅여정 핵심 단계를 얹어 구조 일관성을 높인다.",
+        passRule: "주요 여정 단계가 막 구조와 충돌 없이 정렬된다.",
+        repetitionTip: "불필요한 여정 단계를 2개 제거해도 유지되는지 점검한다.",
+        bookRefs: "Ch2",
+        templateFields: [
+          { key: "hero_world", label: "일상 세계", placeholder: "Lead의 기본 상태" },
+          { key: "hero_call", label: "부름/교란", placeholder: "모험으로 끌어당기는 힘" },
+          { key: "hero_threshold", label: "문턱 통과", placeholder: "돌이킬 수 없는 진입" },
+          { key: "hero_dark_night", label: "암흑의 순간", placeholder: "내적 붕괴 지점" },
+          { key: "hero_return", label: "귀환/변화", placeholder: "새 질서에서의 위치" },
+        ],
+      },
+      {
+        id: "s3_plot_points_midpoint",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 14,
+        title: "플롯 포인트 & 미드포인트",
+        shortLabel: "Midpoint",
+        goal: "중반부 축을 강화해 전반/후반의 긴장 곡선을 재정렬한다.",
+        passRule: "미드포인트 이후 갈등 강도가 체감 가능하게 상승한다.",
+        repetitionTip: "미드포인트 사건만 바꾼 대안 구조를 작성한다.",
+        bookRefs: "Ch5",
+        templateFields: [
+          { key: "plot_point1", label: "Plot Point 1", placeholder: "Act II를 여는 사건" },
+          { key: "midpoint", label: "Midpoint 사건", placeholder: "판세 전환" },
+          { key: "plot_point2", label: "Plot Point 2", placeholder: "Act III 진입 장치" },
+          { key: "stakes_shift", label: "미드포인트 전후 스테이크 변화", placeholder: "수치/감정 모두" },
+          { key: "pace_adjust", label: "리듬 조정 액션", placeholder: "삭제/추가/재배치" },
+        ],
+      },
+      {
+        id: "s3_subplot_thematic_integration",
+        stageId: "s3",
+        viewTags: ["all", "macro"],
+        roadmapOrder: 15,
+        title: "서브플롯-테마 통합",
+        shortLabel: "Subplot",
+        goal: "서브플롯을 메인 갈등/테마와 결속해 복잡도를 통제한다.",
+        passRule: "각 서브플롯의 존재 이유와 수렴 지점이 명확하다.",
+        repetitionTip: "서브플롯 1개를 제거했을 때 영향 분석을 작성한다.",
+        bookRefs: "Ch8",
+        templateFields: [
+          { key: "theme_line", label: "메인 테마 1문장", placeholder: "작품이 묻는 핵심" },
+          { key: "subplot_a", label: "서브플롯 A 목적", placeholder: "메인플롯과 연결점" },
+          { key: "subplot_b", label: "서브플롯 B 목적", placeholder: "대비/보완 관계" },
+          { key: "merge_point", label: "수렴 지점", placeholder: "클라이맥스에서 만나는 방식" },
+          { key: "complexity_risk", label: "복잡도 리스크와 완화", placeholder: "독자 혼란 방지" },
+        ],
+      },
+      {
+        id: "s4_beginning_hook_entry",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 16,
+        title: "시작부 훅 & 진입",
+        shortLabel: "Beginning Hook",
+        goal: "첫 장면에서 후킹, 톤, 핵심 질문의 씨앗을 동시에 심는다.",
+        passRule: "첫 페이지가 다음 페이지를 강제한다.",
+        repetitionTip: "첫 문단 3개 훅 버전을 비교 후 최종안 고른다.",
+        bookRefs: "Ch4",
+        templateFields: [
+          { key: "opening_scene", label: "오프닝 장면 요약", placeholder: "400자 내외" },
+          { key: "opening_hook", label: "훅 문장", placeholder: "첫 문단 핵심" },
+          { key: "opening_question", label: "독자 질문", placeholder: "왜 계속 읽게 되는가" },
+          { key: "opening_tone", label: "장르 톤 신호", placeholder: "디테일 2개" },
+          { key: "opening_bridge", label: "다음 장면 브리지", placeholder: "전환 장치" },
+        ],
+      },
+      {
+        id: "s4_beginning_world_opposition",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 17,
+        title: "시작부 세계/대립 소개",
+        shortLabel: "World & Opp",
+        goal: "세계 규칙과 대립 축을 과잉 설명 없이 제시한다.",
+        passRule: "설정이 설명문이 아니라 사건 안에서 작동한다.",
+        repetitionTip: "설정 설명 5줄을 행동 기반 장면으로 치환한다.",
+        bookRefs: "Ch4",
+        templateFields: [
+          { key: "world_rule", label: "세계 규칙 3개", placeholder: "독자가 알아야 할 최소 규칙" },
+          { key: "opposition_seed", label: "대립 씨앗", placeholder: "초반에 드러나는 저항" },
+          { key: "context_delivery", label: "맥락 전달 방식", placeholder: "대사/행동/소도구" },
+          { key: "info_overload", label: "과잉 설명 위험 구간", placeholder: "삭제/축약 포인트" },
+          { key: "reader_clarity", label: "독자 이해 체크", placeholder: "혼란 가능 질문 1개" },
+        ],
+      },
+      {
+        id: "s4_middle_escalation_pressure",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 18,
+        title: "중반부 압박 상승",
+        shortLabel: "Middle Pressure",
+        goal: "중반부를 정체 없이 압박 상승 구조로 만든다.",
+        passRule: "장애물/대가/시간압박이 단계적으로 상승한다.",
+        repetitionTip: "중반부 5개 사건의 강도 점수를 재배열한다.",
+        bookRefs: "Ch5",
+        templateFields: [
+          { key: "middle_obstacles", label: "중반 핵심 장애물 3개", placeholder: "각각 성격 다르게" },
+          { key: "middle_cost", label: "각 장애물의 비용", placeholder: "잃는 것/희생" },
+          { key: "middle_timer", label: "시간 압박 장치", placeholder: "데드라인/카운트다운" },
+          { key: "middle_dip", label: "긴장 하락 구간", placeholder: "원인과 해결" },
+          { key: "middle_push", label: "Act III로 밀어넣는 사건", placeholder: "반드시 일어날 사건" },
+        ],
+      },
+      {
+        id: "s4_middle_complications_reversals",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 19,
+        title: "중반부 합병증/반전",
+        shortLabel: "Complications",
+        goal: "중반부의 예측가능성을 깨는 합병증과 반전을 설계한다.",
+        passRule: "반전이 우연이 아니라 기존 정보에서 파생된다.",
+        repetitionTip: "반전 복선만 추린 체크리스트를 만든다.",
+        bookRefs: "Ch5, Ch12",
+        templateFields: [
+          { key: "complication_list", label: "합병증 3개", placeholder: "상황이 더 어려워지는 요소" },
+          { key: "reversal_point", label: "핵심 반전 지점", placeholder: "기대 뒤집기" },
+          { key: "foreshadow", label: "사전 복선", placeholder: "이미 심어둔 신호" },
+          { key: "cause_chain", label: "인과 검증", placeholder: "왜 이런 반전이 가능한가" },
+          { key: "post_reversal", label: "반전 이후 전략 변화", placeholder: "Lead가 달라지는 행동" },
+        ],
+      },
+      {
+        id: "s4_ending_knockout_resolution",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 20,
+        title: "엔딩 Knockout 해결",
+        shortLabel: "Ending",
+        goal: "클라이맥스와 해결부에서 감정 타격과 인과 회수를 완성한다.",
+        passRule: "핵심 갈등이 해소되고 여운이 남는다.",
+        repetitionTip: "결말 문단을 리듬/어조만 바꿔 2안 작성한다.",
+        bookRefs: "Ch6",
+        templateFields: [
+          { key: "final_battle", label: "최종 대결 장면", placeholder: "누가 무엇을 걸고 싸우는가" },
+          { key: "resolution_thread", label: "해결되는 주요 실마리", placeholder: "루즈엔드 처리" },
+          { key: "emotional_hit", label: "감정 타격 포인트", placeholder: "독자가 느껴야 할 감정" },
+          { key: "cost_of_win", label: "승리/패배의 대가", placeholder: "단맛/쓴맛 균형" },
+          { key: "ending_line", label: "마지막 문장 후보", placeholder: "기억에 남는 문장" },
+        ],
+      },
+      {
+        id: "s4_last_page_resonance",
+        stageId: "s4",
+        viewTags: ["all", "act", "micro"],
+        roadmapOrder: 21,
+        title: "마지막 페이지 울림",
+        shortLabel: "Resonance",
+        goal: "엔딩 직후 독자에게 남는 정서적 공명을 강화한다.",
+        passRule: "마지막 페이지의 언어/이미지가 작품 의미를 확장한다.",
+        repetitionTip: "마지막 페이지를 시각 이미지 중심으로 재작성한다.",
+        bookRefs: "Ch6",
+        templateFields: [
+          { key: "resonance_theme", label: "마지막 페이지의 주제 신호", placeholder: "한 문장" },
+          { key: "resonance_image", label: "잔상 이미지/행동", placeholder: "독자 뇌리에 남을 장면" },
+          { key: "resonance_language", label: "언어 톤/리듬 전략", placeholder: "단문/장문, 어휘 밀도" },
+          { key: "resonance_risk", label: "과잉 감상 리스크", placeholder: "절제 포인트" },
+          { key: "resonance_rewrite", label: "개선 리라이트 1회", placeholder: "최종 수정안" },
+        ],
+      },
+      {
+        id: "s5_revision_triage",
+        stageId: "s5",
+        viewTags: ["all", "revision"],
+        roadmapOrder: 22,
+        title: "수정 트리아지",
+        shortLabel: "Triage",
+        goal: "문제의 심각도와 영향도로 수정 우선순위를 고정한다.",
+        passRule: "수정 순서가 명확하고 실행 가능한 단위로 분해된다.",
+        repetitionTip: "상위 3개 문제를 24시간 액션으로 변환한다.",
+        bookRefs: "Ch11",
+        templateFields: [
+          { key: "triage_issues", label: "문제 목록 5개", placeholder: "플롯/캐릭터/장면/문장" },
+          { key: "triage_severity", label: "심각도/영향도 평가", placeholder: "상/중/하 + 독자 영향" },
+          { key: "triage_order", label: "수정 우선순위 1~5", placeholder: "왜 이 순서인지" },
+          { key: "triage_action", label: "즉시 착수 액션 3개", placeholder: "장면 단위" },
+          { key: "triage_done_def", label: "완료 판정 기준", placeholder: "수정 끝났다고 볼 조건" },
+        ],
+      },
+      {
+        id: "s5_common_problem_cures",
+        stageId: "s5",
+        viewTags: ["all", "revision"],
+        roadmapOrder: 23,
+        title: "공통 플롯 문제 처방",
+        shortLabel: "Problem Cures",
+        goal: "반복되는 플롯 문제를 원인-처방 매칭으로 해결한다.",
+        passRule: "문제마다 실행 가능한 처방이 1:1로 연결된다.",
+        repetitionTip: "같은 처방을 다른 장면에 이식해본다.",
+        bookRefs: "Ch13",
+        templateFields: [
+          { key: "problem_pick", label: "최우선 문제 1개", placeholder: "예: 동기 약함" },
+          { key: "problem_root", label: "근본 원인", placeholder: "왜 반복되는가" },
+          { key: "problem_cure", label: "처방 3단계", placeholder: "구체 행동으로" },
+          { key: "problem_test", label: "처방 검증 방식", placeholder: "읽기 테스트/체크리스트" },
+          { key: "problem_prevent", label: "재발 방지 규칙", placeholder: "다음 초안용 규칙" },
+        ],
+      },
+      {
+        id: "s5_show_tell_and_precision_tools",
+        stageId: "s5",
+        viewTags: ["all", "revision", "micro"],
+        roadmapOrder: 24,
+        title: "Show/Tell & Precision 툴",
+        shortLabel: "Toolbox",
+        goal: "문장/장면 정밀도를 높이는 도구를 개인 툴셋으로 정리한다.",
+        passRule: "교정 결과가 측정 가능하고 재사용 규칙으로 남는다.",
+        repetitionTip: "교정 전/후 5문장을 비교표로 유지한다.",
+        bookRefs: "Ch14",
+        templateFields: [
+          { key: "tool_showtell", label: "Show→Tell 교정 대상 5개", placeholder: "원문 문장" },
+          { key: "tool_rewrite", label: "교정 버전", placeholder: "개선된 문장" },
+          { key: "tool_precision", label: "정밀도 체크 규칙", placeholder: "모호어 제거/행동 중심" },
+          { key: "tool_trigger", label: "도구 사용 트리거", placeholder: "어떤 상황에서 쓰는가" },
+          { key: "tool_portable", label: "다음 원고 이식 규칙", placeholder: "재사용 가능한 문장 규칙" },
+        ],
+      },
+    ];
+
+    const viewTabs = [
+      { id: "all", label: "전체" },
+      { id: "macro", label: "거시 구조" },
+      { id: "micro", label: "미시 기술" },
+      { id: "act", label: "막별 실행" },
+      { id: "revision", label: "수정 도구" },
+    ];
+
+    const selectedDrillMetaEl = document.getElementById("selectedDrillMeta");
+    const exerciseFieldsEl = document.getElementById("exerciseFields");
+    const manuscriptBodyEl = document.getElementById("manuscriptBody");
+    const stageLegendEl = document.getElementById("stageLegend");
+    const viewTabsEl = document.getElementById("viewTabs");
+    const roadmapSvgEl = document.getElementById("roadmapSvg");
+    const completionControlEl = document.getElementById("completionControl");
     const runBtnEl = document.getElementById("runBtn");
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
@@ -633,6 +1010,14 @@
 
     let turnstileToken = "";
     let turnstileWidgetId = null;
+    let bodySaveTimer = null;
+    let draftSaveTimer = null;
+
+    const curriculumState = {
+      lastSelectedDrillId: drills[0].id,
+      activeTab: "all",
+      perDrill: {},
+    };
 
     function setRunButtonVisible(isVisible) {
       runBtnEl.style.display = isVisible ? "" : "none";
@@ -654,111 +1039,13 @@
     }
     // TEST_ONLY_OWNER_BYPASS_END
 
-    function selectedChecks() {
-      return checks
-        .filter((item) => item.checked)
-        .sort((a, b) => a.recommendedOrder - b.recommendedOrder);
-    }
-
-    function composePresetText(items) {
-      const lines = [];
-      lines.push(PRESET_START);
-      lines.push("[점검 프리셋]");
-
-      if (items.length === 0) {
-        lines.push("- 점검 항목을 선택하세요.");
-      } else {
-        items.forEach((item) => {
-          lines.push("");
-          lines.push(`[${item.chapter} | ${item.label}]`);
-          lines.push(`목표: ${item.goal}`);
-          lines.push(`통과 기준: ${item.passRule}`);
-          lines.push(item.template);
-        });
-      }
-
-      lines.push("");
-      lines.push("---");
-      lines.push("[원고 본문]");
-      lines.push(PRESET_END);
-      return lines.join("\n");
-    }
-
-    function splitPresetAndBody(text) {
-      const startIdx = text.indexOf(PRESET_START);
-      const endIdx = text.indexOf(PRESET_END);
-
-      if (startIdx === -1 || endIdx === -1 || endIdx < startIdx) {
-        return { preset: "", body: text.trim() };
-      }
-
-      const body = text.slice(endIdx + PRESET_END.length).trimStart();
-      const preset = text.slice(startIdx, endIdx + PRESET_END.length);
-      return { preset, body };
-    }
-
-    function extractUserBody(text) {
-      return splitPresetAndBody(text).body.trim();
-    }
-
-    function mergePresetIntoTextarea() {
-      const { body } = splitPresetAndBody(manuscriptEl.value);
-      const presetText = composePresetText(selectedChecks());
-      manuscriptEl.value = `${presetText}\n\n${body}`.trimEnd();
-    }
-
-    function buildPresetForRequest() {
-      const picked = selectedChecks();
-      const lines = [
-        "당신은 한국어 소설 편집자입니다.",
-        "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
-        "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
-      ];
-
-      if (picked.length > 0) {
-        lines.push("점검 항목(목표/통과 기준):");
-        picked.forEach((item, idx) => {
-          lines.push(`${idx + 1}. [${item.chapter}] ${item.label}`);
-          lines.push(`목표: ${item.goal}`);
-          lines.push(`통과 기준: ${item.passRule}`);
-        });
-      }
-
-      return lines.join("\n");
-    }
-
-    function renderChecks() {
-      checkListEl.innerHTML = "";
-      [...checks]
-        .sort((a, b) => a.recommendedOrder - b.recommendedOrder)
-        .forEach((item) => {
-          const wrap = document.createElement("label");
-          wrap.className = "check";
-          wrap.innerHTML = `
-            <input type="checkbox" ${item.checked ? "checked" : ""} />
-            <span>
-              <span class="check-title">${item.label}</span>
-              <span class="check-desc">${item.description}</span>
-            </span>
-          `;
-
-          const input = wrap.querySelector("input");
-          input.addEventListener("change", (e) => {
-            if (e.target.checked && selectedChecks().length >= MAX_SELECTED_CHECKS) {
-              e.target.checked = false;
-              setStatus(`점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`, "error");
-              return;
-            }
-
-            item.checked = e.target.checked;
-            if (statusEl.textContent.includes("최대") && statusEl.classList.contains("error")) {
-              setStatus("", null);
-            }
-            mergePresetIntoTextarea();
-          });
-
-          checkListEl.appendChild(wrap);
-        });
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
     function setStatus(message, type) {
@@ -767,13 +1054,382 @@
       if (type) statusEl.classList.add(type);
     }
 
-    function escapeHtml(value) {
-      return value
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
+    function getStageById(id) {
+      return stages.find((stage) => stage.id === id) || null;
+    }
+
+    function getDrillById(id) {
+      return drills.find((drill) => drill.id === id) || null;
+    }
+
+    function createEmptyProgress() {
+      return {
+        autoDone: false,
+        lastScore: null,
+        manualOverride: null,
+        lastUpdatedAt: "",
+      };
+    }
+
+    function ensureProgress(drillId) {
+      if (!curriculumState.perDrill[drillId] || typeof curriculumState.perDrill[drillId] !== "object") {
+        curriculumState.perDrill[drillId] = createEmptyProgress();
+      }
+      return curriculumState.perDrill[drillId];
+    }
+
+    function getEffectiveDone(progress) {
+      if (progress.manualOverride === true) return true;
+      if (progress.manualOverride === false) return false;
+      return Boolean(progress.autoDone);
+    }
+
+    function getCompletionState(progress) {
+      if (progress.manualOverride === true) return "manual_done";
+      if (progress.manualOverride === false) return "manual_block";
+      if (progress.autoDone) return "auto_done";
+      return "pending";
+    }
+
+    function saveCurriculumState() {
+      localStorage.setItem(
+        CURRICULUM_STORAGE_KEY,
+        JSON.stringify({
+          lastSelectedDrillId: curriculumState.lastSelectedDrillId,
+          activeTab: curriculumState.activeTab,
+          perDrill: curriculumState.perDrill,
+        })
+      );
+    }
+
+    function loadCurriculumState() {
+      try {
+        const raw = localStorage.getItem(CURRICULUM_STORAGE_KEY) || "";
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return;
+
+        if (typeof parsed.lastSelectedDrillId === "string" && getDrillById(parsed.lastSelectedDrillId)) {
+          curriculumState.lastSelectedDrillId = parsed.lastSelectedDrillId;
+        }
+        if (typeof parsed.activeTab === "string" && viewTabs.some((tab) => tab.id === parsed.activeTab)) {
+          curriculumState.activeTab = parsed.activeTab;
+        }
+        if (parsed.perDrill && typeof parsed.perDrill === "object") {
+          curriculumState.perDrill = parsed.perDrill;
+        }
+      } catch {
+        // ignore corrupted local storage
+      }
+    }
+
+    function draftStorageKey(drillId) {
+      return `${DRAFT_STORAGE_KEY_PREFIX}${drillId}:v2`;
+    }
+
+    function readDraft(drillId) {
+      if (!drillId) return {};
+      try {
+        const raw = localStorage.getItem(draftStorageKey(drillId)) || "";
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeDraft(drillId, values) {
+      if (!drillId) return;
+      localStorage.setItem(draftStorageKey(drillId), JSON.stringify(values || {}));
+    }
+
+    function getSelectedDrill() {
+      return getDrillById(curriculumState.lastSelectedDrillId) || drills[0];
+    }
+
+    function isDrillVisibleInTab(drill, tabId) {
+      if (tabId === "all") return true;
+      return drill.viewTags.includes(tabId);
+    }
+
+    function collectExerciseValues() {
+      const values = {};
+      exerciseFieldsEl.querySelectorAll("textarea[data-field-key]").forEach((el) => {
+        values[el.dataset.fieldKey] = el.value || "";
+      });
+      return values;
+    }
+
+    function persistCurrentDraft() {
+      const selected = getSelectedDrill();
+      if (!selected) return;
+      writeDraft(selected.id, collectExerciseValues());
+    }
+
+    function selectDrill(drillId) {
+      if (!getDrillById(drillId)) return;
+      persistCurrentDraft();
+      curriculumState.lastSelectedDrillId = drillId;
+      saveCurriculumState();
+      renderAll();
+    }
+
+    function setActiveTab(tabId) {
+      if (!viewTabs.some((tab) => tab.id === tabId)) return;
+      curriculumState.activeTab = tabId;
+      saveCurriculumState();
+      renderRoadmap();
+      renderTabs();
+    }
+
+    function setManualOverride(mode) {
+      const selected = getSelectedDrill();
+      const progress = ensureProgress(selected.id);
+      if (mode === "manual_done") {
+        progress.manualOverride = true;
+      } else if (mode === "manual_block") {
+        progress.manualOverride = false;
+      } else {
+        progress.manualOverride = null;
+      }
+      progress.lastUpdatedAt = new Date().toISOString();
+      saveCurriculumState();
+      renderRoadmap();
+      renderCompletionControl();
+      renderSelectedMeta();
+    }
+
+    function renderStageLegend() {
+      stageLegendEl.innerHTML = "";
+      stages.forEach((stage) => {
+        const chip = document.createElement("span");
+        chip.className = "stage-chip";
+        chip.innerHTML = `<span class="stage-dot" style="background:${stage.color}"></span>${escapeHtml(stage.label)}`;
+        stageLegendEl.appendChild(chip);
+      });
+    }
+
+    function renderTabs() {
+      viewTabsEl.innerHTML = "";
+      viewTabs.forEach((tab) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `tab${curriculumState.activeTab === tab.id ? " active" : ""}`;
+        button.textContent = tab.label;
+        button.addEventListener("click", () => {
+          setActiveTab(tab.id);
+        });
+        viewTabsEl.appendChild(button);
+      });
+    }
+
+    function renderRoadmap() {
+      const NS = "http://www.w3.org/2000/svg";
+      roadmapSvgEl.innerHTML = "";
+
+      const sorted = [...drills].sort((a, b) => a.roadmapOrder - b.roadmapOrder);
+      const startX = 80;
+      const step = 135;
+      const y = 74;
+      const points = sorted.map((_, idx) => `${startX + idx * step},${y}`).join(" ");
+
+      const polyline = document.createElementNS(NS, "polyline");
+      polyline.setAttribute("points", points);
+      polyline.setAttribute("fill", "none");
+      polyline.setAttribute("stroke", "#bdaf9b");
+      polyline.setAttribute("stroke-width", "4");
+      roadmapSvgEl.appendChild(polyline);
+
+      sorted.forEach((drill, idx) => {
+        const stage = getStageById(drill.stageId);
+        const progress = ensureProgress(drill.id);
+        const completion = getCompletionState(progress);
+        const visible = isDrillVisibleInTab(drill, curriculumState.activeTab);
+        const selected = curriculumState.lastSelectedDrillId === drill.id;
+        const cx = startX + idx * step;
+
+        const group = document.createElementNS(NS, "g");
+        group.setAttribute("transform", `translate(${cx}, ${y})`);
+        group.style.cursor = "pointer";
+        group.style.opacity = visible ? "1" : "0.3";
+
+        const circle = document.createElementNS(NS, "circle");
+        circle.setAttribute("r", selected ? "22" : "18");
+        circle.setAttribute("stroke", stage ? stage.color : "#888");
+        circle.setAttribute("stroke-width", selected ? "4" : "2");
+
+        if (completion === "manual_done") {
+          circle.setAttribute("fill", stage ? stage.color : "#8a4f2a");
+          circle.setAttribute("stroke-width", selected ? "5" : "4");
+        } else if (completion === "auto_done") {
+          circle.setAttribute("fill", stage ? `${stage.color}55` : "#d9cfbf");
+        } else if (completion === "manual_block") {
+          circle.setAttribute("fill", "#f8d7d1");
+          circle.setAttribute("stroke", "#ad3e30");
+        } else {
+          circle.setAttribute("fill", "#fff");
+        }
+        group.appendChild(circle);
+
+        const text = document.createElementNS(NS, "text");
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dy", "4");
+        text.setAttribute("font-size", "11");
+        text.setAttribute("font-weight", "700");
+        text.setAttribute("fill", completion === "manual_done" ? "#fff" : "#2e2a24");
+        text.textContent = String(drill.roadmapOrder);
+        group.appendChild(text);
+
+        if (completion === "auto_done" || completion === "manual_done") {
+          const check = document.createElementNS(NS, "text");
+          check.setAttribute("text-anchor", "middle");
+          check.setAttribute("x", "13");
+          check.setAttribute("y", "-11");
+          check.setAttribute("font-size", "10");
+          check.setAttribute("font-weight", "700");
+          check.setAttribute("fill", completion === "manual_done" ? "#fff" : "#2f6f46");
+          check.textContent = "✓";
+          group.appendChild(check);
+        }
+
+        const label = document.createElementNS(NS, "text");
+        label.setAttribute("text-anchor", "middle");
+        label.setAttribute("y", "34");
+        label.setAttribute("font-size", "9");
+        label.setAttribute("fill", "#4f493f");
+        label.textContent = drill.shortLabel;
+        group.appendChild(label);
+
+        group.addEventListener("click", () => selectDrill(drill.id));
+        roadmapSvgEl.appendChild(group);
+      });
+    }
+
+    function renderSelectedMeta() {
+      const selected = getSelectedDrill();
+      const stage = getStageById(selected.stageId);
+      const progress = ensureProgress(selected.id);
+      const completion = getCompletionState(progress);
+
+      let completionText = "미완료";
+      if (completion === "auto_done") completionText = `자동 완료 (최근 점수 ${Number(progress.lastScore).toFixed(1)})`;
+      if (completion === "manual_done") completionText = "수동 완료";
+      if (completion === "manual_block") completionText = "수동 해제";
+
+      selectedDrillMetaEl.innerHTML = `
+        <div class="selected-title">${escapeHtml(selected.title)}</div>
+        <p class="selected-row"><strong>Stage:</strong> ${escapeHtml(stage ? stage.label : "-")}</p>
+        <p class="selected-row"><strong>목표:</strong> ${escapeHtml(selected.goal)}</p>
+        <p class="selected-row"><strong>통과 기준:</strong> ${escapeHtml(selected.passRule)}</p>
+        <p class="selected-row"><strong>권장 반복 포인트:</strong> ${escapeHtml(selected.repetitionTip)}</p>
+        <p class="selected-row"><strong>참고:</strong> ${escapeHtml(selected.bookRefs)}</p>
+        <p class="selected-row"><strong>완료 상태:</strong> ${escapeHtml(completionText)}</p>
+      `;
+    }
+
+    function renderCompletionControl() {
+      const selected = getSelectedDrill();
+      const progress = ensureProgress(selected.id);
+      const manual = progress.manualOverride;
+
+      completionControlEl.innerHTML = `
+        <div class="selected-title">완료 상태 조정</div>
+        <p class="selected-row">자동 완료 기준: 점수 ${AUTO_DONE_THRESHOLD.toFixed(1)} 이상</p>
+        <div class="completion-row">
+          <button type="button" id="btnManualDone" class="completion-btn${manual === true ? " active" : ""}">수동 완료</button>
+          <button type="button" id="btnManualBlock" class="completion-btn${manual === false ? " active" : ""}">수동 해제</button>
+          <button type="button" id="btnManualAuto" class="completion-btn${manual === null ? " active" : ""}">자동 따르기</button>
+        </div>
+      `;
+
+      document.getElementById("btnManualDone").addEventListener("click", () => setManualOverride("manual_done"));
+      document.getElementById("btnManualBlock").addEventListener("click", () => setManualOverride("manual_block"));
+      document.getElementById("btnManualAuto").addEventListener("click", () => setManualOverride("auto"));
+    }
+
+    function renderExerciseFields() {
+      const selected = getSelectedDrill();
+      const draft = readDraft(selected.id);
+      exerciseFieldsEl.innerHTML = "";
+
+      if (!selected) {
+        exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">로드맵에서 연습 항목을 선택하세요.</p>";
+        return;
+      }
+
+      selected.templateFields.forEach((field) => {
+        const wrap = document.createElement("div");
+        wrap.className = "exercise-field";
+        wrap.innerHTML = `
+          <label for="field_${field.key}">${escapeHtml(field.label)}</label>
+          <textarea
+            id="field_${field.key}"
+            class="exercise-input"
+            data-field-key="${escapeHtml(field.key)}"
+            placeholder="${escapeHtml(field.placeholder || field.label)}"
+          >${escapeHtml(draft[field.key] || "")}</textarea>
+        `;
+
+        const input = wrap.querySelector("textarea");
+        input.addEventListener("input", () => {
+          if (draftSaveTimer) clearTimeout(draftSaveTimer);
+          draftSaveTimer = setTimeout(() => {
+            writeDraft(selected.id, collectExerciseValues());
+          }, 200);
+        });
+
+        exerciseFieldsEl.appendChild(wrap);
+      });
+    }
+
+    function buildPresetForRequest(selected) {
+      const stage = getStageById(selected.stageId);
+      return [
+        "당신은 한국어 소설 편집자입니다.",
+        "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
+        "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
+        `학습 단계: [${stage ? stage.label : selected.stageId}]`,
+        `선택 연습: ${selected.title} (${selected.id})`,
+        `목표: ${selected.goal}`,
+        `통과 기준: ${selected.passRule}`,
+        `권장 반복 포인트: ${selected.repetitionTip}`,
+      ].join("\n");
+    }
+
+    function buildStructuredExerciseText(selected, values) {
+      const stage = getStageById(selected.stageId);
+      const lines = [];
+      lines.push(PRESET_START);
+      lines.push("[점검 프리셋]");
+      lines.push("");
+      lines.push(`[${stage ? stage.label : selected.stageId} | ${selected.title}]`);
+      lines.push(`ID: ${selected.id}`);
+      lines.push(`목표: ${selected.goal}`);
+      lines.push(`통과 기준: ${selected.passRule}`);
+      lines.push(`권장 반복 포인트: ${selected.repetitionTip}`);
+      lines.push(`참고: ${selected.bookRefs}`);
+
+      selected.templateFields.forEach((field) => {
+        lines.push("");
+        lines.push(`${field.label}:`);
+        lines.push((values[field.key] || "").trim());
+      });
+
+      lines.push("");
+      lines.push("---");
+      lines.push("[원고 본문]");
+      lines.push(PRESET_END);
+      return lines.join("\n");
+    }
+
+    function buildManuscriptPayload(exerciseText, optionalBody) {
+      if (!optionalBody) return exerciseText.trim();
+      return `${exerciseText}\n\n${optionalBody}`.trim();
+    }
+
+    function validateExerciseInput(selected, values) {
+      return selected.templateFields.every((field) => String(values[field.key] || "").trim());
     }
 
     function tryRenderTurnstile() {
@@ -845,30 +1501,39 @@
         : "<p class=\"placeholder\">응답을 해석하지 못했습니다.</p>";
     }
 
+    function applyAutoCompletionFromResponse(selectedDrillId, payload) {
+      if (!payload || !Array.isArray(payload.items)) return;
+      const matched = payload.items.find((item) => item && item.id === selectedDrillId) || payload.items[0];
+      if (!matched || typeof matched.score !== "number") return;
+
+      const progress = ensureProgress(selectedDrillId);
+      progress.lastScore = Number(matched.score);
+      progress.autoDone = Number(matched.score) >= AUTO_DONE_THRESHOLD;
+      progress.lastUpdatedAt = new Date().toISOString();
+      saveCurriculumState();
+
+      renderRoadmap();
+      renderSelectedMeta();
+      renderCompletionControl();
+    }
+
     async function runAnalysis() {
-      const manuscript = manuscriptEl.value.trim();
-      if (!manuscript) {
-        setStatus("원고 텍스트를 먼저 입력하세요.", "error");
-        manuscriptEl.focus();
+      const selected = getSelectedDrill();
+      if (!selected) {
+        setStatus("로드맵에서 연습 항목을 선택하세요.", "error");
         return;
       }
 
-      const userBody = extractUserBody(manuscript);
-      if (!userBody) {
-        setStatus("프리셋 항목 또는 원고 본문을 입력하세요.", "error");
-        manuscriptEl.focus();
+      const values = collectExerciseValues();
+      if (!validateExerciseInput(selected, values)) {
+        setStatus("연습 입력칸을 먼저 채워주세요.", "error");
         return;
       }
+      writeDraft(selected.id, values);
 
-      const selected = selectedChecks();
-      if (selected.length === 0) {
-        setStatus("점검 항목을 1개 이상 선택하세요.", "error");
-        return;
-      }
-      if (selected.length > MAX_SELECTED_CHECKS) {
-        setStatus(`점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`, "error");
-        return;
-      }
+      const optionalBody = manuscriptBodyEl.value.trim();
+      const exerciseText = buildStructuredExerciseText(selected, values);
+      const manuscript = buildManuscriptPayload(exerciseText, optionalBody);
 
       if (!turnstileToken && !hasOwnerKey()) {
         setStatus("보안 검증을 완료한 뒤 다시 시도하세요.", "error");
@@ -877,12 +1542,13 @@
 
       const payload = {
         manuscript,
-        preset: buildPresetForRequest(),
-        checks: selected.map((x) => x.id),
+        preset: buildPresetForRequest(selected),
+        checks: [selected.id],
         turnstileToken,
         meta: {
           lang: "ko",
-          version: "v1",
+          version: "v2",
+          curriculumStage: selected.stageId,
         },
       };
 
@@ -893,6 +1559,7 @@
         const headers = {
           "Content-Type": "application/json",
         };
+
         const ownerKey = getOwnerKey();
         if (ownerKey) {
           headers[OWNER_BYPASS_HEADER] = ownerKey;
@@ -925,6 +1592,8 @@
         }
 
         renderResult(data);
+        applyAutoCompletionFromResponse(selected.id, data);
+
         turnstileToken = "";
         if (window.turnstile && turnstileWidgetId !== null) {
           window.turnstile.reset(turnstileWidgetId);
@@ -938,13 +1607,36 @@
       }
     }
 
+    function renderAll() {
+      renderTabs();
+      renderRoadmap();
+      renderSelectedMeta();
+      renderCompletionControl();
+      renderExerciseFields();
+    }
+
+    function initBodyDraft() {
+      const savedBody = localStorage.getItem(BODY_STORAGE_KEY) || "";
+      if (savedBody) manuscriptBodyEl.value = savedBody;
+
+      manuscriptBodyEl.addEventListener("input", () => {
+        if (bodySaveTimer) clearTimeout(bodySaveTimer);
+        bodySaveTimer = setTimeout(() => {
+          localStorage.setItem(BODY_STORAGE_KEY, manuscriptBodyEl.value || "");
+        }, 200);
+      });
+    }
+
+    loadCurriculumState();
+    renderStageLegend();
+    initBodyDraft();
+
     runBtnEl.addEventListener("click", runAnalysis);
+
     // TEST_ONLY_OWNER_BYPASS_START
     if (ownerKeyInputEl) {
       const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
-      if (savedOwnerKey) {
-        ownerKeyInputEl.value = savedOwnerKey;
-      }
+      if (savedOwnerKey) ownerKeyInputEl.value = savedOwnerKey;
 
       ownerKeyInputEl.addEventListener("input", () => {
         const value = getOwnerKey();
@@ -957,8 +1649,8 @@
       });
     }
     // TEST_ONLY_OWNER_BYPASS_END
-    renderChecks();
-    mergePresetIntoTextarea();
+
+    renderAll();
     refreshRunButtonVisibility();
 
     const turnstileInitTimer = setInterval(() => {
