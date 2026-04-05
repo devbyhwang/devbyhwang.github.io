@@ -57,11 +57,12 @@ After deploy, use:
 {
   "manuscript": "...",
   "preset": "...",
-  "checks": ["lock_training"],
+  "checks": ["ch01_plot_basics", "ch04_beginning_hook"],
   "turnstileToken": "...",
   "meta": { "lang": "ko", "version": "v1" }
 }
 ```
+`checks`는 문자열 배열이며, 프런트 기준 최소 1개/최대 2개를 전송합니다.
 
 ## Optional request header (test-only owner bypass)
 - `X-Owner-Key: <owner key>`
@@ -78,8 +79,8 @@ After deploy, use:
   "summary": "...",
   "items": [
     {
-      "id": "lock_training",
-      "label": "LOCK 훈련",
+      "id": "ch01_plot_basics",
+      "label": "Ch1 플롯의 본질",
       "score": 8,
       "evidence": ["..."],
       "suggestion": "..."

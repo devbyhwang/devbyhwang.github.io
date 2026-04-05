@@ -326,19 +326,294 @@
 
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
+    const MAX_SELECTED_CHECKS = 2;
 
     const checks = [
       {
-        id: "lock_training",
-        label: "LOCK 훈련",
-        description: "LOCK(Lead, Objective, Confrontation, Knockout) 기반 반복 훈련 항목입니다.",
+        id: "ch01_plot_basics",
+        label: "Ch1 플롯의 본질",
+        description: "LOCK 완결성과 독자 궁금증을 점검합니다.",
+        chapter: "Chapter 1",
+        goal: "Lead/Objective/Confrontation/Knockout를 한 줄로 명확화한다.",
+        passRule: "4요소가 모두 분명하고 목표의 절실함이 드러난다.",
+        recommendedOrder: 1,
         template: [
-          "L(Lead): 독자가 따라가고 싶은 주인공의 매력/결함",
-          "O(Objective): 얻거나 피하려는 단일 핵심 목표",
-          "C(Confrontation): 목표를 막는 주요 장애물/대립",
-          "K(Knockout): 결말의 결정타(성공/실패와 대가)",
-          "오늘의 4줄 LOCK 요약:",
-          "다음 리라이트 액션 1개:",
+          "Lead(주인공) 한 줄:",
+          "Objective(핵심 목표) 한 줄:",
+          "Confrontation(핵심 대립) 한 줄:",
+          "Knockout(결말의 결정타) 한 줄:",
+          "독자가 계속 읽게 되는 질문 1개:",
+          "이번 버전에서 가장 약한 LOCK 요소 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch02_structure_timing",
+        label: "Ch2 구조와 배치",
+        description: "사건 배열과 정보 공개 타이밍을 점검합니다.",
+        chapter: "Chapter 2",
+        goal: "사건 순서를 인과적으로 재배치해 읽기 리듬을 개선한다.",
+        passRule: "순서의 이유가 분명하고 정보 공개 타이밍이 전략적이다.",
+        recommendedOrder: 2,
+        template: [
+          "사건 카드 1~8 (한 줄씩):",
+          "현재 배치 순서 (1->8):",
+          "이 순서를 택한 이유 3가지:",
+          "정보 공개를 늦출 지점 1개:",
+          "정보 공개를 앞당길 지점 1개:",
+          "리듬이 처지는 구간 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch03_idea_explosion",
+        label: "Ch3 아이디어 폭발",
+        description: "아이디어 양산 후 상위안을 선별합니다.",
+        chapter: "Chapter 3",
+        goal: "아이디어 풀을 넓힌 뒤 갈등 잠재력이 큰 안을 고른다.",
+        passRule: "선정 이유가 명확하고 확장 가능한 갈등 구조가 보인다.",
+        recommendedOrder: 3,
+        template: [
+          "아이디어 10개(한 줄 리스트):",
+          "최종 후보 A:",
+          "최종 후보 B:",
+          "A 선택 시 갈등 잠재력:",
+          "B 선택 시 갈등 잠재력:",
+          "이번에 실제로 밀어붙일 안:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch04_beginning_hook",
+        label: "Ch4 강한 시작",
+        description: "첫 장면 훅과 독자 결속을 강화합니다.",
+        chapter: "Chapter 4",
+        goal: "첫 장면에서 훅, 톤, 대립의 씨앗을 동시에 제시한다.",
+        passRule: "첫 문단이 후킹되고 다음 장면으로의 동력이 분명하다.",
+        recommendedOrder: 4,
+        template: [
+          "첫 장면 초안(약 400자):",
+          "첫 문단 훅 문장 1개:",
+          "주인공에게 바로 드러나는 결핍 1개:",
+          "반대세력/방해요소 힌트 1개:",
+          "장르 톤을 보여주는 디테일 1개:",
+          "다음 장면으로 넘어가게 하는 질문 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch05_middle_pressure",
+        label: "Ch5 미들 압력",
+        description: "중반부 긴장과 스테이크 상승선을 점검합니다.",
+        chapter: "Chapter 5",
+        goal: "중반부에서 압박을 단계적으로 키워 Act 3로 밀어 넣는다.",
+        passRule: "정체 구간 없이 장애물과 대가가 상승한다.",
+        recommendedOrder: 5,
+        template: [
+          "중반부 핵심 장애물 3개:",
+          "각 장애물의 스테이크 상승 방식:",
+          "주인공이 잃을 것(외적/내적):",
+          "중반부 반전 포인트 1개:",
+          "긴장 저하 장면 1개와 수정 방향:",
+          "Act 3로 밀어 넣는 사건 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch06_ending_knockout",
+        label: "Ch6 엔딩 설계",
+        description: "결말의 회수율과 감정 타격을 점검합니다.",
+        chapter: "Chapter 6",
+        goal: "스토리 질문을 회수하면서 감정적으로 강한 엔딩을 만든다.",
+        passRule: "필연성 있는 결말이며 독자에게 뚜렷한 여운을 남긴다.",
+        recommendedOrder: 6,
+        template: [
+          "결말안 A(승리형):",
+          "결말안 B(대가형/실패형):",
+          "각 결말에서 회수되는 질문:",
+          "독자 감정 타격 포인트 1개:",
+          "필연성을 높일 복선 2개:",
+          "마지막 문장 후보 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch07_scene_power",
+        label: "Ch7 장면 단위 강화",
+        description: "장면의 목표-충돌-변화를 점검합니다.",
+        chapter: "Chapter 7",
+        goal: "각 장면이 플롯을 전진시키는 기능을 갖추게 한다.",
+        passRule: "장면마다 목적과 충돌, 전후 변화가 모두 확인된다.",
+        recommendedOrder: 7,
+        template: [
+          "대상 장면 요약(3문장):",
+          "장면 목표(누가 무엇을 원하는가):",
+          "장면 충돌(무엇이 막는가):",
+          "장면 변화(전/후 상태 차이):",
+          "대사/행동 중 긴장 약한 부분 1개:",
+          "장면 종료 후 다음 장면으로 밀어내는 힘 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch08_complexity_theme",
+        label: "Ch8 복합 플롯/테마",
+        description: "테마 일관성과 서브플롯 연결을 점검합니다.",
+        chapter: "Chapter 8",
+        goal: "복잡도를 통제하면서 테마 중심으로 플롯 층위를 확장한다.",
+        passRule: "메인테마와 서브플롯의 연결 관계가 명확하다.",
+        recommendedOrder: 8,
+        template: [
+          "메인테마 1문장:",
+          "서브플롯 A 요약:",
+          "서브플롯 B 요약:",
+          "각 서브플롯이 메인테마를 강화하는 방식:",
+          "복잡도를 낮춰야 할 요소 1개:",
+          "독자가 따라가기 위한 연결 브리지 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch09_character_arc",
+        label: "Ch9 캐릭터 아크",
+        description: "사건과 내면 변화의 연동을 점검합니다.",
+        chapter: "Chapter 9",
+        goal: "플롯 사건이 주인공의 내면 변화를 유도하도록 설계한다.",
+        passRule: "시작-중간-끝 변화가 사건과 인과적으로 연결된다.",
+        recommendedOrder: 9,
+        template: [
+          "주인공 시작 상태(신념/결핍):",
+          "중간 전환 사건:",
+          "최종 변화 상태:",
+          "변화를 촉발한 핵심 선택 1개:",
+          "변화가 세계/관계에 미친 영향:",
+          "아크가 약해지는 구간 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch10_plotting_system",
+        label: "Ch10 플로팅 시스템",
+        description: "OP/NOP 성향 기반 실행 계획을 점검합니다.",
+        chapter: "Chapter 10",
+        goal: "자신에게 맞는 플로팅 시스템을 정하고 실행 가능성을 높인다.",
+        passRule: "7일 계획이 현실적이고 복구 규칙까지 포함한다.",
+        recommendedOrder: 10,
+        template: [
+          "내 성향 선택: OP(아웃라이너) / NOP(비아웃라이너):",
+          "이번 작품용 하이브리드 플로팅 방식:",
+          "7일 작업 계획(일자별 목표):",
+          "하루 최소 분량/시간 기준:",
+          "계획 이탈 시 복구 규칙 1개:",
+          "이번 주 체크포인트 2개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch11_revision_system",
+        label: "Ch11 플롯 수정",
+        description: "진단 기반 재작성 우선순위를 점검합니다.",
+        chapter: "Chapter 11",
+        goal: "1차 원고의 플롯 문제를 진단하고 수정 순서를 고정한다.",
+        passRule: "문제-우선순위-재작성 액션이 일관된 체계로 제시된다.",
+        recommendedOrder: 11,
+        template: [
+          "1차 원고의 플롯 문제 5개:",
+          "문제별 심각도(상/중/하):",
+          "수정 우선순위(1~5):",
+          "즉시 재작성할 장면 2개:",
+          "삭제/축약할 장면 1개:",
+          "수정 완료 판정 기준 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch12_plot_patterns",
+        label: "Ch12 패턴 적용",
+        description: "패턴 활용과 클리셰 회피를 점검합니다.",
+        chapter: "Chapter 12",
+        goal: "플롯 패턴을 차용하되 원고 맥락에 맞게 변형한다.",
+        passRule: "패턴 적용 이유와 클리셰 회피 장치가 구체적이다.",
+        recommendedOrder: 12,
+        template: [
+          "적용할 플롯 패턴 1개:",
+          "선택 이유:",
+          "원고에 맞게 비틀 변형 포인트 3개:",
+          "클리셰로 보일 위험 1개:",
+          "위험 회피를 위한 장면 장치 1개:",
+          "패턴 적용 후 LOCK 재점검 결과:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch13_problem_cures",
+        label: "Ch13 문제 처방",
+        description: "플롯 문제의 원인 진단과 처방을 점검합니다.",
+        chapter: "Chapter 13",
+        goal: "원고의 대표 문제를 빠르게 진단하고 즉시 수정안을 만든다.",
+        passRule: "문제-원인-처방이 일대일로 매칭되고 실행 가능하다.",
+        recommendedOrder: 13,
+        template: [
+          "현재 원고의 문제 체크(장면 평면/동기 약함/우연 해결 등):",
+          "최우선 문제 1개:",
+          "원인 진단:",
+          "처방(구체 수정 행동 3개):",
+          "24시간 내 적용 가능한 수정 1개:",
+          "재발 방지 규칙 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "ch14_toolbox",
+        label: "Ch14 도구 상자",
+        description: "Show/Tell 교정과 개인 도구화를 점검합니다.",
+        chapter: "Chapter 14",
+        goal: "문장/장면 개선 도구를 추출해 재사용 가능한 규칙으로 만든다.",
+        passRule: "교정 결과가 분명하고 개인 툴셋으로 정리된다.",
+        recommendedOrder: 14,
+        template: [
+          "Show→Tell 교정 대상 문장 5개:",
+          "각 문장의 개선 버전:",
+          "이번 작품에서 쓸 개인 도구 5개:",
+          "도구별 사용 트리거:",
+          "남용 위험 도구 1개와 제한 규칙:",
+          "다음 원고에 이식할 규칙 1개:",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "appendix_critical_points",
+        label: "부록A 핵심 체크",
+        description: "핵심 결손 요소를 체크리스트로 점검합니다.",
+        chapter: "Appendix A",
+        goal: "치명 결손을 빠르게 탐지하고 보완 우선순위를 정한다.",
+        passRule: "LOCK/몰입/대립 기준의 누락 항목과 보완 액션이 제시된다.",
+        recommendedOrder: 15,
+        template: [
+          "LOCK 점검표(Lead/Objective/Confrontation/Knockout):",
+          "독자 몰입 저해 요소 3개:",
+          "반대세력 강도 점검:",
+          "핵심 질문 회수 여부:",
+          "치명 누락 1개와 보완 액션:",
+          "전체 완성도 자체 점수(10점):",
+        ].join("\n"),
+        checked: false,
+      },
+      {
+        id: "appendix_backcover_copy",
+        label: "부록B 백커버 카피",
+        description: "스토리 질문 중심 백커버 카피를 점검합니다.",
+        chapter: "Appendix B",
+        goal: "작품의 후킹 포인트를 한 페이지 카피로 압축한다.",
+        passRule: "리드/갈등/질문/톤이 짧은 카피에 모두 반영된다.",
+        recommendedOrder: 16,
+        template: [
+          "리드 캐릭터 이름/직업:",
+          "돌아올 수 없는 문턱 사건:",
+          "주요 반대세력:",
+          "스토리 질문 1문장:",
+          "분위기 키워드 3개:",
+          "백커버 카피 초안(5~7문장):",
         ].join("\n"),
         checked: false,
       },
@@ -380,7 +655,9 @@
     // TEST_ONLY_OWNER_BYPASS_END
 
     function selectedChecks() {
-      return checks.filter((item) => item.checked);
+      return checks
+        .filter((item) => item.checked)
+        .sort((a, b) => a.recommendedOrder - b.recommendedOrder);
     }
 
     function composePresetText(items) {
@@ -393,7 +670,9 @@
       } else {
         items.forEach((item) => {
           lines.push("");
-          lines.push(`[${item.label}]`);
+          lines.push(`[${item.chapter} | ${item.label}]`);
+          lines.push(`목표: ${item.goal}`);
+          lines.push(`통과 기준: ${item.passRule}`);
           lines.push(item.template);
         });
       }
@@ -433,12 +712,15 @@
       const lines = [
         "당신은 한국어 소설 편집자입니다.",
         "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
+        "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
       ];
 
       if (picked.length > 0) {
-        lines.push("점검 항목:");
+        lines.push("점검 항목(목표/통과 기준):");
         picked.forEach((item, idx) => {
-          lines.push(`${idx + 1}. ${item.label}`);
+          lines.push(`${idx + 1}. [${item.chapter}] ${item.label}`);
+          lines.push(`목표: ${item.goal}`);
+          lines.push(`통과 기준: ${item.passRule}`);
         });
       }
 
@@ -447,25 +729,36 @@
 
     function renderChecks() {
       checkListEl.innerHTML = "";
-      checks.forEach((item) => {
-        const wrap = document.createElement("label");
-        wrap.className = "check";
-        wrap.innerHTML = `
-          <input type="checkbox" ${item.checked ? "checked" : ""} />
-          <span>
-            <span class="check-title">${item.label}</span>
-            <span class="check-desc">${item.description}</span>
-          </span>
-        `;
+      [...checks]
+        .sort((a, b) => a.recommendedOrder - b.recommendedOrder)
+        .forEach((item) => {
+          const wrap = document.createElement("label");
+          wrap.className = "check";
+          wrap.innerHTML = `
+            <input type="checkbox" ${item.checked ? "checked" : ""} />
+            <span>
+              <span class="check-title">${item.label}</span>
+              <span class="check-desc">${item.description}</span>
+            </span>
+          `;
 
-        const input = wrap.querySelector("input");
-        input.addEventListener("change", (e) => {
-          item.checked = e.target.checked;
-          mergePresetIntoTextarea();
+          const input = wrap.querySelector("input");
+          input.addEventListener("change", (e) => {
+            if (e.target.checked && selectedChecks().length >= MAX_SELECTED_CHECKS) {
+              e.target.checked = false;
+              setStatus(`점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`, "error");
+              return;
+            }
+
+            item.checked = e.target.checked;
+            if (statusEl.textContent.includes("최대") && statusEl.classList.contains("error")) {
+              setStatus("", null);
+            }
+            mergePresetIntoTextarea();
+          });
+
+          checkListEl.appendChild(wrap);
         });
-
-        checkListEl.appendChild(wrap);
-      });
     }
 
     function setStatus(message, type) {
@@ -570,6 +863,10 @@
       const selected = selectedChecks();
       if (selected.length === 0) {
         setStatus("점검 항목을 1개 이상 선택하세요.", "error");
+        return;
+      }
+      if (selected.length > MAX_SELECTED_CHECKS) {
+        setStatus(`점검 항목은 최대 ${MAX_SELECTED_CHECKS}개까지 선택할 수 있습니다.`, "error");
         return;
       }
 
