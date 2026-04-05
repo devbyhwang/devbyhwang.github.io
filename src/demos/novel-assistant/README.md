@@ -70,7 +70,7 @@
   ],
   "usage": {
     "remainingToday": 1,
-    "limitPerDay": 2
+    "limitPerDay": 5
   }
 }
 ```
