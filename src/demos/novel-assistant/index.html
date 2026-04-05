@@ -442,7 +442,7 @@
     const checks = [
       {
         id: "ch01_plot_basics",
-        label: "Ch1 플롯의 본질",
+        label: "플롯의 본질",
         description: "LOCK 완결성과 독자 궁금증을 점검합니다.",
         chapter: "Chapter 1",
         goal: "Lead/Objective/Confrontation/Knockout를 한 줄로 명확화한다.",
@@ -460,7 +460,7 @@
       },
       {
         id: "ch02_structure_timing",
-        label: "Ch2 구조와 배치",
+        label: "구조와 배치",
         description: "사건 배열과 정보 공개 타이밍을 점검합니다.",
         chapter: "Chapter 2",
         goal: "사건 순서를 인과적으로 재배치해 읽기 리듬을 개선한다.",
@@ -478,7 +478,7 @@
       },
       {
         id: "ch03_idea_explosion",
-        label: "Ch3 아이디어 폭발",
+        label: "아이디어 폭발",
         description: "아이디어 양산 후 상위안을 선별합니다.",
         chapter: "Chapter 3",
         goal: "아이디어 풀을 넓힌 뒤 갈등 잠재력이 큰 안을 고른다.",
@@ -496,7 +496,7 @@
       },
       {
         id: "ch04_beginning_hook",
-        label: "Ch4 강한 시작",
+        label: "강한 시작",
         description: "첫 장면 훅과 독자 결속을 강화합니다.",
         chapter: "Chapter 4",
         goal: "첫 장면에서 훅, 톤, 대립의 씨앗을 동시에 제시한다.",
@@ -514,7 +514,7 @@
       },
       {
         id: "ch05_middle_pressure",
-        label: "Ch5 미들 압력",
+        label: "미들 압력",
         description: "중반부 긴장과 스테이크 상승선을 점검합니다.",
         chapter: "Chapter 5",
         goal: "중반부에서 압박을 단계적으로 키워 Act 3로 밀어 넣는다.",
@@ -532,7 +532,7 @@
       },
       {
         id: "ch06_ending_knockout",
-        label: "Ch6 엔딩 설계",
+        label: "엔딩 설계",
         description: "결말의 회수율과 감정 타격을 점검합니다.",
         chapter: "Chapter 6",
         goal: "스토리 질문을 회수하면서 감정적으로 강한 엔딩을 만든다.",
@@ -550,7 +550,7 @@
       },
       {
         id: "ch07_scene_power",
-        label: "Ch7 장면 단위 강화",
+        label: "장면 단위 강화",
         description: "장면의 목표-충돌-변화를 점검합니다.",
         chapter: "Chapter 7",
         goal: "각 장면이 플롯을 전진시키는 기능을 갖추게 한다.",
@@ -568,7 +568,7 @@
       },
       {
         id: "ch08_complexity_theme",
-        label: "Ch8 복합 플롯/테마",
+        label: "복합 플롯/테마",
         description: "테마 일관성과 서브플롯 연결을 점검합니다.",
         chapter: "Chapter 8",
         goal: "복잡도를 통제하면서 테마 중심으로 플롯 층위를 확장한다.",
@@ -586,7 +586,7 @@
       },
       {
         id: "ch09_character_arc",
-        label: "Ch9 캐릭터 아크",
+        label: "캐릭터 아크",
         description: "사건과 내면 변화의 연동을 점검합니다.",
         chapter: "Chapter 9",
         goal: "플롯 사건이 주인공의 내면 변화를 유도하도록 설계한다.",
@@ -604,7 +604,7 @@
       },
       {
         id: "ch10_plotting_system",
-        label: "Ch10 플로팅 시스템",
+        label: "플로팅 시스템",
         description: "OP/NOP 성향 기반 실행 계획을 점검합니다.",
         chapter: "Chapter 10",
         goal: "자신에게 맞는 플로팅 시스템을 정하고 실행 가능성을 높인다.",
@@ -622,7 +622,7 @@
       },
       {
         id: "ch11_revision_system",
-        label: "Ch11 플롯 수정",
+        label: "플롯 수정",
         description: "진단 기반 재작성 우선순위를 점검합니다.",
         chapter: "Chapter 11",
         goal: "1차 원고의 플롯 문제를 진단하고 수정 순서를 고정한다.",
@@ -640,7 +640,7 @@
       },
       {
         id: "ch12_plot_patterns",
-        label: "Ch12 패턴 적용",
+        label: "패턴 적용",
         description: "패턴 활용과 클리셰 회피를 점검합니다.",
         chapter: "Chapter 12",
         goal: "플롯 패턴을 차용하되 원고 맥락에 맞게 변형한다.",
@@ -658,7 +658,7 @@
       },
       {
         id: "ch13_problem_cures",
-        label: "Ch13 문제 처방",
+        label: "문제 처방",
         description: "플롯 문제의 원인 진단과 처방을 점검합니다.",
         chapter: "Chapter 13",
         goal: "원고의 대표 문제를 빠르게 진단하고 즉시 수정안을 만든다.",
@@ -676,7 +676,7 @@
       },
       {
         id: "ch14_toolbox",
-        label: "Ch14 도구 상자",
+        label: "도구 상자",
         description: "Show/Tell 교정과 개인 도구화를 점검합니다.",
         chapter: "Chapter 14",
         goal: "문장/장면 개선 도구를 추출해 재사용 가능한 규칙으로 만든다.",
@@ -858,7 +858,7 @@
       if (picked.length > 0) {
         lines.push("점검 항목(목표/통과 기준):");
         picked.forEach((item, idx) => {
-          lines.push(`${idx + 1}. [${item.chapter}] ${item.label}`);
+          lines.push(`${idx + 1}. ${item.label}`);
           lines.push(`목표: ${item.goal}`);
           lines.push(`통과 기준: ${item.passRule}`);
         });
