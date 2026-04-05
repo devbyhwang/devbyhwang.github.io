@@ -3,7 +3,7 @@
 Cloudflare Worker for `POST /v1/novel-feedback`.
 
 ## Features
-- OpenAI Responses API proxy (server key only)
+- AI provider proxy (Gemini default, OpenAI fallback via flag)
 - CORS allowlist via `ALLOWED_ORIGIN`
 - Turnstile token verification (required: success + hostname + action)
 - Daily rate limit (2/day) via Durable Object (atomic)
@@ -28,14 +28,17 @@ export CLOUDFLARE_API_TOKEN=your_token_here
 
 3. Set secrets:
 ```bash
+npx wrangler secret put GEMINI_API_KEY
 npx wrangler secret put OPENAI_API_KEY
 npx wrangler secret put TURNSTILE_SECRET_KEY
 npx wrangler secret put OWNER_BYPASS_KEY
 ```
 `ALLOWED_ORIGIN` is already set in `wrangler.jsonc` as `https://devbyhwang.github.io`.
+`AI_PROVIDER` is set to `gemini` by default (`openai` for rollback).
+`GEMINI_MODEL` is set to `gemini-2.0-flash` by default.
 `TURNSTILE_EXPECTED_HOSTNAME` is set to `devbyhwang.github.io`.
 `TURNSTILE_EXPECTED_ACTION` is set to `novel_feedback`.
-`ENABLE_OWNER_BYPASS` is set to `"false"` by default in `wrangler.jsonc`.
+`ENABLE_OWNER_BYPASS` is currently set to `"true"` in `wrangler.jsonc`.
 
 4. Turnstile setup:
 - Cloudflare Turnstile에서 위젯을 생성하고 도메인에 `devbyhwang.github.io`를 등록합니다.
@@ -102,6 +105,24 @@ After deploy, use:
 - `PAYLOAD_TOO_LARGE`
 - `UNSUPPORTED_MEDIA_TYPE`
 - `UPSTREAM_ERROR`
+
+## Regression checklist
+1. Gemini 기본 경로
+- `AI_PROVIDER=gemini`, `GEMINI_API_KEY` 유효
+- 200 + `overallScore/summary/items/usage` 구조 확인
+2. Gemini 키 누락
+- `AI_PROVIDER=gemini`, `GEMINI_API_KEY` 미설정
+- 502 + `UPSTREAM_ERROR`
+3. OpenAI 롤백 경로
+- `AI_PROVIDER=openai`, `OPENAI_API_KEY` 유효
+- 200 + 기존 응답 구조 동일
+4. 제공자 값 이상치
+- `AI_PROVIDER=invalid`
+- 내부적으로 gemini 경로 사용
+5. 기존 보안/제한 회귀
+- Turnstile 실패: `INVALID_CAPTCHA`
+- 일일 제한 초과: `RATE_LIMITED`
+- 12,000자 초과: `PAYLOAD_TOO_LARGE`
 
 ## Test-only bypass lifecycle
 1. Enable for testing:
