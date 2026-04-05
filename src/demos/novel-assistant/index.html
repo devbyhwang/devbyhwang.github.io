@@ -52,26 +52,6 @@
       padding-bottom: 14px;
     }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 10px;
-      color: #6f6659;
-      font-size: 13px;
-      text-decoration: none;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: #fff;
-    }
-
-    .back-link:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-soft);
-    }
-
     h1 {
       margin: 0;
       font-size: clamp(24px, 3.3vw, 35px);
@@ -214,6 +194,26 @@
       font-size: 14px;
       line-height: 1.5;
       font-family: inherit;
+    }
+
+    .field-guide {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fffdf9;
+      padding: 8px 10px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .field-guide p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #5b564d;
+    }
+
+    .field-guide strong {
+      color: #3f392f;
     }
 
     #manuscriptBody {
@@ -421,9 +421,31 @@
       line-height: 1.5;
     }
 
+    .meta-section {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fffdf9;
+      padding: 8px 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .meta-section h4 {
+      margin: 0;
+      font-size: 13px;
+      color: #3f392f;
+    }
+
     .meta-list {
       margin: 0;
       padding-left: 18px;
+    }
+
+    .signal-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 2px;
     }
 
     .node-links {
@@ -432,24 +454,60 @@
       gap: 6px;
     }
 
-    .meta-details {
-      margin-top: 2px;
-      border-top: 1px dashed var(--line);
-      padding-top: 6px;
+    .submission-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 2px;
+      list-style: disc;
     }
 
-    .meta-details summary {
-      cursor: pointer;
+    .submission-list li::marker {
+      color: var(--accent);
+    }
+
+    .submission-list li {
       font-size: 12px;
-      color: #6f6659;
-      font-weight: 700;
+      color: #4f493f;
+      line-height: 1.45;
     }
 
-    .meta-details p {
-      margin: 6px 0 0;
+    .progress-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
       font-size: 12px;
       color: #5b564d;
-      line-height: 1.45;
+      width: fit-content;
+    }
+
+    .progress-chip strong {
+      color: var(--ink);
+    }
+
+    .progress-chip.auto {
+      border-color: #b7d7bf;
+      background: #f3faf5;
+    }
+
+    .progress-chip.done {
+      border-color: #bddbc4;
+      background: #f5fbf7;
+    }
+
+    .progress-chip.block {
+      border-color: #e8c2bc;
+      background: #fff7f5;
+    }
+
+    .progress-chip.pending {
+      border-color: #d9cfbf;
+      background: #fffdf8;
     }
 
     .node-link-btn {
@@ -712,7 +770,6 @@
 <body>
   <main class="shell">
     <header class="head">
-      <a href="../" class="back-link">← Playground로 돌아가기</a>
       <h1>소설 작성 어시스턴트</h1>
       <p class="sub">
         작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다.
@@ -763,8 +820,7 @@
         <p class="usage">기본 무료 플랜: 하루 2회 (관리자 테스트 모드 제외)</p>
         <!-- TEST_ONLY_OWNER_BYPASS_START -->
         <div class="owner-key-box">
-          <label for="ownerKeyInput">관리자 테스트 키</label>
-          <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="테스트 환경에서만 사용" />
+          <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="Owner Key" aria-label="Owner Key" />
         </div>
         <!-- TEST_ONLY_OWNER_BYPASS_END -->
         <div class="captcha-wrap">
@@ -789,11 +845,12 @@
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
     const AUTO_DONE_THRESHOLD = 7.5;
-    const ENABLE_OWNER_BYPASS_UI = false;
+    const ENABLE_OWNER_BYPASS_UI = true;
 
     const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
     const BODY_STORAGE_KEY = "novel-assistant:body:v2";
+    const ONBOARDING_DISMISSED_STORAGE_KEY = "novel-assistant:onboarding-dismissed:v1";
 
     const stages = [
       {
@@ -1336,6 +1393,135 @@
       s5_show_tell_and_precision_tools: "revision",
     };
 
+    function buildDefaultConceptBrief(drill) {
+      const lane = drillLaneMap[drill.id] || "middle";
+      const laneHint = {
+        lock: "이 단계는 플롯의 중심 축을 흔들리지 않게 고정합니다.",
+        beginning: "이 단계는 독자 진입 장벽을 낮추고 초반 이탈을 막습니다.",
+        middle: "이 단계는 대립과 압박을 누적해 독서 추진력을 만듭니다.",
+        ending: "이 단계는 갈등 회수와 감정 여운을 동시에 완성합니다.",
+        revision: "이 단계는 수정 우선순위를 정해 완성도를 끌어올립니다.",
+      };
+      return laneHint[lane] || "이 단계는 핵심 장면을 실행 가능한 문장으로 만드는 데 집중합니다.";
+    }
+
+    function buildDefaultConceptWhy(drill) {
+      const lane = drillLaneMap[drill.id] || "middle";
+      const whyHint = {
+        lock: "핵심 4요소가 흐리면 이후 장면의 선택 기준이 계속 흔들립니다.",
+        beginning: "초반 이해가 막히면 독자는 갈등이 커지기 전에 이탈합니다.",
+        middle: "중반 리듬이 약하면 좋은 설정도 체감 긴장이 급격히 떨어집니다.",
+        ending: "엔딩 회수가 약하면 전체 이야기의 만족도가 크게 하락합니다.",
+        revision: "수정 기준이 없으면 반복 작업이 늘고 품질 향상이 멈춥니다.",
+      };
+      return whyHint[lane] || "이 단계를 고정해야 다음 반복에서 수정 방향이 선명해집니다.";
+    }
+
+    function buildDefaultWritingOutcome(drill) {
+      const fieldCount = Array.isArray(drill.templateFields) ? drill.templateFields.length : 0;
+      return `이 단계가 끝나면 핵심 입력 ${fieldCount}개가 채워진 실행 가능한 초안을 갖게 됩니다.`;
+    }
+
+    function buildDefaultSubmissionChecklist() {
+      return [
+        "모든 입력칸이 비어 있지 않은가?",
+        "각 문장에 행동 또는 사건이 들어가 있는가?",
+        "다음 리라이트 액션을 바로 실행할 수 있는가?",
+      ];
+    }
+
+    function buildDefaultFieldGuide(field) {
+      const label = field.label || field.key || "입력 항목";
+      const placeholder = field.placeholder || "구체 사건/행동을 포함해 작성";
+      return {
+        howTo: `${label}은(는) 2~4문장으로 쓰고, 사건·행동·대가·시간 중 최소 2개를 포함하세요.`,
+        goodExample: `예: ${placeholder}. 그리고 실패 시 바로 발생하는 손실 1개를 명시한다.`,
+        badExample: "예: 느낌과 의지만 적고 구체 사건이 없다. 이렇게 쓰면 수정 방향이 흐려진다.",
+        checkQuestion: "처음 읽는 사람도 바로 실행할 수 있을 만큼 구체적인가? (예/아니오)",
+      };
+    }
+
+    function applyObjectiveOverrides(drill) {
+      drill.conceptBrief = "지배 목표(Objective)는 이야기 전체를 끌고 가는 단 하나의 중심 목표입니다. 목표는 ‘무언가를 얻기’ 또는 ‘무언가를 피하기’ 형태여야 하며, 실패하면 주인공의 삶이 실질적으로 무너질 만큼 중요해야 합니다.";
+      drill.conceptWhy = "지배 목표가 선명해야 장면 선택, 갈등 설계, 결말 회수가 한 축으로 정렬됩니다.";
+      drill.writingOutcome = "이 단계가 끝나면 주인공의 단일 지배 목표와 Story Question이 결말까지 유지되는 초안을 갖게 됩니다.";
+      drill.passSignals = [
+        "목표가 1문장으로 고정되고 장면마다 같은 축으로 수렴한다.",
+        "목표 실패 시 외적/내적 손실이 명확해 독자가 걱정한다.",
+        "스토리 질문(Will...?)이 결말까지 유지된다.",
+      ];
+      drill.failSignals = [
+        "목표가 여러 개라 장면마다 중심축이 바뀐다.",
+        "목표가 소망 수준(있으면 좋다)이라 실패 대가가 약하다.",
+        "스토리 질문이 모호해 독자가 무엇을 기다려야 하는지 불명확하다.",
+      ];
+      drill.submissionChecklist = [
+        "지배 목표가 1문장으로 고정됐는가?",
+        "실패 대가가 외적/내적으로 분리됐는가?",
+        "Will 질문이 결말에서 성공/실패로 회수 가능한가?",
+      ];
+
+      const byKey = Object.fromEntries((drill.templateFields || []).map((field) => [field.key, field]));
+      if (byKey.objective_one) {
+        byKey.objective_one.howTo = "주인공의 단일 지배 목표를 한 문장으로 씁니다. ‘얻는다/벗어난다’ 동사를 포함하세요.";
+        byKey.objective_one.goodExample = "예: 주인공은 72시간 안에 조작된 재판 기록 원본을 찾아 누명을 벗겨야 한다.";
+        byKey.objective_one.badExample = "예: 주인공은 행복해지고 싶다.";
+        byKey.objective_one.checkQuestion = "누가, 무엇을, 언제까지가 한 문장에 들어가 있는가? (예/아니오)";
+      }
+      if (byKey.objective_reason) {
+        byKey.objective_reason.howTo = "왜 ‘지금’ 이 목표여야 하는지 시간 압박·필연 조건 2개를 적습니다.";
+        byKey.objective_reason.goodExample = "예: 내일 오전 판결 선고 + 증거 폐기 시점이 오늘 밤 11시로 고정되어 있다.";
+        byKey.objective_reason.badExample = "예: 그냥 중요한 일이라서.";
+        byKey.objective_reason.checkQuestion = "독자가 읽고 ‘미룰 수 없네’라고 느낄 근거가 있는가? (예/아니오)";
+      }
+      if (byKey.objective_stakes) {
+        byKey.objective_stakes.howTo = "실패 대가를 외적 1개, 내적 1개로 분리해 작성합니다.";
+        byKey.objective_stakes.goodExample = "예: 외적-종신형 확정 / 내적-딸과의 신뢰 완전 붕괴.";
+        byKey.objective_stakes.badExample = "예: 기분이 좀 안 좋아진다.";
+        byKey.objective_stakes.checkQuestion = "대가가 주인공의 생존·관계·정체성에 치명적인가? (예/아니오)";
+      }
+      if (byKey.objective_story_question) {
+        byKey.objective_story_question.howTo = "Will... 형식으로 결말에서 답이 나는 질문 1개를 적습니다.";
+        byKey.objective_story_question.goodExample = "예: Will 주인공은 판결 전까지 원본 증거를 확보해 무죄를 증명할 수 있을까?";
+        byKey.objective_story_question.badExample = "예: 이야기는 어떻게 될까?";
+        byKey.objective_story_question.checkQuestion = "성공/실패로 결말에서 회수 가능한 질문인가? (예/아니오)";
+      }
+      if (byKey.objective_focus) {
+        byKey.objective_focus.howTo = "지배 목표를 흐리는 하위 목표 2개와 제거/통합 방안을 씁니다.";
+        byKey.objective_focus.goodExample = "예: 로맨스 서브플롯은 ‘증거 확보’에 기여하는 장면만 남기고 2장면 삭제.";
+        byKey.objective_focus.badExample = "예: 일단 다 넣고 나중에 보자.";
+        byKey.objective_focus.checkQuestion = "각 장면이 지배 목표를 전진시키는지 판단 가능한가? (예/아니오)";
+      }
+    }
+
+    function enrichDrillGuides() {
+      drills.forEach((drill) => {
+        if (!drill.conceptBrief) drill.conceptBrief = buildDefaultConceptBrief(drill);
+        if (!drill.conceptWhy) drill.conceptWhy = buildDefaultConceptWhy(drill);
+        if (!drill.writingOutcome) drill.writingOutcome = buildDefaultWritingOutcome(drill);
+        if (!Array.isArray(drill.passSignals) || drill.passSignals.length === 0) {
+          drill.passSignals = ["목표/행동/결과가 장면 단위로 연결된다.", "독자가 다음 장면을 기대할 질문이 남는다."];
+        }
+        if (!Array.isArray(drill.failSignals) || drill.failSignals.length === 0) {
+          drill.failSignals = ["설명은 많지만 사건 변화가 없다.", "무엇을 고쳐야 할지 행동 단위로 보이지 않는다."];
+        }
+        if (!Array.isArray(drill.submissionChecklist) || drill.submissionChecklist.length === 0) {
+          drill.submissionChecklist = buildDefaultSubmissionChecklist();
+        }
+
+        (drill.templateFields || []).forEach((field) => {
+          const guide = buildDefaultFieldGuide(field);
+          field.howTo = field.howTo || guide.howTo;
+          field.goodExample = field.goodExample || guide.goodExample;
+          field.badExample = field.badExample || guide.badExample;
+          field.checkQuestion = field.checkQuestion || guide.checkQuestion;
+        });
+      });
+
+      const objectiveDrill = drills.find((drill) => drill.id === "s1_lock_objective");
+      if (objectiveDrill) applyObjectiveOverrides(objectiveDrill);
+    }
+
     function replaceUiTerms(value) {
       if (typeof value !== "string" || !value) return value;
       const replaceIfNotParenthesized = (text, token, replacement) => text.replace(new RegExp(`\\b${token}\\b`, "g"), (match, offset, full) => {
@@ -1377,18 +1563,36 @@
       return localized;
     }
 
+    function normalizeSentence(value) {
+      return String(value || "")
+        .replaceAll("입니다.입니다.", "입니다.")
+        .replaceAll("..", ".")
+        .trim();
+    }
+
     function localizeDrill(drill) {
       drill.title = replaceUiTerms(drill.title);
       drill.shortLabel = replaceUiTerms(drill.shortLabel);
       drill.goal = replaceUiTerms(drill.goal);
       drill.passRule = replaceUiTerms(drill.passRule);
       drill.repetitionTip = replaceUiTerms(drill.repetitionTip);
+      drill.conceptBrief = normalizeSentence(replaceUiTerms(drill.conceptBrief || ""));
+      drill.conceptWhy = normalizeSentence(replaceUiTerms(drill.conceptWhy || ""));
+      drill.writingOutcome = normalizeSentence(replaceUiTerms(drill.writingOutcome || ""));
+      drill.passSignals = (drill.passSignals || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      drill.failSignals = (drill.failSignals || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      drill.submissionChecklist = (drill.submissionChecklist || []).map((item) => normalizeSentence(replaceUiTerms(item)));
       (drill.templateFields || []).forEach((field) => {
         field.label = replaceUiTerms(field.label);
         field.placeholder = replaceUiTerms(field.placeholder);
+        field.howTo = normalizeSentence(replaceUiTerms(field.howTo || ""));
+        field.goodExample = normalizeSentence(replaceUiTerms(field.goodExample || ""));
+        field.badExample = normalizeSentence(replaceUiTerms(field.badExample || ""));
+        field.checkQuestion = normalizeSentence(replaceUiTerms(field.checkQuestion || ""));
       });
     }
 
+    enrichDrillGuides();
     stages.forEach((stage) => {
       stage.label = replaceUiTerms(stage.label);
       stage.description = replaceUiTerms(stage.description);
@@ -1402,6 +1606,7 @@
     const viewTabsEl = document.getElementById("viewTabs");
     const roadmapSvgEl = document.getElementById("roadmapSvg");
     const roadmapScrollEl = document.querySelector(".roadmap-scroll");
+    const onboardingSectionEl = document.querySelector(".onboarding");
     const startFirstStepBtnEl = document.getElementById("startFirstStepBtn");
     const completionControlEl = document.getElementById("completionControl");
     const runBtnEl = document.getElementById("runBtn");
@@ -1420,7 +1625,7 @@
       ...drill,
       laneId: drillLaneMap[drill.id] || "middle",
       linkedNodeIds: [],
-      checklist: [],
+      checklist: Array.isArray(drill.submissionChecklist) ? drill.submissionChecklist : [],
       order: 500 + (Number(drill.roadmapOrder) || 0),
     }));
 
@@ -1489,7 +1694,30 @@
       element.style.height = `${element.scrollHeight}px`;
     }
 
+    function isOnboardingDismissed() {
+      try {
+        return localStorage.getItem(ONBOARDING_DISMISSED_STORAGE_KEY) === "1";
+      } catch (_error) {
+        return false;
+      }
+    }
+
+    function renderOnboardingVisibility() {
+      if (!onboardingSectionEl) return;
+      onboardingSectionEl.hidden = isOnboardingDismissed();
+    }
+
+    function dismissOnboarding() {
+      try {
+        localStorage.setItem(ONBOARDING_DISMISSED_STORAGE_KEY, "1");
+      } catch (_error) {
+        // localStorage 접근이 제한된 환경에서도 동작이 중단되지 않도록 무시
+      }
+      if (onboardingSectionEl) onboardingSectionEl.hidden = true;
+    }
+
     function jumpToFirstStep() {
+      dismissOnboarding();
       setActiveTab("lock");
       if (getNodeById("s1_lock_lead")) {
         selectNode("s1_lock_lead");
@@ -1536,28 +1764,6 @@
 
     function getLaneById(id) {
       return laneDefs.find((lane) => lane.id === id) || null;
-    }
-
-    function getTermHints(selected) {
-      const sourceText = [
-        selected.title,
-        selected.goal,
-        selected.passRule,
-        ...(selected.checklist || []),
-      ].join(" ");
-
-      const glossary = [
-        { pattern: /주인공\(Lead\)/, hint: "주인공(Lead): 독자가 끝까지 따라갈 핵심 인물" },
-        { pattern: /지배 목표\(Objective\)/, hint: "지배 목표(Objective): 이번 이야기에서 반드시 달성/회피해야 할 목표" },
-        { pattern: /대립\(Confrontation\)/, hint: "대립(Confrontation): 목표를 가로막는 저항과 충돌 구조" },
-        { pattern: /결정타 결말\(Knockout\)/, hint: "결정타 결말(Knockout): 감정과 인과를 함께 회수하는 마무리" },
-        { pattern: /교란 사건\(Disturbance\)/, hint: "교란 사건(Disturbance): 평온을 깨고 갈등을 시작시키는 사건" },
-        { pattern: /문턱 사건 [12] \(Doorway [12]\)/, hint: "문턱 사건(Doorway): 되돌아가기 어려운 선택의 관문" },
-        { pattern: /중간 전환점\(Midpoint\)/, hint: "중간 전환점(Midpoint): 중반 판세를 바꾸는 축" },
-        { pattern: /전환 사건\(Plot Point\)/, hint: "전환 사건(Plot Point): 막 전환을 유도하는 사건" },
-      ];
-
-      return glossary.filter((item) => item.pattern.test(sourceText)).slice(0, 2).map((item) => item.hint);
     }
 
     function getNodeById(id) {
@@ -1986,8 +2192,6 @@
         return;
       }
 
-      const stage = selected.stageId ? getStageById(selected.stageId) : null;
-      const lane = getLaneById(selected.laneId);
       const progress = ensureProgress(selected.id);
       const completion = getCompletionState(progress);
 
@@ -1996,31 +2200,48 @@
       if (completion === "manual_done") completionText = "수동 완료";
       if (completion === "manual_block") completionText = "수동 해제";
 
-      const checklistHtml = Array.isArray(selected.checklist) && selected.checklist.length > 0
-        ? `<ul class="meta-list">${selected.checklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+      const passSignalsHtml = Array.isArray(selected.passSignals) && selected.passSignals.length > 0
+        ? `<ul class="signal-list">${selected.passSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
         : "<p class=\"selected-row\">-</p>";
-
-      const termHints = getTermHints(selected);
-      const termHintHtml = termHints.length > 0
-        ? `<p class="selected-row"><strong>용어 힌트:</strong> ${escapeHtml(termHints.join(" · "))}</p>`
-        : "";
+      const failSignalsHtml = Array.isArray(selected.failSignals) && selected.failSignals.length > 0
+        ? `<ul class="signal-list">${selected.failSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const submissionChecklistHtml = Array.isArray(selected.submissionChecklist) && selected.submissionChecklist.length > 0
+        ? `<ul class="submission-list">${selected.submissionChecklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const progressClass = completion === "auto_done"
+        ? "auto"
+        : completion === "manual_done"
+          ? "done"
+          : completion === "manual_block"
+            ? "block"
+            : "pending";
 
       selectedDrillMetaEl.innerHTML = `
         <div class="selected-title">${escapeHtml(selected.title)}</div>
-        <p class="selected-row"><strong>노드 유형:</strong> 실습 노드</p>
-        <p class="selected-row"><strong>레인:</strong> ${escapeHtml(lane ? lane.label : selected.laneId)}</p>
-        ${stage ? `<p class="selected-row"><strong>원본 Stage:</strong> ${escapeHtml(stage.label)}</p>` : ""}
-        <p class="selected-row"><strong>이번 단계에서 할 일:</strong> ${escapeHtml(selected.goal || "-")}</p>
-        <p class="selected-row"><strong>완료 기준:</strong> ${escapeHtml(selected.passRule || "-")}</p>
-        <p class="selected-row"><strong>반복 연습 팁:</strong> ${escapeHtml(selected.repetitionTip || "-")}</p>
-        ${termHintHtml}
-        <p class="selected-row"><strong>완료 상태:</strong> ${escapeHtml(completionText)}</p>
-        <p class="selected-row"><strong>체크리스트:</strong></p>
-        ${checklistHtml}
-        <details class="meta-details">
-          <summary>참고 정보 보기</summary>
-          <p><strong>참고 챕터:</strong> ${escapeHtml(selected.bookRefs || "-")}</p>
-        </details>
+        <section class="meta-section">
+          <h4>1. 개념 이해</h4>
+          <p class="selected-row">${escapeHtml(selected.conceptBrief || "-")}</p>
+          <p class="selected-row"><strong>왜 중요한가:</strong> ${escapeHtml(selected.conceptWhy || "-")}</p>
+        </section>
+        <section class="meta-section">
+          <h4>2. 지금 작성할 항목</h4>
+          <p class="selected-row"><strong>이번 단계에서 할 일:</strong> ${escapeHtml(selected.goal || "-")}</p>
+          <p class="selected-row"><strong>결과물:</strong> ${escapeHtml(selected.writingOutcome || "-")}</p>
+          <p class="selected-row"><strong>완료 기준:</strong> ${escapeHtml(selected.passRule || "-")}</p>
+          <p class="selected-row"><strong>반복 연습 팁:</strong> ${escapeHtml(selected.repetitionTip || "-")}</p>
+          <p class="selected-row"><strong>잘 쓴 상태:</strong></p>
+          ${passSignalsHtml}
+          <p class="selected-row"><strong>보완 필요 신호:</strong></p>
+          ${failSignalsHtml}
+        </section>
+        <section class="meta-section">
+          <h4>3. 제출 전 체크</h4>
+          ${submissionChecklistHtml}
+          <div class="progress-chip ${progressClass}">
+            <strong>현재 진행 상태:</strong> <span>${escapeHtml(completionText)}</span>
+          </div>
+        </section>
       `;
       triggerMetaFadeIn();
     }
@@ -2076,6 +2297,12 @@
             data-field-key="${escapeHtml(field.key)}"
             placeholder="${escapeHtml(field.placeholder || field.label)}"
           >${escapeHtml(draft[field.key] || "")}</textarea>
+          <div class="field-guide">
+            <p><strong>어떻게 쓰나:</strong> ${escapeHtml(field.howTo || "-")}</p>
+            <p><strong>좋은 예:</strong> ${escapeHtml(field.goodExample || "-")}</p>
+            <p><strong>피해야 할 예:</strong> ${escapeHtml(field.badExample || "-")}</p>
+            <p><strong>작성 전 점검:</strong> ${escapeHtml(field.checkQuestion || "-")}</p>
+          </div>
         `;
 
         const input = wrap.querySelector("textarea");
@@ -2094,8 +2321,8 @@
     function buildPresetForRequest(selected) {
       const stage = selected.stageId ? getStageById(selected.stageId) : null;
       const lane = getLaneById(selected.laneId);
-      const checklistText = Array.isArray(selected.checklist) && selected.checklist.length > 0
-        ? selected.checklist.join(" / ")
+      const checklistText = Array.isArray(selected.submissionChecklist) && selected.submissionChecklist.length > 0
+        ? selected.submissionChecklist.join(" / ")
         : "-";
 
       return [
@@ -2108,7 +2335,7 @@
         `선택 노드: ${selected.title} (${selected.id})`,
         `목표: ${selected.goal || "-"}`,
         `통과 기준: ${selected.passRule || "-"}`,
-        `핵심 체크리스트: ${checklistText}`,
+        `제출 전 체크: ${checklistText}`,
         `권장 반복 포인트: ${selected.repetitionTip || "-"}`,
       ].filter(Boolean).join("\n");
     }
@@ -2128,7 +2355,7 @@
       lines.push(`통과 기준: ${selected.passRule || "-"}`);
       lines.push(`권장 반복 포인트: ${selected.repetitionTip || "-"}`);
       lines.push(`참고: ${selected.bookRefs || "-"}`);
-      lines.push(`체크리스트: ${(selected.checklist || []).join(" / ") || "-"}`);
+      lines.push(`제출 전 체크: ${(selected.submissionChecklist || []).join(" / ") || "-"}`);
 
       (selected.templateFields || []).forEach((field) => {
         lines.push("");
@@ -2399,6 +2626,7 @@
 
     loadCurriculumState();
     renderStageLegend();
+    renderOnboardingVisibility();
     initBodyDraft();
     initRoadmapPan();
 
