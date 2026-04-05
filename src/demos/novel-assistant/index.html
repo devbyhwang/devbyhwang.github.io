@@ -30,7 +30,7 @@
     }
 
     .shell {
-      width: min(1240px, 100% - 32px);
+      width: min(1240px, calc(100% - 32px));
       margin: 24px auto;
       padding: 22px;
       border: 1px solid var(--line);
@@ -63,6 +63,7 @@
       grid-template-columns: 1.45fr 1fr;
       gap: 16px;
       min-height: 66vh;
+      min-width: 0;
     }
 
     .pane {
@@ -73,6 +74,7 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      min-width: 0;
     }
 
     .pane h2 {
@@ -101,6 +103,8 @@
       resize: vertical;
       min-height: 280px;
       font-family: "Iowan Old Style", "Times New Roman", serif;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .status {
@@ -119,6 +123,8 @@
       padding: 12px;
       background: #fff;
       overflow: auto;
+      min-width: 0;
+      overflow-wrap: anywhere;
     }
 
     .placeholder {
@@ -165,6 +171,7 @@
       display: grid;
       gap: 8px;
       margin-top: 4px;
+      min-width: 0;
     }
 
     .check {
@@ -176,6 +183,7 @@
       grid-template-columns: 18px 1fr;
       gap: 10px;
       align-items: start;
+      min-width: 0;
     }
 
     .check input { margin-top: 2px; }
@@ -190,6 +198,7 @@
       font-size: 12px;
       color: #5b564d;
       line-height: 1.4;
+      overflow-wrap: anywhere;
     }
 
     .owner-key-box {
@@ -209,6 +218,7 @@
       padding: 10px;
       font-size: 14px;
       font-family: inherit;
+      min-width: 0;
     }
 
     .run {
@@ -240,11 +250,32 @@
       border: 1px dashed var(--line);
       border-radius: 10px;
       background: #fff;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    #turnstileBox {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      min-height: 65px;
     }
 
     @media (max-width: 980px) {
       .layout { grid-template-columns: 1fr; }
-      .shell { margin: 12px auto; padding: 16px; }
+      .shell {
+        width: min(1240px, calc(100% - 16px));
+        margin: 8px auto;
+        padding: 12px;
+      }
+      .head {
+        margin-bottom: 14px;
+        padding-bottom: 12px;
+      }
+      h1 { font-size: clamp(21px, 7vw, 30px); }
+      .pane { padding: 12px; }
       .pane { min-height: auto; }
     }
   </style>
@@ -484,6 +515,7 @@
 
       turnstileWidgetId = window.turnstile.render(turnstileBoxEl, {
         sitekey: TURNSTILE_SITE_KEY,
+        size: "flexible",
         action: TURNSTILE_ACTION,
         callback(token) {
           turnstileToken = token || "";

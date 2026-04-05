@@ -45,6 +45,7 @@
         #ui-toggle { position: absolute; top: 25px; right: 25px; width: 45px; height: 45px; background: rgba(10, 8, 7, 0.8); border: 1px solid rgba(212, 163, 115, 0.2); color: #d4a373; font-family: 'Cinzel', serif; cursor: pointer; z-index: 100; display: flex; align-items: center; justify-content: center; }
         #overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: #020203; z-index: 999; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; }
         #overlay h1 { color: #d4a373; font-family: 'Cinzel', serif; font-size: 3.5rem; letter-spacing: 20px; }
+        .mobile-panel-tabs { display: none; }
 
         /* Back link styling */
         .back-link {
@@ -63,6 +64,113 @@
         }
         .back-link:hover {
             background: rgba(0, 0, 0, 0.9);
+        }
+
+        @media (max-width: 1024px) {
+            .ui-layer {
+                grid-template-columns: minmax(240px, 320px) 1fr;
+                gap: 12px;
+                padding: 12px;
+            }
+
+            .panel {
+                max-height: calc(100vh - 24px);
+                padding: 14px;
+            }
+
+            .back-link {
+                top: 10px;
+                left: 10px;
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
+            #ui-toggle {
+                top: 10px;
+                right: 10px;
+                width: 44px;
+                height: 44px;
+            }
+
+            #audio-panel {
+                right: 10px;
+                bottom: 10px;
+                opacity: 0.55;
+                background: rgba(10, 8, 7, 0.82);
+                border: 1px solid rgba(212, 163, 115, 0.25);
+                border-radius: 6px;
+                padding: 8px 10px;
+            }
+
+            #overlay h1 {
+                font-size: clamp(1.5rem, 8vw, 2.1rem);
+                letter-spacing: 6px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ui-layer {
+                display: block;
+                padding: 10px;
+            }
+
+            .mobile-panel-tabs {
+                display: inline-flex;
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                gap: 6px;
+                pointer-events: auto;
+                z-index: 20;
+            }
+
+            .mobile-panel-tabs button {
+                min-height: 44px;
+                border: 1px solid rgba(212, 163, 115, 0.35);
+                border-radius: 999px;
+                padding: 8px 12px;
+                background: rgba(10, 8, 7, 0.88);
+                color: #d4a373;
+                font-size: 0.72rem;
+                letter-spacing: 1px;
+                cursor: pointer;
+            }
+
+            .mobile-panel-tabs button.active {
+                background: rgba(212, 163, 115, 0.2);
+                border-color: #d4a373;
+            }
+
+            .ui-layer .panel-spacer {
+                display: none;
+            }
+
+            .ui-layer .panel {
+                display: none;
+                width: min(100%, 360px);
+                max-height: min(70vh, 460px);
+                margin-top: 58px;
+                margin-left: 0;
+                margin-right: auto;
+            }
+
+            .ui-layer.mobile-panel-inventory .panel-inventory,
+            .ui-layer.mobile-panel-analysis .panel-analysis {
+                display: flex;
+            }
+
+            #ui-toggle {
+                top: auto;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            #audio-panel {
+                right: 64px;
+                bottom: 10px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -87,8 +195,12 @@
 
 <div id="canvas-container"></div>
 
-<div class="ui-layer" id="main-ui">
-    <aside class="panel">
+<div class="ui-layer mobile-panel-analysis" id="main-ui">
+    <div class="mobile-panel-tabs" id="mobile-panel-tabs">
+        <button type="button" data-panel="analysis" class="active">ANALYSIS</button>
+        <button type="button" data-panel="inventory">SATCHEL</button>
+    </div>
+    <aside class="panel panel-inventory">
         <h2>SATCHEL</h2>
         <div class="scroll-container">
             <div class="inv-btn" onclick="spawnLog('twig')"><div><b>Tinder</b> <small>Fast</small></div><span>+</span></div>
@@ -96,8 +208,8 @@
             <div class="inv-btn" onclick="spawnLog('log')"><div><b>Oak Core</b> <small>Eternal</small></div><span>+</span></div>
         </div>
     </aside>
-    <div></div>
-    <aside class="panel">
+    <div class="panel-spacer"></div>
+    <aside class="panel panel-analysis">
         <h2>ANALYSIS</h2>
         <div class="monitor">
             <div class="temp-val" id="ui-temp">15°C</div>
@@ -197,6 +309,30 @@ function createCrackleBuffer() {
 }
 
     function toggleUI() { document.getElementById('main-ui').classList.toggle('hidden'); }
+
+    const mainUi = document.getElementById('main-ui');
+    const mobileTabs = document.getElementById('mobile-panel-tabs');
+
+    function setMobilePanel(panel) {
+        if (!mainUi) return;
+        mainUi.classList.toggle('mobile-panel-analysis', panel === 'analysis');
+        mainUi.classList.toggle('mobile-panel-inventory', panel === 'inventory');
+
+        if (!mobileTabs) return;
+        mobileTabs.querySelectorAll('button').forEach((btn) => {
+            const active = btn.dataset.panel === panel;
+            btn.classList.toggle('active', active);
+            btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+    }
+
+    if (mobileTabs) {
+        mobileTabs.querySelectorAll('button').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                setMobilePanel(btn.dataset.panel || 'analysis');
+            });
+        });
+    }
 
     // PHYSICS
     const world = new CANNON.World(); world.gravity.set(0, -18, 0);
