@@ -6,7 +6,7 @@
 
 ## 엔드포인트
 - `POST /v1/novel-feedback`
-- 백엔드 AI 제공자 기본값: Gemini (`AI_PROVIDER=gemini`)
+- 백엔드 AI 제공자 기본값: ChatGPT(OpenAI) (`AI_PROVIDER=openai`)
 
 ## UI 구조
 - 헤더 우측 상단: 언어 전환 셀렉터

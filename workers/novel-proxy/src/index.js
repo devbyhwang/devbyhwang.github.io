@@ -6,7 +6,7 @@ const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/sit
 const MANUSCRIPT_MAX_CHARS = 12000;
 const OWNER_BYPASS_HEADER = "X-Owner-Key";
 const DEFAULT_TURNSTILE_ACTION = "novel_feedback";
-const DEFAULT_AI_PROVIDER = "gemini";
+const DEFAULT_AI_PROVIDER = "openai";
 const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
 
 export default {
