@@ -1,0 +1,2900 @@
+    const API_ENDPOINT = "https://novel-proxy.devbyhwang.workers.dev/v1/novel-feedback";
+    const TURNSTILE_SITE_KEY = "0x4AAAAAAC0mnz1HYP-CjAKi";
+    const TURNSTILE_ACTION = "novel_feedback";
+    const PRESET_START = "[[PRESET_START]]";
+    const PRESET_END = "[[PRESET_END]]";
+    const AUTO_DONE_THRESHOLD = 7.5;
+    const ENABLE_OWNER_BYPASS_UI = true;
+
+    const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
+    const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
+    const BODY_STORAGE_KEY = "novel-assistant:body:v2";
+    const LANG_STORAGE_KEY = "novel-assistant:lang:v1";
+
+    let uiLang = "ko";
+
+    const messages = {
+      ko: {
+        htmlLang: "ko",
+        docTitle: "소설 작성 어시스턴트 · DevByHwang",
+        pageTitle: "소설 작성 어시스턴트",
+        pageSubtitle: "작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다. 핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.",
+        languageLabel: "Language",
+        roadmapTitle: "구조형 학습 로드맵",
+        roadmapHint: "먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.",
+        exerciseTitle: "연습 입력",
+        exerciseInputLabel: "연습 입력칸",
+        resetExercise: "입력 초기화",
+        selectNodeEmpty: "로드맵에서 연습 항목을 선택하세요.",
+        noTemplate: "이 노드는 입력 템플릿이 없습니다.",
+        manuscriptLabel: "원고 본문 (선택)",
+        manuscriptPlaceholder: "문맥이 필요할 때만 원고 본문을 추가 입력하세요.",
+        run: "분석 실행",
+        runNeedCaptcha: "분석을 시작하려면 사람인지 확인이 필요합니다.",
+        running: "분석 중...",
+        usage: "기본 무료 플랜: 하루 3회",
+        resultLabel: "피드백 결과",
+        resultPlaceholder: "아직 분석 결과가 없습니다.",
+        score: "종합 점수",
+        summary: "요약",
+        checkpoint: "점검",
+        itemScore: "점수",
+        suggestion: "수정안",
+        remaining: "남은 횟수",
+        unknownResponse: "응답을 해석하지 못했습니다.",
+        noNodeSelected: "선택된 노드가 없습니다.",
+        completionPending: "미완료",
+        completionAuto: "자동 완료 (최근 점수 {score})",
+        completionManualDone: "수동 완료",
+        completionManualBlock: "수동 해제",
+        sectionConcept: "1. 개념 이해",
+        sectionNow: "2. 지금 작성할 항목",
+        sectionChecklist: "3. 제출 전 체크",
+        why: "왜 중요한가:",
+        currentTask: "이번 단계에서 할 일:",
+        outcome: "결과물:",
+        passRule: "완료 기준:",
+        repeatTip: "반복 연습 팁:",
+        passState: "잘 쓴 상태:",
+        failState: "보완 필요 신호:",
+        currentProgress: "현재 진행 상태:",
+        completionControlTitle: "완료 상태 조정",
+        autoDoneRule: "자동 완료 기준: 점수 {score} 이상",
+        manualDone: "수동 완료",
+        manualBlock: "수동 해제",
+        followAuto: "자동 따르기",
+        guideHowTo: "어떻게 쓰나:",
+        guideGood: "좋은 예:",
+        guideBad: "피해야 할 예:",
+        guideCheck: "작성 전 점검:",
+        statusReset: "연습 입력칸을 초기화했습니다.",
+        statusNeedNode: "로드맵에서 연습 항목을 선택하세요.",
+        statusNeedInput: "연습 입력칸을 먼저 채워주세요.",
+        statusNeedCaptcha: "보안 검증을 완료한 뒤 다시 시도하세요.",
+        statusRequesting: "분석 요청 중...",
+        statusDone: "분석이 완료되었습니다.",
+        statusTurnstileMissing: "Turnstile 사이트키가 설정되지 않았습니다.",
+        statusTurnstileError: "보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.",
+        errorRequest: "요청 처리 중 오류가 발생했습니다.",
+        errorInvalidCaptcha: "보안 검증이 만료되었거나 유효하지 않습니다. 다시 검증해 주세요.",
+        errorPayloadTooLarge: "원고는 최대 12,000자까지 입력할 수 있습니다.",
+        errorNetwork: "네트워크 오류가 발생했습니다.",
+      },
+      en: {
+        htmlLang: "en",
+        docTitle: "Novel Writing Assistant · DevByHwang",
+        pageTitle: "Novel Writing Assistant",
+        pageSubtitle: "A staged practice system based on core fiction craft principles. Train in order from LOCK foundations to act structure, scene execution, and revision.",
+        languageLabel: "Language",
+        roadmapTitle: "Structured Learning Roadmap",
+        roadmapHint: "Start with a LOCK node, then expand in order: Beginning, Middle, Ending, and Revision.",
+        exerciseTitle: "Practice Input",
+        exerciseInputLabel: "Practice Fields",
+        resetExercise: "Reset Input",
+        selectNodeEmpty: "Select a roadmap node to begin.",
+        noTemplate: "This node has no input template.",
+        manuscriptLabel: "Manuscript Body (Optional)",
+        manuscriptPlaceholder: "Add manuscript context only when needed.",
+        run: "Run Analysis",
+        runNeedCaptcha: "Human verification is required",
+        running: "Analyzing...",
+        usage: "Free plan: 3 runs per day",
+        resultLabel: "Feedback Result",
+        resultPlaceholder: "No analysis result yet.",
+        score: "Overall Score",
+        summary: "Summary",
+        checkpoint: "Checkpoint",
+        itemScore: "Score",
+        suggestion: "Revision",
+        remaining: "Remaining Runs",
+        unknownResponse: "Could not parse the response.",
+        noNodeSelected: "No node selected.",
+        completionPending: "Not completed",
+        completionAuto: "Auto complete (last score {score})",
+        completionManualDone: "Manual complete",
+        completionManualBlock: "Manual override off",
+        sectionConcept: "1. Concept",
+        sectionNow: "2. What To Write Now",
+        sectionChecklist: "3. Pre-Submit Checklist",
+        why: "Why it matters:",
+        currentTask: "Task now:",
+        outcome: "Expected output:",
+        passRule: "Pass rule:",
+        repeatTip: "Repetition tip:",
+        passState: "Good signals:",
+        failState: "Needs work:",
+        currentProgress: "Current progress:",
+        completionControlTitle: "Completion Control",
+        autoDoneRule: "Auto completion threshold: {score}+",
+        manualDone: "Manual Complete",
+        manualBlock: "Manual Block",
+        followAuto: "Follow Auto",
+        guideHowTo: "How to write:",
+        guideGood: "Good example:",
+        guideBad: "Avoid this:",
+        guideCheck: "Check before submit:",
+        statusReset: "Practice fields were reset.",
+        statusNeedNode: "Select a roadmap node first.",
+        statusNeedInput: "Fill in all practice fields first.",
+        statusNeedCaptcha: "Complete security verification and retry.",
+        statusRequesting: "Sending analysis request...",
+        statusDone: "Analysis completed.",
+        statusTurnstileMissing: "Turnstile site key is missing.",
+        statusTurnstileError: "Security widget failed. Please try again.",
+        errorRequest: "An error occurred while processing the request.",
+        errorInvalidCaptcha: "Security token expired or invalid. Please verify again.",
+        errorPayloadTooLarge: "Manuscript is limited to 12,000 characters.",
+        errorNetwork: "A network error occurred.",
+      },
+    };
+
+    const deepCopy = (value) => JSON.parse(JSON.stringify(value));
+
+    function t(key, vars = {}) {
+      const dict = messages[uiLang] || messages.ko;
+      const raw = dict[key] || messages.ko[key] || "";
+      return Object.entries(vars).reduce((acc, [name, replacement]) => {
+        return acc.replaceAll(`{${name}}`, String(replacement));
+      }, raw);
+    }
+
+    let stages = [
+      {
+        id: "s1",
+        order: 1,
+        label: "Stage 1 · LOCK Foundations",
+        description: "Lead/Objective/Confrontation/Knockout의 기반을 구축합니다.",
+        color: "#8a4f2a",
+      },
+      {
+        id: "s2",
+        order: 2,
+        label: "Stage 2 · Character/Scene/Dialogue",
+        description: "독자 공감, 장면 구성, 대사 무기를 강화합니다.",
+        color: "#1f6d72",
+      },
+      {
+        id: "s3",
+        order: 3,
+        label: "Stage 3 · Macro Structure Models",
+        description: "3막과 영웅여정을 겹쳐 거시 구조를 설계합니다.",
+        color: "#4a5a9b",
+      },
+      {
+        id: "s4",
+        order: 4,
+        label: "Stage 4 · Act Execution",
+        description: "시작/중간/끝과 막 전환을 장면 수준으로 실행합니다.",
+        color: "#7a3f88",
+      },
+      {
+        id: "s5",
+        order: 5,
+        label: "Stage 5 · Revision & Toolbox",
+        description: "수정 우선순위와 도구 상자 규칙으로 완성도를 높입니다.",
+        color: "#556b2f",
+      },
+    ];
+
+    let drills = [
+      {
+        id: "s1_lock_lead",
+        stageId: "s1",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 1,
+        title: "LOCK: Lead",
+        shortLabel: "Lead",
+        goal: "독자가 끝까지 따라갈 주인공(Lead)의 동질감, 연민, 호감도, 내적 갈등중 핵심 요소를 설정하여 캐릭터를 입체적으로 만듭니다.",
+        passRule: "주인공(Lead)이 독자에게 연결되는 구체적 공감 포인트와, 문제 해결 실패 시 잃게 되는 치명적인 대가(Stakes)가 명확히 드러난다.",
+        repetitionTip: "주인공(Lead)을 독자에게 소개하는 장면을 4가지 공감 장치를 활용해 압축 리라이트한다.",
+        bookRefs: "Ch1",
+        templateFields: [
+          { key: "lead_role", label: "주인공(LEAD)의 역할/정체성 한 줄", placeholder: "예: 몰락 직전의 전직 경찰. (구체적인 직업과 현재의 위기 상황 명시)" },
+          { key: "lead_wound", label: "주인공(LEAD)의 내적 갈등 (두 목소리의 대립) (기존 '결핍 또는 상처' 수정)", placeholder: "주인공 내면에서 충돌하는 가치관/욕망/두려움 2가지를 구체 사건과 연결" },
+          { key: "lead_empathy", label: "독자를 사로잡는 공감 장치 (다음 4개 중 2개 선택) (기존 '독자 공감 장치 2개' 수정)", placeholder: "동질감/연민/호감도/내적 갈등 중 2개를 행동·사건으로 작성" },
+          { key: "lead_voice", label: "주인공(LEAD) 시점/목소리 샘플 3문장", placeholder: "주인공만의 고유한 리듬과 태도가 묻어나게 작성" },
+          { key: "lead_risk", label: "주인공(LEAD)이 실패할 때 잃는 것 (판돈/Stakes)", placeholder: "플롯·캐릭터·사회 중 1개 이상을 포함한 치명적 대가" },
+        ],
+      },
+      {
+        id: "s1_lock_objective",
+        stageId: "s1",
+        viewTags: ["all", "macro"],
+        roadmapOrder: 2,
+        title: "LOCK: Objective",
+        shortLabel: "Objective",
+        goal: "스토리를 전진시키는 단일 지배 목표를 명료화한다.",
+        passRule: "목표가 구체적이고 필연적이며 스테이크가 충분히 크다.",
+        repetitionTip: "목표 문장을 20자/40자/80자 버전으로 반복한다.",
+        bookRefs: "Ch1",
+        templateFields: [
+          { key: "objective_one", label: "Lead의 지배 목표 1문장", placeholder: "얻거나 벗어나야 하는 핵심" },
+          { key: "objective_stakes", label: "실패 시 대가(외적/내적)", placeholder: "각 1개 이상" },
+          { key: "objective_reason", label: "왜 지금 이 목표여야 하는가", placeholder: "시간 압박과 필연성" },
+          { key: "objective_story_question", label: "스토리 질문(Will ...?)", placeholder: "독자가 붙잡힐 질문 1개" },
+          { key: "objective_focus", label: "목표 분산 요소와 제거 방안", placeholder: "서브목표 정리" },
+        ],
+      },
+      {
+        id: "s1_lock_confrontation",
+        stageId: "s1",
+        viewTags: ["all", "macro"],
+        roadmapOrder: 3,
+        title: "LOCK: Confrontation",
+        shortLabel: "Confrontation",
+        goal: "목표를 가로막는 대립 세력을 층위별로 설계한다.",
+        passRule: "대립이 점증 구조를 이루고 Lead를 적극적으로 압박한다.",
+        repetitionTip: "동일 장면을 대립 강도 3단계로 재작성한다.",
+        bookRefs: "Ch1, Ch5",
+        templateFields: [
+          { key: "opposition_primary", label: "주요 반대세력 1개", placeholder: "인물/시스템/환경" },
+          { key: "opposition_secondary", label: "보조 장애물 3개", placeholder: "각각 다른 성격으로" },
+          { key: "opposition_escalation", label: "압박 상승선(초반-중반-후반)", placeholder: "단계별 사건" },
+          { key: "opposition_counter", label: "Lead 대응 전략과 실패 지점", placeholder: "각 단계 대응" },
+          { key: "opposition_worry", label: "독자가 걱정하게 되는 근거", placeholder: "구체 근거 2개" },
+        ],
+      },
+      {
+        id: "s1_lock_knockout",
+        stageId: "s1",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 4,
+        title: "LOCK: Knockout",
+        shortLabel: "Knockout",
+        goal: "결말에서 감정과 인과가 동시에 타격하는 Knockout을 설계한다.",
+        passRule: "결말이 스토리 질문을 회수하고 여운을 남긴다.",
+        repetitionTip: "결말 A/B/C를 감정 톤만 바꿔 비교한다.",
+        bookRefs: "Ch1, Ch6",
+        templateFields: [
+          { key: "knockout_ending", label: "결말 핵심 사건 1문장", placeholder: "무엇이 결정타인가" },
+          { key: "knockout_resolution", label: "회수되는 질문/복선", placeholder: "최소 2개" },
+          { key: "knockout_cost", label: "승리 또는 실패의 대가", placeholder: "독자가 체감할 가격" },
+          { key: "knockout_resonance", label: "마지막 페이지의 울림 장치", placeholder: "이미지/문장/행동" },
+          { key: "knockout_alt", label: "대안 결말 1개와 비교", placeholder: "현재 결말을 택한 이유" },
+        ],
+      },
+      {
+        id: "s2_reader_empathy_and_likability",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 5,
+        title: "독자 공감 & 호감도 설계",
+        shortLabel: "Empathy",
+        goal: "Lead가 완벽하지 않아도 독자가 정서적으로 붙도록 만든다.",
+        passRule: "공감 유발 장치와 인간적 모순이 균형 있게 제시된다.",
+        repetitionTip: "공감 장치를 삭제/추가한 두 버전을 비교한다.",
+        bookRefs: "Ch1, Ch9",
+        templateFields: [
+          { key: "empathy_hook", label: "독자 공감 트리거 3개", placeholder: "취약성/책임/선의" },
+          { key: "likability_risk", label: "호감도를 해치는 요소", placeholder: "불필요한 반감 포인트" },
+          { key: "human_contradiction", label: "인간적 모순 1개", placeholder: "양면성을 드러내는 장치" },
+          { key: "relationship_anchor", label: "관계 앵커 장면", placeholder: "독자가 감정 투자할 관계" },
+          { key: "revision_action", label: "다음 리라이트 액션", placeholder: "즉시 수정할 문단/장면" },
+        ],
+      },
+      {
+        id: "s2_character_arc_linkage",
+        stageId: "s2",
+        viewTags: ["all", "micro", "act"],
+        roadmapOrder: 6,
+        title: "캐릭터 아크 연동",
+        shortLabel: "Arc",
+        goal: "사건 전개와 내면 변화를 인과로 연결한다.",
+        passRule: "시작-전환-끝의 변화가 사건 선택과 맞물린다.",
+        repetitionTip: "아크 변화만 추린 12줄 로그를 작성한다.",
+        bookRefs: "Ch9",
+        templateFields: [
+          { key: "arc_start", label: "시작 신념/결핍", placeholder: "무엇을 믿고 무엇이 부족한가" },
+          { key: "arc_turn", label: "중간 전환 사건", placeholder: "변화를 강제한 사건" },
+          { key: "arc_choice", label: "결정적 선택", placeholder: "Lead가 스스로 선택한 순간" },
+          { key: "arc_end", label: "끝의 내면 상태", placeholder: "무엇이 달라졌는가" },
+          { key: "arc_evidence", label: "변화 증거 장면 2개", placeholder: "행동/대사 증거" },
+        ],
+      },
+      {
+        id: "s2_scene_goal_conflict_change",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 7,
+        title: "장면 목적-충돌-변화",
+        shortLabel: "Scene GCC",
+        goal: "각 장면이 플롯을 전진시키는 기능을 갖추게 한다.",
+        passRule: "장면마다 목적/충돌/전후 변화가 모두 확인된다.",
+        repetitionTip: "목적만 바꾼 변형 장면 1개를 추가 작성한다.",
+        bookRefs: "Ch7",
+        templateFields: [
+          { key: "scene_summary", label: "대상 장면 요약 3문장", placeholder: "누가/무엇을/왜" },
+          { key: "scene_goal", label: "장면 목표", placeholder: "이번 장면에서 얻으려는 것" },
+          { key: "scene_conflict", label: "장면 충돌", placeholder: "누가/무엇이 막는가" },
+          { key: "scene_change", label: "장면 전후 변화", placeholder: "상태 차이" },
+          { key: "scene_push", label: "다음 장면으로 밀어내는 힘", placeholder: "질문/위기/결정" },
+        ],
+      },
+      {
+        id: "s2_scene_four_chords",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 8,
+        title: "장면 4코드(Action/Reaction/Setup/Deepening)",
+        shortLabel: "4 Chords",
+        goal: "장면을 action 중심으로 설계하되 깊이 코드를 동시 배치한다.",
+        passRule: "한 장면 안에서 4코드가 목적에 맞게 작동한다.",
+        repetitionTip: "동일 장면의 reaction 비율만 높인 버전을 작성한다.",
+        bookRefs: "Ch7",
+        templateFields: [
+          { key: "chord_action", label: "Action 비트", placeholder: "인물이 하는 행동" },
+          { key: "chord_reaction", label: "Reaction 비트", placeholder: "감정/반응" },
+          { key: "chord_setup", label: "Setup 비트", placeholder: "맥락/상황 배치" },
+          { key: "chord_deepening", label: "Deepening 비트", placeholder: "의미 심화" },
+          { key: "chord_balance", label: "코드 균형 점검", placeholder: "과한/부족한 코드 조정" },
+        ],
+      },
+      {
+        id: "s2_dialogue_voice_distinction",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 9,
+        title: "대사 보이스 분화",
+        shortLabel: "Voice",
+        goal: "인물별 말투와 어휘로 대사만 읽어도 화자가 구분되게 한다.",
+        passRule: "핵심 인물 2명 이상이 문장 리듬과 어휘에서 분리된다.",
+        repetitionTip: "같은 정보를 2인 대사 버전으로 재작성한다.",
+        bookRefs: "Ch14",
+        templateFields: [
+          { key: "voice_char_a", label: "인물 A 말투 규칙 3개", placeholder: "길이/어휘/억양" },
+          { key: "voice_char_b", label: "인물 B 말투 규칙 3개", placeholder: "A와 대비" },
+          { key: "voice_sample", label: "대화 샘플 8~12줄", placeholder: "화자 표기 없이 작성" },
+          { key: "voice_check", label: "화자 구분 실패 지점", placeholder: "모호한 줄 수정" },
+          { key: "voice_fix", label: "수정 원칙", placeholder: "다음 대사 작성 규칙" },
+        ],
+      },
+      {
+        id: "s2_dialogue_as_confrontation",
+        stageId: "s2",
+        viewTags: ["all", "micro"],
+        roadmapOrder: 10,
+        title: "대사 = 대립 무기",
+        shortLabel: "Dialogue Clash",
+        goal: "대사를 정보 전달이 아니라 충돌/압박 도구로 사용한다.",
+        passRule: "대화의 각 턴이 목표 충돌에 기여한다.",
+        repetitionTip: "설명 대사 3줄을 대립형 대사로 치환한다.",
+        bookRefs: "Ch14",
+        templateFields: [
+          { key: "dialogue_goal_a", label: "인물 A의 대화 목표", placeholder: "숨은 목적 포함" },
+          { key: "dialogue_goal_b", label: "인물 B의 대화 목표", placeholder: "A와 충돌되는 목표" },
+          { key: "dialogue_weapon", label: "사용할 언어 무기", placeholder: "회피/비꼼/압박/침묵 등" },
+          { key: "dialogue_exchange", label: "핵심 교환 10줄", placeholder: "턴마다 판세 변화" },
+          { key: "dialogue_shift", label: "대화 후 관계 변화", placeholder: "전/후 차이" },
+        ],
+      },
+      {
+        id: "s3_three_act_spine",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 11,
+        title: "3막 척추 설계",
+        shortLabel: "3-Act",
+        goal: "Act I/II/III의 기능을 분리해 플롯 척추를 만든다.",
+        passRule: "각 막의 목적과 전환점이 명확하게 정의된다.",
+        repetitionTip: "3막 요약을 9문장 버전으로 압축한다.",
+        bookRefs: "Ch2",
+        templateFields: [
+          { key: "act1_function", label: "Act I 기능", placeholder: "도입/설정/교란" },
+          { key: "act2_function", label: "Act II 기능", placeholder: "대립/확장/압박" },
+          { key: "act3_function", label: "Act III 기능", placeholder: "결전/해결/여운" },
+          { key: "act_transitions", label: "막 전환 사건 2개", placeholder: "Act I→II, II→III" },
+          { key: "act_balance", label: "분량/리듬 점검", placeholder: "막별 밀도 조정" },
+        ],
+      },
+      {
+        id: "s3_disturbance_two_doorways",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 12,
+        title: "Disturbance & Two Doorways",
+        shortLabel: "Doorways",
+        goal: "초기 교란과 두 개의 문턱 사건으로 구조 추진력을 만든다.",
+        passRule: "교란-1문턱-2문턱이 인과적으로 연결된다.",
+        repetitionTip: "교란 사건을 크기만 다르게 2안 작성한다.",
+        bookRefs: "Ch2",
+        templateFields: [
+          { key: "disturbance_event", label: "초기 Disturbance", placeholder: "평온을 깨는 사건" },
+          { key: "doorway1", label: "Doorway 1", placeholder: "돌아갈 수 없는 선택" },
+          { key: "doorway2", label: "Doorway 2", placeholder: "최종 결전을 향한 진입" },
+          { key: "doorway_cost", label: "각 문턱의 대가", placeholder: "무엇을 잃는가" },
+          { key: "doorway_chain", label: "인과 체인", placeholder: "A 때문에 B가 발생" },
+        ],
+      },
+      {
+        id: "s3_hero_journey_overlay",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 13,
+        title: "영웅여정 오버레이",
+        shortLabel: "Hero Overlay",
+        goal: "3막 구조 위에 영웅여정 핵심 단계를 얹어 구조 일관성을 높인다.",
+        passRule: "주요 여정 단계가 막 구조와 충돌 없이 정렬된다.",
+        repetitionTip: "불필요한 여정 단계를 2개 제거해도 유지되는지 점검한다.",
+        bookRefs: "Ch2",
+        templateFields: [
+          { key: "hero_world", label: "일상 세계", placeholder: "Lead의 기본 상태" },
+          { key: "hero_call", label: "부름/교란", placeholder: "모험으로 끌어당기는 힘" },
+          { key: "hero_threshold", label: "문턱 통과", placeholder: "돌이킬 수 없는 진입" },
+          { key: "hero_dark_night", label: "암흑의 순간", placeholder: "내적 붕괴 지점" },
+          { key: "hero_return", label: "귀환/변화", placeholder: "새 질서에서의 위치" },
+        ],
+      },
+      {
+        id: "s3_plot_points_midpoint",
+        stageId: "s3",
+        viewTags: ["all", "macro", "act"],
+        roadmapOrder: 14,
+        title: "플롯 포인트 & 미드포인트",
+        shortLabel: "Midpoint",
+        goal: "중반부 축을 강화해 전반/후반의 긴장 곡선을 재정렬한다.",
+        passRule: "미드포인트 이후 갈등 강도가 체감 가능하게 상승한다.",
+        repetitionTip: "미드포인트 사건만 바꾼 대안 구조를 작성한다.",
+        bookRefs: "Ch5",
+        templateFields: [
+          { key: "plot_point1", label: "Plot Point 1", placeholder: "Act II를 여는 사건" },
+          { key: "midpoint", label: "Midpoint 사건", placeholder: "판세 전환" },
+          { key: "plot_point2", label: "Plot Point 2", placeholder: "Act III 진입 장치" },
+          { key: "stakes_shift", label: "미드포인트 전후 스테이크 변화", placeholder: "수치/감정 모두" },
+          { key: "pace_adjust", label: "리듬 조정 액션", placeholder: "삭제/추가/재배치" },
+        ],
+      },
+      {
+        id: "s3_subplot_thematic_integration",
+        stageId: "s3",
+        viewTags: ["all", "macro"],
+        roadmapOrder: 15,
+        title: "서브플롯-테마 통합",
+        shortLabel: "Subplot",
+        goal: "서브플롯을 메인 갈등/테마와 결속해 복잡도를 통제한다.",
+        passRule: "각 서브플롯의 존재 이유와 수렴 지점이 명확하다.",
+        repetitionTip: "서브플롯 1개를 제거했을 때 영향 분석을 작성한다.",
+        bookRefs: "Ch8",
+        templateFields: [
+          { key: "theme_line", label: "메인 테마 1문장", placeholder: "작품이 묻는 핵심" },
+          { key: "subplot_a", label: "서브플롯 A 목적", placeholder: "메인플롯과 연결점" },
+          { key: "subplot_b", label: "서브플롯 B 목적", placeholder: "대비/보완 관계" },
+          { key: "merge_point", label: "수렴 지점", placeholder: "클라이맥스에서 만나는 방식" },
+          { key: "complexity_risk", label: "복잡도 리스크와 완화", placeholder: "독자 혼란 방지" },
+        ],
+      },
+      {
+        id: "s4_beginning_hook_entry",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 16,
+        title: "시작부 훅 & 진입",
+        shortLabel: "Beginning Hook",
+        goal: "첫 장면에서 후킹, 톤, 핵심 질문의 씨앗을 동시에 심는다.",
+        passRule: "첫 페이지가 다음 페이지를 강제한다.",
+        repetitionTip: "첫 문단 3개 훅 버전을 비교 후 최종안 고른다.",
+        bookRefs: "Ch4",
+        templateFields: [
+          { key: "opening_scene", label: "오프닝 장면 요약", placeholder: "400자 내외" },
+          { key: "opening_hook", label: "훅 문장", placeholder: "첫 문단 핵심" },
+          { key: "opening_question", label: "독자 질문", placeholder: "왜 계속 읽게 되는가" },
+          { key: "opening_tone", label: "장르 톤 신호", placeholder: "디테일 2개" },
+          { key: "opening_bridge", label: "다음 장면 브리지", placeholder: "전환 장치" },
+        ],
+      },
+      {
+        id: "s4_beginning_world_opposition",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 17,
+        title: "시작부 세계/대립 소개",
+        shortLabel: "World & Opp",
+        goal: "세계 규칙과 대립 축을 과잉 설명 없이 제시한다.",
+        passRule: "설정이 설명문이 아니라 사건 안에서 작동한다.",
+        repetitionTip: "설정 설명 5줄을 행동 기반 장면으로 치환한다.",
+        bookRefs: "Ch4",
+        templateFields: [
+          { key: "world_rule", label: "세계 규칙 3개", placeholder: "독자가 알아야 할 최소 규칙" },
+          { key: "opposition_seed", label: "대립 씨앗", placeholder: "초반에 드러나는 저항" },
+          { key: "context_delivery", label: "맥락 전달 방식", placeholder: "대사/행동/소도구" },
+          { key: "info_overload", label: "과잉 설명 위험 구간", placeholder: "삭제/축약 포인트" },
+          { key: "reader_clarity", label: "독자 이해 체크", placeholder: "혼란 가능 질문 1개" },
+        ],
+      },
+      {
+        id: "s4_middle_escalation_pressure",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 18,
+        title: "중반부 압박 상승",
+        shortLabel: "Middle Pressure",
+        goal: "중반부를 정체 없이 압박 상승 구조로 만든다.",
+        passRule: "장애물/대가/시간압박이 단계적으로 상승한다.",
+        repetitionTip: "중반부 5개 사건의 강도 점수를 재배열한다.",
+        bookRefs: "Ch5",
+        templateFields: [
+          { key: "middle_obstacles", label: "중반 핵심 장애물 3개", placeholder: "각각 성격 다르게" },
+          { key: "middle_cost", label: "각 장애물의 비용", placeholder: "잃는 것/희생" },
+          { key: "middle_timer", label: "시간 압박 장치", placeholder: "데드라인/카운트다운" },
+          { key: "middle_dip", label: "긴장 하락 구간", placeholder: "원인과 해결" },
+          { key: "middle_push", label: "Act III로 밀어넣는 사건", placeholder: "반드시 일어날 사건" },
+        ],
+      },
+      {
+        id: "s4_middle_complications_reversals",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 19,
+        title: "중반부 합병증/반전",
+        shortLabel: "Complications",
+        goal: "중반부의 예측가능성을 깨는 합병증과 반전을 설계한다.",
+        passRule: "반전이 우연이 아니라 기존 정보에서 파생된다.",
+        repetitionTip: "반전 복선만 추린 체크리스트를 만든다.",
+        bookRefs: "Ch5, Ch12",
+        templateFields: [
+          { key: "complication_list", label: "합병증 3개", placeholder: "상황이 더 어려워지는 요소" },
+          { key: "reversal_point", label: "핵심 반전 지점", placeholder: "기대 뒤집기" },
+          { key: "foreshadow", label: "사전 복선", placeholder: "이미 심어둔 신호" },
+          { key: "cause_chain", label: "인과 검증", placeholder: "왜 이런 반전이 가능한가" },
+          { key: "post_reversal", label: "반전 이후 전략 변화", placeholder: "Lead가 달라지는 행동" },
+        ],
+      },
+      {
+        id: "s4_ending_knockout_resolution",
+        stageId: "s4",
+        viewTags: ["all", "act", "macro"],
+        roadmapOrder: 20,
+        title: "엔딩 Knockout 해결",
+        shortLabel: "Ending",
+        goal: "클라이맥스와 해결부에서 감정 타격과 인과 회수를 완성한다.",
+        passRule: "핵심 갈등이 해소되고 여운이 남는다.",
+        repetitionTip: "결말 문단을 리듬/어조만 바꿔 2안 작성한다.",
+        bookRefs: "Ch6",
+        templateFields: [
+          { key: "final_battle", label: "최종 대결 장면", placeholder: "누가 무엇을 걸고 싸우는가" },
+          { key: "resolution_thread", label: "해결되는 주요 실마리", placeholder: "루즈엔드 처리" },
+          { key: "emotional_hit", label: "감정 타격 포인트", placeholder: "독자가 느껴야 할 감정" },
+          { key: "cost_of_win", label: "승리/패배의 대가", placeholder: "단맛/쓴맛 균형" },
+          { key: "ending_line", label: "마지막 문장 후보", placeholder: "기억에 남는 문장" },
+        ],
+      },
+      {
+        id: "s4_last_page_resonance",
+        stageId: "s4",
+        viewTags: ["all", "act", "micro"],
+        roadmapOrder: 21,
+        title: "마지막 페이지 울림",
+        shortLabel: "Resonance",
+        goal: "엔딩 직후 독자에게 남는 정서적 공명을 강화한다.",
+        passRule: "마지막 페이지의 언어/이미지가 작품 의미를 확장한다.",
+        repetitionTip: "마지막 페이지를 시각 이미지 중심으로 재작성한다.",
+        bookRefs: "Ch6",
+        templateFields: [
+          { key: "resonance_theme", label: "마지막 페이지의 주제 신호", placeholder: "한 문장" },
+          { key: "resonance_image", label: "잔상 이미지/행동", placeholder: "독자 뇌리에 남을 장면" },
+          { key: "resonance_language", label: "언어 톤/리듬 전략", placeholder: "단문/장문, 어휘 밀도" },
+          { key: "resonance_risk", label: "과잉 감상 리스크", placeholder: "절제 포인트" },
+          { key: "resonance_rewrite", label: "개선 리라이트 1회", placeholder: "최종 수정안" },
+        ],
+      },
+      {
+        id: "s5_revision_triage",
+        stageId: "s5",
+        viewTags: ["all", "revision"],
+        roadmapOrder: 22,
+        title: "수정 트리아지",
+        shortLabel: "Triage",
+        goal: "문제의 심각도와 영향도로 수정 우선순위를 고정한다.",
+        passRule: "수정 순서가 명확하고 실행 가능한 단위로 분해된다.",
+        repetitionTip: "상위 3개 문제를 24시간 액션으로 변환한다.",
+        bookRefs: "Ch11",
+        templateFields: [
+          { key: "triage_issues", label: "문제 목록 5개", placeholder: "플롯/캐릭터/장면/문장" },
+          { key: "triage_severity", label: "심각도/영향도 평가", placeholder: "상/중/하 + 독자 영향" },
+          { key: "triage_order", label: "수정 우선순위 1~5", placeholder: "왜 이 순서인지" },
+          { key: "triage_action", label: "즉시 착수 액션 3개", placeholder: "장면 단위" },
+          { key: "triage_done_def", label: "완료 판정 기준", placeholder: "수정 끝났다고 볼 조건" },
+        ],
+      },
+      {
+        id: "s5_common_problem_cures",
+        stageId: "s5",
+        viewTags: ["all", "revision"],
+        roadmapOrder: 23,
+        title: "공통 플롯 문제 처방",
+        shortLabel: "Problem Cures",
+        goal: "반복되는 플롯 문제를 원인-처방 매칭으로 해결한다.",
+        passRule: "문제마다 실행 가능한 처방이 1:1로 연결된다.",
+        repetitionTip: "같은 처방을 다른 장면에 이식해본다.",
+        bookRefs: "Ch13",
+        templateFields: [
+          { key: "problem_pick", label: "최우선 문제 1개", placeholder: "예: 동기 약함" },
+          { key: "problem_root", label: "근본 원인", placeholder: "왜 반복되는가" },
+          { key: "problem_cure", label: "처방 3단계", placeholder: "구체 행동으로" },
+          { key: "problem_test", label: "처방 검증 방식", placeholder: "읽기 테스트/체크리스트" },
+          { key: "problem_prevent", label: "재발 방지 규칙", placeholder: "다음 초안용 규칙" },
+        ],
+      },
+      {
+        id: "s5_show_tell_and_precision_tools",
+        stageId: "s5",
+        viewTags: ["all", "revision", "micro"],
+        roadmapOrder: 24,
+        title: "Show/Tell & Precision 툴",
+        shortLabel: "Toolbox",
+        goal: "문장/장면 정밀도를 높이는 도구를 개인 툴셋으로 정리한다.",
+        passRule: "교정 결과가 측정 가능하고 재사용 규칙으로 남는다.",
+        repetitionTip: "교정 전/후 5문장을 비교표로 유지한다.",
+        bookRefs: "Ch14",
+        templateFields: [
+          { key: "tool_showtell", label: "Show→Tell 교정 대상 5개", placeholder: "원문 문장" },
+          { key: "tool_rewrite", label: "교정 버전", placeholder: "개선된 문장" },
+          { key: "tool_precision", label: "정밀도 체크 규칙", placeholder: "모호어 제거/행동 중심" },
+          { key: "tool_trigger", label: "도구 사용 트리거", placeholder: "어떤 상황에서 쓰는가" },
+          { key: "tool_portable", label: "다음 원고 이식 규칙", placeholder: "재사용 가능한 문장 규칙" },
+        ],
+      },
+    ];
+
+    const drillTextOverrides = {
+      "s1_lock_lead": {
+            "goal": "독자가 끝까지 따라갈 주인공의 입체성을 부여하고 치명적인 대가를 고정합니다.",
+            "passRule": "독자가 주인공과 연결되는 공감 포인트와 실패 시 겪게 될 치명적 붕괴가 명확히 드러난다.",
+            "repetitionTip": "주인공을 소개하는 장면을 4가지 공감 장치(동질감, 연민, 호감도, 내적 갈등)를 각각 다르게 적용해 압축 리라이트한다.",
+            "conceptBrief": "독자는 플롯 자체가 아니라 '인물'을 통해 이야기의 세계로 진입합니다. 아무리 플롯이 화려해도 인물이 평면적이면 몰입할 수 없습니다. 완벽한 영웅보다는 뚜렷한 결핍을 안고 내적 갈등(서로 모순되는 두 가지 가치관의 충돌)과 싸우는 인물이 독자의 마음을 사로잡습니다.",
+            "conceptWhy": "주인공이 목표 달성에 실패했을 때 겪는 대가(Stakes)가 너무 가벼우면, 독자는 이어질 고난과 대립의 순간에 주인공을 응원하지 않고 책을 덮어버립니다. 실패의 대가는 반드시 세 가지 죽음(육체적 생존의 위협, 직업적/사회적 지위의 파멸, 혹은 자아와 영혼의 심리적 붕괴) 중 하나에 버금갈 만큼 치명적이어야 합니다.",
+            "writingOutcome": "독자의 감정이 흠뻑 투자될 입체적인 캐릭터 초안과 실패 시의 막대한 판돈(Stakes)이 설정됩니다.",
+            "passSignals": [
+                  "주인공 내면에서 두 가지 가치관이나 욕망이 팽팽하게 충돌하고 있다.",
+                  "주인공이 실패했을 때 겪을 '사회적/육체적/심리적 파멸'의 형태가 시각적으로 분명하게 그려진다."
+            ],
+            "failSignals": [
+                  "주인공의 이력서처럼 사실만 나열되어 있어 독자가 감정적으로 이입할 틈이 없다.",
+                  "목표 달성에 실패하더라도 주인공의 일상에 큰 타격이 없이 제자리로 돌아갈 수 있어 보인다."
+            ],
+            "submissionChecklist": [
+                  "주인공의 내적 갈등이 단순한 서술이 아닌 구체적인 행동이나 딜레마 상황으로 표현되었는가?",
+                  "실패 시의 대가가 생존이나 삶의 의미를 끝장낼 만큼 치명적인가?"
+            ]
+      },
+      "s1_lock_objective": {
+            "goal": "스토리를 전진시키는 단 하나의 강력한 엔진인 지배 목표를 명료화한다.",
+            "passRule": "목표가 구체적이고 필연적이며, 시한폭탄(타임 리미트)이 설정되어 퇴로가 차단된 상태임이 명확히 드러난다.",
+            "repetitionTip": "목표 문장을 '얻기'와 '피하기' 두 가지 버전으로 작성해 더 절박한 쪽을 선택한다.",
+            "conceptBrief": "지배 목표는 추상적인 소망('행복해지고 싶다', '성공하고 싶다')이 아닙니다. 스크린에서 눈으로 확인할 수 있는 구체적인 무언가를 ‘얻거나(To get)’ ‘벗어나는(To get away from)’ 가시적이고 즉각적인 물리적/행동적 지침이어야 합니다.",
+            "conceptWhy": "단일 지배 목표가 튼튼하게 중심을 잡아주어야만 모든 곁가지 장면들이 길을 잃지 않고 결말이라는 하나의 목적지를 향해 질주할 수 있습니다. 지배 목표가 흐릿하면 서사가 제자리를 맴돌고 긴장감이 증발합니다.",
+            "writingOutcome": "플롯의 나침반이 될 지배 목표와 결말까지 독자를 붙잡아 둘 핵심 질문 초안을 얻습니다.",
+            "passSignals": [
+                  "목표가 카메라로 찍을 수 있을 만큼 가시적인 형태를 띠고 있다. (예: '금고에서 비밀 장부를 훔친다')결말부를 향해 달리는 핵심 질문('과연 ~할 것인가?')이 선명하다."
+            ],
+            "failSignals": [
+                  "목표가 '자아 찾기'처럼 관념적이어서 주인공이 당장 내일 아침 무엇을 행동해야 할지 모호하다.",
+                  "제한 시간(타임 리미트)이 없어 목표 달성을 다음 달, 혹은 내년으로 미뤄도 무방해 보인다."
+            ],
+            "submissionChecklist": [
+                  "목표가 '얻는다' 또는 '피한다/벗어난다'의 구체적 동사로 끝나는가?",
+                  "결말에서 '과연 ~할 것인가?'라는 질문에 성공/실패로 확실히 답을 낼 수 있는가?"
+            ],
+            "templateFieldLabels": {
+                  "objective_one": {
+                        "label": "주인공(LEAD)의 지배 목표 1문장",
+                        "placeholder": "'무엇을 얻는다' 혹은 '무엇으로부터 벗어난다'"
+                  },
+                  "objective_stakes": {
+                        "label": "시각화: 관념을 행동으로 번역하기",
+                        "placeholder": "추상적 목표를 눈에 보이는 구체적 행동/사물로 변환"
+                  },
+                  "objective_reason": {
+                        "label": "왜 지금 이 목표여야 하는가",
+                        "placeholder": "시한폭탄/타임 리미트와 퇴로가 차단된 필연적 이유"
+                  },
+                  "objective_story_question": {
+                        "label": "핵심 질문",
+                        "placeholder": "결말을 관통하는 '과연 ~할 것인가?' 형태의 질문 1개"
+                  },
+                  "objective_focus": {
+                        "label": "플롯의 곁가지(서브플롯) 통제 방안",
+                        "placeholder": "지배 목표를 돕거나 방해하는 방향으로 서브플롯 정렬"
+                  }
+            }
+      },
+      "s1_lock_confrontation": {
+            "goal": "주인공의 목표 달성을 적극적으로 방해하는 대립 세력을 층위별로 설계한다.",
+            "passRule": "대립 세력이 강력하고 지능적이며, 주인공을 점진적으로 벼랑 끝까지 압박한다.",
+            "repetitionTip": "대립 세력이 주인공의 가장 뼈아픈 약점을 정확히 찌르는 버전을 추가 작성한다.",
+            "conceptBrief": "갈등과 대립이 없는 이야기는 죽은 이야기입니다. 대립 세력은 단순히 성격이 나쁜 악당을 의미하지 않습니다. 주인공의 지배 목표와 정면으로 충돌하는 '자신만의 강력하고 합당한 동기를 가진 세력(인물, 자연, 사회 시스템, 혹은 주인공 본인의 결함)'과의 치열한 마찰입니다.",
+            "conceptWhy": "저항이 거세고 넘기 힘들수록 주인공이 이를 쟁취했을 때의 카타르시스도 기하급수적으로 커집니다. 대립 세력이 주인공보다 최소 한 발짝 이상 앞서 있고 더 강해야만 스토리의 긴장감과 생명력이 극대화됩니다.",
+            "writingOutcome": "주인공을 육체적, 정신적 한계까지 몰아붙일 수 있는 다층적이고 단계적인 방해물 목록이 완성됩니다.",
+            "passSignals": [
+                  "방해물이 외부의 적(빌런), 척박한 환경, 인물의 내적 한계 등 여러 층위에서 동시다발적으로 주인공을 압박한다.",
+                  "대립 세력의 동기가 주인공의 동기만큼이나 필연적, 논리적이고 절박하다."
+            ],
+            "failSignals": [
+                  "우연한 행운이나 전능한 조력자의 등장으로 주인공의 위기가 너무 싱겁고 쉽게 해결된다.",
+                  "대립 세력이 그저 '나쁜 놈이라서' 맹목적으로 주인공을 괴롭히며, 그들만의 구체적인 계획이나 명분이 없다."
+            ],
+            "submissionChecklist": [
+                  "대립 세력이 주인공의 가장 취약한 심리적, 물리적 약점을 정확히 공략하고 있는가?",
+                  "이야기 후반부로 치달을수록 주인공이 극복해야 할 장애물의 난이도와 대가가 급격히 커지는가?"
+            ]
+      },
+      "s1_lock_knockout": {
+            "goal": "감정적 타격과 논리적 인과가 완벽히 결합된, 잊을 수 없는 최후의 일격(Knockout)을 설계한다.",
+            "passRule": "시작부에서 던져진 핵심 질문('과연 ~할 것인가?')이 통쾌하거나 묵직하게 회수되며 모든 플롯의 끈이 묶인다.",
+            "repetitionTip": "승리의 대가(희생)가 엄청나게 큰 씁쓸한 버전과 기적적인 완전한 승리 버전을 비교 작성해본다.",
+            "conceptBrief": "권투의 넉아웃(Knockout) 펀치처럼, 훌륭한 결말은 독자의 예측을 통쾌하게 빗나가면서도 다 읽고 나면 '이것 외에는 다른 결말이 있을 수 없다'고 무릎을 치게 만드는 절대적 필연성을 획득해야 합니다.",
+            "conceptWhy": "서론과 본론이 아무리 훌륭해도 결말이 흐지부지되거나 우연에 기대어 끝나면, 독자는 앞서 읽은 모든 시간에 대해 배신감을 느끼고 작가의 다음 작품을 절대 구매하지 않습니다.",
+            "writingOutcome": "초중반에 흩뿌려진 복선이 모조리 회수되고, 독자에게 강력한 감정적 잔상을 남길 클라이맥스와 엔딩의 뼈대를 갖춥니다.",
+            "passSignals": [
+                  "위기 상황에서 제3자나 우연의 개입 없이, 주인공 본인의 각성과 선택(그리고 희생)만으로 최종 승리(혹은 패배)를 끌어낸다.",
+                  "승리를 거머쥐는 과정에서 주인공이 영원히 잃어버리거나 대가로 지불해야 하는 무언가가 존재해 여운을 더한다."
+            ],
+            "failSignals": [
+                  "도저히 풀 수 없을 것 같던 위기가 기계적 장치나 전능한 신적 존재의 개입(데우스 엑스 마키나)으로 1페이지 만에 허무하게 해결된다.",
+                  "도입부에서 독자에게 약속했던 핵심 질문('과연 ~할 것인가?')과 전혀 상관없는 교훈으로 이야기가 마무리된다."
+            ],
+            "submissionChecklist": [
+                  "플롯 전체를 관통하며 쌓인 주인공의 궁극적인 성장이 이 결말을 만들어내는 핵심 열쇠로 작동하는가?'과연 ~할 것인가?'에 대한 최종 답안(Yes or No)이 억지스럽지 않고 명확하게 제시되었는가?"
+            ]
+      },
+      "s2_reader_empathy_and_likability": {
+            "goal": "주인공이 도덕적으로 완벽하지 않아도 독자가 자발적으로 정서적 지지와 편들기를 하도록 장치를 깐다.",
+            "passRule": "주인공의 치명적인 결함과 그를 상쇄하는 매력(책임감, 약자에 대한 선의, 능력 등)이 인간적인 밸런스를 이룬다.",
+            "repetitionTip": "주인공의 이기적인 단점이 폭발한 직후, 예상치 못한 긍정적 인간성을 보여주는 반전 행동 장면을 덧붙인다.",
+            "conceptBrief": "독자는 무결점 도덕군자보다 실수하고 상처받지만 발버둥 치는 인물에게 동질감을 느낍니다. 하지만 단순히 불쌍하기만 해서는 안 됩니다. 성격이 괴팍하더라도 자기 분야에서 타의 추종을 불허하는 '뛰어난 능력'이 있거나, 험악한 용병이지만 '버려진 고양이는 지나치지 못하는' 등의 작은 매력 포인트가 호감도의 핵심입니다.",
+            "conceptWhy": "도입부 1막에서 독자가 인물에게 마음을 내어주지 않으면(감정적 투자 실패), 중반부 이후 아무리 거대하고 화려한 스케일의 폭발이 터져도 독자는 그가 죽든 살든 신경 쓰지 않고 책을 덮게 됩니다.",
+            "writingOutcome": "독자가 감정을 기꺼이 투자할 수 있는, 모순과 매력을 동시에 지닌 캐릭터의 '공감 트리거'를 얻습니다.",
+            "passSignals": [
+                  "주인공이 퉁명스럽고 이기적으로 굴지만, 위험에 처한 타인(약자)을 무의식적으로 돕는 모순된 행동(Save the Cat)을 보인다.",
+                  "주인공이 가진 숨겨진 취약점이나 과거의 트라우마가 독자의 보편적인 상실감, 동질감을 강력하게 자극한다."
+            ],
+            "failSignals": [
+                  "인물이 상황을 타개할 노력은 하지 않고 시종일관 징징대거나 변명만 늘어놓아 독자의 극심한 짜증을 유발한다.",
+                  "단점이나 내적 갈등이 전혀 없는, 모든 것을 쉽게 해결하는 완벽한 메리수(Mary Sue)형 캐릭터라 얄밉고 현실감이 없다."
+            ],
+            "submissionChecklist": [
+                  "독자가 주인공을 불쌍히 여기거나, 대견해하거나, 혹은 존경심을 느낄 만한 명확한 계기(행동)가 포함되었는가?",
+                  "호감도를 깎아먹어 이탈을 유발하는 불필요한 '비호감 포인트(무능함, 원인 없는 악의)'가 제거되었는가?"
+            ]
+      },
+      "s2_character_arc_linkage": {
+            "goal": "플롯에서 터지는 외부 사건이 주인공의 내면을 깨뜨려 변화시키고, 그 변화된 내면이 다시 후반부 사건의 판도를 주도하도록 엮는다.",
+            "passRule": "시작(거짓된 신념) - 전환(진실 대면) - 끝(깨달음과 새로운 선택)에 이르는 주인공의 심리 변화가 구체적 행동의 변화로 증명된다.",
+            "repetitionTip": "인물이 지금까지 자신을 지탱하던 낡은 신념이 틀렸음을 깨닫고 뼈아픈 새로운 가치를 받아들이는 결정적 장면을 묘사한다.",
+            "conceptBrief": "훌륭한 소설은 두 개의 여정이 동시에 진행됩니다. 하나는 외부의 갈등을 물리치는 '플롯의 여정'이고, 다른 하나는 주인공 내면의 낡은 자아가 죽고 새로운 자아로 거듭나는 '캐릭터 아크(성장 곡선)의 여정'입니다. 두 톱니바퀴가 맞물릴 때 서사는 깊이를 얻습니다.",
+            "conceptWhy": "사건만 화려하게 터지고 인물은 기계처럼 리액션만 한다면, 영혼 없이 총만 쏘아대는 3류 액션 영화의 대본과 다를 바 없어집니다. 독자는 변화하지 않는 인물의 이야기에 감동하지 않습니다.",
+            "writingOutcome": "외적 갈등(대립)과 내적 성장(아크)이 하나의 실로 엮여 시너지를 내는 뼈대를 완성합니다.",
+            "passSignals": [
+                  "이야기 초반에 철석같이 믿고 있던 잘못된 신념이나 편견이 중반부의 거대한 사건을 겪으며 산산조각 난다.",
+                  "결말의 클라이맥스에서 주인공은 1페이지의 주인공이었다면 절대 하지 못했을 이타적(혹은 주체적)인 선택을 스스로 내린다."
+            ],
+            "failSignals": [
+                  "온갖 생사의 고비와 비극을 넘겼음에도 인물의 가치관이나 타인을 대하는 태도가 처음과 토씨 하나 다르지 않다.",
+                  "내면의 변화가 인물의 입을 통한 장황한 독백으로만 처리될 뿐, 실질적인 행동이나 극적인 선택으로 증명되지 않는다."
+            ],
+            "submissionChecklist": [
+                  "낡은 자아(결핍) -> 충격적 사건 -> 고통스러운 깨달음 -> 새로운 선택으로 이어지는 내적 변화의 4단계가 명확한가?",
+                  "인물의 내면적 각성이 클라이맥스의 최종 전투(결전)의 향방을 승리로 바꾸는 핵심 트리거로 작동하는가?"
+            ]
+      },
+      "s2_scene_goal_conflict_change": {
+            "goal": "이야기의 구조적 최소 단위인 '장면(Scene)'이 제자리에서 헛돌지 않고 서사를 다음 단계로 튕겨내도록 설계한다.",
+            "passRule": "모든 장면에는 주인공의 단기 목표, 이를 방해하는 저항(갈등), 그리고 전보다 상황이 더 악화되는 재앙(Disaster)이 명확히 담겨 있다.",
+            "repetitionTip": "장면이 뜻대로 평온하게 끝나는 것을 막고, 주인공이 예상치 못한 더 큰 위기(재앙)에 봉착하며 끝맺도록 수정한다.",
+            "conceptBrief": "소설 속 장면은 일상을 비추는 CCTV가 아닙니다. 모든 장면은 '단기 목표(Goal) 설정 -> 방해물과의 충돌(Conflict) -> 실패 혹은 더 큰 문제 발생(Disaster)'이라는 미니 3막 구조를 갖추어야 합니다. 장면의 끝은 결코 깔끔하게 해결되어서는 안 됩니다.",
+            "conceptWhy": "목표도, 갈등도, 끝난 후의 변화도 없는 장면이 2~3번 연속으로 등장하면 독자는 지루함을 견디지 못하고 책을 덮습니다. 모든 장면은 인과율의 사슬이 되어 다음 장면을 낳아야 합니다.",
+            "writingOutcome": "단 한 줄도 버릴 것 없이 쫀쫀하게 맞물려 폭발적인 추진력을 발생시키는 장면 설계도를 획득합니다.",
+            "passSignals": [
+                  "장면을 시작할 때 주인공이 가졌던 야심 찬 계획이 장면의 끝에서 보기 좋게 빗나가며 꼬여버린다(상황 악화).",
+                  "해당 장면을 통째로 들어냈을 때, 앞뒤 사건의 연결 고리(원인과 결과)가 완전히 무너질 만큼 장면의 기능이 뚜렷하다."
+            ],
+            "failSignals": [
+                  "오직 독자에게 배경 정보를 전달하거나 과거를 회상하기 위해서만 만들어진, 갈등이 전혀 없는 '죽은 장면'이다.",
+                  "인물들끼리 차를 마시고 일상적인 수다만 떨다가 목표 달성이나 뚜렷한 감정 변화 없이 다음 챕터로 넘어간다."
+            ],
+            "submissionChecklist": [
+                  "이 장면에 돌입하는 시점 인물이 당장 성취하고자 하는 '눈앞의 단기 목표'가 존재하는가?",
+                  "장면이 끝날 때 주인공의 상황이 이전보다 물리적/심리적으로 더 복잡해지고 위험해졌는가?"
+            ]
+      },
+      "s2_scene_four_chords": {
+            "goal": "행동이 폭발하는 씬(Action)과 내상을 추스르는 속편(Reaction/Sequel)의 리듬을 교차하여 플롯의 입체감을 높인다.",
+            "passRule": "사건이 터지는 액션(Action) 뒤에 반드시 인물이 충격을 흡수하고 딜레마에 빠졌다가 새로운 결단을 내리는(Reaction->Dilemma->Decision) 심리적 흐름이 반영된다.",
+            "repetitionTip": "긴박한 갈등 씬이 끝난 직후, 주인공이 홀로 충격을 갈무리하며 무엇을 할지 고뇌하는 '속편(Sequel)' 비트를 삽입한다.",
+            "conceptBrief": "능숙한 작가는 독자의 호흡을 조절합니다. 외부 갈등이 터지는 역동적인 '장면(Action)'이 있다면, 그 직후에는 반드시 인물이 그 여파로 고통스러워하고(Reaction), 두 가지 나쁜 선택지 사이에서 고민하다가(Dilemma), 새로운 계획을 수립하는(Decision/Setup) 정적인 '속편'이 이어져야 합니다.",
+            "conceptWhy": "반응(Reaction)할 틈도 주지 않는 끝없는 폭발과 액션의 연속은 독자의 감각을 마비시키고 지치게 합니다. 반대로 행동 없이 앉아서 고민만 하는 전개는 독자를 졸게 만듭니다.",
+            "writingOutcome": "긴박한 질주와 깊이 있는 고뇌가 황금 비율로 교차하며 독자의 멱살을 쥐락펴락하는 프로급의 템포 조절 능력을 갖춥니다.",
+            "passSignals": [
+                  "누군가 죽거나 함정에 빠지는 충격적 사건 직후, 독자도 주인공과 함께 잠시 숨을 고르며 절망감을 체감할 감정적 여유 공간이 주어진다.",
+                  "인물의 고뇌(반응)가 수동적인 우울증에 머물지 않고, 어떻게든 상황을 돌파하려는 새로운 계획(결단)으로 연결된다."
+            ],
+            "failSignals": [
+                  "인물이 가족을 잃는 큰 비극을 겪고도 감정적 여파나 슬픔 없이 터미네이터처럼 바로 다음 타겟을 찾아 총을 쏜다.",
+                  "외부적 위협이나 액션의 발생 없이 방에 틀어박혀 5페이지 내내 과거의 상처와 앞으로의 계획만 장황하게 읊는다."
+            ],
+            "submissionChecklist": [
+                  "치열한 충돌(Action/Scene) 뒤에 반드시 감정의 여파를 묘사하는 정적인 구간(Reaction/Sequel)이 배치되었는가?",
+                  "액션과 리액션, 상황 세팅과 주제적 깊이(Deepening) 등 4가지 코드가 장면의 성격에 맞게 적절히 배분되었는가?"
+            ]
+      },
+      "s2_dialogue_voice_distinction": {
+            "goal": "대화의 화자를 알려주는 지문(\"~가 말했다\")을 지워도 독자가 단번에 누가 말하는지 알아챌 수 있도록 고유한 목소리를 부여한다.",
+            "passRule": "등장인물들의 문장 길이 조절, 선호하는 어휘, 말의 억양과 태도가 지문 없이도 명확하게 분리되어 핑퐁된다.",
+            "repetitionTip": "철저히 화자 지시문을 숨긴 채 오직 A와 B의 대사만 연속으로 나열하여 두 사람의 성격 차이가 드러나게 재작성한다.",
+            "conceptBrief": "현실을 살아가는 사람들은 자신의 출신 지역, 학력 수준, 직업병, 방어적/공격적 기질에 따라 완전히 다른 언어의 필터를 사용합니다. 훌륭한 소설 속 대사는 단순한 정보 전달의 도구를 넘어, 입을 여는 순간 그 인물의 영혼(Voice)과 살아온 궤적을 날것 그대로 스크린에 투사합니다.",
+            "conceptWhy": "모든 인물이 작가 본인과 똑같은 지적이고 논리적인 말투(설명문)로 대화하면, 세계의 현실감이 산산조각 나며 극적 긴장감이 급락합니다. 독자는 다양한 화음이 빚어내는 마찰음을 원합니다.",
+            "writingOutcome": "천편일률적인 대사 톤에서 벗어나, 등장인물 각자의 살아 숨 쉬는 '대화 규칙 사전'과 찰진 대사 샘플을 얻습니다.",
+            "passSignals": [
+                  "인물 A는 방어적이라 단답형으로 말하고 끊는 반면, 인물 B는 남의 말을 가로채며 장황하고 권위적으로 말하는 대비가 확실하다.",
+                  "대사 속 쉼표의 위치, 특정 단어를 고집하는 습관, 직업적 은어를 통해 그 인물만의 시그니처 사운드가 들린다."
+            ],
+            "failSignals": [
+                  "A의 대사를 그대로 B의 입에 넣어도 전혀 어색하지 않을 정도로 개성이 증발해 있다.",
+                  "조폭이든 학자든 어린이든 모두가 국어사전에 나올 법한 표준어와 완벽한 문어체 형식으로 길고 친절하게 대답한다."
+            ],
+            "submissionChecklist": [
+                  "각 인물의 대화 스타일(문장의 길이, 말끝을 흐리는지, 특정 단어 회피/선호)에 대한 고유 규칙이 정립되었는가?",
+                  "화자를 알려주는 이름표를 가리고 대화만 연속으로 읽었을 때 머릿속에서 화자가 헷갈리지 않는가?"
+            ]
+      },
+      "s2_dialogue_as_confrontation": {
+            "goal": "대사를 친절한 정보 교환 수단이 아니라, 상대를 조종하고 갈등을 빚어내며 우위를 점하기 위한 날카로운 칼(무기)로 사용한다.",
+            "passRule": "대화 턴이 한 번 오갈 때마다 인물들이 품은 이면의 숨은 목적(Subtext)이 충돌하며 힘의 균형이 역전된다.",
+            "repetitionTip": "상대방의 핵심 질문에 정직하게 대답하는 대신, 동문서답으로 공격을 회피하거나 역으로 상대를 비꼬아 찌르는 대사로 교체한다.",
+            "conceptBrief": "좋은 소설 속 대화는 일상적이고 평화로운 수다가 아닙니다. 등장인물들은 속마음을 그대로 내뱉지 않습니다(서브텍스트). 그들은 자신이 원하는 것을 얻기 위해 거짓말을 하고, 정보를 감추고, 은근슬쩍 상대를 압박하는 고도의 권력 투쟁이자 심리적 체스 게임을 벌여야 합니다.",
+            "conceptWhy": "인물들이 서로에게 지나치게 솔직하게 속마음을 다 털어놓고, 친절하게 과거의 비밀을 설명해주는 순간 장면의 긴장감(Tension)은 바닥을 뚫고 추락합니다. 갈등 없는 대화는 지면 낭비입니다.",
+            "writingOutcome": "표면적으로 뱉는 말과 내면의 진짜 의도(서브텍스트)가 엇박자로 작동하며 스파크를 일으키는, 고도의 긴장감 넘치는 대화 씬이 완성됩니다.",
+            "passSignals": [
+                  "인물들이 겉으로는 우아하게 미소를 지으며 커피 맛을 칭찬하지만, 독자는 그 칭찬 안에 담긴 살벌한 경고와 견제를 소름 돋게 눈치챈다.",
+                  "대화 씬이 종료된 후, 어느 한쪽의 인물이 심리적 치명상을 입었거나 두 사람 사이의 권력 역학(갑과 을)이 완전히 달라져 있다."
+            ],
+            "failSignals": [
+                  "오직 독자에게 배경 상황을 설명해주기 위해, 인물들이 이미 서로 알고 있는 사실을 \"형, 10년 전 우리가 고아원에 버려졌을 때~\"라며 부자연스럽게 읊어댄다(설명충).",
+                  "팽팽한 갈등 상황인데도 한 명이 너무나 쉽게 양보하거나 설득에 고개를 끄덕여 버려 대화가 싱겁게 끝난다."
+            ],
+            "submissionChecklist": [
+                  "대화에 참여한 양측 인물이 서로 상충되는 뚜렷한 '대화 목적(숨은 의도)'을 쥐고 격돌하고 있는가?",
+                  "노골적으로 속마음을 다 보여주거나 정보를 나열하는 대사가 빗겨치기, 회피, 도발 등을 활용한 압박형 대사로 치환되었는가?"
+            ]
+      },
+      "s3_three_act_spine": {
+            "goal": "전체 스토리를 1막(도입-약 20%), 2막(중반/갈등 심화-약 60%), 3막(결말/해소-약 20%)의 비율로 나누어 무너지지 않는 거시적 뼈대를 세운다.",
+            "passRule": "각 막이 고유의 목적을 완수하며, 막과 막을 가로지르는 극적인 전환점(Plot Points)이 명확히 돌출되어 있다.",
+            "repetitionTip": "수백 페이지의 방대한 스토리를 막별 핵심 사건 3문장씩, 총 9문장의 타이트한 구조 요약본으로 압축해 본다.",
+            "conceptBrief": "1막은 주인공의 일상과 목표를 설정하고 평온을 깨는(교란) 단계입니다. 2막은 주인공이 본격적으로 미지의 세계(갈등)로 뛰어들어 고군분투하고 좌절하며 시야를 넓히는 가장 긴 여정입니다. 3막은 퇴로가 끊긴 주인공이 죽음을 불사하고 대립 세력과 최종 결전을 치러 질서를 회복하는 종착지입니다.",
+            "conceptWhy": "이 3막이라는 척추가 제대로 서 있지 않으면, 플롯은 인과관계 없는 에피소드의 파편적 나열(\"이런 일이 있었다. 그리고 나서 저런 일도 있었다.\")로 전락하여 구조적 붕괴가 일어납니다.",
+            "writingOutcome": "전체 이야기의 리듬과 밀도가 완벽하게 조율된, 독자가 지루할 틈을 주지 않는 단단한 거시적 건축 설계도를 얻습니다.",
+            "passSignals": [
+                  "1막에서 제기된 사소해 보이던 문제가 2막을 거치며 스케일이 눈덩이처럼 커지고, 3막에서 피할 수 없는 폭발을 맞이한다.",
+                  "각 막을 다음 막으로 밀어붙이는 전환 사건(Plot Point)이 매우 강력해서, 주인공의 시야와 행동 반경이 이전으로 절대 되돌아갈 수 없게 확장된다."
+            ],
+            "failSignals": [
+                  "1막의 세계관 설명과 일상 묘사가 너무 길어져, 정작 재밌어야 할 2막의 본 갈등이 책의 절반이 지나서야 시작된다.",
+                  "2막 내내 고생한 것에 비해 3막의 클라이맥스가 턱없이 빈약하고 급작스럽게 마무리되어 용두사미가 된다."
+            ],
+            "submissionChecklist": [
+                  "1막, 2막, 3막이 각자의 고유 기능(문제 제기/갈등 심화/최종 해결)에 맞게 올바른 분량(비율)을 지키고 있는가?",
+                  "막과 막 사이를 연결하는 '돌아올 수 없는 문(관문)'이 억지스럽지 않고 필연적으로 열려 있는가?"
+            ]
+      },
+      "s3_disturbance_two_doorways": {
+            "goal": "초반에 일상을 뒤흔드는 충격(Disturbance)을 주고, 이후 스토리를 돌이킬 수 없게 록업(Lock-up)하는 두 개의 거대한 관문을 배치한다.",
+            "passRule": "평온한 일상 -> 첫 교란 -> 1문턱(2막 진입) -> 2문턱(3막/최종전 진입)이 톱니바퀴처럼 인과성 있게 맞물려 돌아간다.",
+            "repetitionTip": "첫 번째 문턱을 넘기 직전, 일상을 포기해야만 하는 주인공이 느끼는 극심한 두려움과 내적 망설임을 구체화한다.",
+            "conceptBrief": "교란(Disturbance)은 평범한 일상에 '문제가 생겼다'고 알리는 첫 경고음입니다. **첫 번째 문턱(Doorway of No Return 1)**은 주인공이 자의든 타의든 일상과 영원히 작별하고 본격적인 2막의 갈등 속으로 뛰어드는 지점입니다. **두 번째 문턱(Doorway 2)**은 3막 클라이맥스를 앞두고, 끔찍한 죽음의 공포나 파멸을 무릅쓰고라도 결판을 내러 가겠다고 다짐하는 지점입니다.",
+            "conceptWhy": "이 문턱을 통과한 인물은 물리적으로든 심리적으로든 절대 과거로 돌아갈 수 없습니다(문이 뒤에서 닫힘). 문턱이 너무 낮거나 언제든 원래 삶으로 도망칠 퇴로가 열려 있다면 주인공의 절박함은 심각하게 훼손되며, 독자는 긴장감을 잃고 하품을 하게 됩니다.",
+            "writingOutcome": "이야기의 추진력을 급가속 시키고 독자의 멱살을 잡아채 한시도 눈 돌릴 수 없게 만드는 치명적인 '포획 지점(록업)'이 완성됩니다.",
+            "passSignals": [
+                  "첫 번째 문턱을 넘는 순간, 주인공이 머물던 안전한 과거의 일상은 산산이 파괴되어 되돌아갈 안식처가 사라진다.",
+                  "두 번째 문턱을 넘을 때 주인공은 자신이 가진 가장 소중한 것을 잃을지도 모른다는 희생과 죽음을 각오한다."
+            ],
+            "failSignals": [
+                  "교란 사건(초대장 등)이 일어났음에도 인물이 아무런 리스크 없이 너무 오랫동안 일상에 머물러 초반 전개가 지루하다.",
+                  "문턱을 넘는 행위가 주인공의 절박한 결단이나 어쩔 수 없는 코너 몰림이 아닌, 우연한 사고에 의해 싱겁게 휩쓸려간다."
+            ],
+            "submissionChecklist": [
+                  "주인공이 1문턱, 2문턱을 통과할 때 치러야만 하는 묵직한 입장료(대가나 포기해야 할 것)가 분명히 제시되었는가?",
+                  "두 개의 관문이 3막 구조의 전환점(Plot Points)과 정확히 맞물리며 플롯의 폭발제로 기능하고 있는가?"
+            ]
+      },
+      "s3_hero_journey_overlay": {
+            "goal": "현대적인 3막 구조 위에, 인류의 무의식에 수천 년간 각인된 신화적 여정(Hero's Journey) 패턴을 덧입혀 몰입도의 깊이를 극대화한다.",
+            "passRule": "소명(교란)-거부-조력자 조우-시련-가장 깊은 동굴(암흑의 순간)-귀환이라는 원형적 서사 구조가 장르의 결에 맞게 유연하게 결합된다.",
+            "repetitionTip": "미드포인트 이후 찾아오는 가장 뼈아픈 내적 절망의 지점인 '암흑의 순간'을 주인공의 최악의 공포/약점과 직면하게 결합해 리라이트한다.",
+            "conceptBrief": "시대와 장르를 불문하고 대중을 사로잡아온 원형 스토리의 뼈대입니다. 평범하고 결핍이 있던 인물이 미지의 세계(2막)로 넘어가 무수한 시련을 겪고, 동굴 깊은 곳에서 죽음(자아의 붕괴)을 경험한 뒤, 완전히 새로운 자아로 부활(성장)하여 세상의 질서를 구원하는 심리적 여정입니다.",
+            "conceptWhy": "이 신화적 리듬은 서사가 지루해지거나 억지스러워지는 중반부의 고질병을 스스로 치료해 주는 가장 강력하고 검증된 백신입니다. 구조가 막힐 때 돌아가야 할 궁극의 지도입니다.",
+            "writingOutcome": "장르 소설의 얄팍한 틀에 갇히지 않고 인간 보편의 정서를 타격하여 잊히지 않는 서사적 깊이와 철학적 뼈대를 확보합니다.",
+            "passSignals": [
+                  "모험의 부름(교란)을 받은 주인공이 처음에는 현실적 두려움과 결핍 때문에 안주하려 하며 여정을 강하게 거부한다.",
+                  "가장 어두운 동굴(암흑의 순간)에서 주인공은 과거의 이기적이거나 미숙한 자아를 철저히 버리고 새로운 신념으로 거듭난다."
+            ],
+            "failSignals": [
+                  "주인공이 아무런 두려움이나 망설임 없이 영웅적 소명을 덥석 받아들이고 닥쳐오는 시련을 천재적으로 돌파한다.",
+                  "여정을 마치고 귀환한 주인공이 내적인 깨달음 없이 금은보화나 지위 등 물리적인 보상만 챙기고 이야기가 싱겁게 끝난다."
+            ],
+            "submissionChecklist": [
+                  "내적 붕괴가 최고조에 달하는 '암흑의 순간'이 미드포인트 이후 플롯 포인트 2를 향해가는 궤도에 효과적으로 배치되었는가?",
+                  "각 단계가 단순히 신화 교재를 베껴 쓰는 기계적인 대입이 아니라, 해당 작품만의 테마와 갈등에 맞게 유연하게 변형되었는가?"
+            ]
+      },
+      "s3_plot_points_midpoint": {
+            "goal": "이야기의 방향을 거칠게 꺾어버리는 두 개의 전환점(Plot Points)과, 주인공이 수동성에서 깨어나 각성하는 정중앙의 변곡점(Midpoint)을 세운다.",
+            "passRule": "미드포인트를 기점으로 숨겨진 거대한 진실이 폭로되거나 엄청난 충격이 가해지며, 주인공의 태도가 수동적 반응(도망)에서 능동적 공세(반격)로 역전된다.",
+            "repetitionTip": "미드포인트 전과 후, 주인공이 위기에 대처하는 목표 달성 방식(방어 -> 공격)을 뚜렷하게 비교하는 대조표를 작성한다.",
+            "conceptBrief": "**전환점(Plot Point 1, 2)**은 이야기를 2막과 3막으로 밀어 넣는 강력한 핀볼의 범퍼입니다. **중간 지점(Midpoint)**은 2막의 정중앙을 떠받치는 거대한 텐트 폴대입니다. 이곳에서 주인공은 자신을 둘러싼 환상이 깨지는 충격적인 '거울의 순간(Mirror Moment)'을 경험하며 더 이상 물러설 곳이 없음을 깨닫고 전사가 됩니다.",
+            "conceptWhy": "갈등이 지지부진하게 이어지는 2막(중반부)은 작가와 독자 모두 허우적거리는 서사의 늪입니다. 스토리 한가운데를 관통하는 강력한 미드포인트가 없으면 이야기가 텐션을 잃고 제자리만 맴돌게 됩니다.",
+            "writingOutcome": "길고 지루해지기 쉬운 중반부의 느슨한 긴장을 다시 한번 극고점으로 끌어올리고 방향성을 명확히 하는 극적 전환의 축을 얻습니다.",
+            "passSignals": [
+                  "미드포인트에서 주인공이 믿었던 아군이 적군임을 알게 되거나 치명적인 패배를 겪어, 지금까지의 판세가 180도 뒤집힌다.",
+                  "미드포인트 이전까지는 맞고 도망치기만(수비) 하던 주인공이, 이후부터는 대립 세력을 향해 기꺼이 몽둥이를 들고 선제공격(반격)을 시작한다."
+            ],
+            "failSignals": [
+                  "이야기 분량의 절반이 지났음에도 갈등의 스케일, 위험도, 혹은 인물의 내적 태도에 아무런 굴곡이나 변화가 없다.",
+                  "플롯 포인트 사건이 주인공의 선택에 의한 필연적 결과가 아니라, 그저 억지 갈등을 만들기 위한 작가의 변덕으로 불쑥 튀어나온다."
+            ],
+            "submissionChecklist": [
+                  "미드포인트 사건을 겪은 전후로 주인공이 감수해야 할 판돈(Stakes)이 두 배 이상 커져 벼랑 끝에 몰렸는가?",
+                  "각 전환점(Plot Points)이 다음 단계로 넘어가지 않고는 배길 수 없는 논리적 타당성과 필연성을 부여하는가?"
+            ]
+      },
+      "s3_subplot_thematic_integration": {
+            "goal": "뻗어나간 잔가지(서브플롯)들이 중구난방 흩어져 집중력을 깎지 않고, 메인 플롯과 테마를 입체적으로 보조하도록 촘촘히 엮는다.",
+            "passRule": "조연들의 이야기나 곁가지 사건(서브플롯)이 메인 갈등을 심화시키거나 클라이맥스 해결에 필수적인 핵심 실마리로 기능하며 하나로 수렴된다.",
+            "repetitionTip": "메인 플롯의 갈등이나 주제 의식을 거울처럼 정반대로 비추어주는(대비되는) 서브플롯 라인을 구축해 메인 스토리를 부각한다.",
+            "conceptBrief": "서브플롯은 분량을 늘리기 위한 단순한 시간 끌기 용도가 아닙니다. 주인공의 억눌린 내면을 폭로하거나, 작품의 테마를 조연의 입을 통해 다른 각도에서 조명하거나, 메인 갈등과 얽혀 위기를 더 복잡하게 꼬아버리는 강력한 추진 부스터입니다.",
+            "conceptWhy": "작가의 통제를 벗어나 무의미하게 길어진 서브플롯은 독자의 시선을 분산시키고, 정작 끓어올라야 할 메인 스토리의 긴장감을 차갑게 식혀버립니다.",
+            "writingOutcome": "여러 인물의 얽힌 서사가 복잡하지만 절대 혼란스럽지 않고, 풍성하지만 산만하지 않게 작동하는 유기적 다중 플롯 체계를 갖춥니다.",
+            "passSignals": [
+                  "조력자와의 깊어지는 로맨스나 갈등(서브플롯)이, 궁극적으로 주인공이 지배 목표를 달성하거나 결단을 내리는 과정에 결정적 영향을 미친다.",
+                  "여러 갈래로 흩어졌던 이야기들이 3막 결말부(클라이맥스)를 향해 달려가며 하나의 거대한 강줄기처럼 폭발적으로 합쳐진다."
+            ],
+            "failSignals": [
+                  "특정 서브플롯을 통째로 덜어내어 삭제해도 메인 스토리를 진행하고 이해하는 데 아무런 지장이 없는 장식용 이야기다.",
+                  "메인 사건의 긴박한 텐션이 올라가는 타이밍에 조연들의 사소한 서브플롯이 뜬금없이 끼어들어 서사적 몰입을 툭 끊어먹는다."
+            ],
+            "submissionChecklist": [
+                  "모든 서브플롯이 주인공의 내적 성장 곡선을 보조하거나, 작품의 핵심 테마를 명확히 대변하고 시험하는 역할을 수행하는가?",
+                  "분리되어 진행되던 이야기들이 클라이맥스 지점에서 기막힌 타이밍으로 유기적으로 수렴하여 카타르시스를 증폭시키는가?"
+            ]
+      },
+      "s4_beginning_hook_entry": {
+            "goal": "책을 막 펼친 독자가 첫 문단, 첫 페이지에서 멱살을 잡힌 채로 호기심을 주체하지 못하고 두 번째 페이지를 넘기도록 강제한다.",
+            "passRule": "시작부는 정보 설명 공간이 아닙니다. 첫 장면에서 인물의 역동적 행동, 긴장감, 세계의 톤 앤 매너가 압축적으로 제시되어 즉각적인 질문을 유발한다.",
+            "repetitionTip": "구름, 날씨, 배경 묘사로 한가롭게 시작하는 첫 문단을, 인물의 급박한 행동(In media res)이나 충격적인 대사로 치환하여 리라이트한다.",
+            "conceptBrief": "훅(Hook)은 독자를 이야기의 소용돌이 속으로 확 끌어들이는 날카로운 낚시바늘입니다. 좋은 오프닝은 '어떻게 된 상황인지 장황하게 설명(Tell)하는 것'이 아니라, '당장 눈앞에서 무슨 흥미로운 사건이 벌어지고 있는지 곧바로 보여주는(Show) 것'입니다.",
+            "conceptWhy": "무수히 쏟아지는 콘텐츠 속에서 첫 3페이지 안에 독자를 사로잡지 못하면, 이후에 아무리 기가 막힌 반전과 갈등이 기다리고 있어도 독자는 결코 그곳까지 도달하지 않고 뒤로 가기 버튼을 누릅니다.",
+            "writingOutcome": "독자의 무의식에 강렬한 의문을 던져 호기심의 불꽃을 극대화하는, 흡입력 100%의 날카로운 오프닝 원고를 완성합니다.",
+            "passSignals": [
+                  "첫 문장이 독자의 일상적 예상을 깨부수는 역설, 미스터리, 극적인 갈등 행동 중 하나를 강렬하게 품고 있다.",
+                  "구구절절한 이력 설명 없이 인물이 허덕이는 '현재 행동과 위기'만으로 주인공의 절박한 처지가 직관적으로 암시된다."
+            ],
+            "failSignals": [
+                  "대망의 첫 1페이지가 세계관의 역사, 가문의 유래, 국가 정세 등 독자가 아직 관심 없는 방대한 '정보 덤핑(Information Dump)'으로 꽉 차 있다.",
+                  "주인공이 아침 햇살을 받으며 잠에서 깨어나 세수하고 밥을 먹는, 이야기와 아무 상관 없는 진부하고 지루한 일상으로 문을 연다."
+            ],
+            "submissionChecklist": [
+                  "첫 장면의 마지막 줄을 읽었을 때 독자 입장에서 '도대체 어떻게 된 일이야? 그래서 이다음엔 어떻게 되는데?'라는 뚜렷한 궁금증이 생기는가?",
+                  "이 소설이 스릴러인지 로맨스인지 장르적 분위기를 즉각 암시하는 오감(시각, 청각 등) 디테일이 도입부에 박혀 있는가?"
+            ]
+      },
+      "s4_beginning_world_opposition": {
+            "goal": "거대한 세계관의 설정과 초기 저항 세력의 존재감을 장황한 백과사전식 설명(Tell) 없이 인물의 행동과 사건(Show) 속에 자연스럽게 녹여낸다.",
+            "passRule": "작가가 개입해 룰을 읊어주는 대신, 독자가 주인공의 위기 상황을 흥미진진하게 지켜보는 과정에서 수동적으로 세계의 룰을 체득하게 만든다.",
+            "repetitionTip": "\"이 세계에서 마법을 쓰면 사형이다\"라는 노골적 서술을, 골목에서 몰래 마법을 쓰다 경비대에게 끌려가는 소년을 목격하는 장면으로 전면 교체한다.",
+            "conceptBrief": "세계관 구축은 빙산의 일각과 같습니다. 수면 아래의 거대하고 방대한 설정 90%는 작가의 머릿속에만 존재해야 하며, 독자에게는 인물이 앞으로 나아갈 때 발끝에 툭툭 부딪히는 수면 위 빙산 10%(갈등 사건)만을 보여주며 전체를 상상하게 만들어야 합니다.",
+            "conceptWhy": "초반부터 인물 간의 대화나 서술을 빌려 과도한 설정을 마구 퍼붓는 정보 덤핑은, 독자에게 서사가 아니라 두꺼운 전공 역사 서적을 읽는 듯한 극심한 피로감을 주어 몰입의 몰입을 쳐버립니다.",
+            "writingOutcome": "정보 과부하의 위험 없이, 박진감 넘치는 스토리 전개와 거대한 세계관 암시가 톱니바퀴처럼 완벽하게 맞물려 굴러가는 1막 초안을 얻습니다.",
+            "passSignals": [
+                  "세계의 억압적인 규칙이나 신분 제도의 모순이 특정 소품의 사용, 인물들의 주눅 든 억양, 짧은 차별적 상황 묘사를 통해 즉각적으로 전달된다.",
+                  "1막에서 주인공이 무심코 겪는 사소한 트러블이나 저항이, 사실 앞으로 2막에서 맞붙을 거대한 대립 세력의 그림자였음이 은연중에 암시된다."
+            ],
+            "failSignals": [
+                  "주인공의 행동이 완전히 정지된 상태에서, 전지적 내레이터가 훅 들어와 과거 100년간 얽힌 왕국의 역사를 두 페이지 넘게 요약 설명하고 있다.",
+                  "주인공의 앞길을 가로막는 작은 반대 세력조차 없어서 첫 번째 문턱에 다가갈 때까지 서사에 아무런 굴곡이나 긴장감이 발생하지 않는다."
+            ],
+            "submissionChecklist": [
+                  "독자가 이 세계를 이해하기 위해 꼭 알아야 할 최소한의 3가지 핵심 규칙이 '설명'이 아닌 '행동이나 갈등 상황'을 통해 간접적으로 표현되었는가?",
+                  "설정이 과하게 노출되는 정보 덤핑 구간을 냉정하게 식별해 과감히 덜어내거나 뒷장면으로 미루는 가지치기 작업이 완료되었는가?"
+            ]
+      },
+      "s4_middle_escalation_pressure": {
+            "goal": "중반부가 한없이 늘어지는 정체 구간(Sagging Middle)이 되지 않도록 장애물의 난이도와 시간 압박의 수위를 단계적으로 가혹하게 높인다.",
+            "passRule": "주인공이 한 관문을 통과할 때마다 상황이 전보다 훨씬 악화되며(설상가상의 원칙), 위기를 벗어나기 위해 치러야 할 대가의 비용이 급등한다.",
+            "repetitionTip": "중반부를 구성하는 주요 위기 사건들을 난이도와 위험도 순으로 나열해 점진적 상승 곡선을 그리는지 확인하고, 텐션이 꺾이는 가장 약한 사건을 과감히 도려낸다.",
+            "conceptBrief": "2막(중반부)은 단순히 결말로 가기 위해 페이지 수를 채우는 다리가 아닙니다. 주인공이 포기하고 싶을 만큼 진이 빠지게 몰아붙여, 내면의 한계를 부수게 만드는 가혹한 제련의 도가니(Crucible)입니다. 이를 위해 필요한 것이 '커지는 판돈의 원칙(Rule of Rising Stakes)'입니다.",
+            "conceptWhy": "이 단계에서 장애물의 압박이 위로 치솟지 않고 같은 난이도로 수평적으로 맴돌기만 한다면, 플롯의 텐션은 바람 빠진 풍선처럼 푹 가라앉고 독자는 흥미를 잃습니다. 위기는 반드시 점층적이어야 합니다.",
+            "writingOutcome": "결말의 과녁을 향해 팽팽하게 당겨진 활시위처럼, 숨 막히는 압박감과 카운트다운 타이밍으로 치밀하게 직조된 역동적인 2막을 설계합니다.",
+            "passSignals": [
+                  "주인공이 이전 장에서 써먹었던 얕은 수법이나 도구로는 더 이상 닥쳐온 위기를 넘길 수 없을 만큼 적의 난이도와 지능이 상승한다.",
+                  "시한폭탄(물리적인 시간제한, 독약의 퍼짐, 좁아지는 적의 포위망 등) 장치가 시시각각 줄어들며 주인공의 목을 조른다."
+            ],
+            "failSignals": [
+                  "중반부를 채우는 여러 장애물들이 그저 배경 장소나 적의 이름만 다를 뿐, 난이도나 주인공이 입는 타격의 크기가 1막과 비슷비슷해 단조롭다.",
+                  "주인공이 목표를 당장 내일 이루든 다음 달에 천천히 이루든 아무런 불이익이 없어 긴박하게 서둘러야 할 동기가 전무하다."
+            ],
+            "submissionChecklist": [
+                  "주인공을 덮쳐오는 중반부 장애물 3개가 각각 육체적 위험/지적 트릭/심리적 고통 등 완전히 다른 성격을 띠며 다각도로 괴롭히고 있는가?",
+                  "2막의 끝에서 주인공을 3막의 최종 클라이맥스로 매몰차고 필연적으로 밀어붙이는 충격적인 촉매 사건(결전의 트리거)이 준비되었는가?"
+            ]
+      },
+      "s4_middle_complications_reversals": {
+            "goal": "상황을 꼬아버리는 '합병증'과, 주인공과 독자의 예상을 보기 좋게 엎어버리는 '반전'을 배치하여 예측 가능한 전개를 철저히 부순다.",
+            "passRule": "반전이 코너에 몰린 작가의 억지나 우연이 아니라, 사전에 앞 페이지들에 교묘하게 심어둔 치밀한 복선에서 필연적으로 파생되어야 한다.",
+            "repetitionTip": "주인공이 세워둔 가장 완벽해 보였던 계획이, 그가 과거에 저지른 사소한 실수나 예기치 못한 변수 하나로 와르르 붕괴되는 과정을 짠다.",
+            "conceptBrief": "**합병증(Complications)**은 주인공이 눈앞의 문제 A를 해결하려다 실수로 B와 C라는 더 심각한 문제를 연달아 터뜨려 상황을 진창으로 만드는 것입니다. **반전(Reversals)**은 믿었던 아군이 적군이 되거나, 사냥꾼이 하루아침에 사냥감이 되어 쫓기는 등 이야기의 방향 자체가 180도 전복되는 것입니다.",
+            "conceptWhy": "주인공의 모든 계획이 세운 대로 순조롭게 흘러가고 예상대로 장애물을 돌파한다면 그것만큼 지루한 소설은 없습니다. 스토리텔링에서 독자의 예측 가능성은 가장 끔찍한 독약입니다.",
+            "writingOutcome": "독자가 '이제 좀 해결되려나' 하고 안심하려는 찰나 무자비하게 뒤통수를 치는, 고도의 논리와 충격을 겸비한 반전 구조를 획득합니다.",
+            "passSignals": [
+                  "독자가 충격적인 반전을 맞닥뜨렸을 때 '말도 안 돼!'가 아니라 '아뿔싸, 왜 이걸 못 봤지!' 하면서 앞선 페이지의 복선을 찾으러 되돌아가게 만든다.",
+                  "합병증으로 인해 주인공이 당초의 얄팍한 계획을 전면 폐기하고, 더 곤란한 처지에서 뼈를 깎는 새로운 대응 전략을 짜도록 강제된다."
+            ],
+            "failSignals": [
+                  "주인공의 위기를 편하게 모면해주기 위해 갑자기 하늘에서 뚝 떨어진 벼락이나 숨겨진 초능력 같은 억지 설정으로 반전을 꾀한다.",
+                  "상황이 꼬이긴 꼬이는데, 주인공의 메인 지배 목표와는 아무 무관한 단순 사고(길을 가다 지갑을 잃어버림 등) 수준의 방해에 그친다."
+            ],
+            "submissionChecklist": [
+                  "상황을 최악으로 꼬아버리는 합병증 변수가 단순한 불운이 아니라, 주인공의 치명적 약점이나 과거의 선택에서 빚어진 인과적인 결과인가?",
+                  "핵심 반전이 터지기 이전에 독자의 무의식에 자연스럽게 찔러넣은(그러나 눈치채기는 힘든) 합리적인 복선(Setup)이 2개 이상 존재하는가?"
+            ]
+      },
+      "s4_ending_knockout_resolution": {
+            "goal": "1페이지부터 쌓아온 모든 감정과 텐션이 거대하게 폭발하는 클라이맥스와, 남은 의문의 실타래를 깔끔히 푸는 완벽한 해결부를 완성한다.",
+            "passRule": "주인공이 지배 목표의 성취 여부(승리 혹은 비극적 패배)를 결판 지으며 핵심 갈등이 한 점의 의혹 없이 완전하게 해소된다.",
+            "repetitionTip": "갈등이 최고조에 달한 클라이맥스 대결 씬을 화려한 육체적 액션 중심의 버전과, 심리적 치부가 드러나는 감정적 대립 버전 두 가지로 작성해 본다.",
+            "conceptBrief": "클라이맥스는 1장부터 켜켜이 쌓아올린 주인공의 내적 갈등, 대립 세력, 테마가 정면으로 충돌해 산산조각 나는 플롯의 거대한 폭발점입니다. 해결부는 폭발 이후의 자욱한 먼지가 가라앉으며, 과거와는 완전히 달라진 새로운 질서가 자리 잡은 세상(혹은 내면)을 짧게 조명하는 에필로그적 기능입니다.",
+            "conceptWhy": "오프닝이 아무리 매혹적이어도, 엔딩에서 던져놓은 복선이나 질문을 논리적으로 수거하지 못하면 독자는 속았다는 배신감을 느끼고 작가를 다시는 신뢰하지 않게 됩니다. 끝맺음이 소설의 최종 평가를 결정합니다.",
+            "writingOutcome": "논리적 빈틈(설정 구멍)이 전혀 없고, 땀을 쥐게 하는 긴장과 해소의 카타르시스가 극대화된 강력한 3막 종결부를 구축합니다.",
+            "passSignals": [
+                  "주인공이 타인이나 우연의 도움을 받지 않고, 여정 내내 고통스럽게 습득한 교훈과 각성된 내면을 무기로 최종 위기를 직접 돌파한다.",
+                  "통쾌한 승리감과, 승리를 위해 지불해야 했던 쓰디쓴 대가(희생)가 절묘하게 섞여 현실적이고 입체적인 카타르시스(Bittersweet)를 선사한다."
+            ],
+            "failSignals": [
+                  "1막, 2막 내내 수백 페이지를 할애해 쌓아온 거대한 갈등이 무색하게, 최종 보스와의 결전이 단 두 줄의 맥없는 상황 설명으로 허무하게 끝난다.",
+                  "핵심 서브플롯이나 작가가 의미심장하게 던져두었던 복선들이 제대로 해소되지 않은 채 방치되어(루즈 엔드 미처리) 심한 찜찜함을 남긴다."
+            ],
+            "submissionChecklist": [
+                  "도입부에서 제시된 소설의 '핵심 질문(과연 ~할 것인가?)'에 대해, 마지막에 이르러 한 치의 모호함이나 타협 없이 명확한 답을 제시했는가?",
+                  "클라이맥스 전투 이후의 설명하는 마무리(해결부) 구간이 지나치게 길게 늘어지지 않고 적절한 타이밍에 날카롭게 컷오프(Cut-off) 되는가?"
+            ]
+      },
+      "s4_last_page_resonance": {
+            "goal": "책을 덮고 나서도 며칠 동안 독자의 머릿속을 맴도는 강력한 정서적 공명과 잊히지 않는 시각적 여운을 설계한다.",
+            "passRule": "작가가 주제를 요약해 떠먹여 주는 모든 구구절절한 설명을 배제하고, 이야기의 의미를 무한히 확장하는 간결한 이미지나 행동 하나로 맺음표를 찍는다.",
+            "repetitionTip": "마지막 문단을 '가르치려는 교훈적 서술'에서, 독자의 뇌리에 '시각적 잔상'만을 툭 던져두고 빠지는 여백의 문장으로 압축 수정한다.",
+            "conceptBrief": "가장 위대한 엔딩은 작가가 직접 나서서 \"이 이야기의 교훈은 이것입니다\"라고 설명하는 것이 아닙니다. 전쟁이 끝난 후 덩그러니 남겨진 낡은 헬멧, 닫히는 문틈 사이로 보이는 희미한 미소 등 시각적 상징물이나 고요한 이미지 하나로 서사가 남긴 흉터와 성장을 보여주는 것입니다.",
+            "conceptWhy": "마지막 1~2페이지가 띠는 언어의 톤과 정서적 리듬이 소설 전체의 품격을 결정합니다. 아무리 플롯이 치밀했어도 마지막이 촌스러우면 평범한 글로 전락하고, 마지막 울림이 강렬하면 명작의 반열에 오릅니다.",
+            "writingOutcome": "독자에게 특정한 감정을 강요(신파)하지 않으면서도, 내면의 가장 깊은 울림을 이끌어내는 프로페셔널하고 우아한 마침표를 완성합니다.",
+            "passSignals": [
+                  "감정을 묘사하는 직접적인 형용사와 부사를 모조리 덜어낸 건조한 단문과 명확한 행동 묘사만으로 오히려 짙은 여운과 슬픔/환희를 남긴다.",
+                  "소설의 첫 오프닝 장면과 거울처럼 완벽하게 대비되거나 수미상관을 이루어, 주인공이 겪은 험난한 여정과 변화의 크기를 침묵으로 증명한다."
+            ],
+            "failSignals": [
+                  "\"그렇게 그는 그동안 자신이 얼마나 어리석었는지, 진정한 사랑의 의미가 무엇인지 깨달았다\" 식의 구시대적이고 직접적인 감상(Tell)을 남발한다.",
+                  "이미 메인 스토리는 다 끝났음에도, 무리하게 다음 후속 시리즈를 의식한 듯한 작위적인 떡밥(쿠키)을 억지로 던져 잘 빚어놓은 여운을 망친다."
+            ],
+            "submissionChecklist": [
+                  "마지막 장면이 독자에게 눈물을 쥐어짜려는 과잉된 감정을 강요하지 않고 담백한 절제미의 선을 아슬아슬하게 유지하고 있는가?",
+                  "작품 전체를 관통해온 핵심 테마를 압축적으로 상징하는 단 하나의 '시각적 이미지'가 텍스트를 넘어 눈앞에 그려지는가?"
+            ]
+      },
+      "s5_revision_triage": {
+            "goal": "완성된 초안 원고의 맹점을 냉정하게 분석하고, 자질구레한 문장보다 치명적인 뼈대(플롯) 문제부터 대수술에 들어가는 우선순위를 정한다.",
+            "passRule": "단순한 오탈자 교정이나 멋진 문장 다듬기에 매몰되지 않고, 근본적인 구조적 오류(Macro)부터 뜯어고치는 명확하고 실행 가능한 수정 로드맵이 도출된다.",
+            "repetitionTip": "발견된 문제점들을 '거시적 플롯/캐릭터/장면/미시적 문장' 단위로 분류해 심각도 순으로 재정렬하고, 문장 수정은 맨 뒤로 미룬다.",
+            "conceptBrief": "트리아지(부상자 중증도 분류)는 야전 병원의 생존 전략입니다. 구조 기둥이 무너져 내리고 있는데 벽지 색깔(문장의 아름다움)을 고민하고 있으면 안 됩니다. 주인공의 빈약한 동기, 약한 대립 세력 같은 스토리의 심장(구조)부터 살려내야 합니다.",
+            "conceptWhy": "거시적인 구조적 문제가 있는 상태에서 단어 하나하나를 다듬는 미시적 퇴고를 하는 것은, 곧 썩어 없어질 시체에 예쁘게 화장을 하는 것과 같습니다. 시간과 에너지만 낭비될 뿐 원고는 절대 좋아지지 않습니다.",
+            "writingOutcome": "가장 적은 시간과 노력으로 작품의 전반적인 완성도를 수직 상승시키는, 고도로 전략적이고 구체적인 퇴고(Revision) 계획표를 얻습니다.",
+            "passSignals": [
+                  "'지배 목표의 절박함 부재', '긴장감이 떨어지는 미드포인트' 등 작품을 관통하는 플롯의 근본적 결함을 1순위 수정 대상으로 진단했다.'중반부를 재밌게 고친다' 같은 모호한 다짐 대신, '분량만 차지하는 회상 씬 3개를 삭제하고 물리적 대립 씬 1개를 삽입한다'로 액션 플랜이 구체적이다."
+            ],
+            "failSignals": [
+                  "첫 번째와 두 번째 수정 목표가 배경 묘사 추가, 오탈자 교정, 중복 단어 교체 등 이야기의 본질에 영향이 없는 지엽적인 부분에 머물러 있다.",
+                  "수정을 통해 원고가 어떻게 나아질 것이라는 객관적인 기준(판정 조건)이 없어서, 느낌에만 의존하다 퇴고가 무한 루프에 빠질 위험이 다분하다."
+            ],
+            "submissionChecklist": [
+                  "플롯의 거시적 문제(지배 목표, 대가, 3막 전환점 등)를 다루는 수술이, 미시적 문제(대사 어투, 묘사 정교화)보다 철저히 우선시되도록 배치했는가?",
+                  "당장 내일 아침 키보드에 손을 올렸을 때 무엇을 쳐내고 무엇을 쓸지 고민 없이 바로 실행할 수 있는 '행동 단위의 물리적 수정 지침'인가?"
+            ]
+      },
+      "s5_common_problem_cures": {
+            "goal": "길을 잃어버린 중반부, 목적이 없는 대화 씬 등 반복해서 등장하는 구조적 고질병들의 근본 원인을 정확히 진단하고 외과 수술적 처방을 내린다.",
+            "passRule": "문제가 발생한 장면에 대사 몇 줄을 덧붙이는 표면적 땜질이 아닌, 플롯 전체를 뜯어고쳐 원인을 제거하는 근본 치료가 적용된다.",
+            "repetitionTip": "전개가 지루해지는 문제를 해결하기 위해, 적의 새로운 공격 없이 주인공 스스로 계획을 세우고 적진으로 돌격하는 능동적인 장면을 강제로 삽입해 본다.",
+            "conceptBrief": "소설 플롯이 재미를 잃고 처지는 원인은 대체로 비슷합니다. 너무 이른 시점에서의 성공, 실패 시 치러야 할 얄팍한 대가(판돈), 타임 리미트의 부재 때문입니다. 겉으로 드러난 지루함이라는 현상에 집착하지 말고 '왜 이 지점에서 텐션의 숨통이 끊어졌는가'를 파고들어야 합니다.",
+            "conceptWhy": "근본 원인을 모른 채 지루함을 덮기 위해 뜬금없는 캐릭터를 투입하거나 억지 갈등(뜬금없는 사고 등)만 자꾸 추가하면, 플롯이 누더기가 되어 기괴해지고 독자는 심한 피로감에 책을 던집니다.",
+            "writingOutcome": "멈춰버린 플롯의 심장을 강제로 다시 뛰게 만드는 제세동기처럼, 특정 문제 구간의 막힌 혈을 확실히 뚫어버리는 처방전과 재발 방지 매뉴얼을 얻습니다.",
+            "passSignals": [
+                  "중반부 서사가 느슨하게 늘어지는 핵심 원인을 찾아내어, 주인공의 등에 '타임 리미트(시한폭탄)'를 부착함으로써 강제로 헉헉대며 뛰게 만든다.",
+                  "우연과 운으로 위기를 싱겁게 벗어났던 장면을 도려내고, 인물이 살을 내어주는 큰 대가를 치르고서야 간신히 빠져나오는 필연적 인과 관계로 재구축한다."
+            ],
+            "failSignals": [
+                  "꼬여버린 전개를 풀지 못하자 무소불위의 능력을 갖춘 새로운 조력자를 뜬금없이 투입해 주인공 대신 모든 문제를 마법처럼 해결해버린다.",
+                  "처방을 적용해 액션을 넣었음에도 여전히 주인공이 행동으로 보여주는 분량보다, 앉아서 과거를 반추하는 독백과 설명이 페이지의 절반 이상을 차지한다."
+            ],
+            "submissionChecklist": [
+                  "텐션이 떨어진 문제의 핵심 원인을 외부의 거대한 압력 부족, 대립 세력의 지능 저하, 혹은 지배 목표의 약화 등 거시적 측면에서 제대로 진단했는가?",
+                  "처방전이 '긴장감을 높이도록 노력한다'는 추상적인 다짐이 아니라, '12장의 회상 장면 전체를 삭제하고 협박 편지를 받는 장면으로 대체한다'는 물리적 편집 형태를 띠고 있는가?"
+            ]
+      },
+      "s5_show_tell_and_precision_tools": {
+            "goal": "뭉뚱그려 모호하게 요약 지시하는 '말하기(Tell)'를, 독자의 오감을 자극하고 살아 움직이게 만드는 '보여주기(Show)'의 정밀한 카메라 워크로 변환한다.",
+            "passRule": "인물의 감정이나 상황 상태를 형용사 한 단어로 요약하지 않고, 구체적인 육체적 반응, 표정, 배경 소도구와의 상호작용으로 화면처럼 생생하게 제시한다.",
+            "repetitionTip": "\"그는 극도로 분노했다\"라는 Tell 문장을 완전히 배제하고, 그가 떨리는 손으로 유리잔을 꽉 쥐어 산산조각 내는 Show 장면으로 교체한 뒤 독자가 받는 파급력의 차이를 비교한다.",
+            "conceptBrief": "'말하기(Tell)'는 요약 기사처럼 작가가 독자에게 정보를 일방적으로 주입하는 것이고, '보여주기(Show)'는 독자가 소설 속 상황을 직접 눈으로 목격하고 그들의 감정을 스스로 결론 내리게 만드는 소설의 가장 강력한 마법입니다. 다만, 중요하지 않은 시간의 경과는 과감히 요약(Tell)하고, 핵심 갈등 씬은 카메라를 들이대어 철저히 묘사(Show)해야 합니다.",
+            "conceptWhy": "서술자가 모든 상황을 요약해버리고 친절하게 감정표('화가 났다', '슬펐다')까지 다 달아주면, 독자는 상상력을 동원할 권리를 빼앗깁니다. 독자가 이야기에 스스로 개입하지 못하면 겉돌기만 할 뿐 카타르시스를 느끼지 못합니다.",
+            "writingOutcome": "문장을 둔탁하게 만드는 군더더기 형용사와 부사를 예리하게 도려내고, 단어 하나하나가 영상처럼 뇌리에 재생되는 정밀한 문장 조각 칼을 장착합니다.",
+            "passSignals": [
+                  "'두려웠다', '기뻤다', '놀랐다' 같은 직접적인 감정 지시어가 배제되고, 입술을 짓씹는 턱관절이나 식은땀 등 신체적 반응과 무의식적 행동이 그 빈자리를 팽팽하게 채운다.'매우', '정말', '갑자기', '아름다운' 같은 게으르고 모호한 수식어가 싹 사라지고, 그 자리를 날카롭고 정확한 명사와 타격감 있는 동사가 대체하여 문장을 끌고 간다."
+            ],
+            "failSignals": [
+                  "무조건 '보여주기'를 해야 한다는 강박에 빠져, 전개와 아무 상관 없는 인물의 신발 끈 묶는 과정이나 건물 외관 묘사까지 수십 줄에 걸쳐 장황하게 나열한다(과잉 묘사).",
+                  "대화 씬에서 지문에 '그가 짜증스럽다는 듯이 말했다', '그녀가 질투심에 불타 화난 듯이 쏘아붙였다' 등 배우에게 연기를 지시하듯 감정을 계속 설명(Tell)하고 있다."
+            ],
+            "submissionChecklist": [
+                  "수정된 문장이 시각, 청각, 촉각, 후각 등 독자의 오감을 직접적으로 자극하여 마치 현장에 있는 듯한 생동감(디테일)을 포함하고 있는가?",
+                  "몇 년의 세월을 휙 건너뛰어야 할 때(Tell 요약)와, 총알이 날아다니는 핵심 갈등의 10초를 묘사해야 할 때(Show 보여주기)를 정확히 구분하여 렌즈를 조절했는가?"
+            ]
+      }
+};
+
+    let laneDefs = [
+      { id: "lock", label: "핵심 4요소(LOCK)", color: "#9f6a49", y: 72 },
+      { id: "beginning", label: "시작 (Act I)", color: "#b87954", y: 174 },
+      { id: "middle", label: "중간 (Act II)", color: "#4b7f82", y: 276 },
+      { id: "ending", label: "끝 (Act III)", color: "#6374aa", y: 378 },
+      { id: "revision", label: "수정 (Revision)", color: "#6f7f4f", y: 480 },
+    ];
+
+    let viewTabs = [
+      { id: "all", label: "전체" },
+      { id: "lock", label: "핵심 4요소(LOCK)" },
+      { id: "beginning", label: "시작" },
+      { id: "middle", label: "중간" },
+      { id: "ending", label: "끝" },
+      { id: "revision", label: "수정" },
+    ];
+
+    const drillLaneMap = {
+      s1_lock_lead: "lock",
+      s1_lock_objective: "lock",
+      s1_lock_confrontation: "lock",
+      s1_lock_knockout: "lock",
+      s2_reader_empathy_and_likability: "beginning",
+      s2_character_arc_linkage: "middle",
+      s2_scene_goal_conflict_change: "middle",
+      s2_scene_four_chords: "middle",
+      s2_dialogue_voice_distinction: "middle",
+      s2_dialogue_as_confrontation: "middle",
+      s3_three_act_spine: "beginning",
+      s3_disturbance_two_doorways: "beginning",
+      s3_hero_journey_overlay: "middle",
+      s3_plot_points_midpoint: "middle",
+      s3_subplot_thematic_integration: "middle",
+      s4_beginning_hook_entry: "beginning",
+      s4_beginning_world_opposition: "beginning",
+      s4_middle_escalation_pressure: "middle",
+      s4_middle_complications_reversals: "middle",
+      s4_ending_knockout_resolution: "ending",
+      s4_last_page_resonance: "ending",
+      s5_revision_triage: "revision",
+      s5_common_problem_cures: "revision",
+      s5_show_tell_and_precision_tools: "revision",
+    };
+
+
+    function applyDrillTextOverride(drill) {
+      const override = drillTextOverrides[drill.id];
+      if (!override) return;
+
+      if (override.goal) drill.goal = override.goal;
+      if (override.passRule) drill.passRule = override.passRule;
+      if (override.repetitionTip) drill.repetitionTip = override.repetitionTip;
+      if (override.conceptBrief) drill.conceptBrief = override.conceptBrief;
+      if (override.conceptWhy) drill.conceptWhy = override.conceptWhy;
+      if (override.writingOutcome) drill.writingOutcome = override.writingOutcome;
+      if (Array.isArray(override.passSignals) && override.passSignals.length > 0) {
+        drill.passSignals = override.passSignals.slice();
+      }
+      if (Array.isArray(override.failSignals) && override.failSignals.length > 0) {
+        drill.failSignals = override.failSignals.slice();
+      }
+      if (Array.isArray(override.submissionChecklist) && override.submissionChecklist.length > 0) {
+        drill.submissionChecklist = override.submissionChecklist.slice();
+      }
+
+      if (override.templateFieldLabels && Array.isArray(drill.templateFields)) {
+        drill.templateFields.forEach((field) => {
+          const fieldOverride = override.templateFieldLabels[field.key];
+          if (!fieldOverride) return;
+          if (fieldOverride.label) field.label = fieldOverride.label;
+          if (fieldOverride.placeholder) field.placeholder = fieldOverride.placeholder;
+        });
+      }
+    }
+
+    function buildDefaultConceptBrief(drill) {
+      const lane = drillLaneMap[drill.id] || "middle";
+      const laneHint = {
+        lock: "이 단계는 플롯의 중심 축을 흔들리지 않게 고정합니다.",
+        beginning: "이 단계는 독자 진입 장벽을 낮추고 초반 이탈을 막습니다.",
+        middle: "이 단계는 대립과 압박을 누적해 독서 추진력을 만듭니다.",
+        ending: "이 단계는 갈등 회수와 감정 여운을 동시에 완성합니다.",
+        revision: "이 단계는 수정 우선순위를 정해 완성도를 끌어올립니다.",
+      };
+      return laneHint[lane] || "이 단계는 핵심 장면을 실행 가능한 문장으로 만드는 데 집중합니다.";
+    }
+
+    function buildDefaultConceptWhy(drill) {
+      const lane = drillLaneMap[drill.id] || "middle";
+      const whyHint = {
+        lock: "핵심 4요소가 흐리면 이후 장면의 선택 기준이 계속 흔들립니다.",
+        beginning: "초반 이해가 막히면 독자는 갈등이 커지기 전에 이탈합니다.",
+        middle: "중반 리듬이 약하면 좋은 설정도 체감 긴장이 급격히 떨어집니다.",
+        ending: "엔딩 회수가 약하면 전체 이야기의 만족도가 크게 하락합니다.",
+        revision: "수정 기준이 없으면 반복 작업이 늘고 품질 향상이 멈춥니다.",
+      };
+      return whyHint[lane] || "이 단계를 고정해야 다음 반복에서 수정 방향이 선명해집니다.";
+    }
+
+    function buildDefaultWritingOutcome(drill) {
+      const fieldCount = Array.isArray(drill.templateFields) ? drill.templateFields.length : 0;
+      return `이 단계가 끝나면 핵심 입력 ${fieldCount}개가 채워진 실행 가능한 초안을 갖게 됩니다.`;
+    }
+
+    function buildDefaultSubmissionChecklist() {
+      return [
+        "모든 입력칸이 비어 있지 않은가?",
+        "각 문장에 행동 또는 사건이 들어가 있는가?",
+        "다음 리라이트 액션을 바로 실행할 수 있는가?",
+      ];
+    }
+
+    function buildDefaultFieldGuide(field) {
+      const label = field.label || field.key || "입력 항목";
+      const placeholder = field.placeholder || "구체 사건/행동을 포함해 작성";
+      return {
+        howTo: `${label}은(는) 2~4문장으로 쓰고, 사건·행동·대가·시간 중 최소 2개를 포함하세요.`,
+        goodExample: `예: ${placeholder}. 그리고 실패 시 바로 발생하는 손실 1개를 명시한다.`,
+        badExample: "예: 느낌과 의지만 적고 구체 사건이 없다. 이렇게 쓰면 수정 방향이 흐려진다.",
+        checkQuestion: "처음 읽는 사람도 바로 실행할 수 있을 만큼 구체적인가? (예/아니오)",
+      };
+    }
+
+    function applyObjectiveOverrides(drill) {
+      if (!drill.conceptBrief) {
+        drill.conceptBrief = "지배 목표(Objective)는 이야기 전체를 끌고 가는 단 하나의 중심 목표입니다. 목표는 ‘무언가를 얻기’ 또는 ‘무언가를 피하기’ 형태여야 하며, 실패하면 주인공의 삶이 실질적으로 무너질 만큼 중요해야 합니다.";
+      }
+      if (!drill.conceptWhy) {
+        drill.conceptWhy = "지배 목표가 선명해야 장면 선택, 갈등 설계, 결말 회수가 한 축으로 정렬됩니다.";
+      }
+      if (!drill.writingOutcome) {
+        drill.writingOutcome = "이 단계가 끝나면 주인공의 단일 지배 목표와 Story Question이 결말까지 유지되는 초안을 갖게 됩니다.";
+      }
+      if (!Array.isArray(drill.passSignals) || drill.passSignals.length === 0) {
+        drill.passSignals = [
+          "목표가 1문장으로 고정되고 장면마다 같은 축으로 수렴한다.",
+          "목표 실패 시 외적/내적 손실이 명확해 독자가 걱정한다.",
+          "스토리 질문(Will...?)이 결말까지 유지된다.",
+        ];
+      }
+      if (!Array.isArray(drill.failSignals) || drill.failSignals.length === 0) {
+        drill.failSignals = [
+          "목표가 여러 개라 장면마다 중심축이 바뀐다.",
+          "목표가 소망 수준(있으면 좋다)이라 실패 대가가 약하다.",
+          "스토리 질문이 모호해 독자가 무엇을 기다려야 하는지 불명확하다.",
+        ];
+      }
+      if (!Array.isArray(drill.submissionChecklist) || drill.submissionChecklist.length === 0) {
+        drill.submissionChecklist = [
+          "지배 목표가 1문장으로 고정됐는가?",
+          "실패 대가가 외적/내적으로 분리됐는가?",
+          "Will 질문이 결말에서 성공/실패로 회수 가능한가?",
+        ];
+      }
+
+      const byKey = Object.fromEntries((drill.templateFields || []).map((field) => [field.key, field]));
+      if (byKey.objective_one) {
+        byKey.objective_one.howTo = "주인공의 단일 지배 목표를 한 문장으로 씁니다. ‘얻는다/벗어난다’ 동사를 포함하세요.";
+        byKey.objective_one.goodExample = "예: 주인공은 72시간 안에 조작된 재판 기록 원본을 찾아 누명을 벗겨야 한다.";
+        byKey.objective_one.badExample = "예: 주인공은 행복해지고 싶다.";
+        byKey.objective_one.checkQuestion = "누가, 무엇을, 언제까지가 한 문장에 들어가 있는가? (예/아니오)";
+      }
+      if (byKey.objective_reason) {
+        byKey.objective_reason.howTo = "왜 ‘지금’ 이 목표여야 하는지 시간 압박·필연 조건 2개를 적습니다.";
+        byKey.objective_reason.goodExample = "예: 내일 오전 판결 선고 + 증거 폐기 시점이 오늘 밤 11시로 고정되어 있다.";
+        byKey.objective_reason.badExample = "예: 그냥 중요한 일이라서.";
+        byKey.objective_reason.checkQuestion = "독자가 읽고 ‘미룰 수 없네’라고 느낄 근거가 있는가? (예/아니오)";
+      }
+      if (byKey.objective_stakes) {
+        byKey.objective_stakes.howTo = "추상적 목표를 독자가 장면으로 떠올릴 수 있게, 구체 행동·사물·공간으로 번역해 작성합니다.";
+        byKey.objective_stakes.goodExample = "예: '진실을 밝힌다' 대신 '봉인된 서버룸에서 조작 로그 원본 파일을 빼낸다'로 적는다.";
+        byKey.objective_stakes.badExample = "예: 정의를 회복한다, 행복을 찾는다처럼 장면으로 보이지 않는 표현.";
+        byKey.objective_stakes.checkQuestion = "카메라로 찍을 수 있을 만큼 눈에 보이는 목표인가? (예/아니오)";
+      }
+      if (byKey.objective_story_question) {
+        byKey.objective_story_question.howTo = "'과연 ~할 것인가?' 형태로 결말에서 성공/실패가 확정되는 질문 1개를 적습니다.";
+        byKey.objective_story_question.goodExample = "예: 과연 주인공은 판결 전까지 원본 증거를 확보해 무죄를 증명할 것인가?";
+        byKey.objective_story_question.badExample = "예: 이야기는 어떻게 흘러갈까?";
+        byKey.objective_story_question.checkQuestion = "성공/실패로 결말에서 회수 가능한 질문인가? (예/아니오)";
+      }
+      if (byKey.objective_focus) {
+        byKey.objective_focus.howTo = "지배 목표를 흐리는 하위 목표 2개와 제거/통합 방안을 씁니다.";
+        byKey.objective_focus.goodExample = "예: 로맨스 서브플롯은 ‘증거 확보’에 기여하는 장면만 남기고 2장면 삭제.";
+        byKey.objective_focus.badExample = "예: 일단 다 넣고 나중에 보자.";
+        byKey.objective_focus.checkQuestion = "각 장면이 지배 목표를 전진시키는지 판단 가능한가? (예/아니오)";
+      }
+    }
+
+    function applyLeadOverrides(drill) {
+      if (!drill.conceptBrief) {
+        drill.conceptBrief = "이 단계는 플롯의 중심 축을 흔들리지 않게 고정합니다.";
+      }
+      if (!drill.conceptWhy) {
+        drill.conceptWhy = "독자는 기본적으로 주인공(Lead)을 통해 이야기 속으로 빨려 들어갑니다. 핵심 4요소 중 주인공이 흐리면 독자는 이야기의 목적(Objective)과 대결(Confrontation)에 몰입하지 못합니다.";
+      }
+      if (!drill.writingOutcome) {
+        drill.writingOutcome = "이 단계가 끝나면 핵심 입력 5개가 채워진 실행 가능한 초안을 갖게 됩니다.";
+      }
+      if (!drill.passRule) {
+        drill.passRule = "주인공(Lead)이 독자에게 연결되는 구체적 공감 포인트와, 문제 해결 실패 시 잃게 되는 치명적인 대가(Stakes)가 명확히 드러난다.";
+      }
+      if (!drill.repetitionTip) {
+        drill.repetitionTip = "주인공(Lead)을 독자에게 소개하는 장면을 4가지 공감 장치를 활용해 압축 리라이트한다.";
+      }
+      if (!Array.isArray(drill.passSignals) || drill.passSignals.length === 0) {
+        drill.passSignals = [
+          "주인공의 내면에서 두 가지 목소리(가치관/욕망)가 팽팽하게 대립하고 있다.",
+          "독자가 다음 장면에서 주인공이 어떻게 될지 걱정하고 기대하는 질문이 남는다.",
+        ];
+      }
+      if (!Array.isArray(drill.failSignals) || drill.failSignals.length === 0) {
+        drill.failSignals = [
+          "평면적인(골판지 같은) 캐릭터여서 설명은 많지만 독자가 그를 응원할 이유가 없다.",
+          "실패하더라도 주인공의 삶에 큰 타격이 없어 보인다.",
+        ];
+      }
+      if (!Array.isArray(drill.submissionChecklist) || drill.submissionChecklist.length === 0) {
+        drill.submissionChecklist = [
+          "모든 입력칸이 비어 있지 않은가?",
+          "각 문장에 행동 또는 사건이 들어가 있는가?",
+          "독자가 주인공에게 몰입하고 응원할 만한 강력한 이유가 제시되었는가?",
+        ];
+      }
+
+      const byKey = Object.fromEntries((drill.templateFields || []).map((field) => [field.key, field]));
+      if (byKey.lead_role) {
+        byKey.lead_role.howTo = "주인공(Lead)의 역할/정체성 한 줄은 2~4문장으로 쓰고, 사건·행동·대가·시간 중 최소 2개를 포함하세요.";
+        byKey.lead_role.goodExample = "예: 몰락 직전의 전직 경찰. (구체적인 직업과 현재의 위기 상황 명시)";
+        byKey.lead_role.badExample = "예: 느낌과 의지만 적고 구체 사건이 없다. 이렇게 쓰면 수정 방향이 흐려진다.";
+        byKey.lead_role.checkQuestion = "처음 읽는 사람도 바로 실행할 수 있을 만큼 구체적인가? (예/아니오)";
+      }
+      if (byKey.lead_wound) {
+        byKey.lead_wound.howTo = "주인공의 내면에서 맹렬히 싸우고 있는 두 가지 '목소리(가치관, 욕망, 두려움)'를 2~4문장으로 구체화하세요.";
+        byKey.lead_wound.goodExample = "예: 범인을 잡고 싶은 경찰로서의 정의감과, 다시는 가족을 위험에 빠뜨리고 싶지 않다는 공포가 매 순간 충돌한다.";
+        byKey.lead_wound.badExample = "예: '과거에 배신당한 상처가 있다'처럼 모호하고 행동으로 이어지지 않는 설정.";
+        byKey.lead_wound.checkQuestion = "주인공을 괴롭히고 행동을 망설이게 하는 두 가지 내적 갈등이 명확히 보이는가? (예/아니오)";
+      }
+      if (byKey.lead_empathy) {
+        byKey.lead_empathy.howTo = "다음 4가지 요소 중 주인공에게 부여할 2가지를 선택해 구체적인 행동/사건으로 작성하세요. 동질감(Identification): 독자와 닮은 평범한 모습이나 고민. 연민(Sympathy): 육체적/감정적 위협, 고난, 약자(언더독)의 위치, 취약성. 호감도(Likability): 재치 있는 입담, 또는 타인을 배려하고 돕는 모습. 내적 갈등(Inner conflict): 극심한 심리적 딜레마.";
+        byKey.lead_empathy.goodExample = "예: (연민) 불치병에 걸린 동생의 병원비를 벌기 위해 위험한 일에 뛰어든다. (호감도) 험악한 인상이지만 길고양이에게 매일 밥을 챙겨준다.";
+        byKey.lead_empathy.badExample = "예: 독자가 감정적으로 이입할 수 없는 단순한 이력서식 사실의 나열.";
+        byKey.lead_empathy.checkQuestion = "독자가 이 장치를 통해 주인공을 사랑하거나 응원하게 될 것인가? (예/아니오)";
+      }
+      if (byKey.lead_voice) {
+        byKey.lead_voice.howTo = "주인공(Lead) 시점/목소리 샘플 3문장은 2~4문장으로 쓰고, 주인공만의 고유한 리듬과 태도가 묻어나게 작성하세요.";
+        byKey.lead_voice.goodExample = "예: 짧고 퉁명스러운 어조로 세상에 대한 냉소를 표현하되, 끝에는 일말의 미련을 남긴다.";
+        byKey.lead_voice.badExample = "예: 작가의 설명적인 말투나 정보 전달(설명충) 위주의 대사가 그대로 드러나는 것.";
+        byKey.lead_voice.checkQuestion = "이 목소리만 듣고도 주인공의 성격과 기질을 파악할 수 있는가? (예/아니오)";
+      }
+      if (byKey.lead_risk) {
+        byKey.lead_risk.howTo = "주인공이 이야기의 핵심 문제를 해결하지 못할 경우 치르게 될 막대한 대가를 플롯(외부적 위협), 캐릭터(내면적 손실), 사회(거시적 영향) 중 하나 이상을 포함해 2~4문장으로 작성하세요. 이 대가는 주인공의 안위와 직결될 만큼 필수적이어야 합니다.";
+        byKey.lead_risk.goodExample = "예: (플롯) 기한 내에 빚을 갚지 못하면 마피아에게 목숨을 잃는다. (캐릭터) 하나뿐인 딸의 양육권을 영원히 빼앗겨 삶의 의미를 잃는다.";
+        byKey.lead_risk.badExample = "예: 실패해도 주인공의 일상에 큰 타격이 없이 제자리로 돌아올 수 있는 사소한 손실.";
+        byKey.lead_risk.checkQuestion = "실패 시 주인공의 삶이 끔찍하게 무너질 만큼 대가가 강력한가? (예/아니오)";
+      }
+    }
+
+    function enrichDrillGuides() {
+      drills.forEach((drill) => {
+        applyDrillTextOverride(drill);
+        if (!drill.conceptBrief) drill.conceptBrief = buildDefaultConceptBrief(drill);
+        if (!drill.conceptWhy) drill.conceptWhy = buildDefaultConceptWhy(drill);
+        if (!drill.writingOutcome) drill.writingOutcome = buildDefaultWritingOutcome(drill);
+        if (!Array.isArray(drill.passSignals) || drill.passSignals.length === 0) {
+          drill.passSignals = ["목표/행동/결과가 장면 단위로 연결된다.", "독자가 다음 장면을 기대할 질문이 남는다."];
+        }
+        if (!Array.isArray(drill.failSignals) || drill.failSignals.length === 0) {
+          drill.failSignals = ["설명은 많지만 사건 변화가 없다.", "무엇을 고쳐야 할지 행동 단위로 보이지 않는다."];
+        }
+        if (!Array.isArray(drill.submissionChecklist) || drill.submissionChecklist.length === 0) {
+          drill.submissionChecklist = buildDefaultSubmissionChecklist();
+        }
+
+        (drill.templateFields || []).forEach((field) => {
+          const guide = buildDefaultFieldGuide(field);
+          field.howTo = field.howTo || guide.howTo;
+          field.goodExample = field.goodExample || guide.goodExample;
+          field.badExample = field.badExample || guide.badExample;
+          field.checkQuestion = field.checkQuestion || guide.checkQuestion;
+        });
+      });
+
+      const leadDrill = drills.find((drill) => drill.id === "s1_lock_lead");
+      if (leadDrill) applyLeadOverrides(leadDrill);
+
+      const objectiveDrill = drills.find((drill) => drill.id === "s1_lock_objective");
+      if (objectiveDrill) applyObjectiveOverrides(objectiveDrill);
+    }
+
+    function replaceUiTerms(value) {
+      if (typeof value !== "string" || !value) return value;
+      const replaceIfNotParenthesized = (text, token, replacement) => text.replace(new RegExp(`\\b${token}\\b`, "g"), (match, offset, full) => {
+        const prev = full[offset - 1];
+        return prev === "(" ? match : replacement;
+      });
+
+      const replacements = [
+        [/LOCK Foundations/g, "핵심 4요소(LOCK) 기초"],
+        [/Character\/Scene\/Dialogue/g, "인물/장면/대사"],
+        [/Macro Structure Models/g, "거시 구조 모델"],
+        [/Act Execution/g, "막별 실행"],
+        [/Revision & Toolbox/g, "수정(Revision) & 도구 상자"],
+        [/LOCK: Lead/g, "핵심 4요소(LOCK): 주인공(Lead)"],
+        [/LOCK: Objective/g, "핵심 4요소(LOCK): 지배 목표(Objective)"],
+        [/LOCK: Confrontation/g, "핵심 4요소(LOCK): 대립(Confrontation)"],
+        [/LOCK: Knockout/g, "핵심 4요소(LOCK): 결정타 결말(Knockout)"],
+        [/Disturbance & Two Doorways/g, "교란 사건(Disturbance) & 문턱 사건 1/2 (Doorway 1/2)"],
+        [/Midpoint Shift/g, "중간 전환점(Midpoint) 변화"],
+        [/ARM Rhythm/g, "장면 리듬 ARM (Action-Reaction-More Action)"],
+        [/Revision Triage/g, "수정 우선순위 분류(Triage)"],
+        [/Show\/Tell/g, "보여주기/말하기(Show/Tell)"],
+        [/Plot Point/g, "전환 사건(Plot Point)"],
+        [/Midpoint/g, "중간 전환점(Midpoint)"],
+        [/Inciting Incident/g, "촉발 사건(Inciting Incident)"],
+        [/Disturbance/g, "교란 사건(Disturbance)"],
+        [/Doorway 1/g, "문턱 사건 1 (Doorway 1)"],
+        [/Doorway 2/g, "문턱 사건 2 (Doorway 2)"],
+      ];
+
+      let localized = value;
+      replacements.forEach(([pattern, to]) => {
+        localized = localized.replace(pattern, to);
+      });
+      localized = replaceIfNotParenthesized(localized, "Objective", "지배 목표(Objective)");
+      localized = replaceIfNotParenthesized(localized, "Confrontation", "대립(Confrontation)");
+      localized = replaceIfNotParenthesized(localized, "Knockout", "결정타 결말(Knockout)");
+      localized = replaceIfNotParenthesized(localized, "Lead", "주인공(Lead)");
+      return localized;
+    }
+
+    function normalizeSentence(value) {
+      return String(value || "")
+        .replaceAll("입니다.입니다.", "입니다.")
+        .replaceAll("..", ".")
+        .trim();
+    }
+
+    function localizeDrill(drill) {
+      drill.title = replaceUiTerms(drill.title);
+      drill.shortLabel = replaceUiTerms(drill.shortLabel);
+      drill.goal = replaceUiTerms(drill.goal);
+      drill.passRule = replaceUiTerms(drill.passRule);
+      drill.repetitionTip = replaceUiTerms(drill.repetitionTip);
+      drill.conceptBrief = normalizeSentence(replaceUiTerms(drill.conceptBrief || ""));
+      drill.conceptWhy = normalizeSentence(replaceUiTerms(drill.conceptWhy || ""));
+      drill.writingOutcome = normalizeSentence(replaceUiTerms(drill.writingOutcome || ""));
+      drill.passSignals = (drill.passSignals || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      drill.failSignals = (drill.failSignals || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      drill.submissionChecklist = (drill.submissionChecklist || []).map((item) => normalizeSentence(replaceUiTerms(item)));
+      (drill.templateFields || []).forEach((field) => {
+        field.label = replaceUiTerms(field.label);
+        field.placeholder = replaceUiTerms(field.placeholder);
+        field.howTo = normalizeSentence(replaceUiTerms(field.howTo || ""));
+        field.goodExample = normalizeSentence(replaceUiTerms(field.goodExample || ""));
+        field.badExample = normalizeSentence(replaceUiTerms(field.badExample || ""));
+        field.checkQuestion = normalizeSentence(replaceUiTerms(field.checkQuestion || ""));
+      });
+    }
+
+    function buildEnglishStageLabel(stageId) {
+      const map = {
+        s1: "Stage 1 · LOCK Foundations",
+        s2: "Stage 2 · Character / Scene / Dialogue",
+        s3: "Stage 3 · Macro Structure Models",
+        s4: "Stage 4 · Act Execution",
+        s5: "Stage 5 · Revision & Toolbox",
+      };
+      return map[stageId] || "Stage";
+    }
+
+    function buildEnglishStageDescription(stageId) {
+      const map = {
+        s1: "Build the foundation for Lead, Objective, Confrontation, and Knockout.",
+        s2: "Strengthen reader empathy, scene execution, and dialogue as conflict.",
+        s3: "Design macro structure by layering 3-act flow and hero-journey beats.",
+        s4: "Execute beginning, middle, and ending at scene-level granularity.",
+        s5: "Raise completion quality with revision triage and reusable tools.",
+      };
+      return map[stageId] || "Strengthen story craft with structured practice.";
+    }
+
+    function buildEnglishNodeTitle(nodeId, fallback) {
+      const map = {
+        s1_lock_lead: "LOCK: Lead",
+        s1_lock_objective: "LOCK: Objective",
+        s1_lock_confrontation: "LOCK: Confrontation",
+        s1_lock_knockout: "LOCK: Knockout",
+        s2_reader_empathy_and_likability: "Reader Empathy & Likability Design",
+        s2_character_arc_linkage: "Character Arc Linkage",
+        s2_scene_goal_conflict_change: "Scene Goal-Conflict-Change",
+        s2_scene_four_chords: "Scene Four Chords (A/R/S/D)",
+        s2_dialogue_voice_distinction: "Dialogue Voice Distinction",
+        s2_dialogue_as_confrontation: "Dialogue as Confrontation Weapon",
+        s3_three_act_spine: "Three-Act Spine",
+        s3_disturbance_two_doorways: "Disturbance & Two Doorways",
+        s3_hero_journey_overlay: "Hero's Journey Overlay",
+        s3_plot_points_midpoint: "Plot Points & Midpoint",
+        s3_subplot_thematic_integration: "Subplot and Theme Integration",
+        s4_beginning_hook_entry: "Beginning Hook & Entry",
+        s4_beginning_world_opposition: "Beginning World & Opposition",
+        s4_middle_escalation_pressure: "Middle Escalation Pressure",
+        s4_middle_complications_reversals: "Middle Complications & Reversals",
+        s4_ending_knockout_resolution: "Ending Knockout Resolution",
+        s4_last_page_resonance: "Last-Page Resonance",
+        s5_revision_triage: "Revision Triage",
+        s5_common_problem_cures: "Common Plot Problem Cures",
+        s5_show_tell_and_precision_tools: "Show/Tell & Precision Toolkit",
+      };
+      return map[nodeId] || fallback || "Practice Node";
+    }
+
+    function humanizeFieldKey(key) {
+      const normalized = String(key || "")
+        .replaceAll("_", " ")
+        .trim();
+      return normalized
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+    }
+
+    function buildEnglishDataset(koData) {
+      const enData = deepCopy(koData);
+
+      enData.laneDefs.forEach((lane) => {
+        const laneMap = {
+          lock: "LOCK",
+          beginning: "Beginning (Act I)",
+          middle: "Middle (Act II)",
+          ending: "Ending (Act III)",
+          revision: "Revision",
+        };
+        lane.label = laneMap[lane.id] || lane.label;
+      });
+
+      enData.viewTabs.forEach((tab) => {
+        const tabMap = {
+          all: "All",
+          lock: "LOCK",
+          beginning: "Beginning",
+          middle: "Middle",
+          ending: "Ending",
+          revision: "Revision",
+        };
+        tab.label = tabMap[tab.id] || tab.label;
+      });
+
+      enData.stages.forEach((stage) => {
+        stage.label = buildEnglishStageLabel(stage.id);
+        stage.description = buildEnglishStageDescription(stage.id);
+      });
+
+      enData.drills.forEach((drill) => {
+        const laneId = drillLaneMap[drill.id] || "middle";
+        const laneName = {
+          lock: "LOCK",
+          beginning: "Beginning",
+          middle: "Middle",
+          ending: "Ending",
+          revision: "Revision",
+        }[laneId] || "Middle";
+        const englishTitle = buildEnglishNodeTitle(drill.id, drill.title);
+        drill.title = englishTitle;
+        drill.shortLabel = englishTitle.replace(/^LOCK:\s*/i, "").slice(0, 30);
+        drill.goal = `Define a concrete ${laneName.toLowerCase()} output for this node in executable story terms.`;
+        drill.passRule = "The output is specific, causal, and immediately reusable in revision.";
+        drill.repetitionTip = "Rewrite this node once with a tighter action and clearer stakes.";
+        drill.conceptBrief = `This ${laneName.toLowerCase()} node stabilizes story momentum with actionable craft decisions.`;
+        drill.conceptWhy = "When this decision is vague, later scenes lose direction and tension.";
+        drill.writingOutcome = `You will leave this step with ${Array.isArray(drill.templateFields) ? drill.templateFields.length : 0} concrete inputs ready for drafting.`;
+        drill.passSignals = [
+          "Goal, action, and consequence connect in a single causal chain.",
+          "The next revision step is clear without additional interpretation.",
+        ];
+        drill.failSignals = [
+          "Statements stay abstract and do not imply a scene-level action.",
+          "The result does not increase conflict, clarity, or narrative pressure.",
+        ];
+        drill.submissionChecklist = [
+          "Are all fields filled with concrete language?",
+          "Does each field include action, conflict, or consequence?",
+          "Can you execute one immediate rewrite from this output?",
+        ];
+        (drill.templateFields || []).forEach((field) => {
+          field.label = humanizeFieldKey(field.key);
+          field.placeholder = "Write 2-4 specific sentences with action, stakes, and time pressure.";
+          field.howTo = `Write ${field.label} in concrete terms and include at least two of these: action, consequence, cost, and timing.`;
+          field.goodExample = `Example: ${field.label} is explicit, measurable, and linked to a clear scene outcome.`;
+          field.badExample = "Example: only mood or intention is stated, with no concrete event or consequence.";
+          field.checkQuestion = "Can a first-time reader execute this immediately without guessing? (yes/no)";
+        });
+      });
+
+      return enData;
+    }
+
+    function replaceArrayInPlace(target, source) {
+      target.splice(0, target.length, ...source);
+    }
+
+    enrichDrillGuides();
+    stages.forEach((stage) => {
+      stage.label = replaceUiTerms(stage.label);
+      stage.description = replaceUiTerms(stage.description);
+    });
+    drills.forEach(localizeDrill);
+
+    const koDataset = {
+      stages: deepCopy(stages),
+      drills: deepCopy(drills),
+      laneDefs: deepCopy(laneDefs),
+      viewTabs: deepCopy(viewTabs),
+    };
+    const enDataset = buildEnglishDataset(koDataset);
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const pageSubtitleEl = document.getElementById("pageSubtitle");
+    const langLabelEl = document.getElementById("langLabel");
+    const langSelectEl = document.getElementById("langSelect");
+    const roadmapTitleEl = document.getElementById("roadmapTitle");
+    const roadmapHintEl = document.getElementById("roadmapHint");
+    const exerciseTitleEl = document.getElementById("exerciseTitle");
+    const exerciseInputLabelEl = document.getElementById("exerciseInputLabel");
+    const manuscriptLabelEl = document.getElementById("manuscriptLabel");
+    const usageLabelEl = document.getElementById("usageLabel");
+    const resultLabelEl = document.getElementById("resultLabel");
+    const selectedDrillMetaEl = document.getElementById("selectedDrillMeta");
+    const exerciseFieldsEl = document.getElementById("exerciseFields");
+    const manuscriptBodyEl = document.getElementById("manuscriptBody");
+    const stageLegendEl = document.getElementById("stageLegend");
+    const viewTabsEl = document.getElementById("viewTabs");
+    const roadmapSvgEl = document.getElementById("roadmapSvg");
+    const roadmapScrollEl = document.querySelector(".roadmap-scroll");
+    const completionControlEl = document.getElementById("completionControl");
+    const resetExerciseBtnEl = document.getElementById("resetExerciseBtn");
+    const runBtnEl = document.getElementById("runBtn");
+    const resultEl = document.getElementById("result");
+    const statusEl = document.getElementById("status");
+    const turnstileBoxEl = document.getElementById("turnstileBox");
+    const ownerKeyBoxEl = document.querySelector(".owner-key-box");
+    let runButtonDefaultLabel = runBtnEl ? runBtnEl.textContent.trim() || t("run") : t("run");
+    // TEST_ONLY_OWNER_BYPASS_START
+    const ownerKeyInputEl = document.getElementById("ownerKeyInput");
+    const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
+    const DAILY_LIMIT_PER_DAY = 3;
+    const OWNER_BYPASS_HEADER = "X-Owner-Key";
+    // TEST_ONLY_OWNER_BYPASS_END
+
+    let drillNodes = [];
+    let roadmapNodes = [];
+
+    function rebuildRoadmapNodes() {
+      drillNodes = drills.map((drill) => ({
+        ...drill,
+        laneId: drillLaneMap[drill.id] || "middle",
+        linkedNodeIds: [],
+        checklist: Array.isArray(drill.submissionChecklist) ? drill.submissionChecklist : [],
+        order: 500 + (Number(drill.roadmapOrder) || 0),
+      }));
+      roadmapNodes = [...drillNodes];
+    }
+
+    rebuildRoadmapNodes();
+
+    let turnstileToken = "";
+    let turnstileWidgetId = null;
+    let bodySaveTimer = null;
+    let draftSaveTimer = null;
+    let isRunLoading = false;
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+    let originScrollLeft = 0;
+    let originScrollTop = 0;
+    let didDrag = false;
+    let suppressNextNodeClick = false;
+
+    const curriculumState = {
+      selectedNodeId: drills[0] ? drills[0].id : (roadmapNodes[0] ? roadmapNodes[0].id : ""),
+      lastSelectedDrillId: drills[0] ? drills[0].id : "",
+      activeTab: "lock",
+      perNode: {},
+    };
+
+    function loadStoredUiLang() {
+      const raw = localStorage.getItem(LANG_STORAGE_KEY) || "";
+      if (raw === "ko" || raw === "en") {
+        uiLang = raw;
+        return true;
+      }
+      return false;
+    }
+
+    async function detectCountryCode() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      try {
+        const response = await fetch("https://www.cloudflare.com/cdn-cgi/trace", {
+          method: "GET",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) return "";
+        const text = await response.text();
+        const match = text.match(/^loc=([A-Z]{2})$/m);
+        return match ? match[1] : "";
+      } catch {
+        return "";
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    function inferDefaultLangByCountry(countryCode) {
+      if (countryCode === "KR") return "ko";
+      if (countryCode) return "en";
+
+      const browserLang = String(navigator.language || "").toLowerCase();
+      if (browserLang.startsWith("ko")) return "ko";
+
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      if (tz === "Asia/Seoul") return "ko";
+      return "en";
+    }
+
+    async function ensureInitialUiLang() {
+      if (loadStoredUiLang()) return;
+      const countryCode = await detectCountryCode();
+      uiLang = inferDefaultLangByCountry(countryCode);
+      saveUiLang();
+    }
+
+    function saveUiLang() {
+      localStorage.setItem(LANG_STORAGE_KEY, uiLang);
+    }
+
+    function applyStaticUiText() {
+      document.documentElement.lang = messages[uiLang].htmlLang;
+      document.title = t("docTitle");
+      if (pageTitleEl) pageTitleEl.textContent = t("pageTitle");
+      if (pageSubtitleEl) pageSubtitleEl.textContent = t("pageSubtitle");
+      if (langLabelEl) langLabelEl.textContent = t("languageLabel");
+      if (roadmapTitleEl) roadmapTitleEl.textContent = t("roadmapTitle");
+      if (roadmapHintEl) roadmapHintEl.textContent = t("roadmapHint");
+      if (exerciseTitleEl) exerciseTitleEl.textContent = t("exerciseTitle");
+      if (exerciseInputLabelEl) exerciseInputLabelEl.textContent = t("exerciseInputLabel");
+      if (manuscriptLabelEl) manuscriptLabelEl.textContent = t("manuscriptLabel");
+      if (manuscriptBodyEl) manuscriptBodyEl.placeholder = t("manuscriptPlaceholder");
+      if (usageLabelEl) usageLabelEl.textContent = t("usage");
+      if (resultLabelEl) resultLabelEl.textContent = t("resultLabel");
+      if (resetExerciseBtnEl) resetExerciseBtnEl.textContent = t("resetExercise");
+      runButtonDefaultLabel = t("run");
+      if (runBtnEl && !isRunLoading) runBtnEl.textContent = runButtonDefaultLabel;
+      if (!resultEl.querySelector(".card") && !resultEl.querySelector(".score") && !resultEl.classList.contains("is-loading")) {
+        resultEl.innerHTML = `<p class="placeholder">${escapeHtml(t("resultPlaceholder"))}</p>`;
+      }
+    }
+
+    function applyDataLanguage() {
+      const source = uiLang === "en" ? enDataset : koDataset;
+      replaceArrayInPlace(stages, deepCopy(source.stages));
+      replaceArrayInPlace(drills, deepCopy(source.drills));
+      replaceArrayInPlace(laneDefs, deepCopy(source.laneDefs));
+      replaceArrayInPlace(viewTabs, deepCopy(source.viewTabs));
+      rebuildRoadmapNodes();
+
+      if (!getNodeById(curriculumState.selectedNodeId)) {
+        curriculumState.selectedNodeId = roadmapNodes[0] ? roadmapNodes[0].id : "";
+      }
+      if (!getNodeById(curriculumState.lastSelectedDrillId)) {
+        curriculumState.lastSelectedDrillId = roadmapNodes[0] ? roadmapNodes[0].id : "";
+      }
+    }
+
+    function setUiLanguage(lang, options = {}) {
+      const { persist = true, rerender = true } = options;
+      if (lang !== "ko" && lang !== "en") return;
+      uiLang = lang;
+      applyDataLanguage();
+      applyStaticUiText();
+      if (langSelectEl) {
+        langSelectEl.value = uiLang;
+        langSelectEl.setAttribute("aria-label", t("languageLabel"));
+      }
+      if (persist) saveUiLang();
+      if (rerender) {
+        renderAll();
+        refreshRunButtonState();
+      }
+    }
+
+    function setRunButtonEnabled(enabled) {
+      runBtnEl.disabled = !enabled;
+    }
+
+    // TEST_ONLY_OWNER_BYPASS_START
+    function getOwnerKey() {
+      if (!ENABLE_OWNER_BYPASS_UI || !ownerKeyInputEl) return "";
+      return ownerKeyInputEl.value.trim();
+    }
+
+    function hasOwnerKey() {
+      return Boolean(getOwnerKey());
+    }
+
+    function refreshRunButtonState() {
+      const selected = getSelectedNode();
+      const canRunForNode = Boolean(selected);
+      const hasVerification = Boolean(turnstileToken || hasOwnerKey());
+      const canRun = !isRunLoading && canRunForNode && hasVerification;
+      setRunButtonEnabled(canRun);
+      if (runBtnEl && !isRunLoading) {
+        runBtnEl.textContent = (canRunForNode && !hasVerification) ? t("runNeedCaptcha") : runButtonDefaultLabel;
+      }
+    }
+    // TEST_ONLY_OWNER_BYPASS_END
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function setStatus(message, type) {
+      statusEl.textContent = message || "";
+      statusEl.className = "status";
+      if (type) statusEl.classList.add(type);
+    }
+
+    function autoResizeTextarea(element) {
+      if (!element) return;
+      element.style.height = "auto";
+      element.style.height = `${element.scrollHeight}px`;
+    }
+
+    function setRunLoading(isLoading) {
+      isRunLoading = Boolean(isLoading);
+      runBtnEl.classList.toggle("is-loading", isRunLoading);
+      runBtnEl.textContent = isRunLoading ? t("running") : runButtonDefaultLabel;
+      refreshRunButtonState();
+    }
+
+    function setResultLoading(isLoading) {
+      if (isLoading) {
+        resultEl.classList.add("is-loading");
+        resultEl.innerHTML = `
+          <div class="result-skeleton" aria-hidden="true">
+            <div class="bar wide"></div>
+            <div class="bar mid"></div>
+            <div class="bar wide"></div>
+            <div class="bar narrow"></div>
+          </div>
+        `;
+        return;
+      }
+      resultEl.classList.remove("is-loading");
+    }
+
+    function triggerMetaFadeIn() {
+      selectedDrillMetaEl.classList.remove("meta-fade-in");
+      void selectedDrillMetaEl.offsetWidth;
+      selectedDrillMetaEl.classList.add("meta-fade-in");
+    }
+
+    function getStageById(id) {
+      return stages.find((stage) => stage.id === id) || null;
+    }
+
+    function getLaneById(id) {
+      return laneDefs.find((lane) => lane.id === id) || null;
+    }
+
+    function getNodeById(id) {
+      return roadmapNodes.find((node) => node.id === id) || null;
+    }
+
+    function createEmptyProgress() {
+      return {
+        autoDone: false,
+        lastScore: null,
+        manualOverride: null,
+        lastUpdatedAt: "",
+      };
+    }
+
+    function ensureProgress(nodeId) {
+      if (!curriculumState.perNode[nodeId] || typeof curriculumState.perNode[nodeId] !== "object") {
+        curriculumState.perNode[nodeId] = createEmptyProgress();
+      }
+      return curriculumState.perNode[nodeId];
+    }
+
+    function getCompletionState(progress) {
+      if (progress.manualOverride === true) return "manual_done";
+      if (progress.manualOverride === false) return "manual_block";
+      if (progress.autoDone) return "auto_done";
+      return "pending";
+    }
+
+    function saveCurriculumState() {
+      const perDrillCompat = {};
+      drillNodes.forEach((node) => {
+        if (curriculumState.perNode[node.id]) {
+          perDrillCompat[node.id] = curriculumState.perNode[node.id];
+        }
+      });
+
+      localStorage.setItem(
+        CURRICULUM_STORAGE_KEY,
+        JSON.stringify({
+          selectedNodeId: curriculumState.selectedNodeId,
+          lastSelectedDrillId: curriculumState.lastSelectedDrillId,
+          activeTab: curriculumState.activeTab,
+          perNode: curriculumState.perNode,
+          perDrill: perDrillCompat,
+        })
+      );
+    }
+
+    function loadCurriculumState() {
+      try {
+        const raw = localStorage.getItem(CURRICULUM_STORAGE_KEY) || "";
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return;
+
+        if (typeof parsed.lastSelectedDrillId === "string" && getNodeById(parsed.lastSelectedDrillId)) {
+          curriculumState.lastSelectedDrillId = parsed.lastSelectedDrillId;
+        }
+
+        if (typeof parsed.selectedNodeId === "string" && getNodeById(parsed.selectedNodeId)) {
+          curriculumState.selectedNodeId = parsed.selectedNodeId;
+        } else if (typeof parsed.lastSelectedDrillId === "string" && getNodeById(parsed.lastSelectedDrillId)) {
+          curriculumState.selectedNodeId = parsed.lastSelectedDrillId;
+        }
+
+        if (typeof parsed.activeTab === "string" && viewTabs.some((tab) => tab.id === parsed.activeTab)) {
+          curriculumState.activeTab = parsed.activeTab;
+        }
+
+        const migrated = {};
+        if (parsed.perNode && typeof parsed.perNode === "object") {
+          Object.entries(parsed.perNode).forEach(([id, progress]) => {
+            if (getNodeById(id) && progress && typeof progress === "object") migrated[id] = progress;
+          });
+        } else if (parsed.perDrill && typeof parsed.perDrill === "object") {
+          Object.entries(parsed.perDrill).forEach(([id, progress]) => {
+            if (getNodeById(id) && progress && typeof progress === "object") migrated[id] = progress;
+          });
+        }
+        curriculumState.perNode = migrated;
+      } catch {
+        // ignore corrupted local storage
+      }
+    }
+
+    function draftStorageKey(nodeId) {
+      return `${DRAFT_STORAGE_KEY_PREFIX}${nodeId}:v2`;
+    }
+
+    function readDraft(nodeId) {
+      if (!nodeId) return {};
+      try {
+        const raw = localStorage.getItem(draftStorageKey(nodeId)) || "";
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === "object" ? parsed : {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writeDraft(nodeId, values) {
+      if (!nodeId) return;
+      localStorage.setItem(draftStorageKey(nodeId), JSON.stringify(values || {}));
+    }
+
+    function getSelectedNode() {
+      return getNodeById(curriculumState.selectedNodeId) || getNodeById(curriculumState.lastSelectedDrillId) || roadmapNodes[0] || null;
+    }
+
+    function isNodeVisibleInTab(node, tabId) {
+      if (tabId === "all") return true;
+      return node.laneId === tabId;
+    }
+
+    function collectExerciseValues() {
+      const values = {};
+      exerciseFieldsEl.querySelectorAll("textarea[data-field-key]").forEach((el) => {
+        values[el.dataset.fieldKey] = el.value || "";
+      });
+      return values;
+    }
+
+    function persistCurrentDraft() {
+      const selected = getSelectedNode();
+      if (!selected) return;
+      writeDraft(selected.id, collectExerciseValues());
+    }
+
+    function resetExerciseInputs() {
+      const selected = getSelectedNode();
+      if (!selected) return;
+
+      if (draftSaveTimer) {
+        clearTimeout(draftSaveTimer);
+        draftSaveTimer = null;
+      }
+
+      const emptyValues = {};
+      const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
+      fields.forEach((field) => {
+        emptyValues[field.key] = "";
+      });
+
+      exerciseFieldsEl.querySelectorAll("textarea[data-field-key]").forEach((el) => {
+        el.value = "";
+        autoResizeTextarea(el);
+      });
+      writeDraft(selected.id, emptyValues);
+      setStatus(t("statusReset"), "ok");
+    }
+
+    function selectNode(nodeId, options = {}) {
+      const node = getNodeById(nodeId);
+      if (!node) return;
+      const {
+        syncTabOnCrossLaneClick = true,
+      } = options;
+
+      persistCurrentDraft();
+      curriculumState.selectedNodeId = node.id;
+      curriculumState.lastSelectedDrillId = node.id;
+
+      if (syncTabOnCrossLaneClick && curriculumState.activeTab !== "all") {
+        const isValidLane = laneDefs.some((lane) => lane.id === node.laneId);
+        if (isValidLane && curriculumState.activeTab !== node.laneId) {
+          curriculumState.activeTab = node.laneId;
+        }
+      }
+
+      saveCurriculumState();
+      renderAll();
+      refreshRunButtonState();
+    }
+
+    function setActiveTab(tabId) {
+      if (!viewTabs.some((tab) => tab.id === tabId)) return;
+      curriculumState.activeTab = tabId;
+      saveCurriculumState();
+      renderStageLegend();
+      renderTabs();
+      renderRoadmap();
+    }
+
+    function setManualOverride(mode) {
+      const selected = getSelectedNode();
+      if (!selected) return;
+      const progress = ensureProgress(selected.id);
+      if (mode === "manual_done") {
+        progress.manualOverride = true;
+      } else if (mode === "manual_block") {
+        progress.manualOverride = false;
+      } else {
+        progress.manualOverride = null;
+      }
+      progress.lastUpdatedAt = new Date().toISOString();
+      saveCurriculumState();
+      renderRoadmap();
+      renderCompletionControl();
+      renderSelectedMeta();
+    }
+
+    function renderStageLegend() {
+      stageLegendEl.innerHTML = "";
+      laneDefs.forEach((lane) => {
+        const chip = document.createElement("span");
+        chip.className = `stage-chip${curriculumState.activeTab === lane.id ? " active" : ""}`;
+        chip.innerHTML = `<span class="stage-dot" style="background:${lane.color}"></span>${escapeHtml(lane.label)}`;
+        chip.addEventListener("click", () => setActiveTab(lane.id));
+        stageLegendEl.appendChild(chip);
+      });
+    }
+
+    function renderTabs() {
+      viewTabsEl.innerHTML = "";
+      viewTabs.forEach((tab) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `tab${curriculumState.activeTab === tab.id ? " active" : ""}`;
+        button.textContent = tab.label;
+        button.addEventListener("click", () => {
+          setActiveTab(tab.id);
+        });
+        viewTabsEl.appendChild(button);
+      });
+    }
+
+    function renderRoadmap() {
+      const NS = "http://www.w3.org/2000/svg";
+      roadmapSvgEl.innerHTML = "";
+      const rootStyle = getComputedStyle(document.documentElement);
+      const stepX = Number.parseFloat(rootStyle.getPropertyValue("--roadmap-step-x")) || 192;
+      const drillRadius = Number.parseFloat(rootStyle.getPropertyValue("--node-drill-r")) || 18;
+      const drillSelectedRadius = Number.parseFloat(rootStyle.getPropertyValue("--node-drill-r-selected")) || 21;
+
+      const laneNodes = {};
+      laneDefs.forEach((lane) => {
+        laneNodes[lane.id] = roadmapNodes
+          .filter((node) => node.laneId === lane.id)
+          .sort((a, b) => (a.order || 9999) - (b.order || 9999));
+      });
+
+      const maxCount = Math.max(...laneDefs.map((lane) => laneNodes[lane.id].length), 1);
+      const startX = 260;
+      const width = Math.max(3400, startX + (maxCount - 1) * stepX + 300);
+      const height = Math.max(620, laneDefs[laneDefs.length - 1].y + 120);
+      roadmapSvgEl.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+      const defs = document.createElementNS(NS, "defs");
+      const marker = document.createElementNS(NS, "marker");
+      marker.setAttribute("id", "arrowHead");
+      marker.setAttribute("markerWidth", "12");
+      marker.setAttribute("markerHeight", "10");
+      marker.setAttribute("refX", "10");
+      marker.setAttribute("refY", "5");
+      marker.setAttribute("orient", "auto");
+      const arrowPath = document.createElementNS(NS, "path");
+      arrowPath.setAttribute("d", "M0,1 L10,5 L0,9 L2.2,5 Z");
+      arrowPath.setAttribute("fill", "#8e8477");
+      marker.appendChild(arrowPath);
+      defs.appendChild(marker);
+
+      const baseShadowFilter = document.createElementNS(NS, "filter");
+      baseShadowFilter.setAttribute("id", "nodeBaseShadow");
+      baseShadowFilter.setAttribute("x", "-100%");
+      baseShadowFilter.setAttribute("y", "-100%");
+      baseShadowFilter.setAttribute("width", "300%");
+      baseShadowFilter.setAttribute("height", "300%");
+      const baseShadow = document.createElementNS(NS, "feDropShadow");
+      baseShadow.setAttribute("dx", "0");
+      baseShadow.setAttribute("dy", "2");
+      baseShadow.setAttribute("stdDeviation", "1.8");
+      baseShadow.setAttribute("flood-color", "#7d6751");
+      baseShadow.setAttribute("flood-opacity", "0.16");
+      baseShadowFilter.appendChild(baseShadow);
+      defs.appendChild(baseShadowFilter);
+
+      const selectedFilter = document.createElementNS(NS, "filter");
+      selectedFilter.setAttribute("id", "nodeSelectedFx");
+      selectedFilter.setAttribute("x", "-120%");
+      selectedFilter.setAttribute("y", "-120%");
+      selectedFilter.setAttribute("width", "340%");
+      selectedFilter.setAttribute("height", "340%");
+      const selectedShadow = document.createElementNS(NS, "feDropShadow");
+      selectedShadow.setAttribute("dx", "0");
+      selectedShadow.setAttribute("dy", "4");
+      selectedShadow.setAttribute("stdDeviation", "2.6");
+      selectedShadow.setAttribute("flood-color", "#6d5944");
+      selectedShadow.setAttribute("flood-opacity", "0.26");
+      const selectedGlow = document.createElementNS(NS, "feDropShadow");
+      selectedGlow.setAttribute("dx", "0");
+      selectedGlow.setAttribute("dy", "0");
+      selectedGlow.setAttribute("stdDeviation", "2.3");
+      selectedGlow.setAttribute("flood-color", "#d7bc9f");
+      selectedGlow.setAttribute("flood-opacity", "0.6");
+      selectedFilter.appendChild(selectedShadow);
+      selectedFilter.appendChild(selectedGlow);
+      defs.appendChild(selectedFilter);
+      roadmapSvgEl.appendChild(defs);
+
+      const nodePosition = {};
+      const lanesLayer = document.createElementNS(NS, "g");
+      const connectorLayer = document.createElementNS(NS, "g");
+      const nodesLayer = document.createElementNS(NS, "g");
+
+      const buildVerticalCurve = (x, fromY, toY) => {
+        const midY = (fromY + toY) / 2;
+        return `M ${x} ${fromY} C ${x + 24} ${midY - 18}, ${x - 24} ${midY + 18}, ${x} ${toY}`;
+      };
+
+
+      laneDefs.forEach((lane) => {
+        const y = lane.y;
+        const activeLane = curriculumState.activeTab === "all" || curriculumState.activeTab === lane.id;
+
+        const line = document.createElementNS(NS, "line");
+        line.setAttribute("x1", "180");
+        line.setAttribute("x2", String(width - 120));
+        line.setAttribute("y1", String(y));
+        line.setAttribute("y2", String(y));
+        line.setAttribute("stroke", lane.color);
+        line.setAttribute("stroke-width", activeLane ? "2.3" : "1.35");
+        line.setAttribute("stroke-linecap", "round");
+        line.setAttribute("opacity", activeLane ? "0.36" : "0.17");
+        lanesLayer.appendChild(line);
+
+        const laneLabel = document.createElementNS(NS, "text");
+        laneLabel.setAttribute("class", "roadmap-lane-label");
+        laneLabel.setAttribute("x", "20");
+        laneLabel.setAttribute("y", String(y + 5));
+        laneLabel.setAttribute("fill", activeLane ? lane.color : "#8f8679");
+        laneLabel.style.cursor = "pointer";
+        laneLabel.textContent = `${lane.label} (${laneNodes[lane.id].length})`;
+        laneLabel.addEventListener("click", () => setActiveTab(lane.id));
+        lanesLayer.appendChild(laneLabel);
+
+        laneNodes[lane.id].forEach((node, idx) => {
+          const cx = startX + idx * stepX;
+          const cy = y;
+          nodePosition[node.id] = { x: cx, y: cy, laneId: lane.id };
+
+          const progress = ensureProgress(node.id);
+          const completion = getCompletionState(progress);
+          const visible = isNodeVisibleInTab(node, curriculumState.activeTab);
+          const selected = curriculumState.selectedNodeId === node.id;
+
+          const group = document.createElementNS(NS, "g");
+          group.setAttribute("class", `roadmap-node node-drill${selected ? " node-selected" : ""}`);
+          group.setAttribute("transform", `translate(${cx}, ${cy})`);
+          group.setAttribute("data-node-id", node.id);
+          group.style.opacity = visible ? "1" : "0.3";
+          group.style.cursor = "pointer";
+
+          const body = document.createElementNS(NS, "g");
+          body.setAttribute("class", "roadmap-node-body");
+          body.setAttribute("filter", selected ? "url(#nodeSelectedFx)" : "url(#nodeBaseShadow)");
+
+          const circle = document.createElementNS(NS, "circle");
+          const radius = selected ? drillSelectedRadius : drillRadius;
+          circle.setAttribute("class", "node-shape node-drill");
+          circle.setAttribute("r", String(radius));
+          circle.setAttribute("stroke", lane.color);
+          circle.setAttribute("stroke-width", selected ? "3.2" : "2.1");
+
+          if (completion === "manual_done") {
+            circle.setAttribute("fill", lane.color);
+          } else if (completion === "auto_done") {
+            circle.setAttribute("fill", `${lane.color}66`);
+          } else if (completion === "manual_block") {
+            circle.setAttribute("fill", "#f5d8d2");
+            circle.setAttribute("stroke", "#ad3e30");
+          } else {
+            circle.setAttribute("fill", "#fffefb");
+          }
+          body.appendChild(circle);
+
+          const text = document.createElementNS(NS, "text");
+          text.setAttribute("class", "node-label");
+          text.setAttribute("text-anchor", "middle");
+          text.setAttribute("dy", "4");
+          text.setAttribute("fill", completion === "manual_done" ? "#fff" : "#2e2a24");
+          text.textContent = String(node.roadmapOrder || "D");
+          body.appendChild(text);
+
+          const label = document.createElementNS(NS, "text");
+          label.setAttribute("class", "node-sub-label");
+          label.setAttribute("text-anchor", "middle");
+          label.setAttribute("y", String(radius + 17));
+          label.textContent = node.shortLabel || node.title;
+          body.appendChild(label);
+
+          if (completion === "auto_done" || completion === "manual_done") {
+            const check = document.createElementNS(NS, "text");
+            check.setAttribute("class", "node-check");
+            check.setAttribute("text-anchor", "middle");
+            check.setAttribute("x", String((selected ? drillSelectedRadius : drillRadius) + 8));
+            check.setAttribute("y", String(-(selected ? drillSelectedRadius : drillRadius) + 5));
+            check.textContent = "✓";
+            body.appendChild(check);
+          }
+
+          group.addEventListener("click", (event) => {
+            if (suppressNextNodeClick) {
+              event.preventDefault();
+              event.stopPropagation();
+              suppressNextNodeClick = false;
+              return;
+            }
+            selectNode(node.id);
+          });
+
+          group.appendChild(body);
+          nodesLayer.appendChild(group);
+        });
+      });
+
+      const progressionPairs = [
+        ["beginning", "middle"],
+        ["middle", "ending"],
+      ];
+      progressionPairs.forEach(([from, to]) => {
+        const fromLane = getLaneById(from);
+        const toLane = getLaneById(to);
+        if (!fromLane || !toLane) return;
+        const connector = document.createElementNS(NS, "path");
+        connector.setAttribute("d", buildVerticalCurve(128, fromLane.y + 16, toLane.y - 16));
+        connector.setAttribute("stroke", "#8e8477");
+        connector.setAttribute("stroke-width", "1.8");
+        connector.setAttribute("fill", "none");
+        connector.setAttribute("stroke-linecap", "round");
+        connector.setAttribute("marker-end", "url(#arrowHead)");
+        connector.setAttribute("opacity", "0.48");
+        connectorLayer.appendChild(connector);
+      });
+
+      const revisionLane = getLaneById("revision");
+      const endingLane = getLaneById("ending");
+      if (revisionLane && endingLane) {
+        const revisionLink = document.createElementNS(NS, "path");
+        revisionLink.setAttribute("d", buildVerticalCurve(156, revisionLane.y - 14, endingLane.y + 14));
+        revisionLink.setAttribute("stroke", "#7f8b5f");
+        revisionLink.setAttribute("stroke-dasharray", "8 6");
+        revisionLink.setAttribute("stroke-width", "1.35");
+        revisionLink.setAttribute("fill", "none");
+        revisionLink.setAttribute("stroke-linecap", "round");
+        revisionLink.setAttribute("opacity", "0.42");
+        connectorLayer.appendChild(revisionLink);
+      }
+
+      roadmapSvgEl.appendChild(lanesLayer);
+      roadmapSvgEl.appendChild(connectorLayer);
+      roadmapSvgEl.appendChild(nodesLayer);
+    }
+
+    function renderSelectedMeta() {
+      const selected = getSelectedNode();
+      if (!selected) {
+        selectedDrillMetaEl.innerHTML = `<p class="selected-row">${escapeHtml(t("noNodeSelected"))}</p>`;
+        triggerMetaFadeIn();
+        return;
+      }
+
+      const progress = ensureProgress(selected.id);
+      const completion = getCompletionState(progress);
+
+      let completionText = t("completionPending");
+      if (completion === "auto_done") completionText = t("completionAuto", { score: Number(progress.lastScore).toFixed(1) });
+      if (completion === "manual_done") completionText = t("completionManualDone");
+      if (completion === "manual_block") completionText = t("completionManualBlock");
+
+      const passSignalsHtml = Array.isArray(selected.passSignals) && selected.passSignals.length > 0
+        ? `<ul class="signal-list">${selected.passSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const failSignalsHtml = Array.isArray(selected.failSignals) && selected.failSignals.length > 0
+        ? `<ul class="signal-list">${selected.failSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const submissionChecklistHtml = Array.isArray(selected.submissionChecklist) && selected.submissionChecklist.length > 0
+        ? `<ul class="submission-list">${selected.submissionChecklist.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
+        : "<p class=\"selected-row\">-</p>";
+      const progressClass = completion === "auto_done"
+        ? "auto"
+        : completion === "manual_done"
+          ? "done"
+          : completion === "manual_block"
+            ? "block"
+            : "pending";
+
+      selectedDrillMetaEl.innerHTML = `
+        <div class="selected-title">${escapeHtml(selected.title)}</div>
+        <section class="meta-section">
+          <h4>${escapeHtml(t("sectionConcept"))}</h4>
+          <p class="selected-row">${escapeHtml(selected.conceptBrief || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("why"))}</strong> ${escapeHtml(selected.conceptWhy || "-")}</p>
+        </section>
+        <section class="meta-section">
+          <h4>${escapeHtml(t("sectionNow"))}</h4>
+          <p class="selected-row"><strong>${escapeHtml(t("currentTask"))}</strong> ${escapeHtml(selected.goal || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("outcome"))}</strong> ${escapeHtml(selected.writingOutcome || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("passRule"))}</strong> ${escapeHtml(selected.passRule || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("repeatTip"))}</strong> ${escapeHtml(selected.repetitionTip || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("passState"))}</strong></p>
+          ${passSignalsHtml}
+          <p class="selected-row"><strong>${escapeHtml(t("failState"))}</strong></p>
+          ${failSignalsHtml}
+        </section>
+        <section class="meta-section">
+          <h4>${escapeHtml(t("sectionChecklist"))}</h4>
+          ${submissionChecklistHtml}
+          <div class="progress-chip ${progressClass}">
+            <strong>${escapeHtml(t("currentProgress"))}</strong> <span>${escapeHtml(completionText)}</span>
+          </div>
+        </section>
+      `;
+      triggerMetaFadeIn();
+    }
+
+    function renderCompletionControl() {
+      const selected = getSelectedNode();
+      if (!selected) {
+        completionControlEl.innerHTML = `<p class="selected-row">${escapeHtml(t("noNodeSelected"))}</p>`;
+        return;
+      }
+      const progress = ensureProgress(selected.id);
+      const manual = progress.manualOverride;
+
+      completionControlEl.innerHTML = `
+        <div class="selected-title">${escapeHtml(t("completionControlTitle"))}</div>
+        <p class="selected-row">${escapeHtml(t("autoDoneRule", { score: AUTO_DONE_THRESHOLD.toFixed(1) }))}</p>
+        <div class="completion-row">
+          <button type="button" id="btnManualDone" class="completion-btn${manual === true ? " active" : ""}">${escapeHtml(t("manualDone"))}</button>
+          <button type="button" id="btnManualBlock" class="completion-btn${manual === false ? " active" : ""}">${escapeHtml(t("manualBlock"))}</button>
+          <button type="button" id="btnManualAuto" class="completion-btn${manual === null ? " active" : ""}">${escapeHtml(t("followAuto"))}</button>
+        </div>
+      `;
+
+      document.getElementById("btnManualDone").addEventListener("click", () => setManualOverride("manual_done"));
+      document.getElementById("btnManualBlock").addEventListener("click", () => setManualOverride("manual_block"));
+      document.getElementById("btnManualAuto").addEventListener("click", () => setManualOverride("auto"));
+    }
+
+    function renderExerciseFields() {
+      const selected = getSelectedNode();
+      if (!selected) {
+        exerciseFieldsEl.innerHTML = `<p class="exercise-empty">${escapeHtml(t("selectNodeEmpty"))}</p>`;
+        if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = true;
+        return;
+      }
+
+      const draft = readDraft(selected.id);
+      exerciseFieldsEl.innerHTML = "";
+
+      const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
+      if (fields.length === 0) {
+        exerciseFieldsEl.innerHTML = `<p class="exercise-empty">${escapeHtml(t("noTemplate"))}</p>`;
+        if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = true;
+        return;
+      }
+      if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = false;
+
+      fields.forEach((field) => {
+        const wrap = document.createElement("div");
+        wrap.className = "exercise-field";
+        wrap.innerHTML = `
+          <label for="field_${field.key}">${escapeHtml(field.label)}</label>
+          <textarea
+            id="field_${field.key}"
+            class="exercise-input"
+            data-field-key="${escapeHtml(field.key)}"
+            placeholder="${escapeHtml(field.placeholder || field.label)}"
+          >${escapeHtml(draft[field.key] || "")}</textarea>
+          <div class="field-guide">
+            <p><strong>${escapeHtml(t("guideHowTo"))}</strong> ${escapeHtml(field.howTo || "-")}</p>
+            <p><strong>${escapeHtml(t("guideGood"))}</strong> ${escapeHtml(field.goodExample || "-")}</p>
+            <p><strong>${escapeHtml(t("guideBad"))}</strong> ${escapeHtml(field.badExample || "-")}</p>
+            <p><strong>${escapeHtml(t("guideCheck"))}</strong> ${escapeHtml(field.checkQuestion || "-")}</p>
+          </div>
+        `;
+
+        const input = wrap.querySelector("textarea");
+        autoResizeTextarea(input);
+        input.addEventListener("input", () => {
+          autoResizeTextarea(input);
+          if (draftSaveTimer) clearTimeout(draftSaveTimer);
+          draftSaveTimer = setTimeout(() => {
+            writeDraft(selected.id, collectExerciseValues());
+          }, 200);
+        });
+        exerciseFieldsEl.appendChild(wrap);
+      });
+    }
+
+    function buildPresetForRequest(selected) {
+      const stage = selected.stageId ? getStageById(selected.stageId) : null;
+      const lane = getLaneById(selected.laneId);
+      const checklistText = Array.isArray(selected.submissionChecklist) && selected.submissionChecklist.length > 0
+        ? selected.submissionChecklist.join(" / ")
+        : "-";
+
+      const isEn = uiLang === "en";
+      return [
+        isEn ? "You are an English-language novel editor." : "당신은 한국어 소설 편집자입니다.",
+        isEn
+          ? "Output format: provide score(10), evidence, and concise revision suggestions."
+          : "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
+        isEn
+          ? "The last line of each suggestion must follow: `Next iteration task: ...`."
+          : "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
+        isEn ? "Node type: drill node" : "노드 유형: 실습 노드",
+        `${isEn ? "Structure lane" : "구조 레인"}: ${lane ? lane.label : selected.laneId}`,
+        stage ? `${isEn ? "Source stage" : "원본 Stage"}: ${stage.label}` : "",
+        `${isEn ? "Selected node" : "선택 노드"}: ${selected.title} (${selected.id})`,
+        `${isEn ? "Goal" : "목표"}: ${selected.goal || "-"}`,
+        `${isEn ? "Pass rule" : "통과 기준"}: ${selected.passRule || "-"}`,
+        `${isEn ? "Pre-submit checklist" : "제출 전 체크"}: ${checklistText}`,
+        `${isEn ? "Repetition tip" : "권장 반복 포인트"}: ${selected.repetitionTip || "-"}`,
+      ].filter(Boolean).join("\n");
+    }
+
+    function buildStructuredExerciseText(selected, values) {
+      const lane = getLaneById(selected.laneId);
+      const stage = selected.stageId ? getStageById(selected.stageId) : null;
+      const lines = [];
+      lines.push(PRESET_START);
+      lines.push(uiLang === "en" ? "[CHECK PRESET]" : "[점검 프리셋]");
+      lines.push("");
+      lines.push(`[${lane ? lane.label : selected.laneId} | ${selected.title}]`);
+      lines.push(`ID: ${selected.id}`);
+      lines.push(uiLang === "en" ? "Node type: drill node" : "노드 유형: 실습 노드");
+      if (stage) lines.push(`${uiLang === "en" ? "Source stage" : "원본 Stage"}: ${stage.label}`);
+      lines.push(`${uiLang === "en" ? "Goal" : "목표"}: ${selected.goal || "-"}`);
+      lines.push(`${uiLang === "en" ? "Pass rule" : "통과 기준"}: ${selected.passRule || "-"}`);
+      lines.push(`${uiLang === "en" ? "Repetition tip" : "권장 반복 포인트"}: ${selected.repetitionTip || "-"}`);
+      lines.push(`${uiLang === "en" ? "Reference" : "참고"}: ${selected.bookRefs || "-"}`);
+      lines.push(`${uiLang === "en" ? "Pre-submit checklist" : "제출 전 체크"}: ${(selected.submissionChecklist || []).join(" / ") || "-"}`);
+
+      (selected.templateFields || []).forEach((field) => {
+        lines.push("");
+        lines.push(`${field.label}:`);
+        lines.push((values[field.key] || "").trim());
+      });
+
+      lines.push("");
+      lines.push("---");
+      lines.push(uiLang === "en" ? "[MANUSCRIPT BODY]" : "[원고 본문]");
+      lines.push(PRESET_END);
+      return lines.join("\n");
+    }
+
+    function buildManuscriptPayload(exerciseText, optionalBody) {
+      if (!optionalBody) return exerciseText.trim();
+      return `${exerciseText}\n\n${optionalBody}`.trim();
+    }
+
+    function validateExerciseInput(selected, values) {
+      const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
+      return fields.every((field) => String(values[field.key] || "").trim());
+    }
+
+    function tryRenderTurnstile() {
+      if (turnstileWidgetId !== null) return;
+      if (!window.turnstile) return;
+
+      if (!TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
+        setStatus(t("statusTurnstileMissing"), "error");
+        refreshRunButtonState();
+        return;
+      }
+
+      turnstileWidgetId = window.turnstile.render(turnstileBoxEl, {
+        sitekey: TURNSTILE_SITE_KEY,
+        size: "flexible",
+        action: TURNSTILE_ACTION,
+        callback(token) {
+          turnstileToken = token || "";
+          refreshRunButtonState();
+        },
+        "expired-callback"() {
+          turnstileToken = "";
+          refreshRunButtonState();
+        },
+        "error-callback"() {
+          turnstileToken = "";
+          refreshRunButtonState();
+          setStatus(t("statusTurnstileError"), "error");
+        },
+      });
+    }
+
+    function renderResult(payload) {
+      setResultLoading(false);
+      const parts = [];
+
+      if (typeof payload.overallScore === "number") {
+        parts.push(`<div class="score">${escapeHtml(t("score"))} ${payload.overallScore.toFixed(1)} / 10</div>`);
+      }
+
+      if (payload.summary) {
+        parts.push(`<h3>${escapeHtml(t("summary"))}</h3><p>${escapeHtml(payload.summary)}</p>`);
+      }
+
+      if (Array.isArray(payload.items) && payload.items.length > 0) {
+        payload.items.forEach((item) => {
+          const evidence = Array.isArray(item.evidence)
+            ? `<ul>${item.evidence.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`
+            : "";
+
+          parts.push(`
+            <section class="card">
+              <h3>${escapeHtml(item.label || item.id || t("checkpoint"))}</h3>
+              ${typeof item.score === "number" ? `<p><strong>${escapeHtml(t("itemScore"))}:</strong> ${item.score} / 10</p>` : ""}
+              ${evidence}
+              ${item.suggestion ? `<p><strong>${escapeHtml(t("suggestion"))}:</strong> ${escapeHtml(item.suggestion)}</p>` : ""}
+            </section>
+          `);
+        });
+      }
+
+      if (payload.usage && typeof payload.usage.remainingToday === "number") {
+        const reportedRemaining = Number(payload.usage.remainingToday);
+        const reportedLimit = Number(payload.usage.limitPerDay);
+        const hasReportedLimit = Number.isFinite(reportedLimit) && reportedLimit > 0;
+        const hasReportedRemaining = Number.isFinite(reportedRemaining) && reportedRemaining >= 0;
+
+        let displayLimit = hasReportedLimit ? reportedLimit : DAILY_LIMIT_PER_DAY;
+        let displayRemaining = hasReportedRemaining ? reportedRemaining : 0;
+
+        // Backward-compatible display: if an older backend still reports a smaller limit (e.g. 2),
+        // preserve the used-count and convert remaining count against the current daily limit (3).
+        if (hasReportedLimit && hasReportedRemaining && reportedLimit < DAILY_LIMIT_PER_DAY) {
+          const usedCount = Math.max(0, Math.min(reportedLimit, reportedLimit - reportedRemaining));
+          displayLimit = DAILY_LIMIT_PER_DAY;
+          displayRemaining = Math.max(0, DAILY_LIMIT_PER_DAY - usedCount);
+        }
+
+        parts.push(
+          `<section class="card"><p><strong>${escapeHtml(t("remaining"))}:</strong> ${displayRemaining} / ${displayLimit}</p></section>`
+        );
+      }
+
+      resultEl.innerHTML = parts.length > 0
+        ? parts.join("")
+        : `<p class="placeholder">${escapeHtml(t("unknownResponse"))}</p>`;
+    }
+
+    function applyAutoCompletionFromResponse(selectedNodeId, payload) {
+      if (!payload || !Array.isArray(payload.items)) return;
+      const matched = payload.items.find((item) => item && item.id === selectedNodeId) || payload.items[0];
+      if (!matched || typeof matched.score !== "number") return;
+
+      const progress = ensureProgress(selectedNodeId);
+      progress.lastScore = Number(matched.score);
+      progress.autoDone = Number(matched.score) >= AUTO_DONE_THRESHOLD;
+      progress.lastUpdatedAt = new Date().toISOString();
+      saveCurriculumState();
+
+      renderRoadmap();
+      renderSelectedMeta();
+      renderCompletionControl();
+    }
+
+    async function runAnalysis() {
+      const selected = getSelectedNode();
+      if (!selected) {
+        setStatus(t("statusNeedNode"), "error");
+        return;
+      }
+
+      const values = collectExerciseValues();
+      if (!validateExerciseInput(selected, values)) {
+        setStatus(t("statusNeedInput"), "error");
+        return;
+      }
+      writeDraft(selected.id, values);
+
+      const optionalBody = manuscriptBodyEl.value.trim();
+      const exerciseText = buildStructuredExerciseText(selected, values);
+      const manuscript = buildManuscriptPayload(exerciseText, optionalBody);
+
+      if (!turnstileToken && !hasOwnerKey()) {
+        setStatus(t("statusNeedCaptcha"), "error");
+        return;
+      }
+
+      const payload = {
+        manuscript,
+        preset: buildPresetForRequest(selected),
+        checks: [selected.id],
+        turnstileToken,
+        meta: {
+          lang: uiLang,
+          version: "v2",
+          nodeKind: "drill",
+          nodeLane: selected.laneId,
+          curriculumStage: selected.stageId || selected.laneId,
+        },
+      };
+      setStatus(t("statusRequesting"), null);
+      setRunLoading(true);
+      setResultLoading(true);
+
+      try {
+        const headers = {
+          "Content-Type": "application/json",
+        };
+
+        const ownerKey = getOwnerKey();
+        if (ownerKey) {
+          headers[OWNER_BYPASS_HEADER] = ownerKey;
+        }
+
+        const response = await fetch(API_ENDPOINT, {
+          method: "POST",
+          headers,
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          const code = data?.error?.code;
+          let message = data?.error?.message || t("errorRequest");
+
+          if (code === "INVALID_CAPTCHA") {
+            message = t("errorInvalidCaptcha");
+            turnstileToken = "";
+            if (window.turnstile && turnstileWidgetId !== null) {
+              window.turnstile.reset(turnstileWidgetId);
+            }
+            refreshRunButtonState();
+          } else if (code === "PAYLOAD_TOO_LARGE") {
+            message = t("errorPayloadTooLarge");
+          }
+
+          throw new Error(message);
+        }
+
+        renderResult(data);
+        applyAutoCompletionFromResponse(selected.id, data);
+
+        turnstileToken = "";
+        if (window.turnstile && turnstileWidgetId !== null) {
+          window.turnstile.reset(turnstileWidgetId);
+        }
+        refreshRunButtonState();
+        setStatus(t("statusDone"), "ok");
+      } catch (err) {
+        setStatus(err.message || t("errorNetwork"), "error");
+        setResultLoading(false);
+        resultEl.innerHTML = `<p class="placeholder">${escapeHtml(t("resultPlaceholder"))}</p>`;
+      } finally {
+        setRunLoading(false);
+        refreshRunButtonState();
+      }
+    }
+
+    function renderAll() {
+      renderStageLegend();
+      renderTabs();
+      renderRoadmap();
+      renderSelectedMeta();
+      renderCompletionControl();
+      renderExerciseFields();
+    }
+
+    function initRoadmapPan() {
+      if (!roadmapScrollEl) return;
+
+      roadmapScrollEl.addEventListener("mousedown", (event) => {
+        if (event.button !== 0) return;
+        isDragging = true;
+        didDrag = false;
+        dragStartX = event.clientX;
+        dragStartY = event.clientY;
+        originScrollLeft = roadmapScrollEl.scrollLeft;
+        originScrollTop = roadmapScrollEl.scrollTop;
+        roadmapScrollEl.classList.add("is-dragging");
+        event.preventDefault();
+      });
+
+      window.addEventListener("mousemove", (event) => {
+        if (!isDragging) return;
+        const dx = event.clientX - dragStartX;
+        const dy = event.clientY - dragStartY;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+          didDrag = true;
+        }
+        roadmapScrollEl.scrollLeft = originScrollLeft - dx;
+        roadmapScrollEl.scrollTop = originScrollTop - dy;
+      });
+
+      window.addEventListener("mouseup", () => {
+        if (!isDragging) return;
+        isDragging = false;
+        roadmapScrollEl.classList.remove("is-dragging");
+        if (didDrag) {
+          suppressNextNodeClick = true;
+          setTimeout(() => {
+            suppressNextNodeClick = false;
+          }, 90);
+        }
+      });
+    }
+
+    function initBodyDraft() {
+      const savedBody = localStorage.getItem(BODY_STORAGE_KEY) || "";
+      if (savedBody) manuscriptBodyEl.value = savedBody;
+      autoResizeTextarea(manuscriptBodyEl);
+
+      manuscriptBodyEl.addEventListener("input", () => {
+        autoResizeTextarea(manuscriptBodyEl);
+        if (bodySaveTimer) clearTimeout(bodySaveTimer);
+        bodySaveTimer = setTimeout(() => {
+          localStorage.setItem(BODY_STORAGE_KEY, manuscriptBodyEl.value || "");
+        }, 200);
+      });
+    }
+
+    async function initApp() {
+      await ensureInitialUiLang();
+      setUiLanguage(uiLang, { persist: false, rerender: false });
+      loadCurriculumState();
+      initBodyDraft();
+      initRoadmapPan();
+
+      runBtnEl.addEventListener("click", runAnalysis);
+      if (langSelectEl) {
+        langSelectEl.addEventListener("change", (event) => {
+          const nextLang = event.target.value === "en" ? "en" : "ko";
+          setUiLanguage(nextLang, { persist: true, rerender: true });
+        });
+      }
+      if (resetExerciseBtnEl) {
+        resetExerciseBtnEl.addEventListener("click", resetExerciseInputs);
+      }
+
+      // TEST_ONLY_OWNER_BYPASS_START
+      if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {
+        ownerKeyBoxEl.hidden = true;
+      }
+      if (ENABLE_OWNER_BYPASS_UI && ownerKeyInputEl) {
+        const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
+        if (savedOwnerKey) ownerKeyInputEl.value = savedOwnerKey;
+
+        ownerKeyInputEl.addEventListener("input", () => {
+          const value = getOwnerKey();
+          if (value) {
+            localStorage.setItem(OWNER_BYPASS_STORAGE_KEY, value);
+          } else {
+            localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
+          }
+          refreshRunButtonState();
+        });
+      }
+      // TEST_ONLY_OWNER_BYPASS_END
+
+      renderAll();
+      refreshRunButtonState();
+
+      const turnstileInitTimer = setInterval(() => {
+        tryRenderTurnstile();
+        if (turnstileWidgetId !== null || !TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
+          clearInterval(turnstileInitTimer);
+        }
+      }, 200);
+    }
+
+    initApp();

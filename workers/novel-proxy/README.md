@@ -6,7 +6,7 @@ Cloudflare Worker for `POST /v1/novel-feedback`.
 - AI provider proxy (Gemini default, OpenAI fallback via flag)
 - CORS allowlist via `ALLOWED_ORIGIN`
 - Turnstile token verification (required: success + hostname + action)
-- Daily rate limit (5/day) via Durable Object (atomic)
+- Daily rate limit (3/day) via Durable Object (atomic)
 - Manuscript length limit (max 12,000 chars)
 - Optional owner-only bypass for temporary testing (`ENABLE_OWNER_BYPASS`, `OWNER_BYPASS_KEY`)
 
@@ -91,7 +91,7 @@ After deploy, use:
   ],
   "usage": {
     "remainingToday": 1,
-    "limitPerDay": 5
+    "limitPerDay": 3
   }
 }
 ```

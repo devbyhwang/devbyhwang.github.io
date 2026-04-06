@@ -85,6 +85,12 @@ views: 42
 - 프록시 서버에만 서버 키를 저장하고, CORS Origin 제한 + Turnstile 검증을 적용합니다.
 - rate limit은 KV 대신 Durable Object 등 원자적 카운터로 강제합니다.
 
+### CSP/SRI 운영 메모
+- 주요 페이지는 `meta` 기반 CSP를 사용합니다(GitHub Pages 환경).
+- 고정 CDN 스크립트는 SRI(`integrity`)를 유지합니다.
+- CDN URL을 변경하면 아래 명령으로 SHA-384를 다시 계산해 `integrity` 값을 갱신하세요.
+  - `curl -sL <cdn-url> | openssl dgst -sha384 -binary | openssl base64 -A`
+
 ## GitHub Pages 배포
 - 워크플로우: `.github/workflows/deploy.yml`
 - `main` 브랜치 push 시 빌드 후 Pages 배포
