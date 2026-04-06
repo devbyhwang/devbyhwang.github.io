@@ -186,11 +186,17 @@ export default {
       );
     }
 
-    const checks = Array.isArray(payload.checks)
-      ? payload.checks.filter((item) => typeof item === "string")
-      : [];
-    const preset = typeof payload.preset === "string" ? payload.preset : "";
-    const meta = payload.meta && typeof payload.meta === "object" ? payload.meta : {};
+    let normalizedInput;
+    try {
+      normalizedInput = normalizeRequestPayload(payload);
+    } catch (error) {
+      return json(
+        { error: { code: "BAD_REQUEST", message: summarizeError(error) } },
+        400,
+        origin,
+        allowedOrigin
+      );
+    }
 
     let limit = { remainingToday: null };
     if (!isOwnerBypass) {
@@ -223,6 +229,7 @@ export default {
       }
     }
 
+    const { checks, preset, meta } = normalizedInput;
     const prompt = buildPrompt({ manuscript, preset, checks, meta });
     const provider = resolveAiProvider(env);
     if (provider === "gemini" && !env.GEMINI_API_KEY) {
@@ -441,16 +448,345 @@ async function parseJson(request) {
   }
 }
 
+function prettyJson(value) {
+  return JSON.stringify(value, null, 2);
+}
+
+function normalizeStringArray(value) {
+  return Array.isArray(value)
+    ? value.map((item) => (typeof item === "string" ? item.trim() : "")).filter(Boolean)
+    : [];
+}
+
+function getDefaultPreset(id = "balanced") {
+  const presets = {
+    strict: {
+      id: "strict",
+      label: "엄격하게",
+      editorRole: "약점과 누락을 먼저 짚는 웹소설 편집자",
+      toneInstruction: "칭찬보다 문제 진단을 앞세우고, 표현은 단호하게 유지한다.",
+      suggestionInstruction: "수정안은 우선순위가 가장 높은 문제부터 바로 고칠 수 있게 제시한다.",
+    },
+    balanced: {
+      id: "balanced",
+      label: "균형 있게",
+      editorRole: "강점과 약점을 함께 보되 실전 수정 우선순위를 잡아주는 웹소설 편집자",
+      toneInstruction: "강점은 짧게 인정하되, 개선 포인트와 누락된 기능을 분명하게 짚는다.",
+      suggestionInstruction: "수정안은 바로 장면이나 문단에 적용할 수 있는 수준으로 구체화한다.",
+    },
+    supportive: {
+      id: "supportive",
+      label: "격려형",
+      editorRole: "초보자도 받아들일 수 있게 설명하되 기준은 흐리지 않는 웹소설 편집자",
+      toneInstruction: "표현은 부드럽게 하되, 문제 자체를 완화하거나 모호하게 돌려 말하지 않는다.",
+      suggestionInstruction: "수정안은 부담을 줄이되, 무엇을 줄이고 무엇을 보강할지 분명히 적는다.",
+    },
+  };
+  return presets[id] || presets.balanced;
+}
+
+function getNodeIdFromCheckId(checkId) {
+  if (typeof checkId !== "string") return "";
+  return checkId.split("__")[0] || "";
+}
+
+function normalizeStructuredChecks(checks) {
+  if (!Array.isArray(checks) || checks.length === 0) {
+    throw new Error("checks must contain at least one rubric object");
+  }
+
+  return checks.map((item, index) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new Error(`checks[${index}] must be an object`);
+    }
+
+    const id = typeof item.id === "string" ? item.id.trim() : "";
+    const label = typeof item.label === "string" ? item.label.trim() : "";
+    const question = typeof item.question === "string" ? item.question.trim() : "";
+    const lookFor = normalizeStringArray(item.lookFor);
+    const rawGuide = item.scoreGuide && typeof item.scoreGuide === "object" ? item.scoreGuide : {};
+    const scoreGuide = {
+      high: typeof rawGuide.high === "string" ? rawGuide.high.trim() : "",
+      mid: typeof rawGuide.mid === "string" ? rawGuide.mid.trim() : "",
+      low: typeof rawGuide.low === "string" ? rawGuide.low.trim() : "",
+    };
+
+    if (!id || !label || !question) {
+      throw new Error(`checks[${index}] is missing id, label, or question`);
+    }
+
+    return {
+      id,
+      label,
+      question,
+      lookFor,
+      scoreGuide,
+    };
+  });
+}
+
+function buildLegacyFallbackCheck(nodeId, meta = {}) {
+  const label = typeof meta.nodeTitle === "string" && meta.nodeTitle.trim() ? meta.nodeTitle.trim() : nodeId;
+  return {
+    id: `${nodeId}__legacy`,
+    label,
+    question: "이 노드의 핵심 기능이 현재 원고에서 분명하게 작동하는가?",
+    lookFor: [
+      "선택 노드의 목표와 통과 기준이 원고 안에서 확인된다",
+      "독자가 다음 장면 또는 다음 단락으로 끌려갈 이유가 생긴다",
+    ],
+    scoreGuide: {
+      high: "노드 기능이 선명하고 원고 근거가 충분하다.",
+      mid: "핵심은 있으나 선명도나 압력이 약하다.",
+      low: "노드 기능이 흐리거나 거의 작동하지 않는다.",
+    },
+  };
+}
+
+function normalizeLegacyChecks(checks, meta) {
+  const legacyIds = Array.isArray(checks)
+    ? checks.map((item) => (typeof item === "string" ? item.trim() : "")).filter(Boolean)
+    : [];
+  const nodeId = meta.nodeId || legacyIds[0];
+  if (!nodeId) {
+    throw new Error("meta.nodeId is required when checks are not structured");
+  }
+  return [buildLegacyFallbackCheck(nodeId, meta)];
+}
+
+function normalizePreset(preset) {
+  if (preset && typeof preset === "object" && !Array.isArray(preset)) {
+    const base = getDefaultPreset(typeof preset.id === "string" ? preset.id.trim() : "balanced");
+    return {
+      id: base.id,
+      label: typeof preset.label === "string" && preset.label.trim() ? preset.label.trim() : base.label,
+      editorRole: typeof preset.editorRole === "string" && preset.editorRole.trim() ? preset.editorRole.trim() : base.editorRole,
+      toneInstruction: typeof preset.toneInstruction === "string" && preset.toneInstruction.trim() ? preset.toneInstruction.trim() : base.toneInstruction,
+      suggestionInstruction:
+        typeof preset.suggestionInstruction === "string" && preset.suggestionInstruction.trim()
+          ? preset.suggestionInstruction.trim()
+          : base.suggestionInstruction,
+    };
+  }
+
+  if (typeof preset === "string" && preset.trim()) {
+    const base = getDefaultPreset("balanced");
+    return {
+      ...base,
+      toneInstruction: `${base.toneInstruction} 추가 참고: ${preset.trim()}`,
+    };
+  }
+
+  return getDefaultPreset("balanced");
+}
+
+function normalizeMeta(meta, checks = [], options = {}) {
+  const { requireNodeId = true } = options;
+  const source = meta && typeof meta === "object" && !Array.isArray(meta) ? meta : {};
+  const lang = source.lang === "en" ? "en" : "ko";
+  const fallbackNodeId = checks[0] ? getNodeIdFromCheckId(checks[0].id) : "";
+  const nodeId = typeof source.nodeId === "string" && source.nodeId.trim() ? source.nodeId.trim() : fallbackNodeId;
+  if (requireNodeId && !nodeId) {
+    throw new Error("meta.nodeId is required");
+  }
+
+  return {
+    lang,
+    version: typeof source.version === "string" && source.version.trim() ? source.version.trim() : "v3",
+    nodeId,
+    nodeTitle: typeof source.nodeTitle === "string" ? source.nodeTitle.trim() : "",
+    nodeKind: typeof source.nodeKind === "string" ? source.nodeKind.trim() : "drill",
+    nodeLane: typeof source.nodeLane === "string" ? source.nodeLane.trim() : "",
+    curriculumStage: typeof source.curriculumStage === "string" ? source.curriculumStage.trim() : "",
+    genre: typeof source.genre === "string" ? source.genre.trim() : "",
+    draftStage: typeof source.draftStage === "string" ? source.draftStage.trim() : "",
+    narrativePOV: typeof source.narrativePOV === "string" ? source.narrativePOV.trim() : "",
+    authorGoal: typeof source.authorGoal === "string" ? source.authorGoal.trim() : "",
+    mustKeep: normalizeStringArray(source.mustKeep),
+  };
+}
+
+function normalizeRequestPayload(payload) {
+  const provisionalMeta = normalizeMeta(payload?.meta, [], { requireNodeId: false });
+  const checks =
+    Array.isArray(payload?.checks) && payload.checks.length > 0 && typeof payload.checks[0] === "object"
+      ? normalizeStructuredChecks(payload.checks)
+      : normalizeLegacyChecks(payload?.checks, provisionalMeta);
+  const meta = normalizeMeta(payload?.meta, checks);
+  const preset = normalizePreset(payload?.preset);
+  return { checks, preset, meta };
+}
+
 function buildPrompt({ manuscript, preset, checks, meta }) {
+  const isEn = meta.lang === "en";
+  if (isEn) {
+    return [
+      "# System Role",
+      "You are a professional web-fiction editor who evaluates drafts with practical commercial standards.",
+      "Read the manuscript and assess only the selected node using the provided rubric.",
+      "You must reflect both meta context and preset instructions.",
+      "",
+      "Editorial rules:",
+      "- Prioritize evidence-based diagnosis over vague praise or impressionistic commentary.",
+      "- Do not invent missing information.",
+      "- Every evaluation must rely on the rubric's question, lookFor, and scoreGuide.",
+      "- Suggestions must be immediately actionable at scene, paragraph, or revision-plan level.",
+      "- Prefer telling the author what to cut, add, sharpen, or reorder.",
+      "",
+      "# Context Meta",
+      "Reflect the following story context in your evaluation.",
+      "meta:",
+      prettyJson(meta),
+      "",
+      "Interpretation rules:",
+      "- Prioritize genre, draftStage, narrativePOV, authorGoal, and mustKeep.",
+      "- If mustKeep exists, preserve those elements and improve around them instead of suggesting removal first.",
+      "- If authorGoal exists, prioritize issues directly related to that goal.",
+      "",
+      "# Feedback Preset",
+      "Follow this feedback mode.",
+      "preset:",
+      prettyJson(preset),
+      "",
+      "Preset rules:",
+      "- strict: lead with weaknesses and missing craft moves in a firm tone.",
+      "- balanced: acknowledge strengths briefly, then clarify revision priorities.",
+      "- supportive: stay encouraging, but do not blur the diagnosis itself.",
+      "",
+      "# Evaluation Criteria",
+      "Use only the following rubrics.",
+      "checks:",
+      prettyJson(checks),
+      "",
+      "Scoring rules:",
+      "- Each score must be a number from 0 to 10.",
+      "- Use the closest high/mid/low scoreGuide when scoring.",
+      "- Evidence must describe only verifiable facts from the manuscript.",
+      "- Suggestion must focus on the single highest-leverage revision move for that rubric.",
+      "- Do not expand into unrelated craft areas.",
+      "",
+      "# Output Requirements",
+      "Return JSON only.",
+      "Do not include markdown, code fences, commentary, introduction, or closing remarks.",
+      "Use this exact schema:",
+      prettyJson({
+        overallScore: 7.5,
+        summary: "One-line node-level summary",
+        items: [
+          {
+            id: "check id",
+            label: "check label",
+            score: 8,
+            evidence: ["Concrete evidence 1", "Concrete evidence 2"],
+            suggestion: "Specific actionable revision",
+          },
+        ],
+      }),
+      "",
+      "Output rules:",
+      "- overallScore is the node-level composite score.",
+      "- summary must be a single line focused on the selected node.",
+      "- items must preserve the checks order.",
+      "- evidence must contain 1 to 3 strings per item.",
+      "- label and id must match the provided checks exactly.",
+      "",
+      "# Scoring Calibration",
+      "- 9~10: The node works with exceptional clarity and immediate reader impact.",
+      "- 7~8: The node mostly works, but some sharpness or pressure is missing.",
+      "- 5~6: The intent exists, but execution is partial or inconsistent.",
+      "- 3~4: The node only partially functions and is hard for readers to feel.",
+      "- 0~2: The node is mostly absent or works against the intended effect.",
+      "",
+      "# Manuscript",
+      "Evaluate only the manuscript below.",
+      manuscript,
+    ].join("\n");
+  }
+
   return [
-    "너는 한국어 소설 편집자다.",
-    "점검 항목별로 점수(10점), 근거, 수정안을 간결하게 작성한다.",
-    "반드시 JSON으로만 응답한다.",
-    `checks: ${JSON.stringify(checks)}`,
-    `meta: ${JSON.stringify(meta)}`,
-    `preset: ${preset}`,
+    "# System Role",
+    "당신은 웹소설 원고를 실전 기준으로 점검하는 전문 편집자다.",
+    "주어진 원고를 읽고, 선택된 노드의 평가 기준만 엄격하게 적용해 분석한다.",
+    "작품 맥락(meta)과 피드백 방식(preset)을 반드시 반영한다.",
     "",
-    "원고:",
+    "편집 원칙:",
+    "- 추상적인 감상이나 막연한 칭찬보다, 원고에 근거한 진단을 우선한다.",
+    "- 보이지 않는 정보는 추정하지 않는다.",
+    "- 각 평가는 반드시 해당 루브릭의 question/lookFor/scoreGuide에 근거해 작성한다.",
+    "- suggestion은 작가가 바로 수정에 옮길 수 있도록 구체적으로 쓴다.",
+    "- suggestion에는 가능하면 무엇을 줄이고, 무엇을 추가하고, 무엇을 더 선명하게 해야 하는지가 드러나야 한다.",
+    "- 원고에 없는 내용을 새로 설정해 단정하지 말고, 현재 원고에서 보완해야 할 방향으로 제안한다.",
+    "",
+    "# Context Meta",
+    "다음 작품 맥락을 평가에 반영한다.",
+    "meta:",
+    prettyJson(meta),
+    "",
+    "해석 규칙:",
+    "- genre, draftStage, narrativePOV, authorGoal, mustKeep를 우선 참고한다.",
+    "- mustKeep에 포함된 요소는 제거 제안 대신 보존한 채 개선하는 방향을 우선한다.",
+    "- authorGoal이 있으면 해당 목표와 직접 관련된 문제를 우선순위 높게 다룬다.",
+    "",
+    "# Feedback Preset",
+    "다음 피드백 방식을 따른다.",
+    "preset:",
+    prettyJson(preset),
+    "",
+    "적용 규칙:",
+    "- strict: 약점과 누락을 먼저 짚고, 표현은 단호하게 한다.",
+    "- balanced: 강점이 있으면 짧게 인정하되, 개선 우선순위를 분명히 제시한다.",
+    "- supportive: 위축되지 않도록 표현하되, 문제 진단 자체는 흐리지 않는다.",
+    "",
+    "# Evaluation Criteria",
+    "다음 평가 기준(rubric)만 사용해 채점한다.",
+    "checks:",
+    prettyJson(checks),
+    "",
+    "채점 규칙:",
+    "- 각 check마다 score는 0~10 사이 숫자로 작성한다.",
+    "- high/mid/low 가이드를 참고해 가장 가까운 수준으로 점수를 준다.",
+    "- evidence는 해당 루브릭의 question/lookFor를 근거로, 현재 원고에서 확인된 사실만 간결하게 설명한다.",
+    "- suggestion은 해당 루브릭 점수를 가장 효율적으로 끌어올릴 수정 방향을 1~3문장으로 제시한다.",
+    "- 루브릭 밖의 항목은 장황하게 확장하지 않는다.",
+    "",
+    "# Output Requirements",
+    "반드시 JSON으로만 응답한다.",
+    "마크다운, 코드블록, 해설 문장, 서문, 후문을 절대 포함하지 않는다.",
+    "반드시 아래 스키마를 따른다:",
+    prettyJson({
+      overallScore: 7.5,
+      summary: "선택 노드 기준의 전반적 총평 한 줄",
+      items: [
+        {
+          id: "check id",
+          label: "check label",
+          score: 8,
+          evidence: ["원고에서 확인된 근거 1", "원고에서 확인된 근거 2"],
+          suggestion: "바로 수정 가능한 구체적 제안",
+        },
+      ],
+    }),
+    "",
+    "출력 규칙:",
+    "- overallScore는 items의 평가를 종합한 노드 단위 점수다.",
+    "- summary는 선택 노드 관점의 총평만 한 줄로 쓴다.",
+    "- items는 checks 순서를 유지한다.",
+    "- evidence는 각 항목당 1~3개 문자열 배열로 작성한다.",
+    "- evidence는 추상 표현보다 장면 기능, 정보 배치, 충돌, 감정 변화 등 관찰 가능한 근거를 우선한다.",
+    "- suggestion은 preset의 톤을 따르되, 모호한 표현만으로 끝내지 않는다.",
+    "- suggestion에서는 우선순위가 가장 높은 수정 포인트를 먼저 말한다.",
+    "- label은 checks에 제공된 label을 그대로 사용한다.",
+    "- id는 checks에 제공된 id를 그대로 사용한다.",
+    "",
+    "# Scoring Calibration",
+    "- 9~10: 노드 목적이 매우 선명하고, 독자가 즉시 체감할 수준으로 잘 작동한다.",
+    "- 7~8: 기능은 대체로 성립하지만, 선명도나 압력이 부족한 부분이 있다.",
+    "- 5~6: 핵심 의도는 보이나 실제 작동이 약하거나 누락이 있다.",
+    "- 3~4: 노드 기능이 부분적으로만 보이며 독자가 체감하기 어렵다.",
+    "- 0~2: 해당 노드 기능이 거의 보이지 않거나 반대로 작동한다.",
+    "",
+    "# Manuscript",
+    "아래 원고만 읽고 평가한다.",
     manuscript,
   ].join("\n");
 }
@@ -809,3 +1145,5 @@ async function consumeRateLimit(env, { key, limit, ttlSec }) {
     return { ok: false, reason: summarizeError(error) };
   }
 }
+
+export { buildPrompt, normalizeModelPayload, normalizeRequestPayload };
