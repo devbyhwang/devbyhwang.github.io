@@ -2018,6 +2018,7 @@
     // TEST_ONLY_OWNER_BYPASS_START
     const ownerKeyInputEl = document.getElementById("ownerKeyInput");
     const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
+    const DAILY_LIMIT_PER_DAY = 5;
     const OWNER_BYPASS_HEADER = "X-Owner-Key";
     // TEST_ONLY_OWNER_BYPASS_END
 
@@ -2961,8 +2962,24 @@
       }
 
       if (payload.usage && typeof payload.usage.remainingToday === "number") {
+        const reportedRemaining = Number(payload.usage.remainingToday);
+        const reportedLimit = Number(payload.usage.limitPerDay);
+        const hasReportedLimit = Number.isFinite(reportedLimit) && reportedLimit > 0;
+        const hasReportedRemaining = Number.isFinite(reportedRemaining) && reportedRemaining >= 0;
+
+        let displayLimit = hasReportedLimit ? reportedLimit : DAILY_LIMIT_PER_DAY;
+        let displayRemaining = hasReportedRemaining ? reportedRemaining : 0;
+
+        // Backward-compatible display: if an older backend still reports a smaller limit (e.g. 2),
+        // preserve the used-count and convert remaining count against the current daily limit (5).
+        if (hasReportedLimit && hasReportedRemaining && reportedLimit < DAILY_LIMIT_PER_DAY) {
+          const usedCount = Math.max(0, Math.min(reportedLimit, reportedLimit - reportedRemaining));
+          displayLimit = DAILY_LIMIT_PER_DAY;
+          displayRemaining = Math.max(0, DAILY_LIMIT_PER_DAY - usedCount);
+        }
+
         parts.push(
-          `<section class="card"><p><strong>${escapeHtml(t("remaining"))}:</strong> ${payload.usage.remainingToday} / ${payload.usage.limitPerDay}</p></section>`
+          `<section class="card"><p><strong>${escapeHtml(t("remaining"))}:</strong> ${displayRemaining} / ${displayLimit}</p></section>`
         );
       }
 
