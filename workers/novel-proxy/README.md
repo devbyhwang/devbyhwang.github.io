@@ -5,7 +5,7 @@ Cloudflare Worker for `POST /v1/novel-feedback`.
 ## Features
 - AI provider proxy (Gemini default, OpenAI fallback via flag)
 - CORS allowlist via `ALLOWED_ORIGIN`
-- Turnstile token verification + signed captcha session token (tab-first verification, 6h TTL)
+- Turnstile token verification (required: success + hostname + action)
 - Daily rate limit (5/day) via Durable Object (atomic)
 - Manuscript length limit (max 12,000 chars)
 - Optional owner-only bypass for temporary testing (`ENABLE_OWNER_BYPASS`, `OWNER_BYPASS_KEY`)
@@ -31,7 +31,6 @@ export CLOUDFLARE_API_TOKEN=your_token_here
 npx wrangler secret put GEMINI_API_KEY
 npx wrangler secret put OPENAI_API_KEY
 npx wrangler secret put TURNSTILE_SECRET_KEY
-npx wrangler secret put CAPTCHA_SESSION_SECRET_KEY
 npx wrangler secret put OWNER_BYPASS_KEY
 ```
 `ALLOWED_ORIGIN` is already set in `wrangler.jsonc` as `https://devbyhwang.github.io`.
@@ -46,7 +45,6 @@ npx wrangler secret put OWNER_BYPASS_KEY
 - 발급받은 Secret Key는 `TURNSTILE_SECRET_KEY`로 저장합니다.
 - 발급받은 Site Key는 `src/demos/novel-assistant/index.html`의 `TURNSTILE_SITE_KEY` 값으로 설정합니다.
 - 위젯 action은 `novel_feedback`으로 설정되며, 워커는 hostname/action 검증이 일치해야 통과합니다.
-- Turnstile 성공 시 워커가 서명한 `captchaSession` 토큰(HMAC-SHA256, TTL 6시간)을 발급합니다.
 
 5. Durable Object migration + deploy:
 ```bash
@@ -64,13 +62,10 @@ After deploy, use:
   "preset": "...",
   "checks": ["s3_three_act_spine"],
   "turnstileToken": "...",
-  "captchaSession": "...",
   "meta": { "lang": "ko", "version": "v2", "curriculumStage": "s3" }
 }
 ```
 `checks`는 문자열 배열이며, 현재 프런트(`src/demos/novel-assistant`)는 단일 항목만 전송합니다.
-- `turnstileToken`은 유효한 `captchaSession`이 없을 때 필수입니다.
-- `captchaSession`은 이전 성공 응답의 `security.captchaSession` 값을 재사용할 때 전달합니다.
 
 ## Optional request header (test-only owner bypass)
 - `X-Owner-Key: <owner key>`
@@ -97,21 +92,9 @@ After deploy, use:
   "usage": {
     "remainingToday": 1,
     "limitPerDay": 5
-  },
-  "security": {
-    "captchaSession": "...",
-    "captchaSessionExpiresAt": "2026-04-06T12:34:56.000Z"
   }
 }
 ```
-- `security`는 Turnstile 재검증으로 새 세션이 발급된 요청에서 포함됩니다.
-
-## Captcha session behavior
-- 최초 요청(또는 세션 만료/무효 시): Turnstile 검증 필요
-- Turnstile 성공 시: 새 `captchaSession` 발급
-- 이후 같은 탭 세션: `captchaSession`으로 재검증 생략 가능
-- 탭 종료 후 새 탭 진입 시: 클라이언트 `sessionStorage`가 초기화되어 다시 Turnstile 필요
-- 변조/만료된 `captchaSession`만 전송 시: `INVALID_CAPTCHA`(403)
 
 ## Error codes
 - `BAD_REQUEST`
@@ -138,7 +121,6 @@ After deploy, use:
 - 내부적으로 gemini 경로 사용
 5. 기존 보안/제한 회귀
 - Turnstile 실패: `INVALID_CAPTCHA`
-- 변조/만료 captcha session 단독 전송: `INVALID_CAPTCHA`
 - 일일 제한 초과: `RATE_LIMITED`
 - 12,000자 초과: `PAYLOAD_TOO_LARGE`
 

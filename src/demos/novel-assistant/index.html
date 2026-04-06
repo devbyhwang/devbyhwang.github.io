@@ -890,7 +890,6 @@
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
     const BODY_STORAGE_KEY = "novel-assistant:body:v2";
     const LANG_STORAGE_KEY = "novel-assistant:lang:v1";
-    const CAPTCHA_SESSION_STORAGE_KEY = "novel-assistant:captcha-session:v1";
 
     let uiLang = "ko";
 
@@ -2601,7 +2600,6 @@
     rebuildRoadmapNodes();
 
     let turnstileToken = "";
-    let captchaSession = "";
     let turnstileWidgetId = null;
     let bodySaveTimer = null;
     let draftSaveTimer = null;
@@ -2742,34 +2740,13 @@
     function hasOwnerKey() {
       return Boolean(getOwnerKey());
     }
-    // TEST_ONLY_OWNER_BYPASS_END
-
-    function loadCaptchaSession() {
-      try {
-        captchaSession = String(sessionStorage.getItem(CAPTCHA_SESSION_STORAGE_KEY) || "").trim();
-      } catch {
-        captchaSession = "";
-      }
-    }
-
-    function saveCaptchaSession(nextValue) {
-      captchaSession = String(nextValue || "").trim();
-      try {
-        if (captchaSession) {
-          sessionStorage.setItem(CAPTCHA_SESSION_STORAGE_KEY, captchaSession);
-        } else {
-          sessionStorage.removeItem(CAPTCHA_SESSION_STORAGE_KEY);
-        }
-      } catch {
-        // sessionStorage may be unavailable in strict browser settings.
-      }
-    }
 
     function refreshRunButtonVisibility() {
       const selected = getSelectedNode();
       const canRunForNode = Boolean(selected);
-      setRunButtonVisible(Boolean(turnstileToken || captchaSession || hasOwnerKey()) && canRunForNode);
+      setRunButtonVisible(Boolean(turnstileToken || hasOwnerKey()) && canRunForNode);
     }
+    // TEST_ONLY_OWNER_BYPASS_END
 
     function escapeHtml(value) {
       return String(value || "")
@@ -3606,7 +3583,7 @@
       const exerciseText = buildStructuredExerciseText(selected, values);
       const manuscript = buildManuscriptPayload(exerciseText, optionalBody);
 
-      if (!turnstileToken && !captchaSession && !hasOwnerKey()) {
+      if (!turnstileToken && !hasOwnerKey()) {
         setStatus(t("statusNeedCaptcha"), "error");
         return;
       }
@@ -3616,7 +3593,6 @@
         preset: buildPresetForRequest(selected),
         checks: [selected.id],
         turnstileToken,
-        captchaSession,
         meta: {
           lang: uiLang,
           version: "v2",
@@ -3654,7 +3630,6 @@
           if (code === "INVALID_CAPTCHA") {
             message = t("errorInvalidCaptcha");
             turnstileToken = "";
-            saveCaptchaSession("");
             if (window.turnstile && turnstileWidgetId !== null) {
               window.turnstile.reset(turnstileWidgetId);
             }
@@ -3668,12 +3643,9 @@
 
         renderResult(data);
         applyAutoCompletionFromResponse(selected.id, data);
-        if (typeof data?.security?.captchaSession === "string" && data.security.captchaSession.trim()) {
-          saveCaptchaSession(data.security.captchaSession.trim());
-        }
 
         turnstileToken = "";
-        if (!captchaSession && window.turnstile && turnstileWidgetId !== null) {
+        if (window.turnstile && turnstileWidgetId !== null) {
           window.turnstile.reset(turnstileWidgetId);
         }
         refreshRunButtonVisibility();
@@ -3754,7 +3726,6 @@
       await ensureInitialUiLang();
       setUiLanguage(uiLang, { persist: false, rerender: false });
       loadCurriculumState();
-      loadCaptchaSession();
       initBodyDraft();
       initRoadmapPan();
 
