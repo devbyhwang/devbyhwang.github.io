@@ -698,6 +698,10 @@
 
     .run:disabled {
       opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .run.is-loading {
       cursor: wait;
     }
 
@@ -715,6 +719,13 @@
       margin-top: 6px;
       font-size: 12px;
       color: #5b564d;
+    }
+
+    .captcha-guide {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #7a3f2f;
+      line-height: 1.45;
     }
 
     .captcha-wrap {
@@ -865,6 +876,7 @@
         <div class="captcha-wrap">
           <div id="turnstileBox"></div>
         </div>
+        <p id="captchaGuide" class="captcha-guide" hidden></p>
 
         <label id="resultLabel">피드백 결과</label>
         <div id="result" class="result">
@@ -950,6 +962,7 @@
         statusNeedNode: "로드맵에서 연습 항목을 선택하세요.",
         statusNeedInput: "연습 입력칸을 먼저 채워주세요.",
         statusNeedCaptcha: "보안 검증을 완료한 뒤 다시 시도하세요.",
+        captchaGuide: "Cloudflare 보안 검증을 먼저 완료한 뒤 분석 실행 버튼을 눌러주세요.",
         statusRequesting: "분석 요청 중...",
         statusDone: "분석이 완료되었습니다.",
         statusTurnstileMissing: "Turnstile 사이트키가 설정되지 않았습니다.",
@@ -1015,6 +1028,7 @@
         statusNeedNode: "Select a roadmap node first.",
         statusNeedInput: "Fill in all practice fields first.",
         statusNeedCaptcha: "Complete security verification and retry.",
+        captchaGuide: "Complete Cloudflare security verification first, then run analysis.",
         statusRequesting: "Sending analysis request...",
         statusDone: "Analysis completed.",
         statusTurnstileMissing: "Turnstile site key is missing.",
@@ -2574,6 +2588,7 @@
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
     const turnstileBoxEl = document.getElementById("turnstileBox");
+    const captchaGuideEl = document.getElementById("captchaGuide");
     const ownerKeyBoxEl = document.querySelector(".owner-key-box");
     let runButtonDefaultLabel = runBtnEl ? runBtnEl.textContent.trim() || t("run") : t("run");
     // TEST_ONLY_OWNER_BYPASS_START
@@ -2686,6 +2701,7 @@
       if (usageLabelEl) usageLabelEl.textContent = t("usage");
       if (resultLabelEl) resultLabelEl.textContent = t("resultLabel");
       if (resetExerciseBtnEl) resetExerciseBtnEl.textContent = t("resetExercise");
+      if (captchaGuideEl) captchaGuideEl.textContent = t("captchaGuide");
       runButtonDefaultLabel = t("run");
       if (runBtnEl && !isRunLoading) runBtnEl.textContent = runButtonDefaultLabel;
       if (!resultEl.querySelector(".card") && !resultEl.querySelector(".score") && !resultEl.classList.contains("is-loading")) {
@@ -2722,13 +2738,12 @@
       if (persist) saveUiLang();
       if (rerender) {
         renderAll();
-        refreshRunButtonVisibility();
+        refreshRunButtonState();
       }
     }
 
-    function setRunButtonVisible(isVisible) {
-      runBtnEl.style.display = isVisible ? "" : "none";
-      runBtnEl.disabled = !isVisible || isRunLoading;
+    function setRunButtonEnabled(enabled) {
+      runBtnEl.disabled = !enabled;
     }
 
     // TEST_ONLY_OWNER_BYPASS_START
@@ -2741,10 +2756,16 @@
       return Boolean(getOwnerKey());
     }
 
-    function refreshRunButtonVisibility() {
+    function refreshRunButtonState() {
       const selected = getSelectedNode();
       const canRunForNode = Boolean(selected);
-      setRunButtonVisible(Boolean(turnstileToken || hasOwnerKey()) && canRunForNode);
+      const hasVerification = Boolean(turnstileToken || hasOwnerKey());
+      const canRun = !isRunLoading && canRunForNode && hasVerification;
+      setRunButtonEnabled(canRun);
+      if (captchaGuideEl) {
+        const showGuide = canRunForNode && !isRunLoading && !hasVerification;
+        captchaGuideEl.hidden = !showGuide;
+      }
     }
     // TEST_ONLY_OWNER_BYPASS_END
 
@@ -2773,7 +2794,7 @@
       isRunLoading = Boolean(isLoading);
       runBtnEl.classList.toggle("is-loading", isRunLoading);
       runBtnEl.textContent = isRunLoading ? t("running") : runButtonDefaultLabel;
-      refreshRunButtonVisibility();
+      refreshRunButtonState();
     }
 
     function setResultLoading(isLoading) {
@@ -2977,7 +2998,7 @@
 
       saveCurriculumState();
       renderAll();
-      refreshRunButtonVisibility();
+      refreshRunButtonState();
     }
 
     function setActiveTab(tabId) {
@@ -3469,7 +3490,7 @@
 
       if (!TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
         setStatus(t("statusTurnstileMissing"), "error");
-        runBtnEl.disabled = true;
+        refreshRunButtonState();
         return;
       }
 
@@ -3479,15 +3500,15 @@
         action: TURNSTILE_ACTION,
         callback(token) {
           turnstileToken = token || "";
-          refreshRunButtonVisibility();
+          refreshRunButtonState();
         },
         "expired-callback"() {
           turnstileToken = "";
-          refreshRunButtonVisibility();
+          refreshRunButtonState();
         },
         "error-callback"() {
           turnstileToken = "";
-          refreshRunButtonVisibility();
+          refreshRunButtonState();
           setStatus(t("statusTurnstileError"), "error");
         },
       });
@@ -3633,7 +3654,7 @@
             if (window.turnstile && turnstileWidgetId !== null) {
               window.turnstile.reset(turnstileWidgetId);
             }
-            refreshRunButtonVisibility();
+            refreshRunButtonState();
           } else if (code === "PAYLOAD_TOO_LARGE") {
             message = t("errorPayloadTooLarge");
           }
@@ -3648,7 +3669,7 @@
         if (window.turnstile && turnstileWidgetId !== null) {
           window.turnstile.reset(turnstileWidgetId);
         }
-        refreshRunButtonVisibility();
+        refreshRunButtonState();
         setStatus(t("statusDone"), "ok");
       } catch (err) {
         setStatus(err.message || t("errorNetwork"), "error");
@@ -3656,7 +3677,7 @@
         resultEl.innerHTML = `<p class="placeholder">${escapeHtml(t("resultPlaceholder"))}</p>`;
       } finally {
         setRunLoading(false);
-        refreshRunButtonVisibility();
+        refreshRunButtonState();
       }
     }
 
@@ -3755,13 +3776,13 @@
           } else {
             localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
           }
-          refreshRunButtonVisibility();
+          refreshRunButtonState();
         });
       }
       // TEST_ONLY_OWNER_BYPASS_END
 
       renderAll();
-      refreshRunButtonVisibility();
+      refreshRunButtonState();
 
       const turnstileInitTimer = setInterval(() => {
         tryRenderTurnstile();
