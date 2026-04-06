@@ -1,4 +1,4 @@
-const LIMIT_PER_DAY = 5;
+const LIMIT_PER_DAY = 3;
 const RATE_TTL_SECONDS = 60 * 60 * 24 * 2;
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
