@@ -131,6 +131,7 @@ export default {
         sessionResult = await verifyCaptchaSessionToken({
           token: captchaSession,
           secret: env.CAPTCHA_SESSION_SECRET_KEY,
+          clientId,
           origin,
           expectedHostname,
           expectedAction,
@@ -204,6 +205,7 @@ export default {
 
         const issuedSession = await issueCaptchaSessionToken({
           secret: env.CAPTCHA_SESSION_SECRET_KEY,
+          clientId,
           origin,
           expectedHostname,
           expectedAction,
@@ -841,7 +843,7 @@ function resolveExpectedTurnstileAction(value) {
   return action || DEFAULT_TURNSTILE_ACTION;
 }
 
-async function issueCaptchaSessionToken({ secret, origin, expectedHostname, expectedAction }) {
+async function issueCaptchaSessionToken({ secret, clientId, origin, expectedHostname, expectedAction }) {
   if (!secret) return { ok: false, reason: "missing_secret" };
   const nowSec = Math.floor(Date.now() / 1000);
   const expSec = nowSec + CAPTCHA_SESSION_TTL_SECONDS;
@@ -850,6 +852,7 @@ async function issueCaptchaSessionToken({ secret, origin, expectedHostname, expe
     sub: "captcha_session",
     iat: nowSec,
     exp: expSec,
+    clientId,
     origin,
     hostname: expectedHostname,
     action: expectedAction,
@@ -873,6 +876,7 @@ async function issueCaptchaSessionToken({ secret, origin, expectedHostname, expe
 async function verifyCaptchaSessionToken({
   token,
   secret,
+  clientId,
   origin,
   expectedHostname,
   expectedAction,
@@ -917,6 +921,9 @@ async function verifyCaptchaSessionToken({
   }
   if (Math.floor(Date.now() / 1000) >= Number(payload.exp)) {
     return { ok: false, reason: "expired" };
+  }
+  if (String(payload.clientId || "") !== String(clientId || "")) {
+    return { ok: false, reason: "client_mismatch" };
   }
   if (String(payload.origin || "") !== String(origin || "")) {
     return { ok: false, reason: "origin_mismatch" };
