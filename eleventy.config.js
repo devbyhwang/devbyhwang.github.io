@@ -68,7 +68,6 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/ads.txt": "ads.txt" });
   eleventyConfig.addWatchTarget("src/styles");
   eleventyConfig.addWatchTarget("src/demos");
-  eleventyConfig.ignores.add("src/demos/**");
 
   eleventyConfig.addFilter("slugify", slugify);
   eleventyConfig.addFilter("readableDate", (dateObj, format = "yyyy.MM.dd") =>
