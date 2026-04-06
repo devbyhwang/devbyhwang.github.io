@@ -98,10 +98,10 @@
     - 이전 구조(`lastSelectedDrillId`, `perDrill`)에서 마이그레이션 지원
   - `novel-assistant:draft:<nodeId>:v2` (노드별 연습 입력 draft)
   - `novel-assistant:body:v2` (선택 원고 본문)
-- `sessionStorage` 키:
+- `localStorage` 키:
   - `novel-assistant:captcha-session:v1`
-    - 워커가 발급한 캡차 세션 토큰(탭 세션 기준)
-    - 탭 종료 시 자동 삭제되어 다음 탭에서 재검증 필요
+    - 워커가 발급한 캡차 세션 토큰(브라우저/도메인 기준, TTL 내 재사용)
+    - 저장소 수동 삭제 또는 만료 시에만 재검증 필요
 
 ## 요청 예시
 ```json
@@ -121,7 +121,7 @@
 }
 ```
 - `turnstileToken`은 유효한 `captchaSession`이 없을 때만 필수입니다.
-- `captchaSession`이 유효하면 같은 탭에서 재검증 없이 요청 가능합니다.
+- `captchaSession`이 유효하면 같은 브라우저/도메인에서 재검증 없이 요청 가능합니다.
 
 ## 언어/요청 동기화 규칙
 - UI 언어가 `KO`일 때 `meta.lang = "ko"` 전송
@@ -161,7 +161,8 @@
   }
 }
 ```
-- `security.captchaSession`이 내려오면 프런트는 `sessionStorage`에 저장해 같은 탭 내 후속 요청에 재사용합니다.
+- `security.captchaSession`이 내려오면 프런트는 `localStorage`에 저장해 같은 브라우저 내 후속 요청에 재사용합니다.
+- 세션은 서명 + TTL + origin/hostname/action으로 검증되며, IP 고정 바인딩은 사용하지 않습니다.
 
 ## 보안 원칙
 - 개인 API 키 입력 기능 없음 (서버 키 전용)

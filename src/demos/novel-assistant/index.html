@@ -2746,7 +2746,7 @@
 
     function loadCaptchaSession() {
       try {
-        captchaSession = String(sessionStorage.getItem(CAPTCHA_SESSION_STORAGE_KEY) || "").trim();
+        captchaSession = String(localStorage.getItem(CAPTCHA_SESSION_STORAGE_KEY) || "").trim();
       } catch {
         captchaSession = "";
       }
@@ -2756,12 +2756,12 @@
       captchaSession = String(nextValue || "").trim();
       try {
         if (captchaSession) {
-          sessionStorage.setItem(CAPTCHA_SESSION_STORAGE_KEY, captchaSession);
+          localStorage.setItem(CAPTCHA_SESSION_STORAGE_KEY, captchaSession);
         } else {
-          sessionStorage.removeItem(CAPTCHA_SESSION_STORAGE_KEY);
+          localStorage.removeItem(CAPTCHA_SESSION_STORAGE_KEY);
         }
       } catch {
-        // sessionStorage may be unavailable in strict browser settings.
+        // Storage may be unavailable in strict browser settings.
       }
     }
 

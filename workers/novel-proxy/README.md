@@ -109,8 +109,9 @@ After deploy, use:
 ## Captcha session behavior
 - 최초 요청(또는 세션 만료/무효 시): Turnstile 검증 필요
 - Turnstile 성공 시: 새 `captchaSession` 발급
-- 이후 같은 탭 세션: `captchaSession`으로 재검증 생략 가능
-- 탭 종료 후 새 탭 진입 시: 클라이언트 `sessionStorage`가 초기화되어 다시 Turnstile 필요
+- 이후 같은 브라우저/도메인: `captchaSession`으로 재검증 생략 가능 (TTL 내)
+- `captchaSession`은 서명 + TTL + origin/hostname/action으로 검증됩니다.
+- IP 고정 바인딩을 제거해 이동통신/프록시 환경에서도 재인증 반복을 줄였습니다.
 - 변조/만료된 `captchaSession`만 전송 시: `INVALID_CAPTCHA`(403)
 
 ## Error codes
