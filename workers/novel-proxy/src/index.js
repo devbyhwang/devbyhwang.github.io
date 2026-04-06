@@ -268,6 +268,14 @@ export default {
         );
       }
       if (result.reason === "status") {
+        if (Number(result.status) === 429) {
+          return json(
+            { error: { code: "AI_QUOTA_EXCEEDED", message: "AI 사용량이 만료되어 응답을 생성할 수 없습니다." } },
+            429,
+            origin,
+            allowedOrigin
+          );
+        }
         return json(
           { error: { code: "UPSTREAM_ERROR", message: "AI 응답 생성에 실패했습니다." } },
           502,
@@ -486,7 +494,7 @@ async function callGemini({ apiKey, model, prompt }) {
 
   if (!response.ok) {
     console.error("Gemini upstream status", response.status);
-    return { ok: false, reason: "status" };
+    return { ok: false, reason: "status", status: response.status };
   }
 
   let geminiJson;
@@ -524,7 +532,7 @@ async function callOpenAi({ apiKey, prompt }) {
 
   if (!response.ok) {
     console.error("OpenAI upstream status", response.status);
-    return { ok: false, reason: "status" };
+    return { ok: false, reason: "status", status: response.status };
   }
 
   let openAiJson;
