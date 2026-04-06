@@ -148,6 +148,19 @@
       gap: 6px;
     }
 
+    .exercise-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .exercise-reset-btn {
+      min-width: 104px;
+    }
+
     .exercise-field label {
       font-size: 11px;
     }
@@ -759,7 +772,10 @@
 
         <div id="selectedDrillMeta" class="selected-card"></div>
 
-        <label>연습 입력칸</label>
+        <div class="exercise-label-row">
+          <label>연습 입력칸</label>
+          <button type="button" id="resetExerciseBtn" class="completion-btn exercise-reset-btn">입력 초기화</button>
+        </div>
         <div id="exerciseFields" class="exercise-wrap">
           <p class="exercise-empty">로드맵에서 연습 항목을 선택하세요.</p>
         </div>
@@ -1559,6 +1575,7 @@
     const roadmapSvgEl = document.getElementById("roadmapSvg");
     const roadmapScrollEl = document.querySelector(".roadmap-scroll");
     const completionControlEl = document.getElementById("completionControl");
+    const resetExerciseBtnEl = document.getElementById("resetExerciseBtn");
     const runBtnEl = document.getElementById("runBtn");
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
@@ -1807,6 +1824,29 @@
       const selected = getSelectedNode();
       if (!selected) return;
       writeDraft(selected.id, collectExerciseValues());
+    }
+
+    function resetExerciseInputs() {
+      const selected = getSelectedNode();
+      if (!selected) return;
+
+      if (draftSaveTimer) {
+        clearTimeout(draftSaveTimer);
+        draftSaveTimer = null;
+      }
+
+      const emptyValues = {};
+      const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
+      fields.forEach((field) => {
+        emptyValues[field.key] = "";
+      });
+
+      exerciseFieldsEl.querySelectorAll("textarea[data-field-key]").forEach((el) => {
+        el.value = "";
+        autoResizeTextarea(el);
+      });
+      writeDraft(selected.id, emptyValues);
+      setStatus("연습 입력칸을 초기화했습니다.", "ok");
     }
 
     function selectNode(nodeId) {
@@ -2189,6 +2229,7 @@
       const selected = getSelectedNode();
       if (!selected) {
         exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">로드맵에서 연습 항목을 선택하세요.</p>";
+        if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = true;
         return;
       }
 
@@ -2198,8 +2239,10 @@
       const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
       if (fields.length === 0) {
         exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">이 노드는 입력 템플릿이 없습니다.</p>";
+        if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = true;
         return;
       }
+      if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = false;
 
       fields.forEach((field) => {
         const wrap = document.createElement("div");
@@ -2545,6 +2588,9 @@
     initRoadmapPan();
 
     runBtnEl.addEventListener("click", runAnalysis);
+    if (resetExerciseBtnEl) {
+      resetExerciseBtnEl.addEventListener("click", resetExerciseInputs);
+    }
 
     // TEST_ONLY_OWNER_BYPASS_START
     if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {
