@@ -8,6 +8,8 @@ const OWNER_BYPASS_HEADER = "X-Owner-Key";
 const DEFAULT_TURNSTILE_ACTION = "novel_feedback";
 const DEFAULT_AI_PROVIDER = "gemini";
 const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
+const CAPTCHA_SESSION_VERSION = "v1";
+const CAPTCHA_SESSION_TTL_SECONDS = 60 * 60 * 6;
 
 export default {
   async fetch(request, env) {
@@ -84,14 +86,7 @@ export default {
     // TEST_ONLY_OWNER_BYPASS_END
 
     const turnstileToken = typeof payload.turnstileToken === "string" ? payload.turnstileToken.trim() : "";
-    if (!isOwnerBypass && !turnstileToken) {
-      return json(
-        { error: { code: "BAD_REQUEST", message: "turnstileToken is required" } },
-        400,
-        origin,
-        allowedOrigin
-      );
-    }
+    const captchaSession = typeof payload.captchaSession === "string" ? payload.captchaSession.trim() : "";
 
     if (!isOwnerBypass && !env.TURNSTILE_SECRET_KEY) {
       console.error("Missing TURNSTILE_SECRET_KEY secret");
@@ -102,8 +97,18 @@ export default {
         allowedOrigin
       );
     }
+    if (!isOwnerBypass && !env.CAPTCHA_SESSION_SECRET_KEY) {
+      console.error("Missing CAPTCHA_SESSION_SECRET_KEY secret");
+      return json(
+        { error: { code: "UPSTREAM_ERROR", message: "보안 검증 구성이 잘못되었습니다." } },
+        502,
+        origin,
+        allowedOrigin
+      );
+    }
 
     const clientId = request.headers.get("CF-Connecting-IP") || "unknown";
+    let securityPayload = null;
     if (!isOwnerBypass) {
       const expectedHostname = resolveExpectedTurnstileHostname({
         explicitHostname: env.TURNSTILE_EXPECTED_HOSTNAME,
@@ -121,16 +126,21 @@ export default {
         );
       }
 
-      const turnstileResult = await verifyTurnstileToken({
-        secret: env.TURNSTILE_SECRET_KEY,
-        token: turnstileToken,
-        remoteIp: clientId,
-      });
-      if (!turnstileResult.ok) {
-        console.error("Turnstile verification failed", {
-          reason: turnstileResult.reason,
-          errors: turnstileResult.errorCodes,
+      let sessionResult = { ok: false, reason: "missing_session" };
+      if (captchaSession) {
+        sessionResult = await verifyCaptchaSessionToken({
+          token: captchaSession,
+          secret: env.CAPTCHA_SESSION_SECRET_KEY,
+          clientId,
+          origin,
+          expectedHostname,
+          expectedAction,
         });
+      }
+      const verifiedBySession = sessionResult.ok;
+
+      if (captchaSession && !verifiedBySession && !turnstileToken) {
+        console.error("Captcha session verification failed", sessionResult.reason || "unknown");
         return json(
           { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
           403,
@@ -139,30 +149,80 @@ export default {
         );
       }
 
-      if (turnstileResult.hostname !== expectedHostname) {
-        console.error("Turnstile hostname mismatch", {
-          expected: expectedHostname,
-          actual: turnstileResult.hostname || "",
-        });
-        return json(
-          { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
-          403,
-          origin,
-          allowedOrigin
-        );
-      }
+      if (!verifiedBySession) {
+        if (!turnstileToken) {
+          return json(
+            { error: { code: "BAD_REQUEST", message: "turnstileToken is required" } },
+            400,
+            origin,
+            allowedOrigin
+          );
+        }
 
-      if (turnstileResult.action !== expectedAction) {
-        console.error("Turnstile action mismatch", {
-          expected: expectedAction,
-          actual: turnstileResult.action || "",
+        const turnstileResult = await verifyTurnstileToken({
+          secret: env.TURNSTILE_SECRET_KEY,
+          token: turnstileToken,
+          remoteIp: clientId,
         });
-        return json(
-          { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
-          403,
+        if (!turnstileResult.ok) {
+          console.error("Turnstile verification failed", {
+            reason: turnstileResult.reason,
+            errors: turnstileResult.errorCodes,
+          });
+          return json(
+            { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
+            403,
+            origin,
+            allowedOrigin
+          );
+        }
+
+        if (turnstileResult.hostname !== expectedHostname) {
+          console.error("Turnstile hostname mismatch", {
+            expected: expectedHostname,
+            actual: turnstileResult.hostname || "",
+          });
+          return json(
+            { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
+            403,
+            origin,
+            allowedOrigin
+          );
+        }
+
+        if (turnstileResult.action !== expectedAction) {
+          console.error("Turnstile action mismatch", {
+            expected: expectedAction,
+            actual: turnstileResult.action || "",
+          });
+          return json(
+            { error: { code: "INVALID_CAPTCHA", message: "보안 검증에 실패했습니다." } },
+            403,
+            origin,
+            allowedOrigin
+          );
+        }
+
+        const issuedSession = await issueCaptchaSessionToken({
+          secret: env.CAPTCHA_SESSION_SECRET_KEY,
+          clientId,
           origin,
-          allowedOrigin
-        );
+          expectedHostname,
+          expectedAction,
+        });
+        if (!issuedSession.ok) {
+          console.error("Captcha session issue failed", issuedSession.reason || "unknown");
+          return json(
+            { error: { code: "UPSTREAM_ERROR", message: "보안 검증 구성이 잘못되었습니다." } },
+            502,
+            origin,
+            allowedOrigin
+          );
+        }
+        securityPayload = {
+          captchaSession: issuedSession.token,
+          captchaSessionExpiresAt: issuedSession.expiresAt,
+        };
       }
     }
 
@@ -314,6 +374,7 @@ export default {
               : Math.max(0, Number(limit.remainingToday)),
           limitPerDay: isOwnerBypass ? null : LIMIT_PER_DAY,
         },
+        ...(securityPayload ? { security: securityPayload } : {}),
       },
       200,
       origin,
@@ -780,6 +841,157 @@ function resolveExpectedTurnstileHostname({ explicitHostname, allowedOrigin }) {
 function resolveExpectedTurnstileAction(value) {
   const action = typeof value === "string" ? value.trim() : "";
   return action || DEFAULT_TURNSTILE_ACTION;
+}
+
+async function issueCaptchaSessionToken({ secret, clientId, origin, expectedHostname, expectedAction }) {
+  if (!secret) return { ok: false, reason: "missing_secret" };
+  const nowSec = Math.floor(Date.now() / 1000);
+  const expSec = nowSec + CAPTCHA_SESSION_TTL_SECONDS;
+  const payload = {
+    v: CAPTCHA_SESSION_VERSION,
+    sub: "captcha_session",
+    iat: nowSec,
+    exp: expSec,
+    clientId,
+    origin,
+    hostname: expectedHostname,
+    action: expectedAction,
+  };
+
+  try {
+    const payloadPart = base64UrlEncode(textEncode(JSON.stringify(payload)));
+    const signingInput = `${CAPTCHA_SESSION_VERSION}.${payloadPart}`;
+    const signatureBytes = await signHmacSha256(secret, signingInput);
+    const signaturePart = base64UrlEncode(signatureBytes);
+    return {
+      ok: true,
+      token: `${CAPTCHA_SESSION_VERSION}.${payloadPart}.${signaturePart}`,
+      expiresAt: new Date(expSec * 1000).toISOString(),
+    };
+  } catch (error) {
+    return { ok: false, reason: summarizeError(error) };
+  }
+}
+
+async function verifyCaptchaSessionToken({
+  token,
+  secret,
+  clientId,
+  origin,
+  expectedHostname,
+  expectedAction,
+}) {
+  if (!token || !secret) return { ok: false, reason: "missing_token_or_secret" };
+  const parts = token.split(".");
+  if (parts.length !== 3) return { ok: false, reason: "invalid_format" };
+  const [versionPart, payloadPart, signaturePart] = parts;
+  if (versionPart !== CAPTCHA_SESSION_VERSION) return { ok: false, reason: "invalid_version" };
+
+  const signatureBytes = base64UrlDecode(signaturePart);
+  if (!signatureBytes) return { ok: false, reason: "invalid_signature_encoding" };
+
+  const signingInput = `${versionPart}.${payloadPart}`;
+  let expectedSignature;
+  try {
+    expectedSignature = await signHmacSha256(secret, signingInput);
+  } catch (error) {
+    return { ok: false, reason: `sign_failed:${summarizeError(error)}` };
+  }
+  if (!timingSafeEqual(signatureBytes, expectedSignature)) {
+    return { ok: false, reason: "signature_mismatch" };
+  }
+
+  const payloadBytes = base64UrlDecode(payloadPart);
+  if (!payloadBytes) return { ok: false, reason: "invalid_payload_encoding" };
+
+  let payload;
+  try {
+    payload = JSON.parse(textDecode(payloadBytes));
+  } catch {
+    return { ok: false, reason: "invalid_payload_json" };
+  }
+
+  if (payload?.v !== CAPTCHA_SESSION_VERSION) return { ok: false, reason: "payload_version_mismatch" };
+  if (payload?.sub !== "captcha_session") return { ok: false, reason: "payload_subject_mismatch" };
+  if (!Number.isFinite(payload?.exp) || !Number.isFinite(payload?.iat)) {
+    return { ok: false, reason: "invalid_timestamps" };
+  }
+  if (Number(payload.iat) > Number(payload.exp)) {
+    return { ok: false, reason: "timestamp_order_invalid" };
+  }
+  if (Math.floor(Date.now() / 1000) >= Number(payload.exp)) {
+    return { ok: false, reason: "expired" };
+  }
+  if (String(payload.clientId || "") !== String(clientId || "")) {
+    return { ok: false, reason: "client_mismatch" };
+  }
+  if (String(payload.origin || "") !== String(origin || "")) {
+    return { ok: false, reason: "origin_mismatch" };
+  }
+  if (String(payload.hostname || "") !== String(expectedHostname || "")) {
+    return { ok: false, reason: "hostname_mismatch" };
+  }
+  if (String(payload.action || "") !== String(expectedAction || "")) {
+    return { ok: false, reason: "action_mismatch" };
+  }
+
+  return { ok: true };
+}
+
+async function signHmacSha256(secret, message) {
+  const key = await crypto.subtle.importKey(
+    "raw",
+    textEncode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  const signature = await crypto.subtle.sign("HMAC", key, textEncode(message));
+  return new Uint8Array(signature);
+}
+
+function base64UrlEncode(bytes) {
+  const chunkSize = 0x8000;
+  let binary = "";
+  for (let idx = 0; idx < bytes.length; idx += chunkSize) {
+    const chunk = bytes.subarray(idx, idx + chunkSize);
+    binary += String.fromCharCode(...chunk);
+  }
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/g, "");
+}
+
+function base64UrlDecode(value) {
+  if (typeof value !== "string" || !value) return null;
+  const normalized = value.replaceAll("-", "+").replaceAll("_", "/");
+  const padded = normalized + "=".repeat((4 - (normalized.length % 4 || 4)) % 4);
+  try {
+    const binary = atob(padded);
+    const bytes = new Uint8Array(binary.length);
+    for (let idx = 0; idx < binary.length; idx += 1) {
+      bytes[idx] = binary.charCodeAt(idx);
+    }
+    return bytes;
+  } catch {
+    return null;
+  }
+}
+
+function timingSafeEqual(left, right) {
+  if (!(left instanceof Uint8Array) || !(right instanceof Uint8Array)) return false;
+  if (left.length !== right.length) return false;
+  let mismatch = 0;
+  for (let idx = 0; idx < left.length; idx += 1) {
+    mismatch |= left[idx] ^ right[idx];
+  }
+  return mismatch === 0;
+}
+
+function textEncode(value) {
+  return new TextEncoder().encode(String(value));
+}
+
+function textDecode(bytes) {
+  return new TextDecoder().decode(bytes);
 }
 
 async function consumeRateLimit(env, { key, limit, ttlSec }) {
