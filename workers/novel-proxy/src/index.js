@@ -8,14 +8,12 @@ const OWNER_BYPASS_HEADER = "X-Owner-Key";
 const DEFAULT_TURNSTILE_ACTION = "novel_feedback";
 const DEFAULT_AI_PROVIDER = "gemini";
 const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
-const MAX_UPSTREAM_ERROR_TEXT = 300;
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin") || "";
     const allowedOrigin = env.ALLOWED_ORIGIN || "";
-    const requestId = resolveRequestId(request);
 
     if (url.pathname !== "/v1/novel-feedback") {
       return json(
@@ -96,23 +94,9 @@ export default {
     }
 
     if (!isOwnerBypass && !env.TURNSTILE_SECRET_KEY) {
-      logUpstreamError("Missing TURNSTILE_SECRET_KEY secret", {
-        requestId,
-        subcode: "TURNSTILE_CONFIG_INVALID",
-        provider: "turnstile",
-        reason: "config_missing",
-      });
+      console.error("Missing TURNSTILE_SECRET_KEY secret");
       return json(
-        buildUpstreamError({
-          requestId,
-          subcode: "TURNSTILE_CONFIG_INVALID",
-          message: "보안 검증 구성이 잘못되었습니다.",
-          exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-          detail: {
-            provider: "turnstile",
-            reason: "config_missing",
-          },
-        }),
+        { error: { code: "UPSTREAM_ERROR", message: "보안 검증 구성이 잘못되었습니다." } },
         502,
         origin,
         allowedOrigin
@@ -128,23 +112,9 @@ export default {
       const expectedAction = resolveExpectedTurnstileAction(env.TURNSTILE_EXPECTED_ACTION);
 
       if (!expectedHostname) {
-        logUpstreamError("Missing TURNSTILE_EXPECTED_HOSTNAME and ALLOWED_ORIGIN hostname fallback", {
-          requestId,
-          subcode: "TURNSTILE_CONFIG_INVALID",
-          provider: "turnstile",
-          reason: "config_missing",
-        });
+        console.error("Missing TURNSTILE_EXPECTED_HOSTNAME and ALLOWED_ORIGIN hostname fallback");
         return json(
-          buildUpstreamError({
-            requestId,
-            subcode: "TURNSTILE_CONFIG_INVALID",
-            message: "보안 검증 구성이 잘못되었습니다.",
-            exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-            detail: {
-              provider: "turnstile",
-              reason: "config_missing",
-            },
-          }),
+          { error: { code: "UPSTREAM_ERROR", message: "보안 검증 구성이 잘못되었습니다." } },
           502,
           origin,
           allowedOrigin
@@ -232,23 +202,9 @@ export default {
         ttlSec: RATE_TTL_SECONDS,
       });
       if (!limit.ok) {
-        logUpstreamError("Rate limiter error", {
-          requestId,
-          subcode: "RATE_LIMIT_BACKEND_FAILED",
-          provider: "rate_limiter",
-          reason: limit.reason || "unknown",
-        });
+        console.error("Rate limiter error", limit.reason || "unknown");
         return json(
-          buildUpstreamError({
-            requestId,
-            subcode: "RATE_LIMIT_BACKEND_FAILED",
-            message: "요청 제한 처리에 실패했습니다.",
-            exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-            detail: {
-              provider: "rate_limiter",
-              reason: limit.reason || "unknown",
-            },
-          }),
+          { error: { code: "UPSTREAM_ERROR", message: "요청 제한 처리에 실패했습니다." } },
           502,
           origin,
           allowedOrigin
@@ -270,46 +226,18 @@ export default {
     const prompt = buildPrompt({ manuscript, preset, checks, meta });
     const provider = resolveAiProvider(env);
     if (provider === "gemini" && !env.GEMINI_API_KEY) {
-      logUpstreamError("Missing GEMINI_API_KEY secret", {
-        requestId,
-        subcode: "AI_CONFIG_INVALID",
-        provider: "gemini",
-        reason: "config_missing",
-      });
+      console.error("Missing GEMINI_API_KEY secret");
       return json(
-        buildUpstreamError({
-          requestId,
-          subcode: "AI_CONFIG_INVALID",
-          message: "AI 요청 구성이 잘못되었습니다.",
-          exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-          detail: {
-            provider: "gemini",
-            reason: "config_missing",
-          },
-        }),
+        { error: { code: "UPSTREAM_ERROR", message: "AI 요청 구성이 잘못되었습니다." } },
         502,
         origin,
         allowedOrigin
       );
     }
     if (provider === "openai" && !env.OPENAI_API_KEY) {
-      logUpstreamError("Missing OPENAI_API_KEY secret", {
-        requestId,
-        subcode: "AI_CONFIG_INVALID",
-        provider: "openai",
-        reason: "config_missing",
-      });
+      console.error("Missing OPENAI_API_KEY secret");
       return json(
-        buildUpstreamError({
-          requestId,
-          subcode: "AI_CONFIG_INVALID",
-          message: "AI 요청 구성이 잘못되었습니다.",
-          exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-          detail: {
-            provider: "openai",
-            reason: "config_missing",
-          },
-        }),
+        { error: { code: "UPSTREAM_ERROR", message: "AI 요청 구성이 잘못되었습니다." } },
         502,
         origin,
         allowedOrigin
@@ -322,109 +250,41 @@ export default {
         apiKey: env.GEMINI_API_KEY,
         model: resolveGeminiModel(env),
         prompt,
-        requestId,
       });
     } else {
       result = await callOpenAi({
         apiKey: env.OPENAI_API_KEY,
         prompt,
-        requestId,
       });
     }
 
     if (!result.ok) {
       if (result.reason === "network") {
-        logUpstreamError("AI request network failure", {
-          requestId,
-          subcode: "AI_UPSTREAM_NETWORK",
-          provider: result.provider,
-          reason: result.reason,
-        });
         return json(
-          buildUpstreamError({
-            requestId,
-            subcode: "AI_UPSTREAM_NETWORK",
-            message: "AI 서비스 연결에 실패했습니다.",
-            exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-            detail: {
-              provider: result.provider,
-              reason: result.reason,
-            },
-          }),
+          { error: { code: "UPSTREAM_ERROR", message: "AI 서비스 연결에 실패했습니다." } },
           502,
           origin,
           allowedOrigin
         );
       }
       if (result.reason === "status") {
-        logUpstreamError("AI upstream status failure", {
-          requestId,
-          subcode: "AI_UPSTREAM_STATUS",
-          provider: result.provider,
-          reason: result.reason,
-          upstreamStatus: result.status,
-          upstreamErrorType: result.upstreamErrorType,
-          upstreamErrorMessage: result.upstreamErrorMessage,
-        });
         return json(
-          buildUpstreamError({
-            requestId,
-            subcode: "AI_UPSTREAM_STATUS",
-            message: "AI 응답 생성에 실패했습니다.",
-            exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-            detail: {
-              provider: result.provider,
-              reason: result.reason,
-              upstreamStatus: result.status,
-              upstreamErrorType: result.upstreamErrorType,
-              upstreamErrorMessage: result.upstreamErrorMessage,
-            },
-          }),
+          { error: { code: "UPSTREAM_ERROR", message: "AI 응답 생성에 실패했습니다." } },
           502,
           origin,
           allowedOrigin
         );
       }
       if (result.reason === "invalid_json") {
-        logUpstreamError("AI upstream JSON parse failure", {
-          requestId,
-          subcode: "AI_UPSTREAM_INVALID_JSON",
-          provider: result.provider,
-          reason: result.reason,
-        });
         return json(
-          buildUpstreamError({
-            requestId,
-            subcode: "AI_UPSTREAM_INVALID_JSON",
-            message: "AI 응답 처리에 실패했습니다.",
-            exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-            detail: {
-              provider: result.provider,
-              reason: result.reason,
-            },
-          }),
+          { error: { code: "UPSTREAM_ERROR", message: "AI 응답 처리에 실패했습니다." } },
           502,
           origin,
           allowedOrigin
         );
       }
-      logUpstreamError("AI upstream empty output", {
-        requestId,
-        subcode: "AI_UPSTREAM_EMPTY_OUTPUT",
-        provider: result.provider,
-        reason: result.reason,
-      });
       return json(
-        buildUpstreamError({
-          requestId,
-          subcode: "AI_UPSTREAM_EMPTY_OUTPUT",
-          message: "AI 응답이 비어 있습니다.",
-          exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-          detail: {
-            provider: result.provider,
-            reason: result.reason,
-          },
-        }),
+        { error: { code: "UPSTREAM_ERROR", message: "AI 응답이 비어 있습니다." } },
         502,
         origin,
         allowedOrigin
@@ -435,25 +295,9 @@ export default {
     try {
       normalized = normalizeModelPayload(JSON.parse(result.outputText));
     } catch (error) {
-      logUpstreamError("Model output parse/normalize failed", {
-        requestId,
-        subcode: "AI_OUTPUT_SCHEMA_INVALID",
-        provider: result.provider,
-        reason: "schema_invalid",
-        upstreamErrorMessage: summarizeError(error),
-      });
+      console.error("Model output parse/normalize failed", summarizeError(error));
       return json(
-        buildUpstreamError({
-          requestId,
-          subcode: "AI_OUTPUT_SCHEMA_INVALID",
-          message: "AI 응답 포맷이 올바르지 않습니다.",
-          exposeDetail: shouldExposeErrorDetail(env, isOwnerBypass),
-          detail: {
-            provider: result.provider,
-            reason: "schema_invalid",
-            upstreamErrorMessage: summarizeError(error),
-          },
-        }),
+        { error: { code: "UPSTREAM_ERROR", message: "AI 응답 포맷이 올바르지 않습니다." } },
         502,
         origin,
         allowedOrigin
@@ -588,62 +432,6 @@ function json(payload, status, origin, allowedOrigin) {
   });
 }
 
-function resolveRequestId(request) {
-  const cfRay = (request.headers.get("CF-Ray") || "").trim();
-  if (cfRay) return cfRay;
-  return crypto.randomUUID();
-}
-
-function shouldExposeErrorDetail(env, isOwnerBypass) {
-  return env.ENABLE_ERROR_DETAIL === "true" && isOwnerBypass === true;
-}
-
-function buildUpstreamError({ requestId, subcode, message, exposeDetail, detail }) {
-  const error = {
-    code: "UPSTREAM_ERROR",
-    subcode,
-    message,
-    requestId,
-  };
-  const safeDetail = sanitizeErrorDetail(detail);
-  if (exposeDetail && safeDetail) {
-    error.detail = safeDetail;
-  }
-  return { error };
-}
-
-function sanitizeErrorDetail(detail) {
-  if (!detail || typeof detail !== "object") return null;
-  const out = {};
-  if (typeof detail.provider === "string" && detail.provider) {
-    out.provider = detail.provider;
-  }
-  if (typeof detail.reason === "string" && detail.reason) {
-    out.reason = detail.reason;
-  }
-  if (Number.isFinite(Number(detail.upstreamStatus))) {
-    out.upstreamStatus = Number(detail.upstreamStatus);
-  }
-  if (typeof detail.upstreamErrorType === "string" && detail.upstreamErrorType) {
-    out.upstreamErrorType = trimToMaxLength(detail.upstreamErrorType, MAX_UPSTREAM_ERROR_TEXT);
-  }
-  if (typeof detail.upstreamErrorMessage === "string" && detail.upstreamErrorMessage) {
-    out.upstreamErrorMessage = trimToMaxLength(detail.upstreamErrorMessage, MAX_UPSTREAM_ERROR_TEXT);
-  }
-  return Object.keys(out).length ? out : null;
-}
-
-function logUpstreamError(message, context) {
-  const safeContext = sanitizeErrorDetail(context) || {};
-  if (typeof context?.requestId === "string" && context.requestId) {
-    safeContext.requestId = context.requestId;
-  }
-  if (typeof context?.subcode === "string" && context.subcode) {
-    safeContext.subcode = context.subcode;
-  }
-  console.error(message, safeContext);
-}
-
 async function parseJson(request) {
   try {
     const value = await request.json();
@@ -679,7 +467,7 @@ function resolveGeminiModel(env) {
   return value || DEFAULT_GEMINI_MODEL;
 }
 
-async function callGemini({ apiKey, model, prompt, requestId }) {
+async function callGemini({ apiKey, model, prompt }) {
   let response;
   const url = `${GEMINI_URL_BASE}/${encodeURIComponent(model)}:generateContent`;
   try {
@@ -692,62 +480,33 @@ async function callGemini({ apiKey, model, prompt, requestId }) {
       body: JSON.stringify(buildGeminiRequest(prompt)),
     });
   } catch (error) {
-    logUpstreamError("Gemini request failed", {
-      requestId,
-      provider: "gemini",
-      reason: "network",
-      upstreamErrorMessage: summarizeError(error),
-    });
-    return { ok: false, provider: "gemini", reason: "network" };
+    console.error("Gemini request failed", summarizeError(error));
+    return { ok: false, reason: "network" };
   }
 
   if (!response.ok) {
-    const details = await summarizeUpstreamFailure(response);
-    logUpstreamError("Gemini upstream status", {
-      requestId,
-      provider: "gemini",
-      reason: "status",
-      upstreamStatus: response.status,
-      upstreamErrorType: details.upstreamErrorType,
-      upstreamErrorMessage: details.upstreamErrorMessage,
-    });
-    return {
-      ok: false,
-      provider: "gemini",
-      reason: "status",
-      status: response.status,
-      upstreamErrorType: details.upstreamErrorType,
-      upstreamErrorMessage: details.upstreamErrorMessage,
-    };
+    console.error("Gemini upstream status", response.status);
+    return { ok: false, reason: "status" };
   }
 
   let geminiJson;
   try {
     geminiJson = await response.json();
   } catch (error) {
-    logUpstreamError("Gemini JSON parse failed", {
-      requestId,
-      provider: "gemini",
-      reason: "invalid_json",
-      upstreamErrorMessage: summarizeError(error),
-    });
-    return { ok: false, provider: "gemini", reason: "invalid_json" };
+    console.error("Gemini JSON parse failed", summarizeError(error));
+    return { ok: false, reason: "invalid_json" };
   }
 
   const outputText = extractGeminiText(geminiJson);
   if (!outputText) {
-    logUpstreamError("Gemini output text missing", {
-      requestId,
-      provider: "gemini",
-      reason: "empty_output",
-    });
-    return { ok: false, provider: "gemini", reason: "empty_output" };
+    console.error("Gemini output text missing");
+    return { ok: false, reason: "empty_output" };
   }
 
-  return { ok: true, provider: "gemini", outputText };
+  return { ok: true, outputText };
 }
 
-async function callOpenAi({ apiKey, prompt, requestId }) {
+async function callOpenAi({ apiKey, prompt }) {
   let response;
   try {
     response = await fetch(OPENAI_URL, {
@@ -759,59 +518,30 @@ async function callOpenAi({ apiKey, prompt, requestId }) {
       body: JSON.stringify(buildOpenAiRequest(prompt)),
     });
   } catch (error) {
-    logUpstreamError("OpenAI request failed", {
-      requestId,
-      provider: "openai",
-      reason: "network",
-      upstreamErrorMessage: summarizeError(error),
-    });
-    return { ok: false, provider: "openai", reason: "network" };
+    console.error("OpenAI request failed", summarizeError(error));
+    return { ok: false, reason: "network" };
   }
 
   if (!response.ok) {
-    const details = await summarizeUpstreamFailure(response);
-    logUpstreamError("OpenAI upstream status", {
-      requestId,
-      provider: "openai",
-      reason: "status",
-      upstreamStatus: response.status,
-      upstreamErrorType: details.upstreamErrorType,
-      upstreamErrorMessage: details.upstreamErrorMessage,
-    });
-    return {
-      ok: false,
-      provider: "openai",
-      reason: "status",
-      status: response.status,
-      upstreamErrorType: details.upstreamErrorType,
-      upstreamErrorMessage: details.upstreamErrorMessage,
-    };
+    console.error("OpenAI upstream status", response.status);
+    return { ok: false, reason: "status" };
   }
 
   let openAiJson;
   try {
     openAiJson = await response.json();
   } catch (error) {
-    logUpstreamError("OpenAI JSON parse failed", {
-      requestId,
-      provider: "openai",
-      reason: "invalid_json",
-      upstreamErrorMessage: summarizeError(error),
-    });
-    return { ok: false, provider: "openai", reason: "invalid_json" };
+    console.error("OpenAI JSON parse failed", summarizeError(error));
+    return { ok: false, reason: "invalid_json" };
   }
 
   const outputText = extractOpenAiText(openAiJson);
   if (!outputText) {
-    logUpstreamError("OpenAI output_text missing", {
-      requestId,
-      provider: "openai",
-      reason: "empty_output",
-    });
-    return { ok: false, provider: "openai", reason: "empty_output" };
+    console.error("OpenAI output_text missing");
+    return { ok: false, reason: "empty_output" };
   }
 
-  return { ok: true, provider: "openai", outputText };
+  return { ok: true, outputText };
 }
 
 function buildGeminiRequest(prompt) {
@@ -987,47 +717,6 @@ function summarizeError(error) {
   if (!error) return "unknown";
   if (error instanceof Error) return error.message;
   return String(error);
-}
-
-function trimToMaxLength(value, maxLength) {
-  const normalized = String(value || "").trim();
-  if (!normalized) return "";
-  if (normalized.length <= maxLength) return normalized;
-  return `${normalized.slice(0, maxLength)}...`;
-}
-
-async function summarizeUpstreamFailure(response) {
-  let bodyText = "";
-  try {
-    bodyText = await response.text();
-  } catch {
-    bodyText = "";
-  }
-
-  const raw = trimToMaxLength(bodyText, MAX_UPSTREAM_ERROR_TEXT);
-  if (!raw) {
-    return { upstreamErrorType: "", upstreamErrorMessage: "" };
-  }
-
-  try {
-    const parsed = JSON.parse(bodyText);
-    if (parsed && typeof parsed === "object") {
-      const payload = parsed.error && typeof parsed.error === "object" ? parsed.error : parsed;
-      const upstreamErrorType = trimToMaxLength(
-        payload.type || payload.code || payload.status || "",
-        MAX_UPSTREAM_ERROR_TEXT
-      );
-      const upstreamErrorMessage = trimToMaxLength(
-        payload.message || payload.error || payload.detail || raw,
-        MAX_UPSTREAM_ERROR_TEXT
-      );
-      return { upstreamErrorType, upstreamErrorMessage };
-    }
-  } catch {
-    // Ignore parse failure and fallback to raw text.
-  }
-
-  return { upstreamErrorType: "", upstreamErrorMessage: raw };
 }
 
 async function verifyTurnstileToken({ secret, token, remoteIp }) {

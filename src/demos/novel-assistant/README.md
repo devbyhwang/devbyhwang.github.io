@@ -151,12 +151,6 @@
 }
 ```
 
-## 에러 응답 처리
-- 프런트 UI는 기존과 동일하게 `error.message`를 사용자 메시지로 표시합니다.
-- `UPSTREAM_ERROR`에는 하위호환 확장 필드 `error.subcode`, `error.requestId`가 포함될 수 있습니다.
-- 운영 이슈 추적 시 `error.requestId`를 기준으로 Worker 로그와 매칭해 원인을 확인합니다.
-- `error.detail`은 디버그 조건에서만 내려올 수 있으며, 기본 UI에는 노출하지 않습니다.
-
 ## 보안 원칙
 - 개인 API 키 입력 기능 없음 (서버 키 전용)
 - LLM API 키는 프록시 환경 변수/시크릿에서만 관리
