@@ -966,7 +966,6 @@
         statusTurnstileMissing: "Turnstile 사이트키가 설정되지 않았습니다.",
         statusTurnstileError: "보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.",
         errorRequest: "요청 처리 중 오류가 발생했습니다.",
-        errorAiQuotaExceeded: "AI 사용량이 만료되어 응답이 불가능합니다.",
         errorInvalidCaptcha: "보안 검증이 만료되었거나 유효하지 않습니다. 다시 검증해 주세요.",
         errorPayloadTooLarge: "원고는 최대 12,000자까지 입력할 수 있습니다.",
         errorNetwork: "네트워크 오류가 발생했습니다.",
@@ -1033,7 +1032,6 @@
         statusTurnstileMissing: "Turnstile site key is missing.",
         statusTurnstileError: "Security widget failed. Please try again.",
         errorRequest: "An error occurred while processing the request.",
-        errorAiQuotaExceeded: "AI quota is exhausted, so responses are currently unavailable.",
         errorInvalidCaptcha: "Security token expired or invalid. Please verify again.",
         errorPayloadTooLarge: "Manuscript is limited to 12,000 characters.",
         errorNetwork: "A network error occurred.",
@@ -3645,9 +3643,7 @@
           const code = data?.error?.code;
           let message = data?.error?.message || t("errorRequest");
 
-          if (code === "AI_QUOTA_EXCEEDED") {
-            message = t("errorAiQuotaExceeded");
-          } else if (code === "INVALID_CAPTCHA") {
+          if (code === "INVALID_CAPTCHA") {
             message = t("errorInvalidCaptcha");
             turnstileToken = "";
             if (window.turnstile && turnstileWidgetId !== null) {

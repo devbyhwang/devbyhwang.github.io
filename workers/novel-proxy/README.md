@@ -101,7 +101,6 @@ After deploy, use:
 - `FORBIDDEN_ORIGIN`
 - `INVALID_CAPTCHA`
 - `RATE_LIMITED`
-- `AI_QUOTA_EXCEEDED`
 - `METHOD_NOT_ALLOWED`
 - `PAYLOAD_TOO_LARGE`
 - `UNSUPPORTED_MEDIA_TYPE`
@@ -123,7 +122,6 @@ After deploy, use:
 5. 기존 보안/제한 회귀
 - Turnstile 실패: `INVALID_CAPTCHA`
 - 일일 제한 초과: `RATE_LIMITED`
-- AI 제공자 429: `AI_QUOTA_EXCEEDED`
 - 12,000자 초과: `PAYLOAD_TOO_LARGE`
 
 ## Test-only bypass lifecycle
