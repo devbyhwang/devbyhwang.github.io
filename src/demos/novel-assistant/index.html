@@ -1905,12 +1905,24 @@
       setStatus("연습 입력칸을 초기화했습니다.", "ok");
     }
 
-    function selectNode(nodeId) {
+    function selectNode(nodeId, options = {}) {
       const node = getNodeById(nodeId);
       if (!node) return;
+      const {
+        syncTabOnCrossLaneClick = true,
+      } = options;
+
       persistCurrentDraft();
       curriculumState.selectedNodeId = node.id;
       curriculumState.lastSelectedDrillId = node.id;
+
+      if (syncTabOnCrossLaneClick && curriculumState.activeTab !== "all") {
+        const isValidLane = laneDefs.some((lane) => lane.id === node.laneId);
+        if (isValidLane && curriculumState.activeTab !== node.laneId) {
+          curriculumState.activeTab = node.laneId;
+        }
+      }
+
       saveCurriculumState();
       renderAll();
       refreshRunButtonVisibility();
