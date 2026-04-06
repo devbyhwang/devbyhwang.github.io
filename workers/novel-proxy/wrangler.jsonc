@@ -7,6 +7,7 @@
     "ALLOWED_ORIGIN": "https://devbyhwang.github.io",
     "AI_PROVIDER": "gemini",
     "GEMINI_MODEL": "gemini-2.0-flash",
+    "ENABLE_ERROR_DETAIL": "false",
     "ENABLE_OWNER_BYPASS": "true",
     "TURNSTILE_EXPECTED_HOSTNAME": "devbyhwang.github.io",
     "TURNSTILE_EXPECTED_ACTION": "novel_feedback"

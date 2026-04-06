@@ -36,6 +36,7 @@ npx wrangler secret put OWNER_BYPASS_KEY
 `ALLOWED_ORIGIN` is already set in `wrangler.jsonc` as `https://devbyhwang.github.io`.
 `AI_PROVIDER` is set to `gemini` by default (`openai` for rollback).
 `GEMINI_MODEL` is set to `gemini-2.0-flash` by default.
+`ENABLE_ERROR_DETAIL` is set to `"false"` by default (detail is exposed only with owner bypass + this flag).
 `TURNSTILE_EXPECTED_HOSTNAME` is set to `devbyhwang.github.io`.
 `TURNSTILE_EXPECTED_ACTION` is set to `novel_feedback`.
 `ENABLE_OWNER_BYPASS` is currently set to `"true"` in `wrangler.jsonc`.
@@ -105,6 +106,37 @@ After deploy, use:
 - `PAYLOAD_TOO_LARGE`
 - `UNSUPPORTED_MEDIA_TYPE`
 - `UPSTREAM_ERROR`
+
+## UPSTREAM_ERROR response shape (compatible extension)
+```json
+{
+  "error": {
+    "code": "UPSTREAM_ERROR",
+    "subcode": "AI_UPSTREAM_STATUS",
+    "message": "AI 응답 생성에 실패했습니다.",
+    "requestId": "..."
+  }
+}
+```
+
+When `ENABLE_ERROR_DETAIL === "true"` and owner bypass is active, `detail` is also included:
+```json
+{
+  "error": {
+    "code": "UPSTREAM_ERROR",
+    "subcode": "AI_UPSTREAM_STATUS",
+    "message": "AI 응답 생성에 실패했습니다.",
+    "requestId": "...",
+    "detail": {
+      "provider": "gemini",
+      "reason": "status",
+      "upstreamStatus": 401,
+      "upstreamErrorType": "...",
+      "upstreamErrorMessage": "..."
+    }
+  }
+}
+```
 
 ## Regression checklist
 1. Gemini 기본 경로
