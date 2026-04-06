@@ -5,7 +5,7 @@
   "compatibility_date": "2026-04-04",
   "vars": {
     "ALLOWED_ORIGIN": "https://devbyhwang.github.io",
-    "AI_PROVIDER": "gemini",
+    "AI_PROVIDER": "openai",
     "GEMINI_MODEL": "gemini-2.0-flash",
     "ENABLE_OWNER_BYPASS": "true",
     "TURNSTILE_EXPECTED_HOSTNAME": "devbyhwang.github.io",
