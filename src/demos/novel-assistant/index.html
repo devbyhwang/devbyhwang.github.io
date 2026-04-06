@@ -47,9 +47,57 @@
     }
 
     .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
       margin-bottom: 18px;
       border-bottom: 1px dashed var(--line);
       padding-bottom: 14px;
+    }
+
+    .head-main {
+      min-width: 0;
+    }
+
+    .head-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      min-width: 120px;
+    }
+
+    .lang-row {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lang-label {
+      font-size: 11px;
+      color: #6f6659;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    .lang-select {
+      min-width: 86px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      padding: 5px 10px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .lang-select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--focus-ring);
     }
 
     h1 {
@@ -698,6 +746,17 @@
       .head {
         margin-bottom: 14px;
         padding-bottom: 12px;
+        flex-direction: column;
+      }
+      .head-actions {
+        width: 100%;
+        align-items: flex-start;
+      }
+      .lang-row {
+        width: 100%;
+      }
+      .lang-select {
+        min-width: 110px;
       }
       h1 { font-size: clamp(21px, 7vw, 30px); }
       .pane { padding: 12px; }
@@ -746,21 +805,32 @@
 <body>
   <main class="shell">
     <header class="head">
-      <h1>소설 작성 어시스턴트</h1>
-      <p class="sub">
-        작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다.
-        핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.
-      </p>
+      <div class="head-main">
+        <h1 id="pageTitle">소설 작성 어시스턴트</h1>
+        <p id="pageSubtitle" class="sub">
+          작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다.
+          핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.
+        </p>
+      </div>
+      <div class="head-actions">
+        <div class="lang-row">
+          <label id="langLabel" class="lang-label" for="langSelect">Language</label>
+          <select id="langSelect" class="lang-select" aria-label="Language">
+            <option value="ko">KO</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+      </div>
     </header>
 
     <section class="layout">
       <section class="pane">
-        <h2>구조형 학습 로드맵</h2>
+        <h2 id="roadmapTitle">구조형 학습 로드맵</h2>
 
         <div class="roadmap-pane">
           <div id="stageLegend" class="stage-legend"></div>
           <div id="viewTabs" class="tabs"></div>
-          <p class="roadmap-hint">먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.</p>
+          <p id="roadmapHint" class="roadmap-hint">먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.</p>
           <div class="roadmap-scroll">
             <svg id="roadmapSvg" viewBox="0 0 3400 520" preserveAspectRatio="none"></svg>
           </div>
@@ -768,25 +838,25 @@
       </section>
 
       <article class="pane">
-        <h2>연습 입력</h2>
+        <h2 id="exerciseTitle">연습 입력</h2>
 
         <div id="selectedDrillMeta" class="selected-card"></div>
 
         <div class="exercise-label-row">
-          <label>연습 입력칸</label>
+          <label id="exerciseInputLabel">연습 입력칸</label>
           <button type="button" id="resetExerciseBtn" class="completion-btn exercise-reset-btn">입력 초기화</button>
         </div>
         <div id="exerciseFields" class="exercise-wrap">
           <p class="exercise-empty">로드맵에서 연습 항목을 선택하세요.</p>
         </div>
 
-        <label for="manuscriptBody">원고 본문 (선택)</label>
+        <label id="manuscriptLabel" for="manuscriptBody">원고 본문 (선택)</label>
         <textarea id="manuscriptBody" placeholder="문맥이 필요할 때만 원고 본문을 추가 입력하세요."></textarea>
 
         <div id="completionControl" class="selected-card"></div>
 
         <button id="runBtn" class="run">분석 실행</button>
-        <p class="usage">기본 무료 플랜: 하루 5회</p>
+        <p id="usageLabel" class="usage">기본 무료 플랜: 하루 5회</p>
         <!-- TEST_ONLY_OWNER_BYPASS_START -->
         <div class="owner-key-box">
           <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="Owner Key" aria-label="Owner Key" />
@@ -796,7 +866,7 @@
           <div id="turnstileBox"></div>
         </div>
 
-        <label>피드백 결과</label>
+        <label id="resultLabel">피드백 결과</label>
         <div id="result" class="result">
           <p class="placeholder">아직 분석 결과가 없습니다.</p>
         </div>
@@ -819,8 +889,154 @@
     const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
     const BODY_STORAGE_KEY = "novel-assistant:body:v2";
+    const LANG_STORAGE_KEY = "novel-assistant:lang:v1";
 
-    const stages = [
+    let uiLang = "ko";
+
+    const messages = {
+      ko: {
+        htmlLang: "ko",
+        docTitle: "소설 작성 어시스턴트 · DevByHwang",
+        pageTitle: "소설 작성 어시스턴트",
+        pageSubtitle: "작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다. 핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.",
+        languageLabel: "Language",
+        roadmapTitle: "구조형 학습 로드맵",
+        roadmapHint: "먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.",
+        exerciseTitle: "연습 입력",
+        exerciseInputLabel: "연습 입력칸",
+        resetExercise: "입력 초기화",
+        selectNodeEmpty: "로드맵에서 연습 항목을 선택하세요.",
+        noTemplate: "이 노드는 입력 템플릿이 없습니다.",
+        manuscriptLabel: "원고 본문 (선택)",
+        manuscriptPlaceholder: "문맥이 필요할 때만 원고 본문을 추가 입력하세요.",
+        run: "분석 실행",
+        running: "분석 중...",
+        usage: "기본 무료 플랜: 하루 5회",
+        resultLabel: "피드백 결과",
+        resultPlaceholder: "아직 분석 결과가 없습니다.",
+        score: "종합 점수",
+        summary: "요약",
+        checkpoint: "점검",
+        itemScore: "점수",
+        suggestion: "수정안",
+        remaining: "남은 횟수",
+        unknownResponse: "응답을 해석하지 못했습니다.",
+        noNodeSelected: "선택된 노드가 없습니다.",
+        completionPending: "미완료",
+        completionAuto: "자동 완료 (최근 점수 {score})",
+        completionManualDone: "수동 완료",
+        completionManualBlock: "수동 해제",
+        sectionConcept: "1. 개념 이해",
+        sectionNow: "2. 지금 작성할 항목",
+        sectionChecklist: "3. 제출 전 체크",
+        why: "왜 중요한가:",
+        currentTask: "이번 단계에서 할 일:",
+        outcome: "결과물:",
+        passRule: "완료 기준:",
+        repeatTip: "반복 연습 팁:",
+        passState: "잘 쓴 상태:",
+        failState: "보완 필요 신호:",
+        currentProgress: "현재 진행 상태:",
+        completionControlTitle: "완료 상태 조정",
+        autoDoneRule: "자동 완료 기준: 점수 {score} 이상",
+        manualDone: "수동 완료",
+        manualBlock: "수동 해제",
+        followAuto: "자동 따르기",
+        guideHowTo: "어떻게 쓰나:",
+        guideGood: "좋은 예:",
+        guideBad: "피해야 할 예:",
+        guideCheck: "작성 전 점검:",
+        statusReset: "연습 입력칸을 초기화했습니다.",
+        statusNeedNode: "로드맵에서 연습 항목을 선택하세요.",
+        statusNeedInput: "연습 입력칸을 먼저 채워주세요.",
+        statusNeedCaptcha: "보안 검증을 완료한 뒤 다시 시도하세요.",
+        statusRequesting: "분석 요청 중...",
+        statusDone: "분석이 완료되었습니다.",
+        statusTurnstileMissing: "Turnstile 사이트키가 설정되지 않았습니다.",
+        statusTurnstileError: "보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.",
+        errorRequest: "요청 처리 중 오류가 발생했습니다.",
+        errorInvalidCaptcha: "보안 검증이 만료되었거나 유효하지 않습니다. 다시 검증해 주세요.",
+        errorPayloadTooLarge: "원고는 최대 12,000자까지 입력할 수 있습니다.",
+        errorNetwork: "네트워크 오류가 발생했습니다.",
+      },
+      en: {
+        htmlLang: "en",
+        docTitle: "Novel Writing Assistant · DevByHwang",
+        pageTitle: "Novel Writing Assistant",
+        pageSubtitle: "A staged practice system based on core fiction craft principles. Train in order from LOCK foundations to act structure, scene execution, and revision.",
+        languageLabel: "Language",
+        roadmapTitle: "Structured Learning Roadmap",
+        roadmapHint: "Start with a LOCK node, then expand in order: Beginning, Middle, Ending, and Revision.",
+        exerciseTitle: "Practice Input",
+        exerciseInputLabel: "Practice Fields",
+        resetExercise: "Reset Input",
+        selectNodeEmpty: "Select a roadmap node to begin.",
+        noTemplate: "This node has no input template.",
+        manuscriptLabel: "Manuscript Body (Optional)",
+        manuscriptPlaceholder: "Add manuscript context only when needed.",
+        run: "Run Analysis",
+        running: "Analyzing...",
+        usage: "Free plan: 5 runs per day",
+        resultLabel: "Feedback Result",
+        resultPlaceholder: "No analysis result yet.",
+        score: "Overall Score",
+        summary: "Summary",
+        checkpoint: "Checkpoint",
+        itemScore: "Score",
+        suggestion: "Revision",
+        remaining: "Remaining Runs",
+        unknownResponse: "Could not parse the response.",
+        noNodeSelected: "No node selected.",
+        completionPending: "Not completed",
+        completionAuto: "Auto complete (last score {score})",
+        completionManualDone: "Manual complete",
+        completionManualBlock: "Manual override off",
+        sectionConcept: "1. Concept",
+        sectionNow: "2. What To Write Now",
+        sectionChecklist: "3. Pre-Submit Checklist",
+        why: "Why it matters:",
+        currentTask: "Task now:",
+        outcome: "Expected output:",
+        passRule: "Pass rule:",
+        repeatTip: "Repetition tip:",
+        passState: "Good signals:",
+        failState: "Needs work:",
+        currentProgress: "Current progress:",
+        completionControlTitle: "Completion Control",
+        autoDoneRule: "Auto completion threshold: {score}+",
+        manualDone: "Manual Complete",
+        manualBlock: "Manual Block",
+        followAuto: "Follow Auto",
+        guideHowTo: "How to write:",
+        guideGood: "Good example:",
+        guideBad: "Avoid this:",
+        guideCheck: "Check before submit:",
+        statusReset: "Practice fields were reset.",
+        statusNeedNode: "Select a roadmap node first.",
+        statusNeedInput: "Fill in all practice fields first.",
+        statusNeedCaptcha: "Complete security verification and retry.",
+        statusRequesting: "Sending analysis request...",
+        statusDone: "Analysis completed.",
+        statusTurnstileMissing: "Turnstile site key is missing.",
+        statusTurnstileError: "Security widget failed. Please try again.",
+        errorRequest: "An error occurred while processing the request.",
+        errorInvalidCaptcha: "Security token expired or invalid. Please verify again.",
+        errorPayloadTooLarge: "Manuscript is limited to 12,000 characters.",
+        errorNetwork: "A network error occurred.",
+      },
+    };
+
+    const deepCopy = (value) => JSON.parse(JSON.stringify(value));
+
+    function t(key, vars = {}) {
+      const dict = messages[uiLang] || messages.ko;
+      const raw = dict[key] || messages.ko[key] || "";
+      return Object.entries(vars).reduce((acc, [name, replacement]) => {
+        return acc.replaceAll(`{${name}}`, String(replacement));
+      }, raw);
+    }
+
+    let stages = [
       {
         id: "s1",
         order: 1,
@@ -858,7 +1074,7 @@
       },
     ];
 
-    const drills = [
+    let drills = [
       {
         id: "s1_lock_lead",
         stageId: "s1",
@@ -1317,7 +1533,7 @@
       },
     ];
 
-    const laneDefs = [
+    let laneDefs = [
       { id: "lock", label: "핵심 4요소(LOCK)", color: "#9f6a49", y: 72 },
       { id: "beginning", label: "시작 (Act I)", color: "#b87954", y: 174 },
       { id: "middle", label: "중간 (Act II)", color: "#4b7f82", y: 276 },
@@ -1325,7 +1541,7 @@
       { id: "revision", label: "수정 (Revision)", color: "#6f7f4f", y: 480 },
     ];
 
-    const viewTabs = [
+    let viewTabs = [
       { id: "all", label: "전체" },
       { id: "lock", label: "핵심 4요소(LOCK)" },
       { id: "beginning", label: "시작" },
@@ -1616,6 +1832,148 @@
       });
     }
 
+    function buildEnglishStageLabel(stageId) {
+      const map = {
+        s1: "Stage 1 · LOCK Foundations",
+        s2: "Stage 2 · Character / Scene / Dialogue",
+        s3: "Stage 3 · Macro Structure Models",
+        s4: "Stage 4 · Act Execution",
+        s5: "Stage 5 · Revision & Toolbox",
+      };
+      return map[stageId] || "Stage";
+    }
+
+    function buildEnglishStageDescription(stageId) {
+      const map = {
+        s1: "Build the foundation for Lead, Objective, Confrontation, and Knockout.",
+        s2: "Strengthen reader empathy, scene execution, and dialogue as conflict.",
+        s3: "Design macro structure by layering 3-act flow and hero-journey beats.",
+        s4: "Execute beginning, middle, and ending at scene-level granularity.",
+        s5: "Raise completion quality with revision triage and reusable tools.",
+      };
+      return map[stageId] || "Strengthen story craft with structured practice.";
+    }
+
+    function buildEnglishNodeTitle(nodeId, fallback) {
+      const map = {
+        s1_lock_lead: "LOCK: Lead",
+        s1_lock_objective: "LOCK: Objective",
+        s1_lock_confrontation: "LOCK: Confrontation",
+        s1_lock_knockout: "LOCK: Knockout",
+        s2_reader_empathy_and_likability: "Reader Empathy & Likability Design",
+        s2_character_arc_linkage: "Character Arc Linkage",
+        s2_scene_goal_conflict_change: "Scene Goal-Conflict-Change",
+        s2_scene_four_chords: "Scene Four Chords (A/R/S/D)",
+        s2_dialogue_voice_distinction: "Dialogue Voice Distinction",
+        s2_dialogue_as_confrontation: "Dialogue as Confrontation Weapon",
+        s3_three_act_spine: "Three-Act Spine",
+        s3_disturbance_two_doorways: "Disturbance & Two Doorways",
+        s3_hero_journey_overlay: "Hero's Journey Overlay",
+        s3_plot_points_midpoint: "Plot Points & Midpoint",
+        s3_subplot_thematic_integration: "Subplot and Theme Integration",
+        s4_beginning_hook_entry: "Beginning Hook & Entry",
+        s4_beginning_world_opposition: "Beginning World & Opposition",
+        s4_middle_escalation_pressure: "Middle Escalation Pressure",
+        s4_middle_complications_reversals: "Middle Complications & Reversals",
+        s4_ending_knockout_resolution: "Ending Knockout Resolution",
+        s4_last_page_resonance: "Last-Page Resonance",
+        s5_revision_triage: "Revision Triage",
+        s5_common_problem_cures: "Common Plot Problem Cures",
+        s5_show_tell_and_precision_tools: "Show/Tell & Precision Toolkit",
+      };
+      return map[nodeId] || fallback || "Practice Node";
+    }
+
+    function humanizeFieldKey(key) {
+      const normalized = String(key || "")
+        .replaceAll("_", " ")
+        .trim();
+      return normalized
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+    }
+
+    function buildEnglishDataset(koData) {
+      const enData = deepCopy(koData);
+
+      enData.laneDefs.forEach((lane) => {
+        const laneMap = {
+          lock: "LOCK",
+          beginning: "Beginning (Act I)",
+          middle: "Middle (Act II)",
+          ending: "Ending (Act III)",
+          revision: "Revision",
+        };
+        lane.label = laneMap[lane.id] || lane.label;
+      });
+
+      enData.viewTabs.forEach((tab) => {
+        const tabMap = {
+          all: "All",
+          lock: "LOCK",
+          beginning: "Beginning",
+          middle: "Middle",
+          ending: "Ending",
+          revision: "Revision",
+        };
+        tab.label = tabMap[tab.id] || tab.label;
+      });
+
+      enData.stages.forEach((stage) => {
+        stage.label = buildEnglishStageLabel(stage.id);
+        stage.description = buildEnglishStageDescription(stage.id);
+      });
+
+      enData.drills.forEach((drill) => {
+        const laneId = drillLaneMap[drill.id] || "middle";
+        const laneName = {
+          lock: "LOCK",
+          beginning: "Beginning",
+          middle: "Middle",
+          ending: "Ending",
+          revision: "Revision",
+        }[laneId] || "Middle";
+        const englishTitle = buildEnglishNodeTitle(drill.id, drill.title);
+        drill.title = englishTitle;
+        drill.shortLabel = englishTitle.replace(/^LOCK:\s*/i, "").slice(0, 30);
+        drill.goal = `Define a concrete ${laneName.toLowerCase()} output for this node in executable story terms.`;
+        drill.passRule = "The output is specific, causal, and immediately reusable in revision.";
+        drill.repetitionTip = "Rewrite this node once with a tighter action and clearer stakes.";
+        drill.conceptBrief = `This ${laneName.toLowerCase()} node stabilizes story momentum with actionable craft decisions.`;
+        drill.conceptWhy = "When this decision is vague, later scenes lose direction and tension.";
+        drill.writingOutcome = `You will leave this step with ${Array.isArray(drill.templateFields) ? drill.templateFields.length : 0} concrete inputs ready for drafting.`;
+        drill.passSignals = [
+          "Goal, action, and consequence connect in a single causal chain.",
+          "The next revision step is clear without additional interpretation.",
+        ];
+        drill.failSignals = [
+          "Statements stay abstract and do not imply a scene-level action.",
+          "The result does not increase conflict, clarity, or narrative pressure.",
+        ];
+        drill.submissionChecklist = [
+          "Are all fields filled with concrete language?",
+          "Does each field include action, conflict, or consequence?",
+          "Can you execute one immediate rewrite from this output?",
+        ];
+        (drill.templateFields || []).forEach((field) => {
+          field.label = humanizeFieldKey(field.key);
+          field.placeholder = "Write 2-4 specific sentences with action, stakes, and time pressure.";
+          field.howTo = `Write ${field.label} in concrete terms and include at least two of these: action, consequence, cost, and timing.`;
+          field.goodExample = `Example: ${field.label} is explicit, measurable, and linked to a clear scene outcome.`;
+          field.badExample = "Example: only mood or intention is stated, with no concrete event or consequence.";
+          field.checkQuestion = "Can a first-time reader execute this immediately without guessing? (yes/no)";
+        });
+      });
+
+      return enData;
+    }
+
+    function replaceArrayInPlace(target, source) {
+      target.splice(0, target.length, ...source);
+    }
+
     enrichDrillGuides();
     stages.forEach((stage) => {
       stage.label = replaceUiTerms(stage.label);
@@ -1623,6 +1981,25 @@
     });
     drills.forEach(localizeDrill);
 
+    const koDataset = {
+      stages: deepCopy(stages),
+      drills: deepCopy(drills),
+      laneDefs: deepCopy(laneDefs),
+      viewTabs: deepCopy(viewTabs),
+    };
+    const enDataset = buildEnglishDataset(koDataset);
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const pageSubtitleEl = document.getElementById("pageSubtitle");
+    const langLabelEl = document.getElementById("langLabel");
+    const langSelectEl = document.getElementById("langSelect");
+    const roadmapTitleEl = document.getElementById("roadmapTitle");
+    const roadmapHintEl = document.getElementById("roadmapHint");
+    const exerciseTitleEl = document.getElementById("exerciseTitle");
+    const exerciseInputLabelEl = document.getElementById("exerciseInputLabel");
+    const manuscriptLabelEl = document.getElementById("manuscriptLabel");
+    const usageLabelEl = document.getElementById("usageLabel");
+    const resultLabelEl = document.getElementById("resultLabel");
     const selectedDrillMetaEl = document.getElementById("selectedDrillMeta");
     const exerciseFieldsEl = document.getElementById("exerciseFields");
     const manuscriptBodyEl = document.getElementById("manuscriptBody");
@@ -1637,22 +2014,28 @@
     const statusEl = document.getElementById("status");
     const turnstileBoxEl = document.getElementById("turnstileBox");
     const ownerKeyBoxEl = document.querySelector(".owner-key-box");
-    const RUN_BUTTON_DEFAULT_LABEL = runBtnEl ? runBtnEl.textContent.trim() || "분석 실행" : "분석 실행";
+    let runButtonDefaultLabel = runBtnEl ? runBtnEl.textContent.trim() || t("run") : t("run");
     // TEST_ONLY_OWNER_BYPASS_START
     const ownerKeyInputEl = document.getElementById("ownerKeyInput");
     const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
     const OWNER_BYPASS_HEADER = "X-Owner-Key";
     // TEST_ONLY_OWNER_BYPASS_END
 
-    const drillNodes = drills.map((drill) => ({
-      ...drill,
-      laneId: drillLaneMap[drill.id] || "middle",
-      linkedNodeIds: [],
-      checklist: Array.isArray(drill.submissionChecklist) ? drill.submissionChecklist : [],
-      order: 500 + (Number(drill.roadmapOrder) || 0),
-    }));
+    let drillNodes = [];
+    let roadmapNodes = [];
 
-    const roadmapNodes = [...drillNodes];
+    function rebuildRoadmapNodes() {
+      drillNodes = drills.map((drill) => ({
+        ...drill,
+        laneId: drillLaneMap[drill.id] || "middle",
+        linkedNodeIds: [],
+        checklist: Array.isArray(drill.submissionChecklist) ? drill.submissionChecklist : [],
+        order: 500 + (Number(drill.roadmapOrder) || 0),
+      }));
+      roadmapNodes = [...drillNodes];
+    }
+
+    rebuildRoadmapNodes();
 
     let turnstileToken = "";
     let turnstileWidgetId = null;
@@ -1673,6 +2056,113 @@
       activeTab: "lock",
       perNode: {},
     };
+
+    function loadStoredUiLang() {
+      const raw = localStorage.getItem(LANG_STORAGE_KEY) || "";
+      if (raw === "ko" || raw === "en") {
+        uiLang = raw;
+        return true;
+      }
+      return false;
+    }
+
+    async function detectCountryCode() {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 1500);
+      try {
+        const response = await fetch("https://www.cloudflare.com/cdn-cgi/trace", {
+          method: "GET",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) return "";
+        const text = await response.text();
+        const match = text.match(/^loc=([A-Z]{2})$/m);
+        return match ? match[1] : "";
+      } catch {
+        return "";
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+
+    function inferDefaultLangByCountry(countryCode) {
+      if (countryCode === "KR") return "ko";
+      if (countryCode) return "en";
+
+      const browserLang = String(navigator.language || "").toLowerCase();
+      if (browserLang.startsWith("ko")) return "ko";
+
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+      if (tz === "Asia/Seoul") return "ko";
+      return "en";
+    }
+
+    async function ensureInitialUiLang() {
+      if (loadStoredUiLang()) return;
+      const countryCode = await detectCountryCode();
+      uiLang = inferDefaultLangByCountry(countryCode);
+      saveUiLang();
+    }
+
+    function saveUiLang() {
+      localStorage.setItem(LANG_STORAGE_KEY, uiLang);
+    }
+
+    function applyStaticUiText() {
+      document.documentElement.lang = messages[uiLang].htmlLang;
+      document.title = t("docTitle");
+      if (pageTitleEl) pageTitleEl.textContent = t("pageTitle");
+      if (pageSubtitleEl) pageSubtitleEl.textContent = t("pageSubtitle");
+      if (langLabelEl) langLabelEl.textContent = t("languageLabel");
+      if (roadmapTitleEl) roadmapTitleEl.textContent = t("roadmapTitle");
+      if (roadmapHintEl) roadmapHintEl.textContent = t("roadmapHint");
+      if (exerciseTitleEl) exerciseTitleEl.textContent = t("exerciseTitle");
+      if (exerciseInputLabelEl) exerciseInputLabelEl.textContent = t("exerciseInputLabel");
+      if (manuscriptLabelEl) manuscriptLabelEl.textContent = t("manuscriptLabel");
+      if (manuscriptBodyEl) manuscriptBodyEl.placeholder = t("manuscriptPlaceholder");
+      if (usageLabelEl) usageLabelEl.textContent = t("usage");
+      if (resultLabelEl) resultLabelEl.textContent = t("resultLabel");
+      if (resetExerciseBtnEl) resetExerciseBtnEl.textContent = t("resetExercise");
+      runButtonDefaultLabel = t("run");
+      if (runBtnEl && !isRunLoading) runBtnEl.textContent = runButtonDefaultLabel;
+      if (!resultEl.querySelector(".card") && !resultEl.querySelector(".score") && !resultEl.classList.contains("is-loading")) {
+        resultEl.innerHTML = `<p class="placeholder">${escapeHtml(t("resultPlaceholder"))}</p>`;
+      }
+    }
+
+    function applyDataLanguage() {
+      const source = uiLang === "en" ? enDataset : koDataset;
+      replaceArrayInPlace(stages, deepCopy(source.stages));
+      replaceArrayInPlace(drills, deepCopy(source.drills));
+      replaceArrayInPlace(laneDefs, deepCopy(source.laneDefs));
+      replaceArrayInPlace(viewTabs, deepCopy(source.viewTabs));
+      rebuildRoadmapNodes();
+
+      if (!getNodeById(curriculumState.selectedNodeId)) {
+        curriculumState.selectedNodeId = roadmapNodes[0] ? roadmapNodes[0].id : "";
+      }
+      if (!getNodeById(curriculumState.lastSelectedDrillId)) {
+        curriculumState.lastSelectedDrillId = roadmapNodes[0] ? roadmapNodes[0].id : "";
+      }
+    }
+
+    function setUiLanguage(lang, options = {}) {
+      const { persist = true, rerender = true } = options;
+      if (lang !== "ko" && lang !== "en") return;
+      uiLang = lang;
+      applyDataLanguage();
+      applyStaticUiText();
+      if (langSelectEl) {
+        langSelectEl.value = uiLang;
+        langSelectEl.setAttribute("aria-label", t("languageLabel"));
+      }
+      if (persist) saveUiLang();
+      if (rerender) {
+        renderAll();
+        refreshRunButtonVisibility();
+      }
+    }
 
     function setRunButtonVisible(isVisible) {
       runBtnEl.style.display = isVisible ? "" : "none";
@@ -1720,7 +2210,7 @@
     function setRunLoading(isLoading) {
       isRunLoading = Boolean(isLoading);
       runBtnEl.classList.toggle("is-loading", isRunLoading);
-      runBtnEl.textContent = isRunLoading ? "분석 중..." : RUN_BUTTON_DEFAULT_LABEL;
+      runBtnEl.textContent = isRunLoading ? t("running") : runButtonDefaultLabel;
       refreshRunButtonVisibility();
     }
 
@@ -1902,7 +2392,7 @@
         autoResizeTextarea(el);
       });
       writeDraft(selected.id, emptyValues);
-      setStatus("연습 입력칸을 초기화했습니다.", "ok");
+      setStatus(t("statusReset"), "ok");
     }
 
     function selectNode(nodeId, options = {}) {
@@ -2210,7 +2700,7 @@
     function renderSelectedMeta() {
       const selected = getSelectedNode();
       if (!selected) {
-        selectedDrillMetaEl.innerHTML = "<p class=\"selected-row\">선택된 노드가 없습니다.</p>";
+        selectedDrillMetaEl.innerHTML = `<p class="selected-row">${escapeHtml(t("noNodeSelected"))}</p>`;
         triggerMetaFadeIn();
         return;
       }
@@ -2218,10 +2708,10 @@
       const progress = ensureProgress(selected.id);
       const completion = getCompletionState(progress);
 
-      let completionText = "미완료";
-      if (completion === "auto_done") completionText = `자동 완료 (최근 점수 ${Number(progress.lastScore).toFixed(1)})`;
-      if (completion === "manual_done") completionText = "수동 완료";
-      if (completion === "manual_block") completionText = "수동 해제";
+      let completionText = t("completionPending");
+      if (completion === "auto_done") completionText = t("completionAuto", { score: Number(progress.lastScore).toFixed(1) });
+      if (completion === "manual_done") completionText = t("completionManualDone");
+      if (completion === "manual_block") completionText = t("completionManualBlock");
 
       const passSignalsHtml = Array.isArray(selected.passSignals) && selected.passSignals.length > 0
         ? `<ul class="signal-list">${selected.passSignals.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`
@@ -2243,26 +2733,26 @@
       selectedDrillMetaEl.innerHTML = `
         <div class="selected-title">${escapeHtml(selected.title)}</div>
         <section class="meta-section">
-          <h4>1. 개념 이해</h4>
+          <h4>${escapeHtml(t("sectionConcept"))}</h4>
           <p class="selected-row">${escapeHtml(selected.conceptBrief || "-")}</p>
-          <p class="selected-row"><strong>왜 중요한가:</strong> ${escapeHtml(selected.conceptWhy || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("why"))}</strong> ${escapeHtml(selected.conceptWhy || "-")}</p>
         </section>
         <section class="meta-section">
-          <h4>2. 지금 작성할 항목</h4>
-          <p class="selected-row"><strong>이번 단계에서 할 일:</strong> ${escapeHtml(selected.goal || "-")}</p>
-          <p class="selected-row"><strong>결과물:</strong> ${escapeHtml(selected.writingOutcome || "-")}</p>
-          <p class="selected-row"><strong>완료 기준:</strong> ${escapeHtml(selected.passRule || "-")}</p>
-          <p class="selected-row"><strong>반복 연습 팁:</strong> ${escapeHtml(selected.repetitionTip || "-")}</p>
-          <p class="selected-row"><strong>잘 쓴 상태:</strong></p>
+          <h4>${escapeHtml(t("sectionNow"))}</h4>
+          <p class="selected-row"><strong>${escapeHtml(t("currentTask"))}</strong> ${escapeHtml(selected.goal || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("outcome"))}</strong> ${escapeHtml(selected.writingOutcome || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("passRule"))}</strong> ${escapeHtml(selected.passRule || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("repeatTip"))}</strong> ${escapeHtml(selected.repetitionTip || "-")}</p>
+          <p class="selected-row"><strong>${escapeHtml(t("passState"))}</strong></p>
           ${passSignalsHtml}
-          <p class="selected-row"><strong>보완 필요 신호:</strong></p>
+          <p class="selected-row"><strong>${escapeHtml(t("failState"))}</strong></p>
           ${failSignalsHtml}
         </section>
         <section class="meta-section">
-          <h4>3. 제출 전 체크</h4>
+          <h4>${escapeHtml(t("sectionChecklist"))}</h4>
           ${submissionChecklistHtml}
           <div class="progress-chip ${progressClass}">
-            <strong>현재 진행 상태:</strong> <span>${escapeHtml(completionText)}</span>
+            <strong>${escapeHtml(t("currentProgress"))}</strong> <span>${escapeHtml(completionText)}</span>
           </div>
         </section>
       `;
@@ -2272,19 +2762,19 @@
     function renderCompletionControl() {
       const selected = getSelectedNode();
       if (!selected) {
-        completionControlEl.innerHTML = "<p class=\"selected-row\">선택된 노드가 없습니다.</p>";
+        completionControlEl.innerHTML = `<p class="selected-row">${escapeHtml(t("noNodeSelected"))}</p>`;
         return;
       }
       const progress = ensureProgress(selected.id);
       const manual = progress.manualOverride;
 
       completionControlEl.innerHTML = `
-        <div class="selected-title">완료 상태 조정</div>
-        <p class="selected-row">자동 완료 기준: 점수 ${AUTO_DONE_THRESHOLD.toFixed(1)} 이상</p>
+        <div class="selected-title">${escapeHtml(t("completionControlTitle"))}</div>
+        <p class="selected-row">${escapeHtml(t("autoDoneRule", { score: AUTO_DONE_THRESHOLD.toFixed(1) }))}</p>
         <div class="completion-row">
-          <button type="button" id="btnManualDone" class="completion-btn${manual === true ? " active" : ""}">수동 완료</button>
-          <button type="button" id="btnManualBlock" class="completion-btn${manual === false ? " active" : ""}">수동 해제</button>
-          <button type="button" id="btnManualAuto" class="completion-btn${manual === null ? " active" : ""}">자동 따르기</button>
+          <button type="button" id="btnManualDone" class="completion-btn${manual === true ? " active" : ""}">${escapeHtml(t("manualDone"))}</button>
+          <button type="button" id="btnManualBlock" class="completion-btn${manual === false ? " active" : ""}">${escapeHtml(t("manualBlock"))}</button>
+          <button type="button" id="btnManualAuto" class="completion-btn${manual === null ? " active" : ""}">${escapeHtml(t("followAuto"))}</button>
         </div>
       `;
 
@@ -2296,7 +2786,7 @@
     function renderExerciseFields() {
       const selected = getSelectedNode();
       if (!selected) {
-        exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">로드맵에서 연습 항목을 선택하세요.</p>";
+        exerciseFieldsEl.innerHTML = `<p class="exercise-empty">${escapeHtml(t("selectNodeEmpty"))}</p>`;
         if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = true;
         return;
       }
@@ -2306,7 +2796,7 @@
 
       const fields = Array.isArray(selected.templateFields) ? selected.templateFields : [];
       if (fields.length === 0) {
-        exerciseFieldsEl.innerHTML = "<p class=\"exercise-empty\">이 노드는 입력 템플릿이 없습니다.</p>";
+        exerciseFieldsEl.innerHTML = `<p class="exercise-empty">${escapeHtml(t("noTemplate"))}</p>`;
         if (resetExerciseBtnEl) resetExerciseBtnEl.disabled = true;
         return;
       }
@@ -2324,10 +2814,10 @@
             placeholder="${escapeHtml(field.placeholder || field.label)}"
           >${escapeHtml(draft[field.key] || "")}</textarea>
           <div class="field-guide">
-            <p><strong>어떻게 쓰나:</strong> ${escapeHtml(field.howTo || "-")}</p>
-            <p><strong>좋은 예:</strong> ${escapeHtml(field.goodExample || "-")}</p>
-            <p><strong>피해야 할 예:</strong> ${escapeHtml(field.badExample || "-")}</p>
-            <p><strong>작성 전 점검:</strong> ${escapeHtml(field.checkQuestion || "-")}</p>
+            <p><strong>${escapeHtml(t("guideHowTo"))}</strong> ${escapeHtml(field.howTo || "-")}</p>
+            <p><strong>${escapeHtml(t("guideGood"))}</strong> ${escapeHtml(field.goodExample || "-")}</p>
+            <p><strong>${escapeHtml(t("guideBad"))}</strong> ${escapeHtml(field.badExample || "-")}</p>
+            <p><strong>${escapeHtml(t("guideCheck"))}</strong> ${escapeHtml(field.checkQuestion || "-")}</p>
           </div>
         `;
 
@@ -2351,18 +2841,23 @@
         ? selected.submissionChecklist.join(" / ")
         : "-";
 
+      const isEn = uiLang === "en";
       return [
-        "당신은 한국어 소설 편집자입니다.",
-        "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
-        "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
-        "노드 유형: 실습 노드",
-        `구조 레인: ${lane ? lane.label : selected.laneId}`,
-        stage ? `원본 Stage: ${stage.label}` : "",
-        `선택 노드: ${selected.title} (${selected.id})`,
-        `목표: ${selected.goal || "-"}`,
-        `통과 기준: ${selected.passRule || "-"}`,
-        `제출 전 체크: ${checklistText}`,
-        `권장 반복 포인트: ${selected.repetitionTip || "-"}`,
+        isEn ? "You are an English-language novel editor." : "당신은 한국어 소설 편집자입니다.",
+        isEn
+          ? "Output format: provide score(10), evidence, and concise revision suggestions."
+          : "출력 형식: 점수(10점), 근거, 수정안을 간결하게 제시하세요.",
+        isEn
+          ? "The last line of each suggestion must follow: `Next iteration task: ...`."
+          : "각 수정안의 마지막 줄은 반드시 `다음 반복 과제 1개: ...` 형식으로 작성하세요.",
+        isEn ? "Node type: drill node" : "노드 유형: 실습 노드",
+        `${isEn ? "Structure lane" : "구조 레인"}: ${lane ? lane.label : selected.laneId}`,
+        stage ? `${isEn ? "Source stage" : "원본 Stage"}: ${stage.label}` : "",
+        `${isEn ? "Selected node" : "선택 노드"}: ${selected.title} (${selected.id})`,
+        `${isEn ? "Goal" : "목표"}: ${selected.goal || "-"}`,
+        `${isEn ? "Pass rule" : "통과 기준"}: ${selected.passRule || "-"}`,
+        `${isEn ? "Pre-submit checklist" : "제출 전 체크"}: ${checklistText}`,
+        `${isEn ? "Repetition tip" : "권장 반복 포인트"}: ${selected.repetitionTip || "-"}`,
       ].filter(Boolean).join("\n");
     }
 
@@ -2371,17 +2866,17 @@
       const stage = selected.stageId ? getStageById(selected.stageId) : null;
       const lines = [];
       lines.push(PRESET_START);
-      lines.push("[점검 프리셋]");
+      lines.push(uiLang === "en" ? "[CHECK PRESET]" : "[점검 프리셋]");
       lines.push("");
       lines.push(`[${lane ? lane.label : selected.laneId} | ${selected.title}]`);
       lines.push(`ID: ${selected.id}`);
-      lines.push("노드 유형: 실습 노드");
-      if (stage) lines.push(`원본 Stage: ${stage.label}`);
-      lines.push(`목표: ${selected.goal || "-"}`);
-      lines.push(`통과 기준: ${selected.passRule || "-"}`);
-      lines.push(`권장 반복 포인트: ${selected.repetitionTip || "-"}`);
-      lines.push(`참고: ${selected.bookRefs || "-"}`);
-      lines.push(`제출 전 체크: ${(selected.submissionChecklist || []).join(" / ") || "-"}`);
+      lines.push(uiLang === "en" ? "Node type: drill node" : "노드 유형: 실습 노드");
+      if (stage) lines.push(`${uiLang === "en" ? "Source stage" : "원본 Stage"}: ${stage.label}`);
+      lines.push(`${uiLang === "en" ? "Goal" : "목표"}: ${selected.goal || "-"}`);
+      lines.push(`${uiLang === "en" ? "Pass rule" : "통과 기준"}: ${selected.passRule || "-"}`);
+      lines.push(`${uiLang === "en" ? "Repetition tip" : "권장 반복 포인트"}: ${selected.repetitionTip || "-"}`);
+      lines.push(`${uiLang === "en" ? "Reference" : "참고"}: ${selected.bookRefs || "-"}`);
+      lines.push(`${uiLang === "en" ? "Pre-submit checklist" : "제출 전 체크"}: ${(selected.submissionChecklist || []).join(" / ") || "-"}`);
 
       (selected.templateFields || []).forEach((field) => {
         lines.push("");
@@ -2391,7 +2886,7 @@
 
       lines.push("");
       lines.push("---");
-      lines.push("[원고 본문]");
+      lines.push(uiLang === "en" ? "[MANUSCRIPT BODY]" : "[원고 본문]");
       lines.push(PRESET_END);
       return lines.join("\n");
     }
@@ -2411,7 +2906,7 @@
       if (!window.turnstile) return;
 
       if (!TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
-        setStatus("Turnstile 사이트키가 설정되지 않았습니다.", "error");
+        setStatus(t("statusTurnstileMissing"), "error");
         runBtnEl.disabled = true;
         return;
       }
@@ -2431,7 +2926,7 @@
         "error-callback"() {
           turnstileToken = "";
           refreshRunButtonVisibility();
-          setStatus("보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.", "error");
+          setStatus(t("statusTurnstileError"), "error");
         },
       });
     }
@@ -2441,11 +2936,11 @@
       const parts = [];
 
       if (typeof payload.overallScore === "number") {
-        parts.push(`<div class="score">종합 점수 ${payload.overallScore.toFixed(1)} / 10</div>`);
+        parts.push(`<div class="score">${escapeHtml(t("score"))} ${payload.overallScore.toFixed(1)} / 10</div>`);
       }
 
       if (payload.summary) {
-        parts.push(`<h3>요약</h3><p>${escapeHtml(payload.summary)}</p>`);
+        parts.push(`<h3>${escapeHtml(t("summary"))}</h3><p>${escapeHtml(payload.summary)}</p>`);
       }
 
       if (Array.isArray(payload.items) && payload.items.length > 0) {
@@ -2456,10 +2951,10 @@
 
           parts.push(`
             <section class="card">
-              <h3>${escapeHtml(item.label || item.id || "점검")}</h3>
-              ${typeof item.score === "number" ? `<p><strong>점수:</strong> ${item.score} / 10</p>` : ""}
+              <h3>${escapeHtml(item.label || item.id || t("checkpoint"))}</h3>
+              ${typeof item.score === "number" ? `<p><strong>${escapeHtml(t("itemScore"))}:</strong> ${item.score} / 10</p>` : ""}
               ${evidence}
-              ${item.suggestion ? `<p><strong>수정안:</strong> ${escapeHtml(item.suggestion)}</p>` : ""}
+              ${item.suggestion ? `<p><strong>${escapeHtml(t("suggestion"))}:</strong> ${escapeHtml(item.suggestion)}</p>` : ""}
             </section>
           `);
         });
@@ -2467,13 +2962,13 @@
 
       if (payload.usage && typeof payload.usage.remainingToday === "number") {
         parts.push(
-          `<section class="card"><p><strong>남은 횟수:</strong> ${payload.usage.remainingToday} / ${payload.usage.limitPerDay}</p></section>`
+          `<section class="card"><p><strong>${escapeHtml(t("remaining"))}:</strong> ${payload.usage.remainingToday} / ${payload.usage.limitPerDay}</p></section>`
         );
       }
 
       resultEl.innerHTML = parts.length > 0
         ? parts.join("")
-        : "<p class=\"placeholder\">응답을 해석하지 못했습니다.</p>";
+        : `<p class="placeholder">${escapeHtml(t("unknownResponse"))}</p>`;
     }
 
     function applyAutoCompletionFromResponse(selectedNodeId, payload) {
@@ -2495,13 +2990,13 @@
     async function runAnalysis() {
       const selected = getSelectedNode();
       if (!selected) {
-        setStatus("로드맵에서 연습 항목을 선택하세요.", "error");
+        setStatus(t("statusNeedNode"), "error");
         return;
       }
 
       const values = collectExerciseValues();
       if (!validateExerciseInput(selected, values)) {
-        setStatus("연습 입력칸을 먼저 채워주세요.", "error");
+        setStatus(t("statusNeedInput"), "error");
         return;
       }
       writeDraft(selected.id, values);
@@ -2511,7 +3006,7 @@
       const manuscript = buildManuscriptPayload(exerciseText, optionalBody);
 
       if (!turnstileToken && !hasOwnerKey()) {
-        setStatus("보안 검증을 완료한 뒤 다시 시도하세요.", "error");
+        setStatus(t("statusNeedCaptcha"), "error");
         return;
       }
 
@@ -2521,15 +3016,14 @@
         checks: [selected.id],
         turnstileToken,
         meta: {
-          lang: "ko",
+          lang: uiLang,
           version: "v2",
           nodeKind: "drill",
           nodeLane: selected.laneId,
           curriculumStage: selected.stageId || selected.laneId,
         },
       };
-
-      setStatus("분석 요청 중...", null);
+      setStatus(t("statusRequesting"), null);
       setRunLoading(true);
       setResultLoading(true);
 
@@ -2553,17 +3047,17 @@
 
         if (!response.ok) {
           const code = data?.error?.code;
-          let message = data?.error?.message || "요청 처리 중 오류가 발생했습니다.";
+          let message = data?.error?.message || t("errorRequest");
 
           if (code === "INVALID_CAPTCHA") {
-            message = "보안 검증이 만료되었거나 유효하지 않습니다. 다시 검증해 주세요.";
+            message = t("errorInvalidCaptcha");
             turnstileToken = "";
             if (window.turnstile && turnstileWidgetId !== null) {
               window.turnstile.reset(turnstileWidgetId);
             }
             refreshRunButtonVisibility();
           } else if (code === "PAYLOAD_TOO_LARGE") {
-            message = "원고는 최대 12,000자까지 입력할 수 있습니다.";
+            message = t("errorPayloadTooLarge");
           }
 
           throw new Error(message);
@@ -2577,11 +3071,11 @@
           window.turnstile.reset(turnstileWidgetId);
         }
         refreshRunButtonVisibility();
-        setStatus("분석이 완료되었습니다.", "ok");
+        setStatus(t("statusDone"), "ok");
       } catch (err) {
-        setStatus(err.message || "네트워크 오류가 발생했습니다.", "error");
+        setStatus(err.message || t("errorNetwork"), "error");
         setResultLoading(false);
-        resultEl.innerHTML = "<p class=\"placeholder\">아직 분석 결과가 없습니다.</p>";
+        resultEl.innerHTML = `<p class="placeholder">${escapeHtml(t("resultPlaceholder"))}</p>`;
       } finally {
         setRunLoading(false);
         refreshRunButtonVisibility();
@@ -2650,45 +3144,56 @@
       });
     }
 
-    loadCurriculumState();
-    renderStageLegend();
-    initBodyDraft();
-    initRoadmapPan();
+    async function initApp() {
+      await ensureInitialUiLang();
+      setUiLanguage(uiLang, { persist: false, rerender: false });
+      loadCurriculumState();
+      initBodyDraft();
+      initRoadmapPan();
 
-    runBtnEl.addEventListener("click", runAnalysis);
-    if (resetExerciseBtnEl) {
-      resetExerciseBtnEl.addEventListener("click", resetExerciseInputs);
-    }
-
-    // TEST_ONLY_OWNER_BYPASS_START
-    if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {
-      ownerKeyBoxEl.hidden = true;
-    }
-    if (ENABLE_OWNER_BYPASS_UI && ownerKeyInputEl) {
-      const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
-      if (savedOwnerKey) ownerKeyInputEl.value = savedOwnerKey;
-
-      ownerKeyInputEl.addEventListener("input", () => {
-        const value = getOwnerKey();
-        if (value) {
-          localStorage.setItem(OWNER_BYPASS_STORAGE_KEY, value);
-        } else {
-          localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
-        }
-        refreshRunButtonVisibility();
-      });
-    }
-    // TEST_ONLY_OWNER_BYPASS_END
-
-    renderAll();
-    refreshRunButtonVisibility();
-
-    const turnstileInitTimer = setInterval(() => {
-      tryRenderTurnstile();
-      if (turnstileWidgetId !== null || !TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
-        clearInterval(turnstileInitTimer);
+      runBtnEl.addEventListener("click", runAnalysis);
+      if (langSelectEl) {
+        langSelectEl.addEventListener("change", (event) => {
+          const nextLang = event.target.value === "en" ? "en" : "ko";
+          setUiLanguage(nextLang, { persist: true, rerender: true });
+        });
       }
-    }, 200);
+      if (resetExerciseBtnEl) {
+        resetExerciseBtnEl.addEventListener("click", resetExerciseInputs);
+      }
+
+      // TEST_ONLY_OWNER_BYPASS_START
+      if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {
+        ownerKeyBoxEl.hidden = true;
+      }
+      if (ENABLE_OWNER_BYPASS_UI && ownerKeyInputEl) {
+        const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
+        if (savedOwnerKey) ownerKeyInputEl.value = savedOwnerKey;
+
+        ownerKeyInputEl.addEventListener("input", () => {
+          const value = getOwnerKey();
+          if (value) {
+            localStorage.setItem(OWNER_BYPASS_STORAGE_KEY, value);
+          } else {
+            localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
+          }
+          refreshRunButtonVisibility();
+        });
+      }
+      // TEST_ONLY_OWNER_BYPASS_END
+
+      renderAll();
+      refreshRunButtonVisibility();
+
+      const turnstileInitTimer = setInterval(() => {
+        tryRenderTurnstile();
+        if (turnstileWidgetId !== null || !TURNSTILE_SITE_KEY || TURNSTILE_SITE_KEY.startsWith("YOUR_")) {
+          clearInterval(turnstileInitTimer);
+        }
+      }, 200);
+    }
+
+    initApp();
   </script>
   <script
     src="../../assets/visitor-counter.js"

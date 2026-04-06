@@ -2,13 +2,19 @@
 
 정적 페이지(`index.html`)는 Plot & Structure 기반의 구조형 학습 로드맵을 상단에 표시하고,
 선택한 노드의 입력 템플릿 + 원고 본문을 합성해 프록시 API로 전달합니다.
-사용자 표면(UI)은 한글 우선 + 영문 병기 용어 정책으로 구성합니다.
+사용자 표면(UI)은 KO/EN 전환을 지원하며, EN 모드는 `Pure English` 정책으로 구성합니다.
 
 ## 엔드포인트
 - `POST /v1/novel-feedback`
 - 백엔드 AI 제공자 기본값: Gemini (`AI_PROVIDER=gemini`)
 
 ## UI 구조
+- 헤더 우측 상단: 언어 전환 셀렉터
+  - `KO` / `EN` 즉시 전환
+  - 영어 모드는 `Pure English` 정책 (한글 병기 없음)
+  - 저장된 사용자 선택값이 없으면 접속 국가 기준 기본 언어 자동 설정
+    - `KR` 접속: `KO`
+    - 그 외 국가: `EN`
 - 헤더 아래: 3단계 온보딩 카드
   - `핵심 4요소(LOCK) 선택 → 입력칸 작성 → 분석 반영`
 - 상단: 구조형 학습 로드맵(SVG 5레인)
@@ -85,6 +91,8 @@
 ## 로컬 임시저장 (v2)
 - `localStorage` 자동 저장 (입력 후 약 200ms)
 - 키:
+  - `novel-assistant:lang:v1`
+    - UI 언어 선택값 저장 (`ko`/`en`)
   - `novel-assistant:curriculum:v2`
     - `selectedNodeId`, `activeTab`, `perNode` 저장
     - 이전 구조(`lastSelectedDrillId`, `perDrill`)에서 마이그레이션 지원
@@ -107,6 +115,15 @@
   }
 }
 ```
+
+## 언어/요청 동기화 규칙
+- UI 언어가 `KO`일 때 `meta.lang = "ko"` 전송
+- UI 언어가 `EN`일 때 `meta.lang = "en"` 전송
+- 프런트의 화면 언어와 분석 요청 메타 언어는 항상 동일하게 유지합니다.
+- 초기 언어 결정 순서:
+  1. `localStorage(novel-assistant:lang:v1)` 저장값 우선
+  2. 저장값 없으면 Cloudflare trace(`loc`) 기반 국가 판별
+  3. 국가 판별 실패 시 브라우저 언어/타임존 폴백
 
 ## 선택 헤더 (테스트 전용)
 - `X-Owner-Key: <owner key>`
