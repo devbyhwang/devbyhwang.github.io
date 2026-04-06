@@ -876,8 +876,6 @@
         <div class="captcha-wrap">
           <div id="turnstileBox"></div>
         </div>
-        <p id="captchaGuide" class="captcha-guide" hidden></p>
-
         <label id="resultLabel">피드백 결과</label>
         <div id="result" class="result">
           <p class="placeholder">아직 분석 결과가 없습니다.</p>
@@ -922,6 +920,7 @@
         manuscriptLabel: "원고 본문 (선택)",
         manuscriptPlaceholder: "문맥이 필요할 때만 원고 본문을 추가 입력하세요.",
         run: "분석 실행",
+        runNeedCaptcha: "분석을 시작하려면 사람인지 확인이 필요합니다.",
         running: "분석 중...",
         usage: "기본 무료 플랜: 하루 5회",
         resultLabel: "피드백 결과",
@@ -962,7 +961,6 @@
         statusNeedNode: "로드맵에서 연습 항목을 선택하세요.",
         statusNeedInput: "연습 입력칸을 먼저 채워주세요.",
         statusNeedCaptcha: "보안 검증을 완료한 뒤 다시 시도하세요.",
-        captchaGuide: "Cloudflare 보안 검증을 먼저 완료한 뒤 분석 실행 버튼을 눌러주세요.",
         statusRequesting: "분석 요청 중...",
         statusDone: "분석이 완료되었습니다.",
         statusTurnstileMissing: "Turnstile 사이트키가 설정되지 않았습니다.",
@@ -988,6 +986,7 @@
         manuscriptLabel: "Manuscript Body (Optional)",
         manuscriptPlaceholder: "Add manuscript context only when needed.",
         run: "Run Analysis",
+        runNeedCaptcha: "Human verification is required",
         running: "Analyzing...",
         usage: "Free plan: 5 runs per day",
         resultLabel: "Feedback Result",
@@ -1028,7 +1027,6 @@
         statusNeedNode: "Select a roadmap node first.",
         statusNeedInput: "Fill in all practice fields first.",
         statusNeedCaptcha: "Complete security verification and retry.",
-        captchaGuide: "Complete Cloudflare security verification first, then run analysis.",
         statusRequesting: "Sending analysis request...",
         statusDone: "Analysis completed.",
         statusTurnstileMissing: "Turnstile site key is missing.",
@@ -2588,7 +2586,6 @@
     const resultEl = document.getElementById("result");
     const statusEl = document.getElementById("status");
     const turnstileBoxEl = document.getElementById("turnstileBox");
-    const captchaGuideEl = document.getElementById("captchaGuide");
     const ownerKeyBoxEl = document.querySelector(".owner-key-box");
     let runButtonDefaultLabel = runBtnEl ? runBtnEl.textContent.trim() || t("run") : t("run");
     // TEST_ONLY_OWNER_BYPASS_START
@@ -2701,7 +2698,6 @@
       if (usageLabelEl) usageLabelEl.textContent = t("usage");
       if (resultLabelEl) resultLabelEl.textContent = t("resultLabel");
       if (resetExerciseBtnEl) resetExerciseBtnEl.textContent = t("resetExercise");
-      if (captchaGuideEl) captchaGuideEl.textContent = t("captchaGuide");
       runButtonDefaultLabel = t("run");
       if (runBtnEl && !isRunLoading) runBtnEl.textContent = runButtonDefaultLabel;
       if (!resultEl.querySelector(".card") && !resultEl.querySelector(".score") && !resultEl.classList.contains("is-loading")) {
@@ -2762,9 +2758,8 @@
       const hasVerification = Boolean(turnstileToken || hasOwnerKey());
       const canRun = !isRunLoading && canRunForNode && hasVerification;
       setRunButtonEnabled(canRun);
-      if (captchaGuideEl) {
-        const showGuide = canRunForNode && !isRunLoading && !hasVerification;
-        captchaGuideEl.hidden = !showGuide;
+      if (runBtnEl && !isRunLoading) {
+        runBtnEl.textContent = (canRunForNode && !hasVerification) ? t("runNeedCaptcha") : runButtonDefaultLabel;
       }
     }
     // TEST_ONLY_OWNER_BYPASS_END
