@@ -98,6 +98,10 @@
     - 이전 구조(`lastSelectedDrillId`, `perDrill`)에서 마이그레이션 지원
   - `novel-assistant:draft:<nodeId>:v2` (노드별 연습 입력 draft)
   - `novel-assistant:body:v2` (선택 원고 본문)
+- `sessionStorage` 키:
+  - `novel-assistant:captcha-session:v1`
+    - 워커가 발급한 캡차 세션 토큰(탭 세션 기준)
+    - 탭 종료 시 자동 삭제되어 다음 탭에서 재검증 필요
 
 ## 요청 예시
 ```json
@@ -106,6 +110,7 @@
   "preset": "...",
   "checks": ["s2_scene_goal_conflict_change"],
   "turnstileToken": "...",
+  "captchaSession": "...",
   "meta": {
     "lang": "ko",
     "version": "v2",
@@ -115,6 +120,8 @@
   }
 }
 ```
+- `turnstileToken`은 유효한 `captchaSession`이 없을 때만 필수입니다.
+- `captchaSession`이 유효하면 같은 탭에서 재검증 없이 요청 가능합니다.
 
 ## 언어/요청 동기화 규칙
 - UI 언어가 `KO`일 때 `meta.lang = "ko"` 전송
@@ -147,14 +154,19 @@
   "usage": {
     "remainingToday": 1,
     "limitPerDay": 5
+  },
+  "security": {
+    "captchaSession": "...",
+    "captchaSessionExpiresAt": "2026-04-06T12:34:56.000Z"
   }
 }
 ```
+- `security.captchaSession`이 내려오면 프런트는 `sessionStorage`에 저장해 같은 탭 내 후속 요청에 재사용합니다.
 
 ## 보안 원칙
 - 개인 API 키 입력 기능 없음 (서버 키 전용)
 - LLM API 키는 프록시 환경 변수/시크릿에서만 관리
 - 브라우저 코드/리포지토리에 키 저장 금지
-- 프록시에 Origin 제한 + Turnstile 검증 + Durable Object 기반 원자적 rate limit 적용
+- 프록시에 Origin 제한 + Turnstile 검증 + 서명 기반 captcha session(6시간 TTL) + Durable Object 기반 원자적 rate limit 적용
 - `manuscript`는 최대 12,000자까지 허용
 - 테스트 종료 후 `ENABLE_OWNER_BYPASS=false`로 즉시 비활성화하고 관련 코드 블록 삭제 권장
