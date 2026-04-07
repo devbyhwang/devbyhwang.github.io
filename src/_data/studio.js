@@ -39,6 +39,7 @@ module.exports = {
       postCategory: "games",
       tags: ["writing", "assistant", "llm", "analysis"],
       type: "demo",
+      preview: "/assets/novel-assistant-preview.png",
     },
   ],
   freelance: {
