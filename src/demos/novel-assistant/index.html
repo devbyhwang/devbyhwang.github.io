@@ -892,6 +892,47 @@
       min-height: 65px;
     }
 
+    .bibliography-pane {
+      margin-top: 4px;
+    }
+
+    .bibliography-intro {
+      margin: 0;
+      color: #5b564d;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .bibliography-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 10px;
+    }
+
+    .bibliography-item {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .bibliography-meta {
+      margin: 0;
+      color: #4f493f;
+      font-size: 13px;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .bibliography-meta strong {
+      color: #3f392f;
+      margin-right: 6px;
+    }
+
     @media (max-width: 980px) {
       .layout { grid-template-columns: 1fr; }
       .shell {
@@ -940,6 +981,12 @@
       #roadmapSvg {
         min-width: 3320px;
         height: 620px;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .bibliography-item {
+        padding: 9px;
       }
     }
 
@@ -1030,6 +1077,18 @@
 
         <p id="status" class="status"></p>
       </article>
+    </section>
+
+    <section class="pane bibliography-pane" aria-labelledby="bibliographyTitle">
+      <h2 id="bibliographyTitle">참고 문헌</h2>
+      <p id="bibliographyIntro" class="bibliography-intro">이 도구의 학습 프레임을 구성할 때 참고한 핵심 작법서입니다.</p>
+      <ul id="bibliographyList" class="bibliography-list">
+        <li class="bibliography-item">
+          <p class="bibliography-meta"><strong>책 제목:</strong> Plot &amp; Structure: Techniques and Exercises for Crafting a Plot That Grips Readers from Start to Finish</p>
+          <p class="bibliography-meta"><strong>저자:</strong> James Scott Bell</p>
+          <p class="bibliography-meta"><strong>출판사:</strong> Writer's Digest Books</p>
+        </li>
+      </ul>
     </section>
   </main>
 

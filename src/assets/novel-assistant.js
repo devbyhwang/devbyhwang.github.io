@@ -20,6 +20,11 @@
         docTitle: "소설 작성 어시스턴트 · DevByHwang",
         pageTitle: "소설 작성 어시스턴트",
         pageSubtitle: "작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다. 핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.",
+        bibliographyTitle: "참고 문헌",
+        bibliographyIntro: "이 도구의 학습 프레임을 구성할 때 참고한 핵심 작법서입니다.",
+        bibliographyLabelTitle: "책 제목",
+        bibliographyLabelAuthor: "저자",
+        bibliographyLabelPublisher: "출판사",
         languageLabel: "Language",
         roadmapTitle: "구조형 학습 로드맵",
         roadmapHint: "먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.",
@@ -129,6 +134,11 @@
         docTitle: "Novel Writing Assistant · DevByHwang",
         pageTitle: "Novel Writing Assistant",
         pageSubtitle: "A staged practice system based on core fiction craft principles. Train in order from LOCK foundations to act structure, scene execution, and revision.",
+        bibliographyTitle: "References",
+        bibliographyIntro: "Core craft book referenced while shaping this learning framework.",
+        bibliographyLabelTitle: "Title",
+        bibliographyLabelAuthor: "Author",
+        bibliographyLabelPublisher: "Publisher",
         languageLabel: "Language",
         roadmapTitle: "Structured Learning Roadmap",
         roadmapHint: "Start with a LOCK node, then expand in order: Beginning, Middle, Ending, and Revision.",
@@ -234,6 +244,14 @@
         errorNetwork: "A network error occurred.",
       },
     };
+
+    const bibliographyEntries = [
+      {
+        title: "Plot & Structure: Techniques and Exercises for Crafting a Plot That Grips Readers from Start to Finish",
+        author: "James Scott Bell",
+        publisher: "Writer's Digest Books",
+      },
+    ];
 
     const deepCopy = (value) => JSON.parse(JSON.stringify(value));
 
@@ -582,7 +600,7 @@
         viewTags: ["all", "micro"],
         roadmapOrder: 5,
         title: "독자 공감 & 호감도 설계",
-        shortLabel: "Empathy",
+        shortLabel: "공감 설계",
         goal: "Lead가 완벽하지 않아도 독자가 정서적으로 붙도록 만든다.",
         passRule: "공감 유발 장치와 인간적 모순이 균형 있게 제시된다.",
         repetitionTip: "공감 장치를 삭제/추가한 두 버전을 비교한다.",
@@ -601,7 +619,7 @@
         viewTags: ["all", "micro", "act"],
         roadmapOrder: 6,
         title: "캐릭터 아크 연동",
-        shortLabel: "Arc",
+        shortLabel: "캐릭터 아크",
         goal: "사건 전개와 내면 변화를 인과로 연결한다.",
         passRule: "시작-전환-끝의 변화가 사건 선택과 맞물린다.",
         repetitionTip: "아크 변화만 추린 12줄 로그를 작성한다.",
@@ -620,7 +638,7 @@
         viewTags: ["all", "micro"],
         roadmapOrder: 7,
         title: "장면 목적-충돌-변화",
-        shortLabel: "Scene GCC",
+        shortLabel: "장면 GCC(목적-충돌-변화)",
         goal: "각 장면이 플롯을 전진시키는 기능을 갖추게 한다.",
         passRule: "장면마다 목적/충돌/전후 변화가 모두 확인된다.",
         repetitionTip: "목적만 바꾼 변형 장면 1개를 추가 작성한다.",
@@ -639,7 +657,7 @@
         viewTags: ["all", "micro"],
         roadmapOrder: 8,
         title: "장면 4코드(Action/Reaction/Setup/Deepening)",
-        shortLabel: "4 Chords",
+        shortLabel: "장면 4단계 패턴",
         goal: "장면을 action 중심으로 설계하되 깊이 코드를 동시 배치한다.",
         passRule: "한 장면 안에서 4코드가 목적에 맞게 작동한다.",
         repetitionTip: "동일 장면의 reaction 비율만 높인 버전을 작성한다.",
@@ -658,7 +676,7 @@
         viewTags: ["all", "micro"],
         roadmapOrder: 9,
         title: "대사 보이스 분화",
-        shortLabel: "Voice",
+        shortLabel: "목소리 차별화",
         goal: "인물별 말투와 어휘로 대사만 읽어도 화자가 구분되게 한다.",
         passRule: "핵심 인물 2명 이상이 문장 리듬과 어휘에서 분리된다.",
         repetitionTip: "같은 정보를 2인 대사 버전으로 재작성한다.",
@@ -677,7 +695,7 @@
         viewTags: ["all", "micro"],
         roadmapOrder: 10,
         title: "대사 = 대립 무기",
-        shortLabel: "Dialogue Clash",
+        shortLabel: "대사 충돌",
         goal: "대사를 정보 전달이 아니라 충돌/압박 도구로 사용한다.",
         passRule: "대화의 각 턴이 목표 충돌에 기여한다.",
         repetitionTip: "설명 대사 3줄을 대립형 대사로 치환한다.",
@@ -696,7 +714,7 @@
         viewTags: ["all", "macro", "act"],
         roadmapOrder: 11,
         title: "3막 척추 설계",
-        shortLabel: "3-Act",
+        shortLabel: "3막 구조",
         goal: "Act I/II/III의 기능을 분리해 플롯 척추를 만든다.",
         passRule: "각 막의 목적과 전환점이 명확하게 정의된다.",
         repetitionTip: "3막 요약을 9문장 버전으로 압축한다.",
@@ -715,7 +733,7 @@
         viewTags: ["all", "macro", "act"],
         roadmapOrder: 12,
         title: "Disturbance & Two Doorways",
-        shortLabel: "Doorways",
+        shortLabel: "두 개의 관문",
         goal: "초기 교란과 두 개의 문턱 사건으로 구조 추진력을 만든다.",
         passRule: "교란-1문턱-2문턱이 인과적으로 연결된다.",
         repetitionTip: "교란 사건을 크기만 다르게 2안 작성한다.",
@@ -734,7 +752,7 @@
         viewTags: ["all", "macro", "act"],
         roadmapOrder: 13,
         title: "영웅여정 오버레이",
-        shortLabel: "Hero Overlay",
+        shortLabel: "영웅여정 대입",
         goal: "3막 구조 위에 영웅여정 핵심 단계를 얹어 구조 일관성을 높인다.",
         passRule: "주요 여정 단계가 막 구조와 충돌 없이 정렬된다.",
         repetitionTip: "불필요한 여정 단계를 2개 제거해도 유지되는지 점검한다.",
@@ -753,7 +771,7 @@
         viewTags: ["all", "macro", "act"],
         roadmapOrder: 14,
         title: "플롯 포인트 & 미드포인트",
-        shortLabel: "Midpoint",
+        shortLabel: "중간 전환점",
         goal: "중반부 축을 강화해 전반/후반의 긴장 곡선을 재정렬한다.",
         passRule: "미드포인트 이후 갈등 강도가 체감 가능하게 상승한다.",
         repetitionTip: "미드포인트 사건만 바꾼 대안 구조를 작성한다.",
@@ -772,7 +790,7 @@
         viewTags: ["all", "macro"],
         roadmapOrder: 15,
         title: "서브플롯-테마 통합",
-        shortLabel: "Subplot",
+        shortLabel: "서브플롯",
         goal: "서브플롯을 메인 갈등/테마와 결속해 복잡도를 통제한다.",
         passRule: "각 서브플롯의 존재 이유와 수렴 지점이 명확하다.",
         repetitionTip: "서브플롯 1개를 제거했을 때 영향 분석을 작성한다.",
@@ -791,7 +809,7 @@
         viewTags: ["all", "act", "macro"],
         roadmapOrder: 16,
         title: "시작부 훅 & 진입",
-        shortLabel: "Beginning Hook",
+        shortLabel: "도입부 훅",
         goal: "첫 장면에서 후킹, 톤, 핵심 질문의 씨앗을 동시에 심는다.",
         passRule: "첫 페이지가 다음 페이지를 강제한다.",
         repetitionTip: "첫 문단 3개 훅 버전을 비교 후 최종안 고른다.",
@@ -810,7 +828,7 @@
         viewTags: ["all", "act", "macro"],
         roadmapOrder: 17,
         title: "시작부 세계/대립 소개",
-        shortLabel: "World & Opp",
+        shortLabel: "세계관과 적대치",
         goal: "세계 규칙과 대립 축을 과잉 설명 없이 제시한다.",
         passRule: "설정이 설명문이 아니라 사건 안에서 작동한다.",
         repetitionTip: "설정 설명 5줄을 행동 기반 장면으로 치환한다.",
@@ -829,7 +847,7 @@
         viewTags: ["all", "act", "macro"],
         roadmapOrder: 18,
         title: "중반부 압박 상승",
-        shortLabel: "Middle Pressure",
+        shortLabel: "중반 압박 상승",
         goal: "중반부를 정체 없이 압박 상승 구조로 만든다.",
         passRule: "장애물/대가/시간압박이 단계적으로 상승한다.",
         repetitionTip: "중반부 5개 사건의 강도 점수를 재배열한다.",
@@ -848,7 +866,7 @@
         viewTags: ["all", "act", "macro"],
         roadmapOrder: 19,
         title: "중반부 합병증/반전",
-        shortLabel: "Complications",
+        shortLabel: "위기의 심화(난관)",
         goal: "중반부의 예측가능성을 깨는 합병증과 반전을 설계한다.",
         passRule: "반전이 우연이 아니라 기존 정보에서 파생된다.",
         repetitionTip: "반전 복선만 추린 체크리스트를 만든다.",
@@ -867,7 +885,7 @@
         viewTags: ["all", "act", "macro"],
         roadmapOrder: 20,
         title: "엔딩 Knockout 해결",
-        shortLabel: "Ending",
+        shortLabel: "결말",
         goal: "클라이맥스와 해결부에서 감정 타격과 인과 회수를 완성한다.",
         passRule: "핵심 갈등이 해소되고 여운이 남는다.",
         repetitionTip: "결말 문단을 리듬/어조만 바꿔 2안 작성한다.",
@@ -886,7 +904,7 @@
         viewTags: ["all", "act", "micro"],
         roadmapOrder: 21,
         title: "마지막 페이지 울림",
-        shortLabel: "Resonance",
+        shortLabel: "여운",
         goal: "엔딩 직후 독자에게 남는 정서적 공명을 강화한다.",
         passRule: "마지막 페이지의 언어/이미지가 작품 의미를 확장한다.",
         repetitionTip: "마지막 페이지를 시각 이미지 중심으로 재작성한다.",
@@ -905,7 +923,7 @@
         viewTags: ["all", "revision"],
         roadmapOrder: 22,
         title: "수정 트리아지",
-        shortLabel: "Triage",
+        shortLabel: "퇴고 우선순위 분류",
         goal: "문제의 심각도와 영향도로 수정 우선순위를 고정한다.",
         passRule: "수정 순서가 명확하고 실행 가능한 단위로 분해된다.",
         repetitionTip: "상위 3개 문제를 24시간 액션으로 변환한다.",
@@ -924,7 +942,7 @@
         viewTags: ["all", "revision"],
         roadmapOrder: 23,
         title: "공통 플롯 문제 처방",
-        shortLabel: "Problem Cures",
+        shortLabel: "플롯 문제 처방",
         goal: "반복되는 플롯 문제를 원인-처방 매칭으로 해결한다.",
         passRule: "문제마다 실행 가능한 처방이 1:1로 연결된다.",
         repetitionTip: "같은 처방을 다른 장면에 이식해본다.",
@@ -943,7 +961,7 @@
         viewTags: ["all", "revision", "micro"],
         roadmapOrder: 24,
         title: "Show/Tell & Precision 툴",
-        shortLabel: "Toolbox",
+        shortLabel: "작법 도구함",
         goal: "문장/장면 정밀도를 높이는 도구를 개인 툴셋으로 정리한다.",
         passRule: "교정 결과가 측정 가능하고 재사용 규칙으로 남는다.",
         repetitionTip: "교정 전/후 5문장을 비교표로 유지한다.",
@@ -1461,10 +1479,10 @@
 
     let laneDefs = [
       { id: "lock", label: "핵심 4요소(LOCK)", color: "#9f6a49", y: 72 },
-      { id: "beginning", label: "시작 (Act I)", color: "#b87954", y: 174 },
-      { id: "middle", label: "중간 (Act II)", color: "#4b7f82", y: 276 },
-      { id: "ending", label: "끝 (Act III)", color: "#6374aa", y: 378 },
-      { id: "revision", label: "수정 (Revision)", color: "#6f7f4f", y: 480 },
+      { id: "beginning", label: "시작 (1막)", color: "#b87954", y: 174 },
+      { id: "middle", label: "중간 (2막)", color: "#4b7f82", y: 276 },
+      { id: "ending", label: "끝 (3막)", color: "#6374aa", y: 378 },
+      { id: "revision", label: "수정 (퇴고)", color: "#6f7f4f", y: 480 },
     ];
 
     let viewTabs = [
@@ -1996,6 +2014,9 @@
 
     const pageTitleEl = document.getElementById("pageTitle");
     const pageSubtitleEl = document.getElementById("pageSubtitle");
+    const bibliographyTitleEl = document.getElementById("bibliographyTitle");
+    const bibliographyIntroEl = document.getElementById("bibliographyIntro");
+    const bibliographyListEl = document.getElementById("bibliographyList");
     const langLabelEl = document.getElementById("langLabel");
     const langSelectEl = document.getElementById("langSelect");
     const roadmapTitleEl = document.getElementById("roadmapTitle");
@@ -2132,6 +2153,7 @@
       if (usageLabelEl) usageLabelEl.textContent = t("usage");
       if (resultLabelEl) resultLabelEl.textContent = t("resultLabel");
       if (resetExerciseBtnEl) resetExerciseBtnEl.textContent = t("resetExercise");
+      renderBibliography();
       runButtonDefaultLabel = t("run");
       if (runBtnEl && !isRunLoading) runBtnEl.textContent = runButtonDefaultLabel;
       if (!resultEl.querySelector(".card") && !resultEl.querySelector(".score") && !resultEl.classList.contains("is-loading")) {
@@ -2205,6 +2227,20 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
+    }
+
+    function renderBibliography() {
+      if (!bibliographyListEl) return;
+      if (bibliographyTitleEl) bibliographyTitleEl.textContent = t("bibliographyTitle");
+      if (bibliographyIntroEl) bibliographyIntroEl.textContent = t("bibliographyIntro");
+
+      bibliographyListEl.innerHTML = bibliographyEntries.map((entry) => `
+        <li class="bibliography-item">
+          <p class="bibliography-meta"><strong>${escapeHtml(t("bibliographyLabelTitle"))}:</strong> ${escapeHtml(entry.title)}</p>
+          <p class="bibliography-meta"><strong>${escapeHtml(t("bibliographyLabelAuthor"))}:</strong> ${escapeHtml(entry.author)}</p>
+          <p class="bibliography-meta"><strong>${escapeHtml(t("bibliographyLabelPublisher"))}:</strong> ${escapeHtml(entry.publisher)}</p>
+        </li>
+      `).join("");
     }
 
     function setStatus(message, type) {
