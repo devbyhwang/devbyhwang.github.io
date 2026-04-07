@@ -9,8 +9,10 @@
 - 백엔드 AI 제공자 기본값: ChatGPT(OpenAI) (`AI_PROVIDER=openai`)
 
 ## UI 구조
-- 헤더 우측 상단: 언어 전환 셀렉터
-  - `KO` / `EN` 즉시 전환
+- 헤더 우측 상단: UI 설정 셀렉터
+  - `Font Size` (`기본/크게/아주 크게`) + `Language` (`KO/EN`) 순서로 노출
+  - 폰트 크기는 UI 전체 텍스트를 단계별로 확대하며, 선택값을 로컬에 저장
+- `KO` / `EN` 즉시 전환
   - 영어 모드는 `Pure English` 정책 (한글 병기 없음)
   - 저장된 사용자 선택값이 없으면 접속 국가 기준 기본 언어 자동 설정
     - `KR` 접속: `KO`
@@ -91,6 +93,8 @@
 ## 로컬 임시저장 (v2)
 - `localStorage` 자동 저장 (입력 후 약 200ms)
 - 키:
+  - `novel-assistant:font-size:v1`
+    - UI 글자 크기 단계 저장 (`base`/`large`/`xlarge`)
   - `novel-assistant:lang:v1`
     - UI 언어 선택값 저장 (`ko`/`en`)
   - `novel-assistant:curriculum:v2`
