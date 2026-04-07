@@ -3003,6 +3003,12 @@ canvas,
   margin-bottom: var(--space-4);
 }
 
+.profile-nickname {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  font-weight: var(--weight-semibold);
+}
+
 .profile-links-inline {
   margin-top: var(--space-4);
 }

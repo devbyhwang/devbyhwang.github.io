@@ -16,7 +16,7 @@ module.exports = {
   description: "개발자 브랜드 DevByHwang와 작가 브랜드 Underground Novel를 위한 블로그.",
   author: "Hwang",
   url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
-  email: "",
+  email: "devbyhwang@gmail.com",
   socials: {
     github: "https://github.com/devbyhwang",
     kmong: "https://kmong.com/@DevByHwang",
