@@ -19,12 +19,15 @@ description: "DevByHwang 소개"
       <li><a href="{{ '/devbyhwang/categories/games/' | url }}">게임 카테고리</a></li>
       <li><a href="{{ '/devbyhwang/categories/freelance/' | url }}">외주 카테고리</a></li>
     </ul>
-
-    <div class="profile-links profile-links-inline">
-      {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
-      {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
-      {% if site.socials.kmong %}<a href="{{ site.socials.kmong }}">Kmong</a>{% endif %}
-      {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
+    <div class="about-contact-block">
+      <div class="about-contact-email-row">
+        {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+      </div>
+      <div class="profile-links about-contact-social-row">
+        {% if site.socials.github %}<a href="{{ site.socials.github }}">GitHub</a>{% endif %}
+        {% if site.socials.kmong %}<a href="{{ site.socials.kmong }}">Kmong</a>{% endif %}
+        {% if site.socials.youtube %}<a href="{{ site.socials.youtube }}">YouTube</a>{% endif %}
+      </div>
     </div>
   </section>
 </article>
