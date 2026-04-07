@@ -18,5 +18,10 @@ description: "Underground Novel 소개"
       <li>독자와 나눌 메모</li>
       <li>내면의 생각 기록</li>
     </ul>
+    <div class="about-contact-block">
+      <div class="about-contact-email-row">
+        {% if site.email %}<a href="mailto:{{ site.email }}">{{ site.email }}</a>{% endif %}
+      </div>
+    </div>
   </section>
 </article>
