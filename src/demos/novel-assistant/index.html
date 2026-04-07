@@ -10,6 +10,7 @@
   <title>소설 작성 어시스턴트 · DevByHwang</title>
   <style>
     :root {
+      --ui-font-scale: 1;
       --bg: #f4f0e8;
       --ink: #1b1a17;
       --paper: #fffdf8;
@@ -66,39 +67,44 @@
 
     .head-actions {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
       min-width: 120px;
     }
 
-    .lang-row {
+    .lang-row,
+    .font-size-row {
       display: inline-flex;
       align-items: center;
       gap: 8px;
     }
 
-    .lang-label {
-      font-size: 11px;
+    .lang-label,
+    .font-size-label {
+      font-size: calc(11px * var(--ui-font-scale));
       color: #6f6659;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       font-weight: 700;
     }
 
-    .lang-select {
+    .lang-select,
+    .font-size-select {
       min-width: 86px;
       border-radius: 999px;
       border: 1px solid var(--line);
       padding: 5px 10px;
       background: #fff;
       color: var(--ink);
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       font-weight: 700;
       cursor: pointer;
     }
 
-    .lang-select:focus {
+    .lang-select:focus,
+    .font-size-select:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: var(--focus-ring);
@@ -106,14 +112,14 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(24px, 3.3vw, 35px);
+      font-size: clamp(calc(24px * var(--ui-font-scale)), calc(3.3vw * var(--ui-font-scale)), calc(35px * var(--ui-font-scale)));
       letter-spacing: 0.01em;
     }
 
     .sub {
       margin-top: 8px;
       color: #5b564d;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
       line-height: 1.45;
     }
 
@@ -138,12 +144,12 @@
 
     .pane h2 {
       margin: 0;
-      font-size: 17px;
+      font-size: calc(17px * var(--ui-font-scale));
       letter-spacing: 0.01em;
     }
 
     label {
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #6f6659;
       font-weight: 700;
       text-transform: uppercase;
@@ -160,7 +166,7 @@
       color: var(--ink);
       padding: 12px;
       line-height: 1.55;
-      font-size: 15px;
+      font-size: calc(15px * var(--ui-font-scale));
       resize: vertical;
       font-family: "Iowan Old Style", "Times New Roman", serif;
       min-width: 0;
@@ -171,7 +177,7 @@
     input,
     select {
       min-height: 44px;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
       font-family: inherit;
     }
 
@@ -198,7 +204,7 @@
     }
 
     .exercise-meta {
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       color: #5b564d;
       line-height: 1.45;
       padding-bottom: 8px;
@@ -208,7 +214,7 @@
     .exercise-empty {
       margin: 0;
       color: #6f6659;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
     }
 
     .exercise-field {
@@ -230,12 +236,12 @@
     }
 
     .exercise-field label {
-      font-size: 11px;
+      font-size: calc(11px * var(--ui-font-scale));
     }
 
     .exercise-input {
       min-height: 88px;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
       line-height: 1.5;
       font-family: inherit;
     }
@@ -251,7 +257,7 @@
 
     .field-guide p {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       line-height: 1.45;
       color: #5b564d;
     }
@@ -275,13 +281,13 @@
 
     .analysis-setup-header h3 {
       margin: 0;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
       color: var(--ink);
     }
 
     .analysis-setup-header p {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #6f6659;
     }
 
@@ -312,13 +318,13 @@
     }
 
     .analysis-summary-title {
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       font-weight: 700;
       color: var(--ink);
     }
 
     .analysis-summary-copy {
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #5b564d;
       text-align: right;
       line-height: 1.4;
@@ -342,12 +348,12 @@
     }
 
     .analysis-field label {
-      font-size: 11px;
+      font-size: calc(11px * var(--ui-font-scale));
     }
 
     .analysis-note {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       line-height: 1.45;
       color: #6f6659;
     }
@@ -360,7 +366,7 @@
     }
 
     .analysis-list li {
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       line-height: 1.45;
       color: #4f493f;
     }
@@ -380,7 +386,7 @@
 
     .analysis-guide p {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #5b564d;
       line-height: 1.45;
     }
@@ -411,7 +417,7 @@
       color: #5b564d;
       border-radius: 999px;
       padding: 6px 10px;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       cursor: pointer;
       transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
     }
@@ -436,7 +442,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       padding: 4px 8px;
-      font-size: 11px;
+      font-size: calc(11px * var(--ui-font-scale));
       color: #5b564d;
       background: #fff;
       cursor: pointer;
@@ -530,21 +536,21 @@
     }
 
     .roadmap-node .node-label {
-      font-size: 11px;
+      font-size: calc(11px * var(--ui-font-scale));
       font-weight: 700;
       fill: #2e2a24;
       pointer-events: none;
     }
 
     .roadmap-node .node-sub-label {
-      font-size: 11px;
+      font-size: calc(11px * var(--ui-font-scale));
       font-weight: 600;
       fill: #4f493f;
       pointer-events: none;
     }
 
     .roadmap-node .node-check {
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       font-weight: 700;
       fill: var(--ok);
       text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
@@ -552,7 +558,7 @@
     }
 
     .roadmap-lane-label {
-      font-size: 15px;
+      font-size: calc(15px * var(--ui-font-scale));
       font-weight: 700;
       letter-spacing: 0.01em;
       pointer-events: all;
@@ -560,7 +566,7 @@
 
     .roadmap-hint {
       margin: 0;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #6f6659;
     }
 
@@ -571,7 +577,7 @@
       background: #fff;
       display: grid;
       gap: 7px;
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       color: #4f493f;
     }
 
@@ -580,7 +586,7 @@
     }
 
     .selected-title {
-      font-size: 15px;
+      font-size: calc(15px * var(--ui-font-scale));
       font-weight: 700;
       color: var(--ink);
     }
@@ -601,7 +607,7 @@
 
     .meta-section h4 {
       margin: 0;
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       color: #3f392f;
     }
 
@@ -636,7 +642,7 @@
     }
 
     .submission-list li {
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #4f493f;
       line-height: 1.45;
     }
@@ -650,7 +656,7 @@
       border-radius: 999px;
       border: 1px solid var(--line);
       background: #fff;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #5b564d;
       width: fit-content;
     }
@@ -685,7 +691,7 @@
       color: #4f493f;
       border-radius: 999px;
       padding: 5px 9px;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       cursor: pointer;
     }
 
@@ -708,7 +714,7 @@
       color: #4f493f;
       border-radius: 8px;
       padding: 5px 9px;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       cursor: pointer;
     }
 
@@ -720,7 +726,7 @@
     }
 
     .status {
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       min-height: 20px;
       color: #5b564d;
     }
@@ -742,7 +748,7 @@
 
     .placeholder {
       color: #6f6659;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
     }
 
     .result.is-loading {
@@ -770,7 +776,7 @@
 
     .result h3 {
       margin: 0 0 6px;
-      font-size: 16px;
+      font-size: calc(16px * var(--ui-font-scale));
     }
 
     .score {
@@ -782,7 +788,7 @@
       border-radius: 999px;
       background: var(--accent-soft);
       color: var(--accent);
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       font-weight: 700;
     }
 
@@ -818,7 +824,7 @@
       background: #fff;
       color: var(--ink);
       padding: 10px;
-      font-size: 14px;
+      font-size: calc(14px * var(--ui-font-scale));
       font-family: inherit;
       min-width: 0;
     }
@@ -830,7 +836,7 @@
       padding: 12px;
       background: var(--accent);
       color: #fff;
-      font-size: 15px;
+      font-size: calc(15px * var(--ui-font-scale));
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
@@ -862,13 +868,13 @@
 
     .usage {
       margin-top: 6px;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #5b564d;
     }
 
     .captcha-guide {
       margin-top: 8px;
-      font-size: 12px;
+      font-size: calc(12px * var(--ui-font-scale));
       color: #7a3f2f;
       line-height: 1.45;
     }
@@ -899,7 +905,7 @@
     .bibliography-intro {
       margin: 0;
       color: #5b564d;
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       line-height: 1.5;
     }
 
@@ -923,7 +929,7 @@
     .bibliography-meta {
       margin: 0;
       color: #4f493f;
-      font-size: 13px;
+      font-size: calc(13px * var(--ui-font-scale));
       line-height: 1.5;
       overflow-wrap: anywhere;
     }
@@ -948,14 +954,18 @@
       .head-actions {
         width: 100%;
         align-items: flex-start;
+        justify-content: flex-start;
+        gap: 8px;
       }
-      .lang-row {
+      .lang-row,
+      .font-size-row {
         width: 100%;
       }
-      .lang-select {
+      .lang-select,
+      .font-size-select {
         min-width: 110px;
       }
-      h1 { font-size: clamp(21px, 7vw, 30px); }
+      h1 { font-size: clamp(calc(21px * var(--ui-font-scale)), calc(7vw * var(--ui-font-scale)), calc(30px * var(--ui-font-scale))); }
       .pane { padding: 12px; }
       .pane { min-height: auto; }
       .roadmap-pane {
@@ -977,7 +987,7 @@
       }
       .stage-legend { top: 0; }
       .tabs { top: 42px; }
-      .roadmap-hint { font-size: 11px; }
+      .roadmap-hint { font-size: calc(11px * var(--ui-font-scale)); }
       #roadmapSvg {
         min-width: 3320px;
         height: 620px;
@@ -1016,6 +1026,14 @@
         </p>
       </div>
       <div class="head-actions">
+        <div class="font-size-row">
+          <label id="fontSizeLabel" class="font-size-label" for="fontSizeSelect">글자 크기</label>
+          <select id="fontSizeSelect" class="font-size-select" aria-label="글자 크기">
+            <option id="fontSizeOptionBase" value="base">기본</option>
+            <option id="fontSizeOptionLarge" value="large">크게</option>
+            <option id="fontSizeOptionXLarge" value="xlarge">아주 크게</option>
+          </select>
+        </div>
         <div class="lang-row">
           <label id="langLabel" class="lang-label" for="langSelect">Language</label>
           <select id="langSelect" class="lang-select" aria-label="Language">

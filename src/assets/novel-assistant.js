@@ -10,9 +10,16 @@
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
     const BODY_STORAGE_KEY = "novel-assistant:body:v2";
     const LANG_STORAGE_KEY = "novel-assistant:lang:v1";
+    const FONT_SIZE_STORAGE_KEY = "novel-assistant:font-size:v1";
     const ANALYSIS_CONTEXT_STORAGE_KEY = "novel-assistant:analysis-context:v1";
+    const FONT_SIZE_LEVELS = Object.freeze({
+      base: 1,
+      large: 1.1,
+      xlarge: 1.2,
+    });
 
     let uiLang = "ko";
+    let uiFontSize = "base";
 
     const messages = {
       ko: {
@@ -26,6 +33,10 @@
         bibliographyLabelAuthor: "저자",
         bibliographyLabelPublisher: "출판사",
         languageLabel: "Language",
+        fontSizeLabel: "글자 크기",
+        fontSizeBase: "기본",
+        fontSizeLarge: "크게",
+        fontSizeXLarge: "아주 크게",
         roadmapTitle: "구조형 학습 로드맵",
         roadmapHint: "먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.",
         exerciseTitle: "연습 입력",
@@ -140,6 +151,10 @@
         bibliographyLabelAuthor: "Author",
         bibliographyLabelPublisher: "Publisher",
         languageLabel: "Language",
+        fontSizeLabel: "Font Size",
+        fontSizeBase: "Base",
+        fontSizeLarge: "Large",
+        fontSizeXLarge: "Extra Large",
         roadmapTitle: "Structured Learning Roadmap",
         roadmapHint: "Start with a LOCK node, then expand in order: Beginning, Middle, Ending, and Revision.",
         exerciseTitle: "Practice Input",
@@ -2017,6 +2032,11 @@
     const bibliographyTitleEl = document.getElementById("bibliographyTitle");
     const bibliographyIntroEl = document.getElementById("bibliographyIntro");
     const bibliographyListEl = document.getElementById("bibliographyList");
+    const fontSizeLabelEl = document.getElementById("fontSizeLabel");
+    const fontSizeSelectEl = document.getElementById("fontSizeSelect");
+    const fontSizeOptionBaseEl = document.getElementById("fontSizeOptionBase");
+    const fontSizeOptionLargeEl = document.getElementById("fontSizeOptionLarge");
+    const fontSizeOptionXLargeEl = document.getElementById("fontSizeOptionXLarge");
     const langLabelEl = document.getElementById("langLabel");
     const langSelectEl = document.getElementById("langSelect");
     const roadmapTitleEl = document.getElementById("roadmapTitle");
@@ -2095,6 +2115,37 @@
       return false;
     }
 
+    function isValidFontSizeLevel(level) {
+      return Object.prototype.hasOwnProperty.call(FONT_SIZE_LEVELS, level);
+    }
+
+    function loadStoredFontSize() {
+      const raw = localStorage.getItem(FONT_SIZE_STORAGE_KEY) || "";
+      if (isValidFontSizeLevel(raw)) {
+        uiFontSize = raw;
+        return true;
+      }
+      uiFontSize = "base";
+      return false;
+    }
+
+    function saveFontSize() {
+      localStorage.setItem(FONT_SIZE_STORAGE_KEY, uiFontSize);
+    }
+
+    function applyFontSizeScale() {
+      const scale = FONT_SIZE_LEVELS[uiFontSize] || FONT_SIZE_LEVELS.base;
+      document.documentElement.style.setProperty("--ui-font-scale", String(scale));
+    }
+
+    function setUiFontSize(level, options = {}) {
+      const { persist = true } = options;
+      uiFontSize = isValidFontSizeLevel(level) ? level : "base";
+      applyFontSizeScale();
+      if (fontSizeSelectEl) fontSizeSelectEl.value = uiFontSize;
+      if (persist) saveFontSize();
+    }
+
     async function detectCountryCode() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 1500);
@@ -2143,6 +2194,14 @@
       document.title = t("docTitle");
       if (pageTitleEl) pageTitleEl.textContent = t("pageTitle");
       if (pageSubtitleEl) pageSubtitleEl.textContent = t("pageSubtitle");
+      if (fontSizeLabelEl) fontSizeLabelEl.textContent = t("fontSizeLabel");
+      if (fontSizeOptionBaseEl) fontSizeOptionBaseEl.textContent = t("fontSizeBase");
+      if (fontSizeOptionLargeEl) fontSizeOptionLargeEl.textContent = t("fontSizeLarge");
+      if (fontSizeOptionXLargeEl) fontSizeOptionXLargeEl.textContent = t("fontSizeXLarge");
+      if (fontSizeSelectEl) {
+        fontSizeSelectEl.value = uiFontSize;
+        fontSizeSelectEl.setAttribute("aria-label", t("fontSizeLabel"));
+      }
       if (langLabelEl) langLabelEl.textContent = t("languageLabel");
       if (roadmapTitleEl) roadmapTitleEl.textContent = t("roadmapTitle");
       if (roadmapHintEl) roadmapHintEl.textContent = t("roadmapHint");
@@ -3430,6 +3489,8 @@
     }
 
     async function initApp() {
+      loadStoredFontSize();
+      setUiFontSize(uiFontSize, { persist: false });
       await ensureInitialUiLang();
       setUiLanguage(uiLang, { persist: false, rerender: false });
       loadCurriculumState();
@@ -3438,6 +3499,11 @@
       initRoadmapPan();
 
       runBtnEl.addEventListener("click", runAnalysis);
+      if (fontSizeSelectEl) {
+        fontSizeSelectEl.addEventListener("change", (event) => {
+          setUiFontSize(String(event.target.value || "base"), { persist: true });
+        });
+      }
       if (langSelectEl) {
         langSelectEl.addEventListener("change", (event) => {
           const nextLang = event.target.value === "en" ? "en" : "ko";
