@@ -7,7 +7,7 @@
     http-equiv="Content-Security-Policy"
     content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://novel-proxy.devbyhwang.workers.dev https://www.cloudflare.com https://api.counterapi.dev; frame-src https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'"
   />
-  <title>소설 공방 (Novel Lab) · DevByHwang</title>
+  <title>소설 작성 어시스턴트 · DevByHwang</title>
   <style>
     :root {
       --ui-font-scale: 1;
@@ -939,220 +939,8 @@
       margin-right: 6px;
     }
 
-    .screen[hidden] {
-      display: none !important;
-    }
-
-    .mode-chooser {
-      display: grid;
-      gap: 18px;
-      min-height: 60vh;
-      align-content: start;
-    }
-
-    .mode-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .mode-card {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: linear-gradient(145deg, #fffdf7 0%, #f6efe2 100%);
-      color: var(--ink);
-      padding: 16px;
-      text-align: left;
-      display: grid;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: var(--soft-shadow);
-      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
-    }
-
-    .mode-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-      box-shadow: 0 16px 26px rgba(77, 54, 32, 0.14);
-    }
-
-    .mode-card:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: var(--focus-ring);
-    }
-
-    .mode-card-title {
-      margin: 0;
-      font-size: calc(20px * var(--ui-font-scale));
-      font-weight: 700;
-      line-height: 1.3;
-    }
-
-    .mode-card-copy {
-      margin: 0;
-      color: #5b564d;
-      font-size: calc(14px * var(--ui-font-scale));
-      line-height: 1.45;
-    }
-
-    .mode-switch-btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #4f493f;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: calc(12px * var(--ui-font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
-    }
-
-    .mode-switch-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-soft);
-    }
-
-    .surfer-layout {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .surfer-layout .pane:last-child {
-      grid-column: 1 / -1;
-    }
-
-    .surfer-inline {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .surfer-inline.single {
-      grid-template-columns: minmax(0, 1fr) auto;
-    }
-
-    .surfer-action-btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #4f493f;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: calc(13px * var(--ui-font-scale));
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-      min-height: 44px;
-    }
-
-    .surfer-action-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-      background: var(--accent-soft);
-    }
-
-    .surfer-list {
-      margin: 8px 0 0;
-      padding: 0;
-      list-style: none;
-      display: grid;
-      gap: 8px;
-    }
-
-    .surfer-list-item {
-      border: 1px dashed var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .surfer-list-copy {
-      margin: 0;
-      font-size: calc(13px * var(--ui-font-scale));
-      color: #4f493f;
-      line-height: 1.4;
-      overflow-wrap: anywhere;
-    }
-
-    .surfer-acts {
-      display: grid;
-      gap: 8px;
-    }
-
-    .surfer-graph-wrap {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 8px;
-      background: #fff;
-      min-height: 260px;
-    }
-
-    #surferGraph {
-      width: 100%;
-      height: 280px;
-      display: block;
-      touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .surfer-point-legend {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
-      gap: 6px;
-    }
-
-    .surfer-point-chip {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: calc(12px * var(--ui-font-scale));
-      background: #fff;
-      color: #5b564d;
-      text-align: center;
-    }
-
-    .surfer-factor-list {
-      display: grid;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .surfer-factor {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px;
-      background: #fff;
-      display: grid;
-      gap: 7px;
-    }
-
-    .surfer-factor-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .surfer-factor-name {
-      margin: 0;
-      font-size: calc(14px * var(--ui-font-scale));
-      color: #3f392f;
-      font-weight: 700;
-      line-height: 1.35;
-      overflow-wrap: anywhere;
-    }
-
     @media (max-width: 980px) {
       .layout { grid-template-columns: 1fr; }
-      .mode-grid { grid-template-columns: 1fr; }
-      .surfer-layout { grid-template-columns: 1fr; }
       .shell {
         width: min(1240px, calc(100% - 16px));
         margin: 8px auto;
@@ -1176,13 +964,6 @@
       .lang-select,
       .font-size-select {
         min-width: 110px;
-      }
-      .surfer-inline,
-      .surfer-inline.single {
-        grid-template-columns: 1fr;
-      }
-      .mode-switch-btn {
-        width: 100%;
       }
       h1 { font-size: clamp(calc(21px * var(--ui-font-scale)), calc(7vw * var(--ui-font-scale)), calc(30px * var(--ui-font-scale))); }
       .pane { padding: 12px; }
@@ -1236,175 +1017,96 @@
 </head>
 <body>
   <main class="shell">
-    <section id="modeChooserScreen" class="screen mode-chooser">
-      <header class="head">
-        <div class="head-main">
-          <h1 id="chooserTitle">소설 공방 (Novel Lab)</h1>
-          <p id="chooserSubtitle" class="sub">먼저 작업 모드를 선택하세요. 기존 단계형 연습은 학습 모드에서, 구조적 텐션 설계는 서퍼 모드에서 진행합니다.</p>
-        </div>
-      </header>
-      <div class="mode-grid">
-        <button type="button" id="chooseLearningBtn" class="mode-card">
-          <h2 id="learningModeCardTitle" class="mode-card-title">학습 모드</h2>
-          <p id="learningModeCardCopy" class="mode-card-copy">기존 로드맵 기반 연습 흐름으로 LOCK부터 수정 단계까지 순차 훈련합니다.</p>
-        </button>
-        <button type="button" id="chooseSurferBtn" class="mode-card">
-          <h2 id="surferModeCardTitle" class="mode-card-title">서퍼 모드</h2>
-          <p id="surferModeCardCopy" class="mode-card-copy">입력 구조를 받아 자동 프리셋을 만들고, 3막 텐션 파형을 드래그로 조정합니다.</p>
-        </button>
+    <header class="head">
+      <div class="head-main">
+        <h1 id="pageTitle">소설 작성 어시스턴트</h1>
+        <p id="pageSubtitle" class="sub">
+          작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다.
+          핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.
+        </p>
       </div>
+      <div class="head-actions">
+        <div class="font-size-row">
+          <label id="fontSizeLabel" class="font-size-label" for="fontSizeSelect">글자 크기</label>
+          <select id="fontSizeSelect" class="font-size-select" aria-label="글자 크기">
+            <option id="fontSizeOptionBase" value="base">기본</option>
+            <option id="fontSizeOptionLarge" value="large">크게</option>
+            <option id="fontSizeOptionXLarge" value="xlarge">아주 크게</option>
+          </select>
+        </div>
+        <div class="lang-row">
+          <label id="langLabel" class="lang-label" for="langSelect">Language</label>
+          <select id="langSelect" class="lang-select" aria-label="Language">
+            <option value="ko">KO</option>
+            <option value="en">EN</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <section class="layout">
+      <section class="pane">
+        <h2 id="roadmapTitle">구조형 학습 로드맵</h2>
+
+        <div class="roadmap-pane">
+          <div id="stageLegend" class="stage-legend"></div>
+          <div id="viewTabs" class="tabs"></div>
+          <p id="roadmapHint" class="roadmap-hint">먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.</p>
+          <div class="roadmap-scroll">
+            <svg id="roadmapSvg" viewBox="0 0 3400 520" preserveAspectRatio="none"></svg>
+          </div>
+        </div>
+      </section>
+
+      <article class="pane">
+        <h2 id="exerciseTitle">연습 입력</h2>
+
+        <div id="selectedDrillMeta" class="selected-card"></div>
+
+        <div id="analysisSetup" class="analysis-setup"></div>
+
+        <div class="exercise-label-row">
+          <label id="exerciseInputLabel">연습 입력칸</label>
+          <button type="button" id="resetExerciseBtn" class="completion-btn exercise-reset-btn">입력 초기화</button>
+        </div>
+        <div id="exerciseFields" class="exercise-wrap">
+          <p class="exercise-empty">로드맵에서 연습 항목을 선택하세요.</p>
+        </div>
+
+        <label id="manuscriptLabel" for="manuscriptBody">원고 본문 (선택)</label>
+        <textarea id="manuscriptBody" placeholder="문맥이 필요할 때만 원고 본문을 추가 입력하세요."></textarea>
+
+        <div id="completionControl" class="selected-card"></div>
+
+        <button id="runBtn" class="run">분석 실행</button>
+        <p id="usageLabel" class="usage">기본 무료 플랜: 하루 3회</p>
+        <!-- TEST_ONLY_OWNER_BYPASS_START -->
+        <div class="owner-key-box">
+          <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="Owner Key" aria-label="Owner Key" />
+        </div>
+        <!-- TEST_ONLY_OWNER_BYPASS_END -->
+        <div class="captcha-wrap">
+          <div id="turnstileBox"></div>
+        </div>
+        <label id="resultLabel">피드백 결과</label>
+        <div id="result" class="result">
+          <p class="placeholder">아직 분석 결과가 없습니다.</p>
+        </div>
+
+        <p id="status" class="status"></p>
+      </article>
     </section>
 
-    <section id="learningScreen" class="screen" hidden>
-      <header class="head">
-        <div class="head-main">
-          <h1 id="pageTitle">소설 공방 (Novel Lab)</h1>
-          <p id="pageSubtitle" class="sub">
-            작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다.
-            핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.
-          </p>
-        </div>
-        <div class="head-actions">
-          <button type="button" id="learningSwitchModeBtn" class="mode-switch-btn">모드 바꾸기</button>
-          <div class="font-size-row">
-            <label id="fontSizeLabel" class="font-size-label" for="fontSizeSelect">글자 크기</label>
-            <select id="fontSizeSelect" class="font-size-select" aria-label="글자 크기">
-              <option id="fontSizeOptionBase" value="base">기본</option>
-              <option id="fontSizeOptionLarge" value="large">크게</option>
-              <option id="fontSizeOptionXLarge" value="xlarge">아주 크게</option>
-            </select>
-          </div>
-          <div class="lang-row">
-            <label id="langLabel" class="lang-label" for="langSelect">Language</label>
-            <select id="langSelect" class="lang-select" aria-label="Language">
-              <option value="ko">KO</option>
-              <option value="en">EN</option>
-            </select>
-          </div>
-        </div>
-      </header>
-
-      <section class="layout">
-        <section class="pane">
-          <h2 id="roadmapTitle">구조형 학습 로드맵</h2>
-
-          <div class="roadmap-pane">
-            <div id="stageLegend" class="stage-legend"></div>
-            <div id="viewTabs" class="tabs"></div>
-            <p id="roadmapHint" class="roadmap-hint">먼저 핵심 4요소(LOCK) 노드를 선택한 뒤, 시작-중간-끝-수정 순서로 확장하세요.</p>
-            <div class="roadmap-scroll">
-              <svg id="roadmapSvg" viewBox="0 0 3400 520" preserveAspectRatio="none"></svg>
-            </div>
-          </div>
-        </section>
-
-        <article class="pane">
-          <h2 id="exerciseTitle">연습 입력</h2>
-
-          <div id="selectedDrillMeta" class="selected-card"></div>
-
-          <div id="analysisSetup" class="analysis-setup"></div>
-
-          <div class="exercise-label-row">
-            <label id="exerciseInputLabel">연습 입력칸</label>
-            <button type="button" id="resetExerciseBtn" class="completion-btn exercise-reset-btn">입력 초기화</button>
-          </div>
-          <div id="exerciseFields" class="exercise-wrap">
-            <p class="exercise-empty">로드맵에서 연습 항목을 선택하세요.</p>
-          </div>
-
-          <label id="manuscriptLabel" for="manuscriptBody">원고 본문 (선택)</label>
-          <textarea id="manuscriptBody" placeholder="문맥이 필요할 때만 원고 본문을 추가 입력하세요."></textarea>
-
-          <div id="completionControl" class="selected-card"></div>
-
-          <button id="runBtn" class="run">분석 실행</button>
-          <p id="usageLabel" class="usage">기본 무료 플랜: 하루 3회</p>
-          <!-- TEST_ONLY_OWNER_BYPASS_START -->
-          <div class="owner-key-box">
-            <input id="ownerKeyInput" type="password" autocomplete="off" placeholder="Owner Key" aria-label="Owner Key" />
-          </div>
-          <!-- TEST_ONLY_OWNER_BYPASS_END -->
-          <div class="captcha-wrap">
-            <div id="turnstileBox"></div>
-          </div>
-          <label id="resultLabel">피드백 결과</label>
-          <div id="result" class="result">
-            <p class="placeholder">아직 분석 결과가 없습니다.</p>
-          </div>
-
-          <p id="status" class="status"></p>
-        </article>
-      </section>
-
-      <section class="pane bibliography-pane" aria-labelledby="bibliographyTitle">
-        <h2 id="bibliographyTitle">참고 문헌</h2>
-        <p id="bibliographyIntro" class="bibliography-intro">이 도구의 학습 프레임을 구성할 때 참고한 핵심 작법서입니다.</p>
-        <ul id="bibliographyList" class="bibliography-list">
-          <li class="bibliography-item">
-            <p class="bibliography-meta"><strong>책 제목:</strong> Plot &amp; Structure: Techniques and Exercises for Crafting a Plot That Grips Readers from Start to Finish</p>
-            <p class="bibliography-meta"><strong>저자:</strong> James Scott Bell</p>
-            <p class="bibliography-meta"><strong>출판사:</strong> Writer's Digest Books</p>
-          </li>
-        </ul>
-      </section>
-    </section>
-
-    <section id="surferScreen" class="screen" hidden>
-      <header class="head">
-        <div class="head-main">
-          <h1 id="surferTitle">소설 공방 (Novel Lab) · 서퍼 모드</h1>
-          <p id="surferSubtitle" class="sub">구조 입력을 받아 자동 프리셋을 만들고, 3막 텐션 파형을 직접 끌어 서사의 굴곡을 조정합니다.</p>
-        </div>
-        <div class="head-actions">
-          <button type="button" id="surferSwitchModeBtn" class="mode-switch-btn">모드 바꾸기</button>
-        </div>
-      </header>
-
-      <section class="layout surfer-layout">
-        <article class="pane">
-          <h2 id="surferStructureTitle">구조 입력</h2>
-          <p id="surferStructureHint" class="roadmap-hint">기본 입력과 사용자 항목을 채우면 자동 프리셋이 생성됩니다.</p>
-          <div id="surferBaseFields" class="analysis-grid"></div>
-
-          <label id="surferCustomLabel" for="surferCustomKeyInput">사용자 추가 항목</label>
-          <div class="surfer-inline">
-            <input id="surferCustomKeyInput" type="text" placeholder="항목 이름" />
-            <input id="surferCustomValueInput" type="text" placeholder="항목 값" />
-            <button type="button" id="surferAddFieldBtn" class="surfer-action-btn">추가</button>
-          </div>
-          <ul id="surferCustomList" class="surfer-list"></ul>
-        </article>
-
-        <article class="pane">
-          <h2 id="surferGraphTitle">3막 텐션 그래프</h2>
-          <p id="surferGraphHint" class="roadmap-hint">포인트를 드래그해 1~10 긴장도를 조절하세요.</p>
-
-          <div class="surfer-acts">
-            <label id="act1BoundaryLabel" for="act1BoundaryRange">Act I 끝 지점</label>
-            <input id="act1BoundaryRange" type="range" min="15" max="45" value="30" step="1" />
-            <label id="act2BoundaryLabel" for="act2BoundaryRange">Act II 끝 지점</label>
-            <input id="act2BoundaryRange" type="range" min="55" max="85" value="70" step="1" />
-          </div>
-
-          <div class="surfer-graph-wrap">
-            <svg id="surferGraph" viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Surfer Tension Graph"></svg>
-          </div>
-          <div id="surferPointLegend" class="surfer-point-legend"></div>
-
-          <button id="surferPresetBtn" type="button" class="run">자동 프리셋 생성</button>
-        </article>
-
-        <article class="pane">
-          <h2 id="surferConsiderTitle">추가 고려 요소</h2>
-          <p id="surferConsiderHint" class="roadmap-hint">서사적 긴장에 영향을 주는 변수들을 등록하고 중요도를 조절하세요.</p>
-          <div class="surfer-inline single">
-            <input id="surferFactorNameInput" type="text" placeholder="요소 이름" />
-            <button id="surferAddFactorBtn" type="button" class="surfer-action-btn">요소 추가</button>
-          </div>
-          <div id="surferFactors" class="surfer-factor-list"></div>
-        </article>
-      </section>
+    <section class="pane bibliography-pane" aria-labelledby="bibliographyTitle">
+      <h2 id="bibliographyTitle">참고 문헌</h2>
+      <p id="bibliographyIntro" class="bibliography-intro">이 도구의 학습 프레임을 구성할 때 참고한 핵심 작법서입니다.</p>
+      <ul id="bibliographyList" class="bibliography-list">
+        <li class="bibliography-item">
+          <p class="bibliography-meta"><strong>책 제목:</strong> Plot &amp; Structure: Techniques and Exercises for Crafting a Plot That Grips Readers from Start to Finish</p>
+          <p class="bibliography-meta"><strong>저자:</strong> James Scott Bell</p>
+          <p class="bibliography-meta"><strong>출판사:</strong> Writer's Digest Books</p>
+        </li>
+      </ul>
     </section>
   </main>
 

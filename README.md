@@ -77,7 +77,7 @@ views: 42
 - 현재 등록 데모:
   - Embercraft Fireplace (`/playground/embercraft/`)
   - 네모게임 (NEMO GAME) (`/playground/nemo-game/`)
-  - 소설 공방 (Novel Lab) (`/playground/novel-assistant/`)
+  - 소설 작성 어시스턴트 (`/playground/novel-assistant/`)
 
 ### LLM 데모 보안 원칙
 - GitHub Pages 리포지토리/정적 코드에 API 키를 저장하지 않습니다.
