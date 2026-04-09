@@ -288,17 +288,25 @@ canvas,
 
 .brand-home {
   display: block;
+  color: var(--color-text);
+  transition: color var(--transition-fast);
+}
+
+.brand-home:hover,
+.brand-home:focus-visible {
+  color: var(--color-primary);
 }
 
 .brand-title {
   font-size: 20px;
   font-weight: var(--weight-bold);
-  color: var(--color-text);
+  color: inherit;
   letter-spacing: -0.01em;
 }
 
 .brand-tagline {
   display: none;
+  color: inherit;
 }
 
 .brand-cross-link {
@@ -309,7 +317,8 @@ canvas,
   transition: color var(--transition-fast);
 }
 
-.brand-cross-link:hover {
+.brand-cross-link:hover,
+.brand-cross-link:focus-visible {
   color: var(--color-primary);
 }
 
@@ -327,7 +336,8 @@ canvas,
   transition: color var(--transition-fast);
 }
 
-.nav a:hover {
+.nav a:hover,
+.nav a:focus-visible {
   color: var(--color-text);
 }
 
@@ -344,11 +354,19 @@ canvas,
   border: none;
   cursor: pointer;
   color: var(--color-text);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background var(--transition-fast);
 }
 
 .menu-btn svg {
   width: 24px;
   height: 24px;
+}
+
+.menu-btn:hover,
+.menu-btn:focus-visible {
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
 }
 
 /* ===========================================
@@ -1044,6 +1062,14 @@ canvas,
   border: none;
   cursor: pointer;
   color: var(--color-text-secondary);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.drawer-close:hover,
+.drawer-close:focus-visible {
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
 }
 
 .drawer-nav {
@@ -1063,9 +1089,20 @@ canvas,
   transition: all var(--transition-fast);
 }
 
-.drawer-nav a:hover {
+.drawer-nav a:hover,
+.drawer-nav a:focus-visible {
   color: var(--color-primary);
   background: var(--color-primary-bg);
+}
+
+.brand-home:focus-visible,
+.brand-cross-link:focus-visible,
+.nav a:focus-visible,
+.menu-btn:focus-visible,
+.drawer-close:focus-visible,
+.drawer-nav a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .drawer-categories {
@@ -2544,11 +2581,6 @@ canvas,
 .hub-link-secondary:hover {
   color: var(--color-text);
   border-color: rgba(31, 28, 24, 0.28);
-}
-
-.theme-devbyhwang .brand-title,
-.theme-devbyhwang .brand-tagline {
-  color: inherit;
 }
 
 .writing-kicker {
