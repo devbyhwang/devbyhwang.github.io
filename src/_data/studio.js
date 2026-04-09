@@ -28,11 +28,11 @@ module.exports = {
       preview: "/assets/nemo-game-preview.png",
     },
     {
-      title: "소설 공방 (Novel Lab)",
+      title: "소설 작성 어시스턴트",
       slug: "novel-assistant",
       role: "Playground",
       status: "Live",
-      blurb: "학습 모드 + 서퍼 모드를 제공하는 소설 설계 도구. 구조 입력, 텐션 그래프, 피드백 루프를 한 화면에서 운영.",
+      blurb: "원고 입력 + 점검 항목 선택 기반 피드백 도구. 서버 프록시(OpenAI) 연동 구조.",
       links: [
         { label: "Try", href: "/playground/novel-assistant/" },
       ],

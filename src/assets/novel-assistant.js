@@ -12,8 +12,6 @@
     const LANG_STORAGE_KEY = "novel-assistant:lang:v1";
     const FONT_SIZE_STORAGE_KEY = "novel-assistant:font-size:v1";
     const ANALYSIS_CONTEXT_STORAGE_KEY = "novel-assistant:analysis-context:v1";
-    const SURFER_STORAGE_KEY = "novel-lab:surfer:v1";
-    const SURFER_POINT_COUNT = 9;
     const FONT_SIZE_LEVELS = Object.freeze({
       base: 1,
       large: 1.1,
@@ -26,44 +24,9 @@
     const messages = {
       ko: {
         htmlLang: "ko",
-        docTitle: "소설 공방 (Novel Lab) · DevByHwang",
-        pageTitle: "소설 공방 (Novel Lab)",
+        docTitle: "소설 작성 어시스턴트 · DevByHwang",
+        pageTitle: "소설 작성 어시스턴트",
         pageSubtitle: "작법서 핵심 구조를 바탕으로, 초보자도 바로 시작할 수 있게 만든 단계형 연습 시스템입니다. 핵심 4요소(LOCK)부터 막 구성, 장면 실행, 수정까지 순서대로 훈련하세요.",
-        chooserTitle: "소설 공방 (Novel Lab)",
-        chooserSubtitle: "먼저 작업 모드를 선택하세요. 기존 단계형 연습은 학습 모드에서, 구조적 텐션 설계는 서퍼 모드에서 진행합니다.",
-        learningModeCardTitle: "학습 모드",
-        learningModeCardCopy: "기존 로드맵 기반 연습 흐름으로 LOCK부터 수정 단계까지 순차 훈련합니다.",
-        surferModeCardTitle: "서퍼 모드",
-        surferModeCardCopy: "입력 구조를 받아 자동 프리셋을 만들고, 3막 텐션 파형을 드래그로 조정합니다.",
-        modeSwitch: "모드 바꾸기",
-        surferTitle: "소설 공방 (Novel Lab) · 서퍼 모드",
-        surferSubtitle: "구조 입력을 받아 자동 프리셋을 만들고, 3막 텐션 파형을 직접 끌어 서사의 굴곡을 조정합니다.",
-        surferStructureTitle: "구조 입력",
-        surferStructureHint: "기본 입력과 사용자 항목을 채우면 자동 프리셋이 생성됩니다.",
-        surferBasePremiseLabel: "핵심 상황",
-        surferBasePremisePlaceholder: "예: 마감 3일 전, 증거를 잃은 변호사가 역전 증인을 찾아야 한다.",
-        surferBaseGoalLabel: "주인공 목표",
-        surferBaseGoalPlaceholder: "예: 판결 전까지 원본 증거를 확보해 무죄를 증명한다.",
-        surferBaseConflictLabel: "핵심 갈등",
-        surferBaseConflictPlaceholder: "예: 내부 배신으로 정보가 새고, 상대 측이 증인을 먼저 포섭한다.",
-        surferCustomLabel: "사용자 추가 항목",
-        surferCustomKeyPlaceholder: "항목 이름",
-        surferCustomValuePlaceholder: "항목 값",
-        surferAddField: "추가",
-        surferGraphTitle: "3막 텐션 그래프",
-        surferGraphHint: "포인트를 드래그해 1~10 긴장도를 조절하세요.",
-        act1BoundaryLabel: "Act I 끝 지점 ({value}%)",
-        act2BoundaryLabel: "Act II 끝 지점 ({value}%)",
-        surferPreset: "자동 프리셋 생성",
-        surferConsiderTitle: "추가 고려 요소",
-        surferConsiderHint: "서사적 긴장에 영향을 주는 변수들을 등록하고 중요도를 조절하세요.",
-        surferFactorNamePlaceholder: "요소 이름",
-        surferAddFactor: "요소 추가",
-        surferImportance: "중요도",
-        surferPointLabel: "포인트 {index}",
-        surferEmptyCustom: "추가된 사용자 항목이 없습니다.",
-        surferEmptyFactors: "추가된 고려 요소가 없습니다.",
-        surferRemove: "삭제",
         bibliographyTitle: "참고 문헌",
         bibliographyIntro: "이 도구의 학습 프레임을 구성할 때 참고한 핵심 작법서입니다.",
         bibliographyLabelTitle: "책 제목",
@@ -179,44 +142,9 @@
       },
       en: {
         htmlLang: "en",
-        docTitle: "Novel Lab · DevByHwang",
-        pageTitle: "Novel Lab",
+        docTitle: "Novel Writing Assistant · DevByHwang",
+        pageTitle: "Novel Writing Assistant",
         pageSubtitle: "A staged practice system based on core fiction craft principles. Train in order from LOCK foundations to act structure, scene execution, and revision.",
-        chooserTitle: "Novel Lab",
-        chooserSubtitle: "Choose your mode first. Use Learning Mode for the existing guided curriculum and Surfer Mode for structural tension shaping.",
-        learningModeCardTitle: "Learning Mode",
-        learningModeCardCopy: "Follow the existing roadmap from LOCK fundamentals to revision in a staged loop.",
-        surferModeCardTitle: "Surfer Mode",
-        surferModeCardCopy: "Build an auto preset from structural inputs and shape three-act tension by dragging the waveform.",
-        modeSwitch: "Switch Mode",
-        surferTitle: "Novel Lab · Surfer Mode",
-        surferSubtitle: "Generate a structural preset, then drag the three-act tension curve to tune narrative waves.",
-        surferStructureTitle: "Structured Input",
-        surferStructureHint: "Fill base inputs and optional custom items to generate an automatic preset.",
-        surferBasePremiseLabel: "Core Premise",
-        surferBasePremisePlaceholder: "e.g. Three days before trial, a lawyer who lost key evidence must find a reversal witness.",
-        surferBaseGoalLabel: "Protagonist Goal",
-        surferBaseGoalPlaceholder: "e.g. Recover the original evidence before verdict and prove innocence.",
-        surferBaseConflictLabel: "Core Conflict",
-        surferBaseConflictPlaceholder: "e.g. An internal betrayal leaks information while the opponent buys the witness first.",
-        surferCustomLabel: "Custom Input Items",
-        surferCustomKeyPlaceholder: "Item name",
-        surferCustomValuePlaceholder: "Item value",
-        surferAddField: "Add",
-        surferGraphTitle: "Three-Act Tension Graph",
-        surferGraphHint: "Drag points to set tension from 1 to 10.",
-        act1BoundaryLabel: "End of Act I ({value}%)",
-        act2BoundaryLabel: "End of Act II ({value}%)",
-        surferPreset: "Generate Auto Preset",
-        surferConsiderTitle: "Additional Factors",
-        surferConsiderHint: "Register variables that affect narrative pressure and tune their importance.",
-        surferFactorNamePlaceholder: "Factor name",
-        surferAddFactor: "Add Factor",
-        surferImportance: "Importance",
-        surferPointLabel: "Point {index}",
-        surferEmptyCustom: "No custom input items yet.",
-        surferEmptyFactors: "No additional factors yet.",
-        surferRemove: "Remove",
         bibliographyTitle: "References",
         bibliographyIntro: "Core craft book referenced while shaping this learning framework.",
         bibliographyLabelTitle: "Title",
@@ -332,12 +260,6 @@
       },
     };
 
-    const surferBaseFieldDefs = Object.freeze([
-      { key: "premise", labelKey: "surferBasePremiseLabel", placeholderKey: "surferBasePremisePlaceholder" },
-      { key: "goal", labelKey: "surferBaseGoalLabel", placeholderKey: "surferBaseGoalPlaceholder" },
-      { key: "conflict", labelKey: "surferBaseConflictLabel", placeholderKey: "surferBaseConflictPlaceholder" },
-    ]);
-
     const bibliographyEntries = [
       {
         title: "Plot & Structure: Techniques and Exercises for Crafting a Plot That Grips Readers from Start to Finish",
@@ -364,23 +286,6 @@
         authorGoal: "",
         mustKeepText: "",
         presetId: "balanced",
-      };
-    }
-
-    function createDefaultSurferState() {
-      return {
-        base: {
-          premise: "",
-          goal: "",
-          conflict: "",
-        },
-        customFields: [],
-        actBoundaries: {
-          act1End: 30,
-          act2End: 70,
-        },
-        tensionPoints: [3, 4, 5, 6, 7, 8, 7, 8, 9],
-        factors: [],
       };
     }
 
@@ -2122,43 +2027,6 @@
     };
     const enDataset = buildEnglishDataset(koDataset);
 
-    const modeChooserScreenEl = document.getElementById("modeChooserScreen");
-    const learningScreenEl = document.getElementById("learningScreen");
-    const surferScreenEl = document.getElementById("surferScreen");
-    const chooseLearningBtnEl = document.getElementById("chooseLearningBtn");
-    const chooseSurferBtnEl = document.getElementById("chooseSurferBtn");
-    const learningSwitchModeBtnEl = document.getElementById("learningSwitchModeBtn");
-    const surferSwitchModeBtnEl = document.getElementById("surferSwitchModeBtn");
-    const chooserTitleEl = document.getElementById("chooserTitle");
-    const chooserSubtitleEl = document.getElementById("chooserSubtitle");
-    const learningModeCardTitleEl = document.getElementById("learningModeCardTitle");
-    const learningModeCardCopyEl = document.getElementById("learningModeCardCopy");
-    const surferModeCardTitleEl = document.getElementById("surferModeCardTitle");
-    const surferModeCardCopyEl = document.getElementById("surferModeCardCopy");
-    const surferTitleEl = document.getElementById("surferTitle");
-    const surferSubtitleEl = document.getElementById("surferSubtitle");
-    const surferStructureTitleEl = document.getElementById("surferStructureTitle");
-    const surferStructureHintEl = document.getElementById("surferStructureHint");
-    const surferBaseFieldsEl = document.getElementById("surferBaseFields");
-    const surferCustomLabelEl = document.getElementById("surferCustomLabel");
-    const surferCustomKeyInputEl = document.getElementById("surferCustomKeyInput");
-    const surferCustomValueInputEl = document.getElementById("surferCustomValueInput");
-    const surferAddFieldBtnEl = document.getElementById("surferAddFieldBtn");
-    const surferCustomListEl = document.getElementById("surferCustomList");
-    const surferGraphTitleEl = document.getElementById("surferGraphTitle");
-    const surferGraphHintEl = document.getElementById("surferGraphHint");
-    const act1BoundaryLabelEl = document.getElementById("act1BoundaryLabel");
-    const act2BoundaryLabelEl = document.getElementById("act2BoundaryLabel");
-    const act1BoundaryRangeEl = document.getElementById("act1BoundaryRange");
-    const act2BoundaryRangeEl = document.getElementById("act2BoundaryRange");
-    const surferGraphEl = document.getElementById("surferGraph");
-    const surferPointLegendEl = document.getElementById("surferPointLegend");
-    const surferPresetBtnEl = document.getElementById("surferPresetBtn");
-    const surferConsiderTitleEl = document.getElementById("surferConsiderTitle");
-    const surferConsiderHintEl = document.getElementById("surferConsiderHint");
-    const surferFactorNameInputEl = document.getElementById("surferFactorNameInput");
-    const surferAddFactorBtnEl = document.getElementById("surferAddFactorBtn");
-    const surferFactorsEl = document.getElementById("surferFactors");
     const pageTitleEl = document.getElementById("pageTitle");
     const pageSubtitleEl = document.getElementById("pageSubtitle");
     const bibliographyTitleEl = document.getElementById("bibliographyTitle");
@@ -2229,9 +2097,6 @@
     let originScrollTop = 0;
     let didDrag = false;
     let suppressNextNodeClick = false;
-    let currentMode = "chooser";
-    let surferState = createDefaultSurferState();
-    let activeSurferPointIndex = -1;
     let analysisContext = createDefaultAnalysisContext();
 
     const curriculumState = {
@@ -2240,90 +2105,6 @@
       activeTab: "lock",
       perNode: {},
     };
-
-    function clampNumber(value, min, max) {
-      return Math.min(max, Math.max(min, value));
-    }
-
-    function normalizeSurferState(raw) {
-      const defaults = createDefaultSurferState();
-      const next = {
-        ...defaults,
-        ...(raw && typeof raw === "object" ? raw : {}),
-      };
-
-      next.base = {
-        ...defaults.base,
-        ...(next.base && typeof next.base === "object" ? next.base : {}),
-      };
-
-      if (!Array.isArray(next.customFields)) next.customFields = [];
-      next.customFields = next.customFields
-        .map((item, index) => ({
-          id: String(item?.id || `custom-${index + 1}`),
-          key: String(item?.key || "").trim(),
-          value: String(item?.value || "").trim(),
-        }))
-        .filter((item) => item.key && item.value);
-
-      next.actBoundaries = {
-        act1End: clampNumber(Number(next.actBoundaries?.act1End) || defaults.actBoundaries.act1End, 15, 45),
-        act2End: clampNumber(Number(next.actBoundaries?.act2End) || defaults.actBoundaries.act2End, 55, 85),
-      };
-      if (next.actBoundaries.act2End - next.actBoundaries.act1End < 10) {
-        next.actBoundaries.act2End = clampNumber(next.actBoundaries.act1End + 10, 55, 85);
-      }
-
-      const sourcePoints = Array.isArray(next.tensionPoints) ? next.tensionPoints : defaults.tensionPoints;
-      const normalizedPoints = [];
-      for (let i = 0; i < SURFER_POINT_COUNT; i += 1) {
-        const fallback = defaults.tensionPoints[i] ?? 5;
-        const value = Number(sourcePoints[i] ?? fallback);
-        normalizedPoints.push(clampNumber(Math.round(value), 1, 10));
-      }
-      next.tensionPoints = normalizedPoints;
-
-      if (!Array.isArray(next.factors)) next.factors = [];
-      next.factors = next.factors
-        .map((item, index) => ({
-          id: String(item?.id || `factor-${index + 1}`),
-          name: String(item?.name || "").trim(),
-          importance: clampNumber(Number(item?.importance) || 5, 1, 10),
-        }))
-        .filter((item) => item.name);
-
-      return next;
-    }
-
-    function loadSurferState() {
-      try {
-        const raw = localStorage.getItem(SURFER_STORAGE_KEY) || "";
-        if (!raw) {
-          surferState = createDefaultSurferState();
-          return;
-        }
-        surferState = normalizeSurferState(JSON.parse(raw));
-      } catch {
-        surferState = createDefaultSurferState();
-      }
-    }
-
-    function saveSurferState() {
-      localStorage.setItem(SURFER_STORAGE_KEY, JSON.stringify(surferState));
-    }
-
-    function setMode(nextMode) {
-      currentMode = nextMode === "learning" || nextMode === "surfer" ? nextMode : "chooser";
-      if (modeChooserScreenEl) modeChooserScreenEl.hidden = currentMode !== "chooser";
-      if (learningScreenEl) learningScreenEl.hidden = currentMode !== "learning";
-      if (surferScreenEl) surferScreenEl.hidden = currentMode !== "surfer";
-      if (currentMode === "surfer") {
-        renderSurferAll();
-      }
-      if (currentMode === "learning") {
-        refreshRunButtonState();
-      }
-    }
 
     function loadStoredUiLang() {
       const raw = localStorage.getItem(LANG_STORAGE_KEY) || "";
@@ -2411,18 +2192,8 @@
     function applyStaticUiText() {
       document.documentElement.lang = messages[uiLang].htmlLang;
       document.title = t("docTitle");
-      if (chooserTitleEl) chooserTitleEl.textContent = t("chooserTitle");
-      if (chooserSubtitleEl) chooserSubtitleEl.textContent = t("chooserSubtitle");
-      if (learningModeCardTitleEl) learningModeCardTitleEl.textContent = t("learningModeCardTitle");
-      if (learningModeCardCopyEl) learningModeCardCopyEl.textContent = t("learningModeCardCopy");
-      if (surferModeCardTitleEl) surferModeCardTitleEl.textContent = t("surferModeCardTitle");
-      if (surferModeCardCopyEl) surferModeCardCopyEl.textContent = t("surferModeCardCopy");
       if (pageTitleEl) pageTitleEl.textContent = t("pageTitle");
       if (pageSubtitleEl) pageSubtitleEl.textContent = t("pageSubtitle");
-      if (surferTitleEl) surferTitleEl.textContent = t("surferTitle");
-      if (surferSubtitleEl) surferSubtitleEl.textContent = t("surferSubtitle");
-      if (learningSwitchModeBtnEl) learningSwitchModeBtnEl.textContent = t("modeSwitch");
-      if (surferSwitchModeBtnEl) surferSwitchModeBtnEl.textContent = t("modeSwitch");
       if (fontSizeLabelEl) fontSizeLabelEl.textContent = t("fontSizeLabel");
       if (fontSizeOptionBaseEl) fontSizeOptionBaseEl.textContent = t("fontSizeBase");
       if (fontSizeOptionLargeEl) fontSizeOptionLargeEl.textContent = t("fontSizeLarge");
@@ -2441,19 +2212,6 @@
       if (usageLabelEl) usageLabelEl.textContent = t("usage");
       if (resultLabelEl) resultLabelEl.textContent = t("resultLabel");
       if (resetExerciseBtnEl) resetExerciseBtnEl.textContent = t("resetExercise");
-      if (surferStructureTitleEl) surferStructureTitleEl.textContent = t("surferStructureTitle");
-      if (surferStructureHintEl) surferStructureHintEl.textContent = t("surferStructureHint");
-      if (surferCustomLabelEl) surferCustomLabelEl.textContent = t("surferCustomLabel");
-      if (surferCustomKeyInputEl) surferCustomKeyInputEl.placeholder = t("surferCustomKeyPlaceholder");
-      if (surferCustomValueInputEl) surferCustomValueInputEl.placeholder = t("surferCustomValuePlaceholder");
-      if (surferAddFieldBtnEl) surferAddFieldBtnEl.textContent = t("surferAddField");
-      if (surferGraphTitleEl) surferGraphTitleEl.textContent = t("surferGraphTitle");
-      if (surferGraphHintEl) surferGraphHintEl.textContent = t("surferGraphHint");
-      if (surferPresetBtnEl) surferPresetBtnEl.textContent = t("surferPreset");
-      if (surferConsiderTitleEl) surferConsiderTitleEl.textContent = t("surferConsiderTitle");
-      if (surferConsiderHintEl) surferConsiderHintEl.textContent = t("surferConsiderHint");
-      if (surferFactorNameInputEl) surferFactorNameInputEl.placeholder = t("surferFactorNamePlaceholder");
-      if (surferAddFactorBtnEl) surferAddFactorBtnEl.textContent = t("surferAddFactor");
       renderBibliography();
       runButtonDefaultLabel = t("run");
       if (runBtnEl && !isRunLoading) runBtnEl.textContent = runButtonDefaultLabel;
@@ -2542,325 +2300,6 @@
           <p class="bibliography-meta"><strong>${escapeHtml(t("bibliographyLabelPublisher"))}:</strong> ${escapeHtml(entry.publisher)}</p>
         </li>
       `).join("");
-    }
-
-    function createSurferItemId(prefix) {
-      const rand = Math.floor(Math.random() * 100000);
-      return `${prefix}-${Date.now()}-${rand}`;
-    }
-
-    function normalizeActBoundaries() {
-      surferState.actBoundaries.act1End = clampNumber(Number(surferState.actBoundaries.act1End) || 30, 15, 45);
-      surferState.actBoundaries.act2End = clampNumber(Number(surferState.actBoundaries.act2End) || 70, 55, 85);
-      if (surferState.actBoundaries.act2End - surferState.actBoundaries.act1End < 10) {
-        surferState.actBoundaries.act2End = clampNumber(surferState.actBoundaries.act1End + 10, 55, 85);
-      }
-    }
-
-    function renderSurferBaseFields() {
-      if (!surferBaseFieldsEl) return;
-      surferBaseFieldsEl.innerHTML = surferBaseFieldDefs.map((field) => `
-        <div class="analysis-field">
-          <label for="surferBaseField-${escapeHtml(field.key)}">${escapeHtml(t(field.labelKey))}</label>
-          <textarea id="surferBaseField-${escapeHtml(field.key)}" class="exercise-input" data-surfer-base-key="${escapeHtml(field.key)}" placeholder="${escapeHtml(t(field.placeholderKey))}">${escapeHtml(surferState.base[field.key] || "")}</textarea>
-        </div>
-      `).join("");
-      surferBaseFieldsEl.querySelectorAll("[data-surfer-base-key]").forEach((el) => {
-        const key = el.dataset.surferBaseKey || "";
-        autoResizeTextarea(el);
-        el.addEventListener("input", () => {
-          autoResizeTextarea(el);
-          surferState.base[key] = el.value;
-          saveSurferState();
-        });
-      });
-    }
-
-    function renderSurferCustomList() {
-      if (!surferCustomListEl) return;
-      if (!surferState.customFields.length) {
-        surferCustomListEl.innerHTML = `<li class="surfer-list-item"><p class="surfer-list-copy">${escapeHtml(t("surferEmptyCustom"))}</p></li>`;
-        return;
-      }
-      surferCustomListEl.innerHTML = surferState.customFields.map((item) => `
-        <li class="surfer-list-item">
-          <p class="surfer-list-copy"><strong>${escapeHtml(item.key)}</strong>: ${escapeHtml(item.value)}</p>
-          <button type="button" class="completion-btn" data-surfer-remove-custom="${escapeHtml(item.id)}">${escapeHtml(t("surferRemove"))}</button>
-        </li>
-      `).join("");
-    }
-
-    function addSurferCustomField() {
-      if (!surferCustomKeyInputEl || !surferCustomValueInputEl) return;
-      const key = surferCustomKeyInputEl.value.trim();
-      const value = surferCustomValueInputEl.value.trim();
-      if (!key || !value) return;
-      surferState.customFields.push({
-        id: createSurferItemId("custom"),
-        key,
-        value,
-      });
-      surferCustomKeyInputEl.value = "";
-      surferCustomValueInputEl.value = "";
-      saveSurferState();
-      renderSurferCustomList();
-    }
-
-    function renderSurferFactors() {
-      if (!surferFactorsEl) return;
-      if (!surferState.factors.length) {
-        surferFactorsEl.innerHTML = `<div class="surfer-factor"><p class="surfer-list-copy">${escapeHtml(t("surferEmptyFactors"))}</p></div>`;
-        return;
-      }
-      surferFactorsEl.innerHTML = surferState.factors.map((factor) => `
-        <article class="surfer-factor">
-          <div class="surfer-factor-head">
-            <p class="surfer-factor-name">${escapeHtml(factor.name)}</p>
-            <button type="button" class="completion-btn" data-surfer-remove-factor="${escapeHtml(factor.id)}">${escapeHtml(t("surferRemove"))}</button>
-          </div>
-          <label for="surferFactorRange-${escapeHtml(factor.id)}">${escapeHtml(t("surferImportance"))}: <strong>${escapeHtml(String(factor.importance))}</strong></label>
-          <input id="surferFactorRange-${escapeHtml(factor.id)}" type="range" min="1" max="10" step="1" value="${escapeHtml(String(factor.importance))}" data-surfer-factor-range="${escapeHtml(factor.id)}" />
-        </article>
-      `).join("");
-    }
-
-    function addSurferFactor() {
-      if (!surferFactorNameInputEl) return;
-      const name = surferFactorNameInputEl.value.trim();
-      if (!name) return;
-      surferState.factors.push({
-        id: createSurferItemId("factor"),
-        name,
-        importance: 5,
-      });
-      surferFactorNameInputEl.value = "";
-      saveSurferState();
-      renderSurferFactors();
-    }
-
-    function buildAutoPresetFromSurferInput() {
-      const filledBaseCount = surferBaseFieldDefs.reduce((count, field) => {
-        return count + (String(surferState.base[field.key] || "").trim() ? 1 : 0);
-      }, 0);
-      const customCount = surferState.customFields.length;
-      const factorCount = surferState.factors.length;
-      const avgFactor = factorCount
-        ? surferState.factors.reduce((sum, item) => sum + Number(item.importance || 0), 0) / factorCount
-        : 5;
-      const intensitySeed = clampNumber(3 + filledBaseCount + Math.min(customCount, 3), 3, 8);
-      const boost = avgFactor >= 7 ? 1 : 0;
-      const crest = clampNumber(intensitySeed + 2 + boost, 6, 10);
-      const midpoint = clampNumber(intensitySeed + boost, 4, 9);
-      const start = clampNumber(intensitySeed - 2, 2, 7);
-
-      surferState.tensionPoints = [
-        start,
-        clampNumber(start + 1, 1, 10),
-        clampNumber(midpoint - 1, 1, 10),
-        midpoint,
-        clampNumber(midpoint + 1, 1, 10),
-        clampNumber(crest - 1, 1, 10),
-        clampNumber(crest - 2, 1, 10),
-        crest,
-        clampNumber(crest - 1, 1, 10),
-      ];
-
-      const conflictLength = String(surferState.base.conflict || "").trim().length;
-      surferState.actBoundaries.act1End = clampNumber(34 - Math.floor(conflictLength / 80) * 2, 18, 42);
-      surferState.actBoundaries.act2End = clampNumber(68 + Math.min(customCount, 3), 58, 82);
-      normalizeActBoundaries();
-      saveSurferState();
-      renderSurferGraph();
-      renderSurferPointLegend();
-    }
-
-    function valueToSurferGraphY(value) {
-      const normalized = (clampNumber(value, 1, 10) - 1) / 9;
-      return 94 - normalized * 88;
-    }
-
-    function clientYToSurferValue(clientY) {
-      if (!surferGraphEl) return 5;
-      const rect = surferGraphEl.getBoundingClientRect();
-      if (!rect.height) return 5;
-      const ratio = 1 - clampNumber((clientY - rect.top) / rect.height, 0, 1);
-      return clampNumber(Math.round(1 + ratio * 9), 1, 10);
-    }
-
-    function updateSurferBoundaryLabels() {
-      if (act1BoundaryRangeEl) act1BoundaryRangeEl.value = String(surferState.actBoundaries.act1End);
-      if (act2BoundaryRangeEl) act2BoundaryRangeEl.value = String(surferState.actBoundaries.act2End);
-      if (act1BoundaryLabelEl) {
-        act1BoundaryLabelEl.textContent = t("act1BoundaryLabel", {
-          value: surferState.actBoundaries.act1End,
-        });
-      }
-      if (act2BoundaryLabelEl) {
-        act2BoundaryLabelEl.textContent = t("act2BoundaryLabel", {
-          value: surferState.actBoundaries.act2End,
-        });
-      }
-    }
-
-    function renderSurferPointLegend() {
-      if (!surferPointLegendEl) return;
-      surferPointLegendEl.innerHTML = surferState.tensionPoints.map((value, index) => `
-        <div class="surfer-point-chip">${escapeHtml(t("surferPointLabel", { index: index + 1 }))}: ${escapeHtml(String(value))}</div>
-      `).join("");
-    }
-
-    function renderSurferGraph() {
-      if (!surferGraphEl) return;
-      normalizeActBoundaries();
-      updateSurferBoundaryLabels();
-
-      const act1X = surferState.actBoundaries.act1End;
-      const act2X = surferState.actBoundaries.act2End;
-      const pointStep = 100 / (SURFER_POINT_COUNT - 1);
-      const points = surferState.tensionPoints.map((value, index) => ({
-        x: Number((pointStep * index).toFixed(4)),
-        y: Number(valueToSurferGraphY(value).toFixed(4)),
-      }));
-      const pointString = points.map((point) => `${point.x},${point.y}`).join(" ");
-
-      const guideLines = [1, 3, 5, 7, 10].map((level) => {
-        const y = valueToSurferGraphY(level);
-        return `<line x1="0" y1="${y}" x2="100" y2="${y}" stroke="rgba(138,79,42,0.12)" stroke-width="0.4" />`;
-      }).join("");
-
-      const circles = points.map((point, index) => `
-        <circle
-          cx="${point.x}"
-          cy="${point.y}"
-          r="2.1"
-          fill="#fff"
-          stroke="#8a4f2a"
-          stroke-width="0.8"
-          data-surfer-point-index="${index}"
-          style="cursor:ns-resize;"
-        ></circle>
-      `).join("");
-
-      surferGraphEl.innerHTML = `
-        <rect x="0" y="0" width="${act1X}" height="100" fill="rgba(180, 151, 124, 0.14)"></rect>
-        <rect x="${act1X}" y="0" width="${act2X - act1X}" height="100" fill="rgba(138, 79, 42, 0.08)"></rect>
-        <rect x="${act2X}" y="0" width="${100 - act2X}" height="100" fill="rgba(103, 77, 54, 0.12)"></rect>
-        ${guideLines}
-        <polyline fill="none" stroke="#8a4f2a" stroke-width="1.3" points="${pointString}"></polyline>
-        ${circles}
-      `;
-
-      surferGraphEl.querySelectorAll("[data-surfer-point-index]").forEach((node) => {
-        node.addEventListener("pointerdown", (event) => {
-          const index = Number(node.getAttribute("data-surfer-point-index"));
-          activeSurferPointIndex = Number.isFinite(index) ? index : -1;
-          if (activeSurferPointIndex < 0) return;
-          const nextValue = clientYToSurferValue(event.clientY);
-          surferState.tensionPoints[activeSurferPointIndex] = nextValue;
-          saveSurferState();
-          renderSurferGraph();
-          renderSurferPointLegend();
-          if (typeof node.setPointerCapture === "function") {
-            node.setPointerCapture(event.pointerId);
-          }
-          event.preventDefault();
-        });
-      });
-    }
-
-    function renderSurferAll() {
-      renderSurferBaseFields();
-      renderSurferCustomList();
-      renderSurferFactors();
-      renderSurferGraph();
-      renderSurferPointLegend();
-    }
-
-    function initSurferMode() {
-      if (surferAddFieldBtnEl) {
-        surferAddFieldBtnEl.addEventListener("click", addSurferCustomField);
-      }
-      if (surferCustomValueInputEl) {
-        surferCustomValueInputEl.addEventListener("keydown", (event) => {
-          if (event.key !== "Enter" || event.shiftKey) return;
-          event.preventDefault();
-          addSurferCustomField();
-        });
-      }
-      if (surferCustomListEl) {
-        surferCustomListEl.addEventListener("click", (event) => {
-          const target = event.target.closest("[data-surfer-remove-custom]");
-          if (!target) return;
-          const removeId = target.getAttribute("data-surfer-remove-custom") || "";
-          surferState.customFields = surferState.customFields.filter((item) => item.id !== removeId);
-          saveSurferState();
-          renderSurferCustomList();
-        });
-      }
-      if (surferAddFactorBtnEl) {
-        surferAddFactorBtnEl.addEventListener("click", addSurferFactor);
-      }
-      if (surferFactorNameInputEl) {
-        surferFactorNameInputEl.addEventListener("keydown", (event) => {
-          if (event.key !== "Enter" || event.shiftKey) return;
-          event.preventDefault();
-          addSurferFactor();
-        });
-      }
-      if (surferFactorsEl) {
-        surferFactorsEl.addEventListener("click", (event) => {
-          const target = event.target.closest("[data-surfer-remove-factor]");
-          if (!target) return;
-          const removeId = target.getAttribute("data-surfer-remove-factor") || "";
-          surferState.factors = surferState.factors.filter((item) => item.id !== removeId);
-          saveSurferState();
-          renderSurferFactors();
-        });
-        surferFactorsEl.addEventListener("input", (event) => {
-          const target = event.target.closest("[data-surfer-factor-range]");
-          if (!target) return;
-          const factorId = target.getAttribute("data-surfer-factor-range") || "";
-          const factor = surferState.factors.find((item) => item.id === factorId);
-          if (!factor) return;
-          factor.importance = clampNumber(Number(target.value) || 1, 1, 10);
-          saveSurferState();
-          renderSurferFactors();
-        });
-      }
-      if (act1BoundaryRangeEl) {
-        act1BoundaryRangeEl.addEventListener("input", () => {
-          surferState.actBoundaries.act1End = clampNumber(Number(act1BoundaryRangeEl.value) || 30, 15, 45);
-          normalizeActBoundaries();
-          saveSurferState();
-          renderSurferGraph();
-        });
-      }
-      if (act2BoundaryRangeEl) {
-        act2BoundaryRangeEl.addEventListener("input", () => {
-          surferState.actBoundaries.act2End = clampNumber(Number(act2BoundaryRangeEl.value) || 70, 55, 85);
-          normalizeActBoundaries();
-          saveSurferState();
-          renderSurferGraph();
-        });
-      }
-      if (surferPresetBtnEl) {
-        surferPresetBtnEl.addEventListener("click", buildAutoPresetFromSurferInput);
-      }
-      if (surferGraphEl) {
-        surferGraphEl.addEventListener("pointermove", (event) => {
-          if (activeSurferPointIndex < 0) return;
-          surferState.tensionPoints[activeSurferPointIndex] = clientYToSurferValue(event.clientY);
-          saveSurferState();
-          renderSurferGraph();
-          renderSurferPointLegend();
-        });
-        surferGraphEl.addEventListener("pointerup", () => {
-          activeSurferPointIndex = -1;
-        });
-        surferGraphEl.addEventListener("pointerleave", () => {
-          activeSurferPointIndex = -1;
-        });
-      }
     }
 
     function setStatus(message, type) {
@@ -3994,7 +3433,6 @@
       renderAnalysisSetup();
       renderCompletionControl();
       renderExerciseFields();
-      renderSurferAll();
     }
 
     function initRoadmapPan() {
@@ -4057,10 +3495,8 @@
       setUiLanguage(uiLang, { persist: false, rerender: false });
       loadCurriculumState();
       loadAnalysisContext();
-      loadSurferState();
       initBodyDraft();
       initRoadmapPan();
-      initSurferMode();
 
       runBtnEl.addEventListener("click", runAnalysis);
       if (fontSizeSelectEl) {
@@ -4076,26 +3512,6 @@
       }
       if (resetExerciseBtnEl) {
         resetExerciseBtnEl.addEventListener("click", resetExerciseInputs);
-      }
-      if (chooseLearningBtnEl) {
-        chooseLearningBtnEl.addEventListener("click", () => {
-          setMode("learning");
-        });
-      }
-      if (chooseSurferBtnEl) {
-        chooseSurferBtnEl.addEventListener("click", () => {
-          setMode("surfer");
-        });
-      }
-      if (learningSwitchModeBtnEl) {
-        learningSwitchModeBtnEl.addEventListener("click", () => {
-          setMode("chooser");
-        });
-      }
-      if (surferSwitchModeBtnEl) {
-        surferSwitchModeBtnEl.addEventListener("click", () => {
-          setMode("chooser");
-        });
       }
 
       // TEST_ONLY_OWNER_BYPASS_START
@@ -4119,7 +3535,6 @@
       // TEST_ONLY_OWNER_BYPASS_END
 
       renderAll();
-      setMode("chooser");
       refreshRunButtonState();
 
       const turnstileInitTimer = setInterval(() => {
