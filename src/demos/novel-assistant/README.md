@@ -132,7 +132,8 @@
 ## 선택 헤더 (테스트 전용)
 - `X-Owner-Key: <owner key>`
 - 워커에서 `ENABLE_OWNER_BYPASS=true` + `OWNER_BYPASS_KEY` 일치 시에만 적용됩니다.
-- UI에서는 `ENABLE_OWNER_BYPASS_UI` 설정에 따라 입력칸 노출 여부를 제어합니다.
+- 기본 배포에서는 `ENABLE_OWNER_BYPASS_UI=false`로 입력칸이 숨겨져 있습니다.
+- Owner key는 브라우저 `localStorage`에 저장하지 않으며, 입력값은 새로고침 시 사라집니다.
 
 ## 응답 예시
 ```json
@@ -159,6 +160,7 @@
 - 개인 API 키 입력 기능 없음 (서버 키 전용)
 - LLM API 키는 프록시 환경 변수/시크릿에서만 관리
 - 브라우저 코드/리포지토리에 키 저장 금지
+- Owner bypass key를 브라우저 영구 저장소(`localStorage`)에 보관하지 않음
 - 프록시에 Origin 제한 + Turnstile 검증 + Durable Object 기반 원자적 rate limit 적용
 - `manuscript`는 최대 12,000자까지 허용
-- 테스트 종료 후 `ENABLE_OWNER_BYPASS=false`로 즉시 비활성화하고 관련 코드 블록 삭제 권장
+- 테스트 종료 후 `ENABLE_OWNER_BYPASS=false`로 즉시 비활성화

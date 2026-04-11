@@ -26,27 +26,32 @@ npm install
 export CLOUDFLARE_API_TOKEN=your_token_here
 ```
 
-3. Set secrets:
+3. Set required secrets:
 ```bash
 npx wrangler secret put GEMINI_API_KEY
 npx wrangler secret put OPENAI_API_KEY
 npx wrangler secret put TURNSTILE_SECRET_KEY
-npx wrangler secret put OWNER_BYPASS_KEY
 ```
 `ALLOWED_ORIGIN` is already set in `wrangler.jsonc` as `https://devbyhwang.github.io`.
 `AI_PROVIDER` is set to `openai` by default (`gemini` for rollback).
 `GEMINI_MODEL` is set to `gemini-2.0-flash` by default.
 `TURNSTILE_EXPECTED_HOSTNAME` is set to `devbyhwang.github.io`.
 `TURNSTILE_EXPECTED_ACTION` is set to `novel_feedback`.
-`ENABLE_OWNER_BYPASS` is currently set to `"true"` in `wrangler.jsonc`.
+`ENABLE_OWNER_BYPASS` is set to `"false"` by default in `wrangler.jsonc`.
 
-4. Turnstile setup:
+4. Optional (temporary owner bypass for testing only):
+```bash
+npx wrangler secret put OWNER_BYPASS_KEY
+```
+Set `ENABLE_OWNER_BYPASS` to `"true"` only during temporary test windows, then disable again.
+
+5. Turnstile setup:
 - Cloudflare Turnstile에서 위젯을 생성하고 도메인에 `devbyhwang.github.io`를 등록합니다.
 - 발급받은 Secret Key는 `TURNSTILE_SECRET_KEY`로 저장합니다.
 - 발급받은 Site Key는 `src/demos/novel-assistant/index.html`의 `TURNSTILE_SITE_KEY` 값으로 설정합니다.
 - 위젯 action은 `novel_feedback`으로 설정되며, 워커는 hostname/action 검증이 일치해야 통과합니다.
 
-5. Durable Object migration + deploy:
+6. Durable Object migration + deploy:
 ```bash
 npm run dev
 npm run deploy
@@ -73,7 +78,8 @@ After deploy, use:
   - `ENABLE_OWNER_BYPASS === "true"`
   - request `Origin` matches `ALLOWED_ORIGIN`
   - header matches `OWNER_BYPASS_KEY`
-- When active, Turnstile and daily limit are bypassed for that request.
+- Default deployment uses `ENABLE_OWNER_BYPASS === "false"`.
+- When temporarily enabled and active, Turnstile and daily limit are bypassed for that request.
 
 ## Success response
 ```json
