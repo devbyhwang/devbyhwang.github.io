@@ -82,6 +82,15 @@ const jsonScript = (value) =>
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
 
+const shuffle = (items) => {
+  const shuffled = Array.isArray(items) ? [...items] : [];
+  for (let i = shuffled.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
 module.exports = function (eleventyConfig) {
   loadEnv();
 
@@ -204,6 +213,71 @@ module.exports = function (eleventyConfig) {
       const fallback = post.data.brand === DODOES_BRAND ? "notes" : "devlog";
       return (post.data.category || fallback) === categoryKey;
     });
+  });
+
+  eleventyConfig.addFilter("hybridRelatedPosts", (posts, currentUrl, limit = 4) => {
+    if (!Array.isArray(posts)) return [];
+    const normalizedCurrentUrl = normalizePostPath(currentUrl);
+    if (!normalizedCurrentUrl) return [];
+
+    const maxItems = Number.isFinite(Number(limit)) ? Math.max(0, Number(limit)) : 4;
+    if (maxItems < 1) return [];
+
+    const currentIndex = posts.findIndex(
+      (post) => normalizePostPath(post && post.url) === normalizedCurrentUrl
+    );
+    if (currentIndex === -1) return [];
+
+    const toPath = (post) => normalizePostPath(post && post.url);
+    const prevPost = posts[currentIndex + 1] || null;
+    const nextPost = posts[currentIndex - 1] || null;
+
+    const excluded = new Set([normalizedCurrentUrl]);
+    [prevPost, nextPost].forEach((post) => {
+      const pathKey = toPath(post);
+      if (pathKey) excluded.add(pathKey);
+    });
+
+    const randomPool = shuffle(
+      posts.filter((post) => {
+        const pathKey = toPath(post);
+        return pathKey && !excluded.has(pathKey);
+      })
+    );
+
+    const usedPaths = new Set([normalizedCurrentUrl]);
+    const results = [];
+    let randomIndex = 0;
+
+    const pushUnique = (post, role) => {
+      if (!post) return false;
+      const pathKey = toPath(post);
+      if (!pathKey || usedPaths.has(pathKey)) return false;
+      usedPaths.add(pathKey);
+      results.push({ post, role });
+      return true;
+    };
+
+    const pickRandom = () => {
+      while (randomIndex < randomPool.length) {
+        const candidate = randomPool[randomIndex];
+        randomIndex += 1;
+        if (pushUnique(candidate, "random")) return true;
+      }
+      return false;
+    };
+
+    if (!pushUnique(prevPost, "prev")) {
+      pickRandom();
+    }
+
+    if (results.length < maxItems && !pushUnique(nextPost, "next")) {
+      pickRandom();
+    }
+
+    while (results.length < maxItems && pickRandom()) {}
+
+    return results;
   });
 
   eleventyConfig.addFilter("sitemapFilter", (items) => {
