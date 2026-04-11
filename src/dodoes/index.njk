@@ -52,10 +52,10 @@ description: "Underground Novel 최신 글"
 
     <div class="sidebar-posts">
       <div class="tab-buttons">
-        <button class="tab-btn active" data-tab="recent">최근글</button>
-        <button class="tab-btn" data-tab="popular">인기글</button>
+        <button class="tab-btn" data-tab="recent">최근글</button>
+        <button class="tab-btn active" data-tab="popular">인기글</button>
       </div>
-      <ul class="post-list-tab active" data-content="recent">
+      <ul class="post-list-tab" data-content="recent">
         {% if dodoesPosts.length > 0 %}
         {% for post in dodoesPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
@@ -64,7 +64,7 @@ description: "Underground Novel 최신 글"
           <li class="muted">아직 글이 없습니다.</li>
         {% endif %}
       </ul>
-      <ul class="post-list-tab" data-content="popular" data-popular-list data-popular-brand="dodoes">
+      <ul class="post-list-tab active" data-content="popular" data-popular-list data-popular-brand="dodoes">
         {% if dodoesPopularPosts.length > 0 %}
         {% for post in dodoesPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
