@@ -4,7 +4,9 @@ brand: dodoes
 ---
 <article class="writing-note">
   <header class="writing-header">
+    {% if showKicker !== false %}
     <div class="writing-kicker">{{ category or 'notes' }}</div>
+    {% endif %}
     <h1 class="writing-title">{{ title }}</h1>
     {% if description %}
     <p class="writing-description">{{ description }}</p>
