@@ -4,6 +4,7 @@ brand: dodoes
 ---
 <article class="writing-note">
   <header class="writing-header">
+    {% set postViewSeed = { views: views } | postViewSeed %}
     {% if showKicker !== false %}
     <div class="writing-kicker">{{ category or 'notes' }}</div>
     {% endif %}
@@ -14,7 +15,18 @@ brand: dodoes
     <div class="writing-meta">
       <span class="writing-date">{{ date | readableDate }}</span>
       <span class="writing-author">by {{ brands.dodoes.displayName }}</span>
+      <span class="writing-views">
+        조회수
+        <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
+      </span>
     </div>
+    <div
+      data-post-view-track
+      data-post-key="{{ page.url }}"
+      data-post-seed="{{ postViewSeed }}"
+      data-post-view-target="post-view-count"
+      hidden
+    ></div>
   </header>
 
   <div class="writing-content prose">

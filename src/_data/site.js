@@ -35,4 +35,10 @@ module.exports = {
     dailyPrefix: env.VISITOR_COUNTER_DAILY_PREFIX || "daily",
     timeZone: env.VISITOR_COUNTER_TIMEZONE || "Asia/Seoul",
   },
+  postViews: {
+    enable: toBool(env.POST_VIEWS_ENABLE, true),
+    namespace: env.POST_VIEWS_NAMESPACE || "devbyhwang-post-views",
+    counterPrefix: env.POST_VIEWS_COUNTER_PREFIX || "pv",
+    timeZone: env.POST_VIEWS_TIMEZONE || "Asia/Seoul",
+  },
 };

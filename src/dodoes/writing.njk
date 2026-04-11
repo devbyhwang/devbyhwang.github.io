@@ -7,6 +7,7 @@ permalink: /dodoes/writing/
 ---
 {% set dodoesPosts = collections.dodoesWriting %}
 {% set dodoesPopularPosts = collections.dodoesPopularPosts %}
+{% set dodoesPopularCandidates = dodoesPosts | postViewCandidates %}
 <section class="page-hero">
   <h1>글</h1>
 </section>
@@ -60,7 +61,7 @@ permalink: /dodoes/writing/
           <li class="muted">아직 글이 없습니다.</li>
         {% endif %}
       </ul>
-      <ul class="post-list-tab" data-content="popular">
+      <ul class="post-list-tab" data-content="popular" data-popular-list data-popular-brand="dodoes">
         {% if dodoesPopularPosts.length > 0 %}
         {% for post in dodoesPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
@@ -72,3 +73,4 @@ permalink: /dodoes/writing/
     </div>
   </aside>
 </section>
+<script type="application/json" data-popular-candidates="dodoes">{{ dodoesPopularCandidates | jsonScript | safe }}</script>

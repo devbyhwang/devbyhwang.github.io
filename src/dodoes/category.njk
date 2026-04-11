@@ -11,6 +11,7 @@ eleventyComputed:
   description: "Underground Novel {{ category.name }} 글 모음"
 ---
 {% set categoryPosts = collections.dodoesWriting | postsByCategory(category) %}
+{% set dodoesPopularCandidates = collections.dodoesWriting | postViewCandidates %}
 
 <section class="page-hero">
   <h1>{{ category.name }}</h1>
@@ -61,7 +62,7 @@ eleventyComputed:
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
       </ul>
-      <ul class="post-list-tab" data-content="popular">
+      <ul class="post-list-tab" data-content="popular" data-popular-list data-popular-brand="dodoes">
         {% for post in collections.dodoesPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
@@ -69,3 +70,4 @@ eleventyComputed:
     </div>
   </aside>
 </section>
+<script type="application/json" data-popular-candidates="dodoes">{{ dodoesPopularCandidates | jsonScript | safe }}</script>

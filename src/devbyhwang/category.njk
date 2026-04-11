@@ -11,6 +11,7 @@ eleventyComputed:
   description: "{{ category.name }} 카테고리 글 모음"
 ---
 {% set categoryPosts = collections.devPosts | postsByCategory(category) %}
+{% set devPopularCandidates = collections.devPosts | postViewCandidates %}
 {% set gamesPlayground = [] %}
 {% if category.key == 'games' %}
   {% for project in studio.games %}
@@ -105,7 +106,7 @@ eleventyComputed:
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
       </ul>
-      <ul class="post-list-tab" data-content="popular">
+      <ul class="post-list-tab" data-content="popular" data-popular-list data-popular-brand="devbyhwang">
         {% for post in collections.devPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
@@ -113,3 +114,4 @@ eleventyComputed:
     </div>
   </aside>
 </section>
+<script type="application/json" data-popular-candidates="devbyhwang">{{ devPopularCandidates | jsonScript | safe }}</script>
