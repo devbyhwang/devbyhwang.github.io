@@ -102,14 +102,22 @@ eleventyComputed:
         <button class="tab-btn active" data-tab="popular">인기글</button>
       </div>
       <ul class="post-list-tab" data-content="recent">
+        {% if collections.devPosts | length > 0 %}
         {% for post in collections.devPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
+        {% else %}
+          <li class="muted">아직 글이 없습니다.</li>
+        {% endif %}
       </ul>
       <ul class="post-list-tab active" data-content="popular" data-popular-list data-popular-brand="devbyhwang">
+        {% if collections.devPopularPosts | length > 0 %}
         {% for post in collections.devPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
+        {% else %}
+          <li class="muted">아직 글이 없습니다.</li>
+        {% endif %}
       </ul>
     </div>
   </aside>
