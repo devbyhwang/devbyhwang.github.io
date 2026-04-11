@@ -146,6 +146,17 @@
         <script src="{{ '/assets/visitor-counter.js' | url }}" defer></script>
       {% endif %}
     {% endif %}
+    {% if activeBrand and env.isProd and site.postViews and site.postViews.enable %}
+      <div
+        data-post-views-config
+        data-namespace="{{ site.postViews.namespace }}"
+        data-counter-prefix="{{ site.postViews.counterPrefix }}"
+        data-timezone="{{ site.postViews.timeZone }}"
+        data-path-prefix="{{ env.pathPrefix }}"
+        hidden
+      ></div>
+      <script src="{{ '/assets/post-views.js' | url }}" defer></script>
+    {% endif %}
     {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd %}
       <script src="{{ '/assets/ads-init.js' | url }}" defer></script>
     {% endif %}

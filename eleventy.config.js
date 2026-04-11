@@ -59,6 +59,29 @@ const toNumber = (value) => {
   return Number.isFinite(num) ? num : null;
 };
 
+const normalizePostPath = (value) => {
+  if (typeof value !== "string") return "";
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+  return withSlash.replace(/\/+/g, "/");
+};
+
+const toSeedViews = (data) => {
+  const payload = data && typeof data === "object" ? data : {};
+  const views = toNumber(payload.views);
+  if (views !== null) return views;
+  return 0;
+};
+
+const jsonScript = (value) =>
+  JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+
 module.exports = function (eleventyConfig) {
   loadEnv();
 
@@ -81,6 +104,21 @@ module.exports = function (eleventyConfig) {
     if (!Array.isArray(items)) return [];
     return items.slice(0, count);
   });
+  eleventyConfig.addFilter("postViewSeed", (input) => {
+    if (input && input.data) return toSeedViews(input.data);
+    return toSeedViews(input);
+  });
+  eleventyConfig.addFilter("postViewCandidates", (posts) => {
+    if (!Array.isArray(posts)) return [];
+    return posts.map((post) => ({
+      url: post.url || "",
+      postKey: normalizePostPath(post.url || ""),
+      title: (post.data && post.data.title) || "",
+      seedViews: toSeedViews(post.data),
+      dateMs: post.date instanceof Date ? post.date.getTime() : 0,
+    }));
+  });
+  eleventyConfig.addFilter("jsonScript", (value) => jsonScript(value));
 
   const getDevPosts = (collectionApi) =>
     collectionApi
@@ -122,14 +160,10 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addCollection("devPopularPosts", (collectionApi) =>
     getDevPosts(collectionApi)
-      .map((post) => {
-        const views = toNumber(post.data.views);
-        const rank = toNumber(post.data.popularRank);
-        if (views !== null) return { post, score: views };
-        if (rank !== null) return { post, score: rank };
-        if (post.data.popular === true) return { post, score: 1 };
-        return { post, score: 0 };
-      })
+      .map((post) => ({
+        post,
+        score: toNumber(post.data.views) || 0,
+      }))
       .sort((a, b) => b.score - a.score || b.post.date - a.post.date)
       .map(({ post }) => post)
   );

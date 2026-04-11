@@ -4,12 +4,24 @@ brand: devbyhwang
 ---
 <article class="post">
   <header class="post-header">
+    {% set postViewSeed = { views: views } | postViewSeed %}
     <span class="post-category">{{ category or 'devlog' }}</span>
     <h1 class="post-title">{{ title }}</h1>
     <div class="post-meta">
       <span class="post-date">{{ date | readableDate }}</span>
       <span class="post-author">by {{ brands.devbyhwang.displayName }}</span>
+      <span class="post-views">
+        조회수
+        <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
+      </span>
     </div>
+    <div
+      data-post-view-track
+      data-post-key="{{ page.url }}"
+      data-post-seed="{{ postViewSeed }}"
+      data-post-view-target="post-view-count"
+      hidden
+    ></div>
   </header>
 
   <div class="post-content prose">

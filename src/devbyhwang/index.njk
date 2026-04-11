@@ -12,6 +12,7 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
 {% endfor %}
 {% set devPosts = collections.devPosts %}
 {% set devPopularPosts = collections.devPopularPosts %}
+{% set devPopularCandidates = devPosts | postViewCandidates %}
 
 <section class="page-hero">
   <h1>Playground</h1>
@@ -122,7 +123,7 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
           <li class="muted">아직 글이 없습니다.</li>
         {% endif %}
       </ul>
-      <ul class="post-list-tab" data-content="popular">
+      <ul class="post-list-tab" data-content="popular" data-popular-list data-popular-brand="devbyhwang">
         {% if devPopularPosts.length > 0 %}
         {% for post in devPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
@@ -136,3 +137,4 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
     {% include "ad-slot.njk" %}
   </aside>
 </section>
+<script type="application/json" data-popular-candidates="devbyhwang">{{ devPopularCandidates | jsonScript | safe }}</script>
