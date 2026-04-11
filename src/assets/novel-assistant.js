@@ -4,7 +4,7 @@
     const PRESET_START = "[[PRESET_START]]";
     const PRESET_END = "[[PRESET_END]]";
     const AUTO_DONE_THRESHOLD = 7.5;
-    const ENABLE_OWNER_BYPASS_UI = true;
+    const ENABLE_OWNER_BYPASS_UI = false;
 
     const CURRICULUM_STORAGE_KEY = "novel-assistant:curriculum:v2";
     const DRAFT_STORAGE_KEY_PREFIX = "novel-assistant:draft:";
@@ -2064,7 +2064,6 @@
     let runButtonDefaultLabel = runBtnEl ? runBtnEl.textContent.trim() || t("run") : t("run");
     // TEST_ONLY_OWNER_BYPASS_START
     const ownerKeyInputEl = document.getElementById("ownerKeyInput");
-    const OWNER_BYPASS_STORAGE_KEY = "novel-assistant-owner-key";
     const DAILY_LIMIT_PER_DAY = 3;
     const OWNER_BYPASS_HEADER = "X-Owner-Key";
     // TEST_ONLY_OWNER_BYPASS_END
@@ -3515,20 +3514,14 @@
       }
 
       // TEST_ONLY_OWNER_BYPASS_START
-      if (ownerKeyBoxEl && !ENABLE_OWNER_BYPASS_UI) {
-        ownerKeyBoxEl.hidden = true;
+      try {
+        localStorage.removeItem("novel-assistant-owner-key");
+      } catch {
       }
-      if (ENABLE_OWNER_BYPASS_UI && ownerKeyInputEl) {
-        const savedOwnerKey = localStorage.getItem(OWNER_BYPASS_STORAGE_KEY) || "";
-        if (savedOwnerKey) ownerKeyInputEl.value = savedOwnerKey;
 
+      if (ownerKeyBoxEl) ownerKeyBoxEl.hidden = !ENABLE_OWNER_BYPASS_UI;
+      if (ENABLE_OWNER_BYPASS_UI && ownerKeyInputEl) {
         ownerKeyInputEl.addEventListener("input", () => {
-          const value = getOwnerKey();
-          if (value) {
-            localStorage.setItem(OWNER_BYPASS_STORAGE_KEY, value);
-          } else {
-            localStorage.removeItem(OWNER_BYPASS_STORAGE_KEY);
-          }
           refreshRunButtonState();
         });
       }
