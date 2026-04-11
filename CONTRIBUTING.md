@@ -39,7 +39,7 @@
 - 경로: `src/devbyhwang/blog/YYYY-MM-DD-title.md`
 - 참고: `src/devbyhwang/blog/` 디렉터리가 없다면 먼저 생성한 뒤 글 파일을 추가하세요.
 - 레이아웃: `layouts/post.njk`
-- 카테고리: `devlog | freelance | games`
+- 카테고리: `devlog | info | freelance | games`
 
 ```yaml
 ---

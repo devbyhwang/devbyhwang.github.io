@@ -1663,6 +1663,45 @@ canvas,
   margin-bottom: var(--space-2);
 }
 
+.prose table {
+  width: 100%;
+  margin: 0 0 var(--space-6);
+  border-collapse: collapse;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+.prose thead th {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  text-align: left;
+  line-height: var(--leading-normal);
+  vertical-align: top;
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose tbody tr:nth-child(even) {
+  background: var(--color-surface);
+}
+
+.prose tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .prose blockquote {
   margin: var(--space-6) 0;
   padding: var(--space-4) var(--space-5);
@@ -2393,6 +2432,20 @@ canvas,
   .prose pre code {
     font-size: 0.75rem;
     line-height: 1.5;
+  }
+
+  .prose table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+
+  .prose thead th,
+  .prose th,
+  .prose td {
+    font-size: var(--text-sm);
   }
 
   /* Playground image height constraints */
