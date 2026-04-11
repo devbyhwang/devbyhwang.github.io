@@ -18,6 +18,44 @@
       xlarge: 1.2,
     });
 
+    const safeStorage = (() => {
+      try {
+        const storage = window.localStorage;
+        if (!storage) return null;
+        const probeKey = "__novel_assistant_storage_probe__";
+        storage.setItem(probeKey, "1");
+        storage.removeItem(probeKey);
+        return storage;
+      } catch {
+        return null;
+      }
+    })();
+
+    function storageGet(key) {
+      if (!safeStorage) return null;
+      try {
+        return safeStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    }
+
+    function storageSet(key, value) {
+      if (!safeStorage) return;
+      try {
+        safeStorage.setItem(key, value);
+      } catch {
+      }
+    }
+
+    function storageRemove(key) {
+      if (!safeStorage) return;
+      try {
+        safeStorage.removeItem(key);
+      } catch {
+      }
+    }
+
     let uiLang = "ko";
     let uiFontSize = "base";
 
@@ -137,7 +175,7 @@
         statusTurnstileError: "보안 검증 위젯 오류가 발생했습니다. 잠시 후 다시 시도하세요.",
         errorRequest: "요청 처리 중 오류가 발생했습니다.",
         errorInvalidCaptcha: "보안 검증이 만료되었거나 유효하지 않습니다. 다시 검증해 주세요.",
-        errorPayloadTooLarge: "원고는 최대 12,000자까지 입력할 수 있습니다.",
+        errorPayloadTooLarge: "요청 데이터가 허용 크기를 초과했습니다. 입력 길이를 줄여 다시 시도하세요.",
         errorNetwork: "네트워크 오류가 발생했습니다.",
       },
       en: {
@@ -255,7 +293,7 @@
         statusTurnstileError: "Security widget failed. Please try again.",
         errorRequest: "An error occurred while processing the request.",
         errorInvalidCaptcha: "Security token expired or invalid. Please verify again.",
-        errorPayloadTooLarge: "Manuscript is limited to 12,000 characters.",
+        errorPayloadTooLarge: "Request data exceeds allowed size limits. Reduce input length and try again.",
         errorNetwork: "A network error occurred.",
       },
     };
@@ -2106,7 +2144,7 @@
     };
 
     function loadStoredUiLang() {
-      const raw = localStorage.getItem(LANG_STORAGE_KEY) || "";
+      const raw = storageGet(LANG_STORAGE_KEY) || "";
       if (raw === "ko" || raw === "en") {
         uiLang = raw;
         return true;
@@ -2119,7 +2157,7 @@
     }
 
     function loadStoredFontSize() {
-      const raw = localStorage.getItem(FONT_SIZE_STORAGE_KEY) || "";
+      const raw = storageGet(FONT_SIZE_STORAGE_KEY) || "";
       if (isValidFontSizeLevel(raw)) {
         uiFontSize = raw;
         return true;
@@ -2129,7 +2167,7 @@
     }
 
     function saveFontSize() {
-      localStorage.setItem(FONT_SIZE_STORAGE_KEY, uiFontSize);
+      storageSet(FONT_SIZE_STORAGE_KEY, uiFontSize);
     }
 
     function applyFontSizeScale() {
@@ -2185,7 +2223,7 @@
     }
 
     function saveUiLang() {
-      localStorage.setItem(LANG_STORAGE_KEY, uiLang);
+      storageSet(LANG_STORAGE_KEY, uiLang);
     }
 
     function applyStaticUiText() {
@@ -2385,7 +2423,7 @@
         }
       });
 
-      localStorage.setItem(
+      storageSet(
         CURRICULUM_STORAGE_KEY,
         JSON.stringify({
           selectedNodeId: curriculumState.selectedNodeId,
@@ -2399,7 +2437,7 @@
 
     function loadCurriculumState() {
       try {
-        const raw = localStorage.getItem(CURRICULUM_STORAGE_KEY) || "";
+        const raw = storageGet(CURRICULUM_STORAGE_KEY) || "";
         if (!raw) return;
         const parsed = JSON.parse(raw);
         if (!parsed || typeof parsed !== "object") return;
@@ -2441,7 +2479,7 @@
     function readDraft(nodeId) {
       if (!nodeId) return {};
       try {
-        const raw = localStorage.getItem(draftStorageKey(nodeId)) || "";
+        const raw = storageGet(draftStorageKey(nodeId)) || "";
         if (!raw) return {};
         const parsed = JSON.parse(raw);
         return parsed && typeof parsed === "object" ? parsed : {};
@@ -2452,12 +2490,12 @@
 
     function writeDraft(nodeId, values) {
       if (!nodeId) return;
-      localStorage.setItem(draftStorageKey(nodeId), JSON.stringify(values || {}));
+      storageSet(draftStorageKey(nodeId), JSON.stringify(values || {}));
     }
 
     function loadAnalysisContext() {
       try {
-        const raw = localStorage.getItem(ANALYSIS_CONTEXT_STORAGE_KEY) || "";
+        const raw = storageGet(ANALYSIS_CONTEXT_STORAGE_KEY) || "";
         if (!raw) return;
         const parsed = JSON.parse(raw);
         if (!parsed || typeof parsed !== "object") return;
@@ -2471,7 +2509,7 @@
     }
 
     function saveAnalysisContext() {
-      localStorage.setItem(ANALYSIS_CONTEXT_STORAGE_KEY, JSON.stringify(analysisContext));
+      storageSet(ANALYSIS_CONTEXT_STORAGE_KEY, JSON.stringify(analysisContext));
     }
 
     function parseMustKeepText(raw) {
@@ -3474,7 +3512,7 @@
     }
 
     function initBodyDraft() {
-      const savedBody = localStorage.getItem(BODY_STORAGE_KEY) || "";
+      const savedBody = storageGet(BODY_STORAGE_KEY) || "";
       if (savedBody) manuscriptBodyEl.value = savedBody;
       autoResizeTextarea(manuscriptBodyEl);
 
@@ -3482,7 +3520,7 @@
         autoResizeTextarea(manuscriptBodyEl);
         if (bodySaveTimer) clearTimeout(bodySaveTimer);
         bodySaveTimer = setTimeout(() => {
-          localStorage.setItem(BODY_STORAGE_KEY, manuscriptBodyEl.value || "");
+          storageSet(BODY_STORAGE_KEY, manuscriptBodyEl.value || "");
         }, 200);
       });
     }
@@ -3515,7 +3553,7 @@
 
       // TEST_ONLY_OWNER_BYPASS_START
       try {
-        localStorage.removeItem("novel-assistant-owner-key");
+        storageRemove("novel-assistant-owner-key");
       } catch {
       }
 

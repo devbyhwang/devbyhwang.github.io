@@ -1,13 +1,50 @@
 const LIMIT_PER_DAY = 3;
 const RATE_TTL_SECONDS = 60 * 60 * 24 * 2;
+const RATE_STORAGE_PREFIX = "rate:";
+const RATE_GC_CURSOR_KEY = "gc:cursor";
+const RATE_GC_BATCH_SIZE = 100;
+const RATE_GC_ACTIVE_INTERVAL_MS = 15 * 1000;
+const RATE_GC_IDLE_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const RATE_GC_RETRY_INTERVAL_MS = 60 * 1000;
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 const GEMINI_URL_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 const MANUSCRIPT_MAX_CHARS = 12000;
+const REQUEST_CONTENT_LENGTH_MAX_BYTES = 32 * 1024;
+const TURNSTILE_TOKEN_MAX_CHARS = 4096;
+const NON_MANUSCRIPT_MAX_CHARS = 8000;
+const PAYLOAD_TOO_LARGE_MESSAGE = "request fields exceed size limits";
+const MAX_CHECKS_COUNT = 12;
+const MAX_CHECK_ID_CHARS = 120;
+const MAX_CHECK_LABEL_CHARS = 120;
+const MAX_CHECK_QUESTION_CHARS = 400;
+const MAX_CHECK_LOOKFOR_ITEMS = 8;
+const MAX_CHECK_LOOKFOR_ITEM_CHARS = 240;
+const MAX_SCORE_GUIDE_CHARS = 240;
+const MAX_META_VERSION_CHARS = 16;
+const MAX_META_NODE_ID_CHARS = 120;
+const MAX_META_NODE_TITLE_CHARS = 200;
+const MAX_META_NODE_KIND_CHARS = 32;
+const MAX_META_NODE_LANE_CHARS = 32;
+const MAX_META_CURRICULUM_STAGE_CHARS = 32;
+const MAX_META_GENRE_CHARS = 64;
+const MAX_META_DRAFT_STAGE_CHARS = 64;
+const MAX_META_NARRATIVE_POV_CHARS = 64;
+const MAX_META_AUTHOR_GOAL_CHARS = 500;
+const MAX_META_MUST_KEEP_ITEMS = 20;
+const MAX_META_MUST_KEEP_ITEM_CHARS = 120;
+const MAX_PRESET_ID_CHARS = 32;
+const MAX_PRESET_LABEL_CHARS = 64;
+const MAX_PRESET_EDITOR_ROLE_CHARS = 200;
+const MAX_PRESET_TONE_INSTRUCTION_CHARS = 500;
+const MAX_PRESET_SUGGESTION_INSTRUCTION_CHARS = 500;
+const MAX_LEGACY_PRESET_CHARS = 500;
 const OWNER_BYPASS_HEADER = "X-Owner-Key";
 const DEFAULT_TURNSTILE_ACTION = "novel_feedback";
 const DEFAULT_AI_PROVIDER = "openai";
 const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
+
+class PayloadTooLargeError extends Error {}
 
 export default {
   async fetch(request, env) {
@@ -58,6 +95,21 @@ export default {
       );
     }
 
+    let contentLengthBytes;
+    try {
+      contentLengthBytes = readContentLengthBytes(request);
+    } catch {
+      return json(
+        { error: { code: "BAD_REQUEST", message: "Invalid Content-Length header" } },
+        400,
+        origin,
+        allowedOrigin
+      );
+    }
+    if (contentLengthBytes !== null && contentLengthBytes > REQUEST_CONTENT_LENGTH_MAX_BYTES) {
+      return payloadTooLarge(origin, allowedOrigin);
+    }
+
     const parsed = await parseJson(request);
     if (!parsed.ok) {
       return json(
@@ -84,6 +136,9 @@ export default {
     // TEST_ONLY_OWNER_BYPASS_END
 
     const turnstileToken = typeof payload.turnstileToken === "string" ? payload.turnstileToken.trim() : "";
+    if (turnstileToken.length > TURNSTILE_TOKEN_MAX_CHARS) {
+      return payloadTooLarge(origin, allowedOrigin);
+    }
     if (!isOwnerBypass && !turnstileToken) {
       return json(
         { error: { code: "BAD_REQUEST", message: "turnstileToken is required" } },
@@ -178,18 +233,17 @@ export default {
     }
 
     if (manuscript.length > MANUSCRIPT_MAX_CHARS) {
-      return json(
-        { error: { code: "PAYLOAD_TOO_LARGE", message: `manuscript must be <= ${MANUSCRIPT_MAX_CHARS} chars` } },
-        413,
-        origin,
-        allowedOrigin
-      );
+      return payloadTooLarge(origin, allowedOrigin);
     }
 
     let normalizedInput;
     try {
       normalizedInput = normalizeRequestPayload(payload);
+      assertNonManuscriptBudget(normalizedInput);
     } catch (error) {
+      if (error instanceof PayloadTooLargeError) {
+        return payloadTooLarge(origin, allowedOrigin);
+      }
       return json(
         { error: { code: "BAD_REQUEST", message: summarizeError(error) } },
         400,
@@ -334,6 +388,15 @@ export class RateLimiterDO {
     this.state = state;
   }
 
+  async alarm() {
+    try {
+      await this.runGarbageCollection(Date.now());
+    } catch (error) {
+      console.error("Rate limiter GC alarm failed", summarizeError(error));
+      await this.state.storage.setAlarm(Date.now() + RATE_GC_RETRY_INTERVAL_MS);
+    }
+  }
+
   async fetch(request) {
     if (request.method !== "POST") {
       return new Response(JSON.stringify({ ok: false, reason: "method_not_allowed" }), {
@@ -363,8 +426,10 @@ export class RateLimiterDO {
       });
     }
 
-    const storageKey = `rate:${key}`;
     const now = Date.now();
+    await this.ensureGcAlarm(now);
+
+    const storageKey = `${RATE_STORAGE_PREFIX}${key}`;
     const ttlMs = Math.max(1, ttlSec) * 1000;
     const current = await this.state.storage.get(storageKey);
     const expired = !current || typeof current.expiresAt !== "number" || current.expiresAt <= now;
@@ -404,6 +469,44 @@ export class RateLimiterDO {
       }
     );
   }
+
+  async ensureGcAlarm(now, intervalMs = RATE_GC_IDLE_INTERVAL_MS) {
+    const currentAlarm = await this.state.storage.getAlarm();
+    if (currentAlarm === null || currentAlarm <= now) {
+      await this.state.storage.setAlarm(now + intervalMs);
+    }
+  }
+
+  async runGarbageCollection(now) {
+    const cursorRaw = await this.state.storage.get(RATE_GC_CURSOR_KEY);
+    const startAfter =
+      typeof cursorRaw === "string" && cursorRaw.startsWith(RATE_STORAGE_PREFIX) ? cursorRaw : undefined;
+    const listOptions = {
+      prefix: RATE_STORAGE_PREFIX,
+      limit: RATE_GC_BATCH_SIZE,
+    };
+    if (startAfter) listOptions.startAfter = startAfter;
+    const page = await this.state.storage.list(listOptions);
+
+    let lastKey = "";
+    let processed = 0;
+    for (const [key, value] of page) {
+      processed += 1;
+      lastKey = key;
+      if (value && typeof value.expiresAt === "number" && value.expiresAt <= now) {
+        await this.state.storage.delete(key);
+      }
+    }
+
+    if (processed >= RATE_GC_BATCH_SIZE && lastKey) {
+      await this.state.storage.put(RATE_GC_CURSOR_KEY, lastKey);
+      await this.state.storage.setAlarm(now + RATE_GC_ACTIVE_INTERVAL_MS);
+      return;
+    }
+
+    await this.state.storage.delete(RATE_GC_CURSOR_KEY);
+    await this.state.storage.setAlarm(now + RATE_GC_IDLE_INTERVAL_MS);
+  }
 }
 
 function isOriginAllowed(origin, allowedOrigin) {
@@ -439,6 +542,15 @@ function json(payload, status, origin, allowedOrigin) {
   });
 }
 
+function payloadTooLarge(origin, allowedOrigin) {
+  return json(
+    { error: { code: "PAYLOAD_TOO_LARGE", message: PAYLOAD_TOO_LARGE_MESSAGE } },
+    413,
+    origin,
+    allowedOrigin
+  );
+}
+
 async function parseJson(request) {
   try {
     const value = await request.json();
@@ -446,6 +558,20 @@ async function parseJson(request) {
   } catch {
     return { ok: false };
   }
+}
+
+function readContentLengthBytes(request) {
+  const raw = request.headers.get("Content-Length");
+  if (raw === null) return null;
+  const normalized = raw.trim();
+  if (!/^\d+$/.test(normalized)) {
+    throw new Error("invalid_content_length");
+  }
+  const value = Number(normalized);
+  if (!Number.isSafeInteger(value)) {
+    throw new Error("invalid_content_length");
+  }
+  return value;
 }
 
 function prettyJson(value) {
@@ -456,6 +582,104 @@ function normalizeStringArray(value) {
   return Array.isArray(value)
     ? value.map((item) => (typeof item === "string" ? item.trim() : "")).filter(Boolean)
     : [];
+}
+
+function assertMaxString(value, max, name) {
+  if (typeof value !== "string") return;
+  if (value.length > max) {
+    throw new PayloadTooLargeError(`${name} exceeds ${max} chars`);
+  }
+}
+
+function assertStringArrayLimit(value, { maxItems, maxItemChars, name }) {
+  if (!Array.isArray(value)) return;
+  if (value.length > maxItems) {
+    throw new PayloadTooLargeError(`${name} exceeds ${maxItems} items`);
+  }
+  value.forEach((item, index) => {
+    const text = typeof item === "string" ? item : "";
+    if (text.length > maxItemChars) {
+      throw new PayloadTooLargeError(`${name}[${index}] exceeds ${maxItemChars} chars`);
+    }
+  });
+}
+
+function assertNormalizedChecksWithinLimits(checks) {
+  if (!Array.isArray(checks) || checks.length === 0) {
+    throw new Error("checks must contain at least one rubric object");
+  }
+  if (checks.length > MAX_CHECKS_COUNT) {
+    throw new PayloadTooLargeError(`checks exceeds ${MAX_CHECKS_COUNT} items`);
+  }
+
+  checks.forEach((item, index) => {
+    if (!item || typeof item !== "object" || Array.isArray(item)) {
+      throw new Error(`checks[${index}] must be an object`);
+    }
+    const idLimit = typeof item.id === "string" && item.id.endsWith("__legacy")
+      ? MAX_CHECK_ID_CHARS + "__legacy".length
+      : MAX_CHECK_ID_CHARS;
+    assertMaxString(item.id, idLimit, `checks[${index}].id`);
+    assertMaxString(item.label, MAX_CHECK_LABEL_CHARS, `checks[${index}].label`);
+    assertMaxString(item.question, MAX_CHECK_QUESTION_CHARS, `checks[${index}].question`);
+    assertStringArrayLimit(item.lookFor, {
+      maxItems: MAX_CHECK_LOOKFOR_ITEMS,
+      maxItemChars: MAX_CHECK_LOOKFOR_ITEM_CHARS,
+      name: `checks[${index}].lookFor`,
+    });
+
+    const guide = item.scoreGuide && typeof item.scoreGuide === "object" ? item.scoreGuide : {};
+    assertMaxString(guide.high, MAX_SCORE_GUIDE_CHARS, `checks[${index}].scoreGuide.high`);
+    assertMaxString(guide.mid, MAX_SCORE_GUIDE_CHARS, `checks[${index}].scoreGuide.mid`);
+    assertMaxString(guide.low, MAX_SCORE_GUIDE_CHARS, `checks[${index}].scoreGuide.low`);
+  });
+}
+
+function assertNormalizedMetaWithinLimits(meta) {
+  if (!meta || typeof meta !== "object" || Array.isArray(meta)) {
+    throw new Error("meta must be an object");
+  }
+  assertMaxString(meta.version, MAX_META_VERSION_CHARS, "meta.version");
+  assertMaxString(meta.nodeId, MAX_META_NODE_ID_CHARS, "meta.nodeId");
+  assertMaxString(meta.nodeTitle, MAX_META_NODE_TITLE_CHARS, "meta.nodeTitle");
+  assertMaxString(meta.nodeKind, MAX_META_NODE_KIND_CHARS, "meta.nodeKind");
+  assertMaxString(meta.nodeLane, MAX_META_NODE_LANE_CHARS, "meta.nodeLane");
+  assertMaxString(meta.curriculumStage, MAX_META_CURRICULUM_STAGE_CHARS, "meta.curriculumStage");
+  assertMaxString(meta.genre, MAX_META_GENRE_CHARS, "meta.genre");
+  assertMaxString(meta.draftStage, MAX_META_DRAFT_STAGE_CHARS, "meta.draftStage");
+  assertMaxString(meta.narrativePOV, MAX_META_NARRATIVE_POV_CHARS, "meta.narrativePOV");
+  assertMaxString(meta.authorGoal, MAX_META_AUTHOR_GOAL_CHARS, "meta.authorGoal");
+  assertStringArrayLimit(meta.mustKeep, {
+    maxItems: MAX_META_MUST_KEEP_ITEMS,
+    maxItemChars: MAX_META_MUST_KEEP_ITEM_CHARS,
+    name: "meta.mustKeep",
+  });
+}
+
+function assertNormalizedPresetWithinLimits(preset) {
+  if (!preset || typeof preset !== "object" || Array.isArray(preset)) {
+    throw new Error("preset must be an object");
+  }
+  assertMaxString(preset.id, MAX_PRESET_ID_CHARS, "preset.id");
+  assertMaxString(preset.label, MAX_PRESET_LABEL_CHARS, "preset.label");
+  assertMaxString(preset.editorRole, MAX_PRESET_EDITOR_ROLE_CHARS, "preset.editorRole");
+  assertMaxString(
+    preset.toneInstruction,
+    preset.__isLegacy ? MAX_PRESET_TONE_INSTRUCTION_CHARS + MAX_LEGACY_PRESET_CHARS : MAX_PRESET_TONE_INSTRUCTION_CHARS,
+    "preset.toneInstruction"
+  );
+  assertMaxString(preset.suggestionInstruction, MAX_PRESET_SUGGESTION_INSTRUCTION_CHARS, "preset.suggestionInstruction");
+}
+
+function assertNonManuscriptBudget({ checks, meta, preset }) {
+  assertNormalizedChecksWithinLimits(checks);
+  assertNormalizedMetaWithinLimits(meta);
+  assertNormalizedPresetWithinLimits(preset);
+
+  const payloadSize = JSON.stringify({ checks, meta, preset }).length;
+  if (payloadSize > NON_MANUSCRIPT_MAX_CHARS) {
+    throw new PayloadTooLargeError(`non-manuscript payload exceeds ${NON_MANUSCRIPT_MAX_CHARS} chars`);
+  }
 }
 
 function getDefaultPreset(id = "balanced") {
@@ -547,6 +771,11 @@ function normalizeLegacyChecks(checks, meta) {
   const legacyIds = Array.isArray(checks)
     ? checks.map((item) => (typeof item === "string" ? item.trim() : "")).filter(Boolean)
     : [];
+  assertStringArrayLimit(legacyIds, {
+    maxItems: MAX_CHECKS_COUNT,
+    maxItemChars: MAX_CHECK_ID_CHARS,
+    name: "checks",
+  });
   const nodeId = meta.nodeId || legacyIds[0];
   if (!nodeId) {
     throw new Error("meta.nodeId is required when checks are not structured");
@@ -556,6 +785,24 @@ function normalizeLegacyChecks(checks, meta) {
 
 function normalizePreset(preset) {
   if (preset && typeof preset === "object" && !Array.isArray(preset)) {
+    assertMaxString(typeof preset.id === "string" ? preset.id.trim() : "", MAX_PRESET_ID_CHARS, "preset.id");
+    assertMaxString(typeof preset.label === "string" ? preset.label.trim() : "", MAX_PRESET_LABEL_CHARS, "preset.label");
+    assertMaxString(
+      typeof preset.editorRole === "string" ? preset.editorRole.trim() : "",
+      MAX_PRESET_EDITOR_ROLE_CHARS,
+      "preset.editorRole"
+    );
+    assertMaxString(
+      typeof preset.toneInstruction === "string" ? preset.toneInstruction.trim() : "",
+      MAX_PRESET_TONE_INSTRUCTION_CHARS,
+      "preset.toneInstruction"
+    );
+    assertMaxString(
+      typeof preset.suggestionInstruction === "string" ? preset.suggestionInstruction.trim() : "",
+      MAX_PRESET_SUGGESTION_INSTRUCTION_CHARS,
+      "preset.suggestionInstruction"
+    );
+
     const base = getDefaultPreset(typeof preset.id === "string" ? preset.id.trim() : "balanced");
     return {
       id: base.id,
@@ -570,11 +817,19 @@ function normalizePreset(preset) {
   }
 
   if (typeof preset === "string" && preset.trim()) {
+    const legacyInstruction = preset.trim();
+    assertMaxString(legacyInstruction, MAX_LEGACY_PRESET_CHARS, "preset");
     const base = getDefaultPreset("balanced");
-    return {
+    const normalized = {
       ...base,
-      toneInstruction: `${base.toneInstruction} 추가 참고: ${preset.trim()}`,
+      toneInstruction: `${base.toneInstruction} 추가 참고: ${legacyInstruction}`,
     };
+    Object.defineProperty(normalized, "__isLegacy", {
+      value: true,
+      enumerable: false,
+      configurable: false,
+    });
+    return normalized;
   }
 
   return getDefaultPreset("balanced");
