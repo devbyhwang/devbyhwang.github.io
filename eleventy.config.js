@@ -7,6 +7,7 @@ const DODOES_BRAND = "dodoes";
 
 const DEV_CATEGORY_LABELS = {
   devlog: "개발일지",
+  info: "정보글",
   freelance: "외주",
   games: "게임",
 };
@@ -16,7 +17,7 @@ const DODOES_CATEGORY_LABELS = {
   notes: "노트",
 };
 
-const DEV_CATEGORY_ORDER = ["devlog", "freelance", "games"];
+const DEV_CATEGORY_ORDER = ["devlog", "info", "freelance", "games"];
 const DODOES_CATEGORY_ORDER = ["novel", "notes"];
 
 const loadEnv = () => {
