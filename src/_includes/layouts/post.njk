@@ -30,3 +30,33 @@ brand: devbyhwang
 
   {% include "ad-slot.njk" %}
 </article>
+
+{% set relatedPosts = collections.devPosts | hybridRelatedPosts(page.url, 4) %}
+<section class="related-posts writing-related-posts">
+  <div class="section-header">
+    <h2>이 글 다음으로 읽기</h2>
+  </div>
+  {% if relatedPosts.length > 0 %}
+  <ol class="writing-related-list">
+    {% for item in relatedPosts %}
+      {% set roleLabel = "랜덤" %}
+      {% if item.role == "prev" %}
+        {% set roleLabel = "이전글" %}
+      {% elseif item.role == "next" %}
+        {% set roleLabel = "다음글" %}
+      {% endif %}
+      <li>
+        <a class="writing-related-link" href="{{ item.post.url | url }}">
+          <span class="writing-related-index">{% if loop.index < 10 %}0{% endif %}{{ loop.index }}</span>
+          <span class="writing-related-body">
+            <span class="writing-related-title">{{ item.post.data.title }}</span>
+            <span class="writing-related-meta">{{ roleLabel }} · {{ item.post.data.category | default('devlog') }} · {{ item.post.date | readableDate }}</span>
+          </span>
+        </a>
+      </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="muted">아직 추천할 글이 없습니다.</p>
+  {% endif %}
+</section>

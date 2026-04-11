@@ -1398,6 +1398,66 @@ canvas,
   font-weight: var(--weight-bold);
 }
 
+.writing-related-list {
+  list-style: none;
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-light);
+}
+
+.writing-related-list li {
+  margin: 0;
+}
+
+.writing-related-link {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid var(--color-border-light);
+  padding: var(--space-4) 0;
+  transition: transform var(--transition-fast);
+}
+
+.writing-related-link:hover {
+  transform: translateX(2px);
+}
+
+.writing-related-index {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.6;
+}
+
+.writing-related-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.writing-related-title {
+  color: var(--color-text);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-normal);
+  transition: color var(--transition-fast);
+}
+
+.writing-related-link:hover .writing-related-title {
+  color: var(--color-primary);
+}
+
+.writing-related-meta {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
 /* Freelance Grid */
 .freelance-grid {
   display: grid;
@@ -2695,7 +2755,7 @@ canvas,
 .theme-dodoes .page-hero h1,
 .theme-dodoes .writing-title,
 .theme-dodoes .post-item-title,
-.theme-dodoes .related-title,
+.theme-dodoes .writing-related-title,
 .theme-dodoes .sidebar-title {
   font-family: var(--font-sans);
 }
@@ -2732,8 +2792,8 @@ canvas,
 .theme-dodoes .tab-btn,
 .theme-dodoes .post-meta,
 .theme-dodoes .count,
-.theme-dodoes .related-title,
-.theme-dodoes .related-item p,
+.theme-dodoes .writing-related-title,
+.theme-dodoes .writing-related-meta,
 .theme-dodoes .writing-meta {
   font-family: var(--font-sans);
 }
@@ -2958,6 +3018,23 @@ canvas,
 
   .theme-dodoes .post-list-tab li a {
     overflow-wrap: anywhere;
+  }
+
+  .writing-related-link {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .writing-related-index {
+    font-size: 11px;
+  }
+
+  .writing-related-title {
+    font-size: var(--text-sm);
+  }
+
+  .writing-related-meta {
+    font-size: 12px;
   }
 
   .portal-hero {
