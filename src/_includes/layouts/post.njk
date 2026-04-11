@@ -2,54 +2,70 @@
 layout: layouts/base.njk
 brand: devbyhwang
 ---
-<article class="post">
-  <header class="post-header">
-    {% set postViewSeed = { views: views } | postViewSeed %}
-    <span class="post-category">{{ category or 'devlog' }}</span>
-    <h1 class="post-title">{{ title }}</h1>
-    <div class="post-meta">
-      <span class="post-date">{{ date | readableDate }}</span>
-      <span class="post-author">by {{ brands.devbyhwang.displayName }}</span>
-      <span class="post-views">
-        조회수
-        <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
-      </span>
+<div class="post-detail-rails">
+  <aside class="post-rail post-rail-left" aria-label="왼쪽 광고 영역">
+    <div class="post-rail-sticky">
+      {% include "ad-slot.njk" %}
     </div>
-    <div
-      data-post-view-track
-      data-post-key="{{ page.url }}"
-      data-post-seed="{{ postViewSeed }}"
-      data-post-view-target="post-view-count"
-      hidden
-    ></div>
-  </header>
+  </aside>
 
-  <div class="post-content prose">
-    {{ content | safe }}
-  </div>
-
-  {% include "ad-slot.njk" %}
-</article>
-
-{% set relatedPosts = collections.devPosts | hybridRelatedPosts(page.url, 4) %}
-<section class="related-posts writing-related-posts">
-  <div class="section-header">
-    <h2>이 글 다음으로 읽기</h2>
-  </div>
-  {% if relatedPosts.length > 0 %}
-  <ol class="writing-related-list">
-    {% for item in relatedPosts %}
-      <li>
-        <a class="writing-related-link" href="{{ item.post.url | url }}">
-          <span class="writing-related-body">
-            <span class="writing-related-title">{{ item.post.data.title }}</span>
-            <span class="writing-related-meta">{{ item.post.data.category | default('devlog') }} · {{ item.post.date | readableDate }}</span>
+  <div class="post-detail-main">
+    <article class="post">
+      <header class="post-header">
+        {% set postViewSeed = { views: views } | postViewSeed %}
+        <span class="post-category">{{ category or 'devlog' }}</span>
+        <h1 class="post-title">{{ title }}</h1>
+        <div class="post-meta">
+          <span class="post-date">{{ date | readableDate }}</span>
+          <span class="post-author">by {{ brands.devbyhwang.displayName }}</span>
+          <span class="post-views">
+            조회수
+            <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
           </span>
-        </a>
-      </li>
-    {% endfor %}
-  </ol>
-  {% else %}
-  <p class="muted">아직 추천할 글이 없습니다.</p>
-  {% endif %}
-</section>
+        </div>
+        <div
+          data-post-view-track
+          data-post-key="{{ page.url }}"
+          data-post-seed="{{ postViewSeed }}"
+          data-post-view-target="post-view-count"
+          hidden
+        ></div>
+      </header>
+
+      <div class="post-content prose">
+        {{ content | injectInlineAds(site, env) | safe }}
+      </div>
+
+      {% include "ad-slot.njk" %}
+    </article>
+
+    {% set relatedPosts = collections.devPosts | hybridRelatedPosts(page.url, 4) %}
+    <section class="related-posts writing-related-posts">
+      <div class="section-header">
+        <h2>이 글 다음으로 읽기</h2>
+      </div>
+      {% if relatedPosts.length > 0 %}
+      <ol class="writing-related-list">
+        {% for item in relatedPosts %}
+          <li>
+            <a class="writing-related-link" href="{{ item.post.url | url }}">
+              <span class="writing-related-body">
+                <span class="writing-related-title">{{ item.post.data.title }}</span>
+                <span class="writing-related-meta">{{ item.post.data.category | default('devlog') }} · {{ item.post.date | readableDate }}</span>
+              </span>
+            </a>
+          </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="muted">아직 추천할 글이 없습니다.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <aside class="post-rail post-rail-right" aria-label="오른쪽 광고 영역">
+    <div class="post-rail-sticky">
+      {% include "ad-slot.njk" %}
+    </div>
+  </aside>
+</div>
