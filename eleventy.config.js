@@ -91,6 +91,91 @@ const shuffle = (items) => {
   return shuffled;
 };
 
+const INLINE_AD_DEFAULTS = {
+  minParagraphs: 10,
+  paragraphsPerAd: 10,
+  maxAds: 3,
+  scope: "devbyhwang-post",
+};
+
+const buildInlineAdMarkup = ({ isEnabled, client, scope }) => {
+  if (isEnabled) {
+    return `
+<div class="ad-shell ad-shell-inline" data-inline-ad-slot="1" data-inline-ad-scope="${scope}" aria-label="Advertisement">
+  <ins
+    class="adsbygoogle"
+    style="display:block"
+    data-ad-client="${client}"
+    data-ad-slot="0000000000"
+    data-ad-format="auto"
+    data-full-width-responsive="true"
+  ></ins>
+</div>`;
+  }
+
+  return `
+<div class="ad-shell ad-shell-inline" data-inline-ad-slot="1" data-inline-ad-scope="${scope}" aria-label="Advertisement">
+  <div class="ad-placeholder">
+    광고 영역 · Google AdSense client ID 설정 후 활성화됩니다.
+  </div>
+</div>`;
+};
+
+const injectInlineAds = (html, site, env, options = {}) => {
+  if (typeof html !== "string" || !html.includes("</p>")) return html;
+
+  const config = {
+    ...INLINE_AD_DEFAULTS,
+    ...(options && typeof options === "object" ? options : {}),
+  };
+
+  const minParagraphs = Number.isFinite(Number(config.minParagraphs))
+    ? Math.max(1, Number(config.minParagraphs))
+    : INLINE_AD_DEFAULTS.minParagraphs;
+  const paragraphsPerAd = Number.isFinite(Number(config.paragraphsPerAd))
+    ? Math.max(1, Number(config.paragraphsPerAd))
+    : INLINE_AD_DEFAULTS.paragraphsPerAd;
+  const maxAds = Number.isFinite(Number(config.maxAds))
+    ? Math.max(1, Number(config.maxAds))
+    : INLINE_AD_DEFAULTS.maxAds;
+  const scope = typeof config.scope === "string" && config.scope.trim()
+    ? config.scope.trim()
+    : INLINE_AD_DEFAULTS.scope;
+
+  const paragraphCount = (html.match(/<\/p>/gi) || []).length;
+  if (paragraphCount < minParagraphs) return html;
+
+  const targetAds = Math.min(maxAds, Math.floor(paragraphCount / paragraphsPerAd));
+  if (targetAds < 1) return html;
+
+  const positions = [];
+  for (let i = 1; i <= targetAds; i += 1) {
+    let position = Math.floor((i * paragraphCount) / (targetAds + 1));
+    if (position < 1) position = 1;
+    const previous = positions[positions.length - 1];
+    if (previous && position <= previous) {
+      position = previous + 1;
+    }
+    if (position > paragraphCount) break;
+    positions.push(position);
+  }
+  if (!positions.length) return html;
+
+  const adMarkup = buildInlineAdMarkup({
+    isEnabled: Boolean(site && site.googleAds && site.googleAds.enable && site.googleAds.client && env && env.isProd),
+    client: (site && site.googleAds && site.googleAds.client) || "",
+    scope,
+  });
+  const insertAfter = new Set(positions);
+
+  let paragraphIndex = 0;
+  return html.replace(/<\/p>/gi, (match) => {
+    paragraphIndex += 1;
+    if (!insertAfter.has(paragraphIndex)) return match;
+    return `${match}${adMarkup}`;
+  });
+};
+
 module.exports = function (eleventyConfig) {
   loadEnv();
 
@@ -128,6 +213,9 @@ module.exports = function (eleventyConfig) {
     }));
   });
   eleventyConfig.addFilter("jsonScript", (value) => jsonScript(value));
+  eleventyConfig.addFilter("injectInlineAds", (html, site, env, options = {}) =>
+    injectInlineAds(html, site, env, options)
+  );
 
   const getDevPosts = (collectionApi) =>
     collectionApi

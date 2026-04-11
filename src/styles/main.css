@@ -1489,6 +1489,40 @@ canvas,
    13. Post Detail Page
    =========================================== */
 /* Post Page (Tistory Style) */
+.post-detail-rails {
+  --post-rail-width: 160px;
+  --post-rail-gap: var(--space-6);
+  --post-rail-sticky-top: 96px;
+  display: grid;
+  grid-template-columns: var(--post-rail-width) minmax(0, var(--content-max)) var(--post-rail-width);
+  gap: 0 var(--post-rail-gap);
+  align-items: start;
+  justify-content: center;
+}
+
+.post-detail-main {
+  min-width: 0;
+}
+
+.post-rail {
+  min-width: 0;
+}
+
+.post-rail-sticky {
+  position: sticky;
+  top: var(--post-rail-sticky-top);
+}
+
+.post-rail .ad-shell {
+  margin-top: var(--space-8);
+  min-height: 640px;
+  padding: var(--space-4);
+}
+
+.post-rail .adsbygoogle {
+  min-height: 100%;
+}
+
 .post {
   max-width: var(--content-max);
   margin: var(--space-8) auto;
@@ -1605,6 +1639,16 @@ canvas,
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-5);
+}
+
+@media (max-width: 1100px) {
+  .post-detail-rails {
+    display: block;
+  }
+
+  .post-rail {
+    display: none;
+  }
 }
 
 /* ===========================================
@@ -1929,6 +1973,11 @@ canvas,
 .adsbygoogle {
   display: block;
   min-height: inherit;
+}
+
+.ad-shell-inline {
+  margin: var(--space-8) 0;
+  min-height: 280px;
 }
 
 /* ===========================================
@@ -2460,6 +2509,12 @@ canvas,
   /* Mobile ad height */
   .ad-shell {
     min-height: 250px;
+  }
+
+  .ad-shell-inline {
+    min-height: 250px;
+    margin: var(--space-6) 0;
+    padding: var(--space-4);
   }
 }
 
