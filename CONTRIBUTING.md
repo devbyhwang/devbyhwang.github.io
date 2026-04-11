@@ -31,6 +31,7 @@
 
 ### A. DevByHwang 글
 - 경로: `src/devbyhwang/blog/YYYY-MM-DD-title.md`
+- 참고: `src/devbyhwang/blog/` 디렉터리가 없다면 먼저 생성한 뒤 글 파일을 추가하세요.
 - 레이아웃: `layouts/post.njk`
 - 카테고리: `devlog | freelance | games`
 
@@ -41,6 +42,17 @@ title: "글 제목"
 date: 2026-04-04
 category: devlog
 excerpt: "한 줄 요약"
+---
+```
+
+선택 고급 메타데이터 예시:
+
+```yaml
+---
+readingTime: "4 min"
+views: 350
+tags:
+  - devlog
 ---
 ```
 
@@ -59,12 +71,24 @@ description: "짧은 요약"
 ---
 ```
 
+선택 고급 메타데이터 예시:
+
+```yaml
+---
+excerpt: "본문 일부 요약"
+views: 42
+tags:
+  - notes
+---
+```
+
 ### 콘텐츠 작성 가이드
 - 마크다운 형식 사용
 - 인용/참고 자료가 있으면 출처 명시
-- `tags`, `excerpt`, `views` 등 추가 메타데이터는 선택
-- `views`는 글별 조회수 자동 집계의 초기 시드값입니다(없으면 `0`).
-- 인기글 정렬은 런타임 조회수(자동 집계) + 시드값을 합산한 값 기준입니다.
+- front matter 필수 필드: `layout`, `title`, `date`, `category`
+- front matter 선택 필드: `excerpt`, `description`(writing), `readingTime`(post), `tags`, `views`
+- `views`는 글별 조회수 자동 집계에 더해지는 초기 시드값이며, 없으면 `0`입니다.
+- 인기글 정렬은 `effective views = seed views + runtime views` 기준입니다.
 
 ## PR 제출 예시
 
