@@ -3099,7 +3099,9 @@ canvas,
 }
 
 .footer.footer-minimal .footer-meta {
-  gap: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .about-profile {

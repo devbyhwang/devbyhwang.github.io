@@ -8,12 +8,23 @@
 {% else %}
   {% set themeClass = 'theme-hub' %}
 {% endif %}
-{% if activeBrand and brand == 'devbyhwang' %}
-  {% set footerNewest = collections.devPosts | first %}
-{% elif activeBrand and brand == 'dodoes' %}
-  {% set footerNewest = collections.dodoesWriting | first %}
+{% set devNewest = collections.devPosts | first %}
+{% set dodoesNewest = collections.dodoesWriting | first %}
+{% if devNewest and dodoesNewest %}
+  {% if devNewest.date > dodoesNewest.date %}
+    {% set overallNewest = devNewest %}
+  {% else %}
+    {% set overallNewest = dodoesNewest %}
+  {% endif %}
 {% else %}
-  {% set footerNewest = (collections.devPosts | first) or (collections.dodoesWriting | first) %}
+  {% set overallNewest = devNewest or dodoesNewest %}
+{% endif %}
+{% if brand == 'devbyhwang' %}
+  {% set brandNewest = devNewest %}
+{% elif brand == 'dodoes' %}
+  {% set brandNewest = dodoesNewest %}
+{% else %}
+  {% set brandNewest = null %}
 {% endif %}
 <!doctype html>
 <html lang="ko">
@@ -125,8 +136,16 @@
       <main class="site-main">{{ content | safe }}</main>
 
       <footer class="footer footer-minimal">
+        {% set footerLabel = activeBrand.displayName if activeBrand else site.author %}
+        {% set footerYearSource = brandNewest or overallNewest %}
+        {% if footerYearSource %}
+          {% set footerYear = footerYearSource.date | readableDate('yyyy') %}
+        {% else %}
+          {% set footerYear = '' %}
+        {% endif %}
         <div class="footer-meta">
-          <span>© {{ activeBrand.displayName if activeBrand else site.author }}{% if footerNewest %} {{ footerNewest.date | readableDate('yyyy') }}{% endif %}</span>
+          <span>© {{ footerLabel }}{% if footerYear %} {{ footerYear }}{% endif %}</span>
+          <span>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
         </div>
       </footer>
     </div>
