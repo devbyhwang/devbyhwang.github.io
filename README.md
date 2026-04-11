@@ -45,14 +45,6 @@ excerpt: "이번 주 렌더링 병목 분석과 수정 기록"
 본문을 마크다운으로 작성합니다.
 ```
 
-선택 고급 메타데이터 예시:
-
-```md
----
-views: 350
----
-```
-
 ### 2) Underground Novel 글
 - 경로: `src/dodoes/writing/YYYY-MM-DD-title.md`
 - 레이아웃: `layouts/writing.njk`
@@ -69,14 +61,6 @@ excerpt: "본문 일부 요약"
 ---
 
 본문을 마크다운으로 작성합니다.
-```
-
-선택 고급 메타데이터 예시:
-
-```md
----
-views: 42
----
 ```
 
 ### 작성 메모
