@@ -40,7 +40,6 @@ title: "Devlog #12 - 렌더링 최적화"
 date: 2026-04-04
 category: devlog
 excerpt: "이번 주 렌더링 병목 분석과 수정 기록"
-readingTime: "4 min"
 ---
 
 본문을 마크다운으로 작성합니다.
@@ -51,9 +50,6 @@ readingTime: "4 min"
 ```md
 ---
 views: 350
-tags:
-  - performance
-  - rendering
 ---
 ```
 
@@ -80,14 +76,14 @@ excerpt: "본문 일부 요약"
 ```md
 ---
 views: 42
-tags:
-  - note
 ---
 ```
 
 ### 작성 메모
 - front matter 필수 필드: `layout`, `title`, `date`, `category`
-- front matter 선택 필드: `excerpt`, `description`(writing), `readingTime`(post), `tags`, `views`
+- front matter 선택 필드:
+  - Dev 글: `excerpt`, `views`
+  - Writing 글: `description`, `excerpt`, `views`
 - 카테고리별 목록 페이지는 `eleventy.config.js` 컬렉션 규칙을 따릅니다.
 - 이미지가 있다면 `src/assets/`에 추가 후 글에서 상대/절대 경로를 일관되게 사용하세요.
 - 글별 조회수는 CounterAPI 기반으로 자동 집계됩니다(동일 브라우저/동일 글/동일 날짜 1회 증가).
