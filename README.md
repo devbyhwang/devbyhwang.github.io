@@ -112,7 +112,12 @@ excerpt: "본문 일부 요약"
 
 ## 라이선스
 - 코드: MIT License (`LICENSE`)
-- 콘텐츠(글/이미지): CC BY-NC-SA 4.0 (`LICENSE-CONTENT`)
+- 콘텐츠: CC BY-NC-SA 4.0 (`LICENSE-CONTENT`)
+- 콘텐츠 경로는 `LICENSE-CONTENT`의 Scope를 따릅니다.
+  - 포함: `src/devbyhwang/blog/**`, `src/dodoes/writing/**`, `src/demos/**`
+  - 포함: Playground 전용 자산(`src/assets/embercraft.js`, `src/assets/novel-assistant.js`, `src/assets/*-preview.png`, `src/assets/profile.jpg`, `src/assets/dodoes-profile.png`)
+- 그 외 레이아웃/테마/템플릿/빌드/워커를 포함한 코드성 파일은 MIT를 따릅니다.
+- 제3자 라이브러리/폰트/SDK 등은 각 원저작권 및 원라이선스가 우선합니다.
 
 ## 기여
 - 오타 수정, 빌드/설정 개선, 문서 개선 PR을 환영합니다.
