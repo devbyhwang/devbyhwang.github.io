@@ -2968,6 +2968,10 @@ canvas,
 }
 
 @media (max-width: 1024px) {
+  .layout-two {
+    align-items: stretch;
+  }
+
   .sidebar {
     order: 1;
     border-bottom: none;
@@ -2978,14 +2982,11 @@ canvas,
     order: 0;
   }
 
-  .theme-dodoes .layout-two .sidebar {
+  .layout-two > .feed,
+  .layout-two > .sidebar {
+    min-width: 0;
     align-self: stretch;
     width: 100%;
-  }
-
-  .theme-dodoes .layout-two .sidebar > div {
-    width: 100%;
-    box-sizing: border-box;
   }
 }
 
