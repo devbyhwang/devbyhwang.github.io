@@ -14,24 +14,13 @@ permalink: /devbyhwang/blog/
 
 <section class="layout-two archive">
   <div class="feed">
-    <div class="post-list archive-list">
-      {% if devPosts.length > 0 %}
-      {% for post in devPosts %}
-        <a class="post-item compact" href="{{ post.url | url }}">
-          <div class="post-item-top">
-            <span class="badge">{{ post.data.category | default('devlog') }}</span>
-            <span class="post-meta">{{ post.date | readableDate }}</span>
-          </div>
-          <div class="post-item-title">{{ post.data.title }}</div>
-          {% if post.data.excerpt or post.data.description %}
-          <div class="post-item-excerpt muted">{{ post.data.excerpt or post.data.description }}</div>
-          {% endif %}
-        </a>
-      {% endfor %}
-      {% else %}
-      <p class="muted">아직 글이 없습니다.</p>
-      {% endif %}
-    </div>
+    {% set posts = devPosts %}
+    {% set defaultCategory = "devlog" %}
+    {% set emptyMessage = "아직 글이 없습니다." %}
+    {% set listClass = "post-list archive-list writing-feed-list" %}
+    {% set itemClass = "writing-feed-item" %}
+    {% set showExcerpt = true %}
+    {% include "partials/writing-feed-cards.njk" %}
   </div>
   <aside class="sidebar">
     <div class="sidebar-categories">

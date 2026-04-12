@@ -14,24 +14,13 @@ permalink: /dodoes/writing/
 
 <section class="layout-two archive">
   <div class="feed">
-    <div class="post-list archive-list dodoes-feed-list">
-      {% if dodoesPosts.length > 0 %}
-      {% for post in dodoesPosts %}
-      <a class="post-item compact dodoes-feed-item" href="{{ post.url | url }}">
-        <div class="post-item-top">
-          <span class="badge">{{ post.data.category | default('notes') }}</span>
-          <span class="post-meta">{{ post.date | readableDate }}</span>
-        </div>
-        <div class="post-item-title">{{ post.data.title }}</div>
-        {% if post.data.description or post.data.excerpt %}
-        <div class="post-item-excerpt muted">{{ post.data.excerpt or post.data.description }}</div>
-        {% endif %}
-      </a>
-      {% endfor %}
-      {% else %}
-      <p class="muted">아직 글이 없습니다.</p>
-      {% endif %}
-    </div>
+    {% set posts = dodoesPosts %}
+    {% set defaultCategory = "notes" %}
+    {% set emptyMessage = "아직 글이 없습니다." %}
+    {% set listClass = "post-list archive-list writing-feed-list" %}
+    {% set itemClass = "writing-feed-item" %}
+    {% set showExcerpt = true %}
+    {% include "partials/writing-feed-cards.njk" %}
   </div>
 
   <aside class="sidebar">

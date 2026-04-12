@@ -3,7 +3,6 @@ layout: layouts/writing.njk
 title: "구조적 소설은 죽게 될 것이다."
 date: 2026-04-11
 category: notes
-description: "내가 그것을 죽일 것이다."
 excerpt: "내가 그것을 죽일 것이다."
 ---
 

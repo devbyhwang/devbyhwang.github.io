@@ -2,57 +2,10 @@
 layout: layouts/base.njk
 brand: dodoes
 ---
-<article class="writing-note">
-  <header class="writing-header">
-    {% set postViewSeed = { views: views } | postViewSeed %}
-    {% if showKicker !== false %}
-    <div class="writing-kicker">{{ category or 'notes' }}</div>
-    {% endif %}
-    <h1 class="writing-title">{{ title }}</h1>
-    {% if description %}
-    <p class="writing-description">{{ description }}</p>
-    {% endif %}
-    <div class="writing-meta">
-      <span class="writing-date">{{ date | readableDate }}</span>
-      <span class="writing-author">by {{ brands.dodoes.displayName }}</span>
-      <span class="writing-views">
-        조회수
-        <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
-      </span>
-    </div>
-    <div
-      data-post-view-track
-      data-post-key="{{ page.url }}"
-      data-post-seed="{{ postViewSeed }}"
-      data-post-view-target="post-view-count"
-      hidden
-    ></div>
-  </header>
-
-  <div class="writing-content prose">
-    {{ content | safe }}
-  </div>
-</article>
-
-{% set relatedPosts = collections.dodoesWriting | hybridRelatedPosts(page.url, 4) %}
-<section class="related-posts writing-related-posts">
-  <div class="section-header">
-    <h2>이 글 다음으로 읽기</h2>
-  </div>
-  {% if relatedPosts.length > 0 %}
-  <ol class="writing-related-list">
-    {% for item in relatedPosts %}
-      <li>
-        <a class="writing-related-link" href="{{ item.post.url | url }}">
-          <span class="writing-related-body">
-            <span class="writing-related-title">{{ item.post.data.title }}</span>
-            <span class="writing-related-meta">{{ item.post.data.category | default('notes') }} · {{ item.post.date | readableDate }}</span>
-          </span>
-        </a>
-      </li>
-    {% endfor %}
-  </ol>
-  {% else %}
-  <p class="muted">아직 추천할 글이 없습니다.</p>
-  {% endif %}
-</section>
+{% set brandKey = "dodoes" %}
+{% set defaultCategory = "notes" %}
+{% set relatedCollection = collections.dodoesWriting %}
+{% set renderInlineAds = false %}
+{% set showRails = false %}
+{% set showBottomAd = false %}
+{% include "partials/writing-detail-core.njk" %}

@@ -46,7 +46,7 @@
       content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.counterapi.dev; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self'"
     />
     <title>{{ docTitle }}</title>
-    <meta name="description" content="{{ description or (activeBrand and activeBrand.description) or site.description }}" />
+    <meta name="description" content="{{ excerpt or description or (activeBrand and activeBrand.description) or site.description }}" />
     <link rel="canonical" href="{{ canonicalUrl or (site.url + (page.url | url)) }}" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/icons/favicon-32x32.png' | url }}" />
     <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/icons/favicon-16x16.png' | url }}" />
