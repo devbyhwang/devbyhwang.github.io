@@ -8,6 +8,11 @@ const toBool = (value, fallback = false) => {
   return value === "true";
 };
 
+const normalizeAdSlot = (value) => {
+  if (typeof value !== "string") return "";
+  return value.trim();
+};
+
 const env = process.env;
 
 module.exports = {
@@ -27,6 +32,8 @@ module.exports = {
   googleAds: {
     client: env.GOOGLE_ADS_CLIENT || "",
     enable: toBool(env.GOOGLE_ADS_ENABLE, false),
+    defaultSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_DEFAULT || ""),
+    playgroundBottomSlot: normalizeAdSlot(env.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT || ""),
   },
   visitorCounter: {
     enable: toBool(env.VISITOR_COUNTER_ENABLE, true),

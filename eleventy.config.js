@@ -99,7 +99,13 @@ const INLINE_AD_DEFAULTS = {
   scope: "devbyhwang-post",
 };
 
-const buildInlineAdMarkup = ({ isEnabled, client, scope }) => {
+const isValidAdSlot = (slot) => {
+  if (typeof slot !== "string") return false;
+  const normalized = slot.trim();
+  return Boolean(normalized && normalized !== "0000000000");
+};
+
+const buildInlineAdMarkup = ({ isEnabled, client, slot, scope }) => {
   if (isEnabled) {
     return `
 <div class="ad-shell ad-shell-inline" data-inline-ad-slot="1" data-inline-ad-scope="${scope}" aria-label="Advertisement">
@@ -107,7 +113,7 @@ const buildInlineAdMarkup = ({ isEnabled, client, scope }) => {
     class="adsbygoogle"
     style="display:block"
     data-ad-client="${client}"
-    data-ad-slot="0000000000"
+    data-ad-slot="${slot}"
     data-ad-format="auto"
     data-full-width-responsive="true"
   ></ins>
@@ -162,9 +168,21 @@ const injectInlineAds = (html, site, env, options = {}) => {
   }
   if (!positions.length) return html;
 
+  const defaultSlot = site && site.googleAds && typeof site.googleAds.defaultSlot === "string"
+    ? site.googleAds.defaultSlot.trim()
+    : "";
   const adMarkup = buildInlineAdMarkup({
-    isEnabled: Boolean(site && site.googleAds && site.googleAds.enable && site.googleAds.client && env && env.isProd),
+    isEnabled: Boolean(
+      site &&
+      site.googleAds &&
+      site.googleAds.enable &&
+      site.googleAds.client &&
+      env &&
+      env.isProd &&
+      isValidAdSlot(defaultSlot)
+    ),
     client: (site && site.googleAds && site.googleAds.client) || "",
+    slot: defaultSlot,
     scope,
   });
   const insertAfter = new Set(positions);

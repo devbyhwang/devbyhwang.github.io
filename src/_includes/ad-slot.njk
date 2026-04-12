@@ -1,10 +1,12 @@
 <div class="ad-shell" aria-label="Advertisement">
-  {% if site.googleAds.enable and site.googleAds.client and env.isProd %}
+  {% set defaultSlot = site.googleAds.defaultSlot or "" %}
+  {% set isDefaultSlotValid = defaultSlot and defaultSlot != "0000000000" %}
+  {% if site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultSlotValid %}
     <ins
       class="adsbygoogle"
       style="display:block"
       data-ad-client="{{ site.googleAds.client }}"
-      data-ad-slot="0000000000"
+      data-ad-slot="{{ defaultSlot }}"
       data-ad-format="auto"
       data-full-width-responsive="true"
     ></ins>

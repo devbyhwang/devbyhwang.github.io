@@ -1,0 +1,18 @@
+---
+permalink: /assets/playground-ad-config.json
+eleventyExcludeFromCollections: true
+---
+{% set enabled = site.googleAds.enable %}
+{% set client = site.googleAds.client %}
+{% set slot = site.googleAds.playgroundBottomSlot %}
+{% set isProd = env.isProd %}
+{% set hasClient = client | length > 0 %}
+{% set hasValidSlot = (slot | length > 0) and slot != "0000000000" %}
+{% set shouldServeAds = enabled and hasClient and hasValidSlot and isProd %}
+{{ {
+  enabled: enabled,
+  client: client,
+  slot: slot,
+  isProd: isProd,
+  shouldServeAds: shouldServeAds
+} | jsonScript | safe }}
