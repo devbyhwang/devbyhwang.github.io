@@ -1506,9 +1506,11 @@ canvas,
 
 .post-rail {
   min-width: 0;
+  align-self: stretch;
 }
 
 .post-rail-sticky {
+  position: -webkit-sticky;
   position: sticky;
   top: var(--post-rail-sticky-top);
 }
