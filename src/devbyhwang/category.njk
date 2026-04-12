@@ -27,31 +27,13 @@ eleventyComputed:
 
 <section class="layout-two archive">
   <div class="feed">
-    <div class="post-list">
-      {% if categoryPosts.length > 0 %}
-        {% for post in categoryPosts %}
-          <article class="post-item">
-            <a href="{{ post.url | url }}">
-              {% if post.data.image %}
-              <div class="post-thumb">
-                <img src="{{ post.data.image | url }}" alt="{{ post.data.title }}" loading="lazy" />
-              </div>
-              {% endif %}
-              <div class="post-info">
-                <span class="post-category">{{ post.data.category | default('devlog') }}</span>
-                <h2 class="post-title">{{ post.data.title }}</h2>
-                {% if post.data.excerpt or post.data.description %}
-                <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
-                {% endif %}
-                <span class="post-date">{{ post.date | readableDate }}</span>
-              </div>
-            </a>
-          </article>
-        {% endfor %}
-      {% else %}
-        <p class="muted">아직 이 카테고리에 작성된 글이 없습니다.</p>
-      {% endif %}
-    </div>
+    {% set posts = categoryPosts %}
+    {% set defaultCategory = "devlog" %}
+    {% set emptyMessage = "아직 이 카테고리에 작성된 글이 없습니다." %}
+    {% set listClass = "post-list archive-list writing-feed-list" %}
+    {% set itemClass = "writing-feed-item" %}
+    {% set showExcerpt = true %}
+    {% include "partials/writing-feed-cards.njk" %}
 
     {% if gamesPlayground.length > 0 %}
     <section class="related-cards">

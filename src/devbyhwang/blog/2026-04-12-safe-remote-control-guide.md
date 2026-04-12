@@ -1,9 +1,9 @@
 ---
 layout: layouts/post.njk
-title: "완전 쉽고 안전한 내 PC 원격 제어 가이드! (Moonlight, Parsec, Chrome 원격 데스크톱 + Tailscale + IoT 스위치)"
+title: "완전 쉽고 안전한 내 PC 원격 제어 가이드!"
 date: 2026-04-12
 category: info
-excerpt: "지하철이나 카페에서도 집의 고성능 PC를 안전하게 원격 제어하는 방법을 정리했습니다. WOL 대신 IoT 스위치와 Tailscale 기반으로 안정성과 보안을 함께 챙기는 세팅 가이드입니다."
+excerpt: "(Moonlight, Parsec, Chrome 원격 데스크톱 + Tailscale + IoT 스위치)"
 ---
 
 지하철에서 출퇴근할 때 스마트폰이나 아이패드로 집에서 하던 고사양 스팀 게임을 이어서 하고 싶으신가요?

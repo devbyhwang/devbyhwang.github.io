@@ -1,0 +1,26 @@
+{% set feedPosts = posts or [] %}
+{% if limit %}
+  {% set feedPosts = feedPosts | head(limit) %}
+{% endif %}
+{% set feedListClass = listClass or 'post-list archive-list writing-feed-list' %}
+{% set feedItemClass = itemClass or 'writing-feed-item' %}
+{% set shouldShowExcerpt = showExcerpt !== false %}
+
+<div class="{{ feedListClass }}">
+  {% if feedPosts.length > 0 %}
+    {% for post in feedPosts %}
+    <a class="post-item compact {{ feedItemClass }}" href="{{ post.url | url }}">
+      <div class="post-item-top">
+        <span class="badge">{{ post.data.category | default(defaultCategory or 'notes') }}</span>
+        <span class="post-meta">{{ post.date | readableDate }}</span>
+      </div>
+      <div class="post-item-title">{{ post.data.title }}</div>
+      {% if shouldShowExcerpt and post.data.excerpt %}
+      <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
+      {% endif %}
+    </a>
+    {% endfor %}
+  {% else %}
+  <p class="muted">{{ emptyMessage or '아직 글이 없습니다.' }}</p>
+  {% endif %}
+</div>

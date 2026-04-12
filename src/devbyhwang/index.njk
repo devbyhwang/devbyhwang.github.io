@@ -51,31 +51,14 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
     <div class="section-header">
       <h2>최신 글</h2>
     </div>
-    <div class="post-list home-latest-posts">
-      {% if devPosts.length > 0 %}
-      {% for post in devPosts | head(6) %}
-        <article class="post-item">
-          <a href="{{ post.url | url }}">
-            {% if post.data.image %}
-            <div class="post-thumb">
-              <img src="{{ post.data.image | url }}" alt="{{ post.data.title }}" loading="lazy" />
-            </div>
-            {% endif %}
-            <div class="post-info">
-              <span class="post-category">{{ post.data.category | default('devlog') }}</span>
-              <h2 class="post-title">{{ post.data.title }}</h2>
-              {% if post.data.excerpt or post.data.description %}
-              <p class="post-excerpt">{{ post.data.excerpt or post.data.description }}</p>
-              {% endif %}
-              <span class="post-date">{{ post.date | readableDate }}</span>
-            </div>
-          </a>
-        </article>
-      {% endfor %}
-      {% else %}
-      <p class="muted">아직 글이 없습니다.</p>
-      {% endif %}
-    </div>
+    {% set posts = devPosts %}
+    {% set defaultCategory = "devlog" %}
+    {% set limit = 8 %}
+    {% set emptyMessage = "아직 글이 없습니다." %}
+    {% set listClass = "post-list archive-list writing-feed-list" %}
+    {% set itemClass = "writing-feed-item" %}
+    {% set showExcerpt = true %}
+    {% include "partials/writing-feed-cards.njk" %}
 
     {% include "ad-slot.njk" %}
   </div>

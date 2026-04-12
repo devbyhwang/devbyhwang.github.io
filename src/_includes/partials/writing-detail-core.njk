@@ -1,0 +1,89 @@
+{% set postViewSeed = { views: views } | postViewSeed %}
+{% set detailBrand = brands[brandKey] %}
+{% set detailDefaultCategory = defaultCategory or 'notes' %}
+{% set detailRelated = relatedCollection or [] %}
+{% if renderInlineAds %}
+  {% set detailContent = content | injectInlineAds(site, env) %}
+{% else %}
+  {% set detailContent = content %}
+{% endif %}
+
+{% if showRails %}
+<div class="post-detail-rails">
+  <aside class="post-rail post-rail-left" aria-label="왼쪽 광고 영역">
+    <div class="post-rail-sticky">
+      {% include "ad-slot.njk" %}
+    </div>
+  </aside>
+
+  <div class="post-detail-main">
+{% endif %}
+
+  <article class="writing-note">
+    <header class="writing-header">
+      {% if showKicker !== false %}
+      <div class="writing-kicker">{{ category or detailDefaultCategory }}</div>
+      {% endif %}
+      <h1 class="writing-title">{{ title }}</h1>
+      {% if excerpt %}
+      <p class="writing-description">{{ excerpt }}</p>
+      {% endif %}
+      <div class="writing-meta">
+        <span class="writing-date">{{ date | readableDate }}</span>
+        <span class="writing-author">by {{ detailBrand.displayName }}</span>
+        <span class="writing-views">
+          조회수
+          <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
+        </span>
+      </div>
+      <div
+        data-post-view-track
+        data-post-key="{{ page.url }}"
+        data-post-seed="{{ postViewSeed }}"
+        data-post-view-target="post-view-count"
+        hidden
+      ></div>
+    </header>
+
+    <div class="writing-content prose">
+      {{ detailContent | safe }}
+    </div>
+
+    {% if showBottomAd %}
+      {% include "ad-slot.njk" %}
+    {% endif %}
+  </article>
+
+  {% set relatedPosts = detailRelated | hybridRelatedPosts(page.url, 4) %}
+  <section class="related-posts writing-related-posts">
+    <div class="section-header">
+      <h2>이 글 다음으로 읽기</h2>
+    </div>
+    {% if relatedPosts.length > 0 %}
+    <ol class="writing-related-list">
+      {% for item in relatedPosts %}
+        <li>
+          <a class="writing-related-link" href="{{ item.post.url | url }}">
+            <span class="writing-related-body">
+              <span class="writing-related-title">{{ item.post.data.title }}</span>
+              <span class="writing-related-meta">{{ item.post.data.category | default(detailDefaultCategory) }} · {{ item.post.date | readableDate }}</span>
+            </span>
+          </a>
+        </li>
+      {% endfor %}
+    </ol>
+    {% else %}
+    <p class="muted">아직 추천할 글이 없습니다.</p>
+    {% endif %}
+  </section>
+
+{% if showRails %}
+  </div>
+
+  <aside class="post-rail post-rail-right" aria-label="오른쪽 광고 영역">
+    <div class="post-rail-sticky">
+      {% include "ad-slot.njk" %}
+    </div>
+  </aside>
+</div>
+{% endif %}
