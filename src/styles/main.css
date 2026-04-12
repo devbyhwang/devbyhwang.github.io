@@ -1460,6 +1460,36 @@ canvas,
   min-height: 100%;
 }
 
+@media (min-width: 1101px) {
+  .theme-devbyhwang .post-detail-rails {
+    --post-rail-edge-padding: clamp(24px, calc(56px - 2vw), 40px);
+    width: calc(100vw - (var(--post-rail-edge-padding) * 2));
+    margin-inline: calc(50% - 50vw + var(--post-rail-edge-padding));
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) minmax(0, var(--content-max)) minmax(0, 1fr);
+  }
+
+  .theme-devbyhwang .post-rail {
+    display: block;
+  }
+
+  .theme-devbyhwang .post-rail .post-rail-sticky {
+    width: min(100%, var(--post-rail-width));
+  }
+
+  .theme-devbyhwang .post-rail-left .post-rail-sticky {
+    margin-right: auto;
+  }
+
+  .theme-devbyhwang .post-rail-right .post-rail-sticky {
+    margin-left: auto;
+  }
+
+  .theme-devbyhwang .post-rail .ad-shell {
+    width: 100%;
+  }
+}
+
 .post {
   max-width: var(--content-max);
   margin: var(--space-8) auto;
