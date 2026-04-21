@@ -15,7 +15,7 @@
     }
     #demo-container {
       width: 100%;
-      height: 100vh;
+      height: calc(100vh - var(--playground-ad-safe-space, 0px));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -50,7 +50,7 @@
 <body>
   <a href="../" class="back-link">← Playground</a>
 
-  <div id="demo-container">
+  <div id="demo-container" data-playground-safe-root>
     <h1>Your Demo Here</h1>
     <!-- Add your interactive demo code here -->
   </div>
@@ -59,6 +59,7 @@
     // Your JavaScript
     console.log('Demo initialized');
   </script>
+  <!-- Playground 하단 광고는 공통 스크립트가 CSS까지 자동 로드합니다. -->
   <script src="../../../assets/playground-bottom-ad.js" defer></script>
 </body>
 </html>
