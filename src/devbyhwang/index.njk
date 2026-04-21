@@ -11,8 +11,6 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
   {% endif %}
 {% endfor %}
 {% set devPosts = collections.devPosts %}
-{% set devPopularPosts = collections.devPopularPosts %}
-{% set devPopularCandidates = devPosts | postViewCandidates %}
 
 <section class="page-hero">
   <h1>Playground</h1>
@@ -81,11 +79,8 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
     </div>
 
     <div class="sidebar-posts">
-      <div class="tab-buttons">
-        <button class="tab-btn" data-tab="recent">최근글</button>
-        <button class="tab-btn active" data-tab="popular">인기글</button>
-      </div>
-      <ul class="post-list-tab" data-content="recent">
+      <div class="sidebar-title">최근 글</div>
+      <ul class="category-tree">
         {% if devPosts.length > 0 %}
         {% for post in devPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
@@ -94,30 +89,8 @@ description: "Playground와 개발 기록을 모아둔 DevByHwang 홈."
           <li class="muted">아직 글이 없습니다.</li>
         {% endif %}
       </ul>
-      <ul class="post-list-tab active" data-content="popular" data-popular-list data-popular-brand="devbyhwang">
-        {% if devPopularPosts.length > 0 %}
-        {% for post in devPopularPosts | head(5) %}
-          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
-        {% endfor %}
-        {% else %}
-          <li class="muted">아직 글이 없습니다.</li>
-        {% endif %}
-      </ul>
     </div>
-
-    {% if site.visitorCounter and site.visitorCounter.enable %}
-      <div class="sidebar-counter">
-        <div class="counter-label">방문자</div>
-        <div class="counter-row">
-          <span>TODAY</span><span id="visitor-today">—</span>
-        </div>
-        <div class="counter-row">
-          <span>TOTAL</span><span id="visitor-total">—</span>
-        </div>
-      </div>
-    {% endif %}
 
     {% include "ad-slot.njk" %}
   </aside>
 </section>
-<script type="application/json" data-popular-candidates="devbyhwang">{{ devPopularCandidates | jsonScript | safe }}</script>

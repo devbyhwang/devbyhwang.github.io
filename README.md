@@ -66,20 +66,10 @@ excerpt: "본문 일부 요약"
 ### 작성 메모
 - front matter 필수 필드: `layout`, `title`, `date`, `category`
 - front matter 선택 필드:
-  - Dev 글: `excerpt`, `views`
-  - Writing 글: `description`, `excerpt`, `views`
+  - Dev 글: `excerpt`
+  - Writing 글: `description`, `excerpt`
 - 카테고리별 목록 페이지는 `eleventy.config.js` 컬렉션 규칙을 따릅니다.
 - 이미지가 있다면 `src/assets/`에 추가 후 글에서 상대/절대 경로를 일관되게 사용하세요.
-- 글별 조회수는 CounterAPI 기반으로 자동 집계됩니다(동일 브라우저/동일 글/동일 날짜 1회 증가).
-- front matter의 `views`는 선택 시드값이며, 설정하지 않으면 `0`으로 처리됩니다.
-- 인기글 정렬 기준은 `effective views = seed views + runtime views` 입니다.
-
-### 조회수 운영 설정 (`.env`)
-- `POST_VIEWS_ENABLE=true|false` (기본: `true`)
-- `POST_VIEWS_NAMESPACE=<counterapi namespace>` (기본: `devbyhwang-post-views`)
-- `POST_VIEWS_COUNTER_PREFIX=<counter key prefix>` (기본: `pv`)
-- `POST_VIEWS_TIMEZONE=<IANA timezone>` (기본: `Asia/Seoul`)
-- 조회수 스크립트는 `ELEVENTY_ENV=production`에서만 로드됩니다.
 
 ## Playground 운영
 - 데모 파일 경로: `src/demos/<slug>/index.html`

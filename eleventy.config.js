@@ -55,24 +55,12 @@ const slugify = (value) => {
     .replace(/-+/g, "-");
 };
 
-const toNumber = (value) => {
-  const num = Number(value);
-  return Number.isFinite(num) ? num : null;
-};
-
 const normalizePostPath = (value) => {
   if (typeof value !== "string") return "";
   const trimmed = value.trim();
   if (!trimmed) return "";
   const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   return withSlash.replace(/\/+/g, "/");
-};
-
-const toSeedViews = (data) => {
-  const payload = data && typeof data === "object" ? data : {};
-  const views = toNumber(payload.views);
-  if (views !== null) return views;
-  return 0;
 };
 
 const jsonScript = (value) =>
@@ -217,20 +205,6 @@ module.exports = function (eleventyConfig) {
     if (!Array.isArray(items)) return [];
     return items.slice(0, count);
   });
-  eleventyConfig.addFilter("postViewSeed", (input) => {
-    if (input && input.data) return toSeedViews(input.data);
-    return toSeedViews(input);
-  });
-  eleventyConfig.addFilter("postViewCandidates", (posts) => {
-    if (!Array.isArray(posts)) return [];
-    return posts.map((post) => ({
-      url: post.url || "",
-      postKey: normalizePostPath(post.url || ""),
-      title: (post.data && post.data.title) || "",
-      seedViews: toSeedViews(post.data),
-      dateMs: post.date instanceof Date ? post.date.getTime() : 0,
-    }));
-  });
   eleventyConfig.addFilter("jsonScript", (value) => jsonScript(value));
   eleventyConfig.addFilter("injectInlineAds", (html, site, env, options = {}) =>
     injectInlineAds(html, site, env, options)
@@ -273,26 +247,6 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("devPosts", (collectionApi) => getDevPosts(collectionApi));
   eleventyConfig.addCollection("posts", (collectionApi) => getDevPosts(collectionApi));
   eleventyConfig.addCollection("dodoesWriting", (collectionApi) => getDodoesWriting(collectionApi));
-
-  eleventyConfig.addCollection("devPopularPosts", (collectionApi) =>
-    getDevPosts(collectionApi)
-      .map((post) => ({
-        post,
-        score: toNumber(post.data.views) || 0,
-      }))
-      .sort((a, b) => b.score - a.score || b.post.date - a.post.date)
-      .map(({ post }) => post)
-  );
-
-  eleventyConfig.addCollection("dodoesPopularPosts", (collectionApi) =>
-    getDodoesWriting(collectionApi)
-      .map((post) => ({
-        post,
-        score: toNumber(post.data.views) || 0,
-      }))
-      .sort((a, b) => b.score - a.score || b.post.date - a.post.date)
-      .map(({ post }) => post)
-  );
 
   eleventyConfig.addCollection("devCategoryList", (collectionApi) =>
     buildCategoryList(

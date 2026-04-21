@@ -6,8 +6,6 @@ description: "Underground Novel 글 아카이브"
 permalink: /dodoes/writing/
 ---
 {% set dodoesPosts = collections.dodoesWriting %}
-{% set dodoesPopularPosts = collections.dodoesPopularPosts %}
-{% set dodoesPopularCandidates = dodoesPosts | postViewCandidates %}
 <section class="page-hero">
   <h1>글</h1>
 </section>
@@ -37,22 +35,10 @@ permalink: /dodoes/writing/
     </div>
 
     <div class="sidebar-posts">
-      <div class="tab-buttons">
-        <button class="tab-btn" data-tab="recent">최근글</button>
-        <button class="tab-btn active" data-tab="popular">인기글</button>
-      </div>
-      <ul class="post-list-tab" data-content="recent">
+      <div class="sidebar-title">최근 글</div>
+      <ul class="category-tree">
         {% if dodoesPosts.length > 0 %}
         {% for post in dodoesPosts | head(5) %}
-          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
-        {% endfor %}
-        {% else %}
-          <li class="muted">아직 글이 없습니다.</li>
-        {% endif %}
-      </ul>
-      <ul class="post-list-tab active" data-content="popular" data-popular-list data-popular-brand="dodoes">
-        {% if dodoesPopularPosts.length > 0 %}
-        {% for post in dodoesPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
         {% else %}
@@ -62,4 +48,3 @@ permalink: /dodoes/writing/
     </div>
   </aside>
 </section>
-<script type="application/json" data-popular-candidates="dodoes">{{ dodoesPopularCandidates | jsonScript | safe }}</script>

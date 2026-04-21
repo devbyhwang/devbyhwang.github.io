@@ -35,17 +35,4 @@ module.exports = {
     defaultSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_DEFAULT || ""),
     playgroundBottomSlot: normalizeAdSlot(env.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT || ""),
   },
-  visitorCounter: {
-    enable: toBool(env.VISITOR_COUNTER_ENABLE, true),
-    namespace: env.VISITOR_COUNTER_NAMESPACE || "devbyhwang-tel-aviv",
-    totalKey: env.VISITOR_COUNTER_TOTAL_KEY || "total",
-    dailyPrefix: env.VISITOR_COUNTER_DAILY_PREFIX || "daily",
-    timeZone: env.VISITOR_COUNTER_TIMEZONE || "Asia/Seoul",
-  },
-  postViews: {
-    enable: toBool(env.POST_VIEWS_ENABLE, true),
-    namespace: env.POST_VIEWS_NAMESPACE || "devbyhwang-post-views",
-    counterPrefix: env.POST_VIEWS_COUNTER_PREFIX || "pv",
-    timeZone: env.POST_VIEWS_TIMEZONE || "Asia/Seoul",
-  },
 };
