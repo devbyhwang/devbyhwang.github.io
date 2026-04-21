@@ -6,7 +6,7 @@ module.exports = {
       status: "Live",
       blurb: "Three.js와 Cannon.js로 만든 실시간 장작불 시뮬레이션. 물리 기반 파티클, 동적 오디오, 절차적 불꽃 생성.",
       links: [
-        { label: "Launch", href: "/playground/embercraft/" },
+        { label: "Launch", href: "/devbyhwang/playground/embercraft/" },
       ],
       postCategory: "games",
       tags: ["webgl", "physics", "simulation"],
@@ -20,7 +20,7 @@ module.exports = {
       status: "Live",
       blurb: "100% 풀이 가능한 논리 퍼즐. 역설계 맵 생성과 기하학 알고리즘으로 완벽한 해결 보장.",
       links: [
-        { label: "Play", href: "/playground/nemo-game/" },
+        { label: "Play", href: "/devbyhwang/playground/nemo-game/" },
       ],
       postCategory: "games",
       tags: ["canvas", "game", "puzzle", "algorithm", "geometry"],
@@ -34,7 +34,7 @@ module.exports = {
       status: "Live",
       blurb: "원고 입력 + 점검 항목 선택 기반 피드백 도구. 서버 프록시(OpenAI) 연동 구조.",
       links: [
-        { label: "Try", href: "/playground/novel-assistant/" },
+        { label: "Try", href: "/devbyhwang/playground/novel-assistant/" },
       ],
       postCategory: "games",
       tags: ["writing", "assistant", "llm", "analysis"],

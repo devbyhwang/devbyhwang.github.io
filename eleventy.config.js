@@ -188,7 +188,7 @@ module.exports = function (eleventyConfig) {
 
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy({ "src/styles": "styles" });
-  eleventyConfig.addPassthroughCopy({ "src/demos": "playground" });
+  eleventyConfig.addPassthroughCopy({ "src/demos": "devbyhwang/playground" });
   eleventyConfig.addPassthroughCopy({ "src/ads.txt": "ads.txt" });
   eleventyConfig.addWatchTarget("src/styles");
   eleventyConfig.addWatchTarget("src/demos");
