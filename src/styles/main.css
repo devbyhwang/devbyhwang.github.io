@@ -2817,8 +2817,7 @@ canvas,
   padding: var(--space-4);
 }
 
-.theme-dodoes .sidebar-categories,
-.theme-dodoes .sidebar-posts {
+.theme-dodoes .sidebar-categories {
   border-radius: 4px;
 }
 
@@ -2971,8 +2970,7 @@ canvas,
     padding: var(--space-1) var(--space-2);
   }
 
-  .theme-dodoes .sidebar-categories,
-  .theme-dodoes .sidebar-posts {
+  .theme-dodoes .sidebar-categories {
     min-width: 0;
   }
 

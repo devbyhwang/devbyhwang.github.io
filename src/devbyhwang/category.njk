@@ -77,17 +77,5 @@ eleventyComputed:
         {% endfor %}
       </ul>
     </div>
-    <div class="sidebar-posts">
-      <div class="sidebar-title">최근 글</div>
-      <ul class="category-tree">
-        {% if collections.devPosts | length > 0 %}
-        {% for post in collections.devPosts | head(5) %}
-          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
-        {% endfor %}
-        {% else %}
-          <li class="muted">아직 글이 없습니다.</li>
-        {% endif %}
-      </ul>
-    </div>
   </aside>
 </section>
