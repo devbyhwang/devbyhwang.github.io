@@ -5,7 +5,7 @@
   "description": "Personal GitHub Pages blog for games, devlogs, freelance work, and writing with Google Ads slots.",
   "scripts": {
     "dev": "eleventy --serve --watch",
-    "build": "ELEVENTY_ENV=production eleventy",
+    "build": "npm run clean && ELEVENTY_ENV=production eleventy",
     "clean": "rm -rf _site"
   },
   "devDependencies": {
