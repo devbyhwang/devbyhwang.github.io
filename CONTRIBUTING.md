@@ -51,14 +51,6 @@ excerpt: "한 줄 요약"
 ---
 ```
 
-선택 고급 메타데이터 예시:
-
-```yaml
----
-views: 350
----
-```
-
 ### B. Underground Novel 글
 - 경로: `src/dodoes/writing/YYYY-MM-DD-title.md`
 - 레이아웃: `layouts/writing.njk`
@@ -79,7 +71,6 @@ description: "짧은 요약"
 ```yaml
 ---
 excerpt: "본문 일부 요약"
-views: 42
 ---
 ```
 
@@ -88,10 +79,8 @@ views: 42
 - 인용/참고 자료가 있으면 출처 명시
 - front matter 필수 필드: `layout`, `title`, `date`, `category`
 - front matter 선택 필드:
-  - Dev 글: `excerpt`, `views`
-  - Writing 글: `description`, `excerpt`, `views`
-- `views`는 글별 조회수 자동 집계에 더해지는 초기 시드값이며, 없으면 `0`입니다.
-- 인기글 정렬은 `effective views = seed views + runtime views` 기준입니다.
+  - Dev 글: `excerpt`
+  - Writing 글: `description`, `excerpt`
 
 ## PR 제출 예시
 

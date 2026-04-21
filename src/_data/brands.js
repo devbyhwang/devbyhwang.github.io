@@ -22,7 +22,6 @@ module.exports = {
     themeClass: "theme-devbyhwang",
     features: {
       ads: true,
-      visitorCounter: true,
     },
   },
   dodoes: {
@@ -43,7 +42,6 @@ module.exports = {
     themeClass: "theme-dodoes",
     features: {
       ads: false,
-      visitorCounter: false,
     },
   },
 };

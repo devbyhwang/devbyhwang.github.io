@@ -29,28 +29,6 @@
 })();
 
 (function () {
-  document.querySelectorAll(".tab-buttons").forEach(function (group) {
-    const tabButtons = group.querySelectorAll(".tab-btn");
-    const container = group.parentElement;
-    if (!container) return;
-    const tabContents = container.querySelectorAll(".post-list-tab[data-content]");
-
-    tabButtons.forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        const tabName = this.dataset.tab;
-        tabButtons.forEach(function (button) {
-          button.classList.remove("active");
-        });
-        tabContents.forEach(function (content) {
-          content.classList.toggle("active", content.dataset.content === tabName);
-        });
-        this.classList.add("active");
-      });
-    });
-  });
-})();
-
-(function () {
   document.querySelectorAll(".prose pre").forEach(function (pre) {
     const btn = document.createElement("button");
     btn.className = "code-copy-btn";

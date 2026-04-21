@@ -1,4 +1,3 @@
-{% set postViewSeed = { views: views } | postViewSeed %}
 {% set detailBrand = brands[brandKey] %}
 {% set detailDefaultCategory = defaultCategory or 'notes' %}
 {% set detailRelated = relatedCollection or [] %}
@@ -31,18 +30,7 @@
       <div class="writing-meta">
         <span class="writing-date">{{ date | readableDate }}</span>
         <span class="writing-author">by {{ detailBrand.displayName }}</span>
-        <span class="writing-views">
-          조회수
-          <span id="post-view-count">{% if postViewSeed > 0 %}{{ postViewSeed }}{% else %}—{% endif %}</span>
-        </span>
       </div>
-      <div
-        data-post-view-track
-        data-post-key="{{ page.url }}"
-        data-post-seed="{{ postViewSeed }}"
-        data-post-view-target="post-view-count"
-        hidden
-      ></div>
     </header>
 
     <div class="writing-content prose">

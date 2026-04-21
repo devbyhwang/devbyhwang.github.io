@@ -45,7 +45,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.counterapi.dev; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+      content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self'"
     />
     <title>{{ docTitle }}</title>
     <meta name="description" content="{{ excerpt or description or (activeBrand and activeBrand.description) or site.description }}" />
@@ -157,32 +157,6 @@
       </footer>
     </div>
 
-    {% if activeBrand and activeBrand.features.visitorCounter and env.isProd %}
-      {% if site.visitorCounter and site.visitorCounter.enable %}
-        <div
-          data-visitor-counter
-          data-namespace="{{ site.visitorCounter.namespace }}"
-          data-total-key="{{ site.visitorCounter.totalKey }}"
-          data-daily-prefix="{{ site.visitorCounter.dailyPrefix }}"
-          data-timezone="{{ site.visitorCounter.timeZone }}"
-          data-today-id="visitor-today"
-          data-total-id="visitor-total"
-          hidden
-        ></div>
-        <script src="{{ '/assets/visitor-counter.js' | url }}" defer></script>
-      {% endif %}
-    {% endif %}
-    {% if activeBrand and env.isProd and site.postViews and site.postViews.enable %}
-      <div
-        data-post-views-config
-        data-namespace="{{ site.postViews.namespace }}"
-        data-counter-prefix="{{ site.postViews.counterPrefix }}"
-        data-timezone="{{ site.postViews.timeZone }}"
-        data-path-prefix="{{ env.pathPrefix }}"
-        hidden
-      ></div>
-      <script src="{{ '/assets/post-views.js' | url }}" defer></script>
-    {% endif %}
     {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultAdSlotValid %}
       <script src="{{ '/assets/ads-init.js' | url }}" defer></script>
     {% endif %}

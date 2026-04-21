@@ -11,7 +11,6 @@ eleventyComputed:
   description: "Underground Novel {{ category.name }} 글 모음"
 ---
 {% set categoryPosts = collections.dodoesWriting | postsByCategory(category) %}
-{% set dodoesPopularCandidates = collections.dodoesWriting | postViewCandidates %}
 
 <section class="page-hero">
   <h1>{{ category.name }}</h1>
@@ -42,22 +41,10 @@ eleventyComputed:
     </div>
 
     <div class="sidebar-posts">
-      <div class="tab-buttons">
-        <button class="tab-btn" data-tab="recent">최근글</button>
-        <button class="tab-btn active" data-tab="popular">인기글</button>
-      </div>
-      <ul class="post-list-tab" data-content="recent">
+      <div class="sidebar-title">최근 글</div>
+      <ul class="category-tree">
         {% if collections.dodoesWriting | length > 0 %}
         {% for post in collections.dodoesWriting | head(5) %}
-          <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
-        {% endfor %}
-        {% else %}
-          <li class="muted">아직 글이 없습니다.</li>
-        {% endif %}
-      </ul>
-      <ul class="post-list-tab active" data-content="popular" data-popular-list data-popular-brand="dodoes">
-        {% if collections.dodoesPopularPosts | length > 0 %}
-        {% for post in collections.dodoesPopularPosts | head(5) %}
           <li><a href="{{ post.url | url }}">{{ post.data.title }}</a></li>
         {% endfor %}
         {% else %}
@@ -67,4 +54,3 @@ eleventyComputed:
     </div>
   </aside>
 </section>
-<script type="application/json" data-popular-candidates="dodoes">{{ dodoesPopularCandidates | jsonScript | safe }}</script>
