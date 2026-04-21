@@ -2,6 +2,12 @@
   const BANNER_ID = "playground-bottom-ad-banner";
   const ROOT_FLAG = "playgroundBottomAdMounted";
   const SCRIPT_SELECTOR = 'script[src*="playground-bottom-ad.js"]';
+  const CSS_ID = "playground-bottom-ad-css";
+  const BODY_ACTIVE_CLASS = "playground-ad-active";
+  const DEMO_ACTIVE_CLASS = "playground-ad-demo";
+  const SAFE_SPACE_VAR = "--playground-ad-safe-space";
+  const SAFE_SPACE_EXTRA = 8;
+  const FALLBACK_TEXT = "광고 영역 · Google AdSense 설정 후 활성화됩니다.";
 
   if (document.body && document.body.dataset && document.body.dataset[ROOT_FLAG] === "1") {
     return;
@@ -26,6 +32,24 @@
 
   const scriptUrl = getScriptUrl();
   const configUrl = new URL("playground-ad-config.json", scriptUrl).toString();
+  const cssUrl = new URL("playground-bottom-ad.css", scriptUrl).toString();
+
+  const ensureAdStyles = function () {
+    return new Promise(function (resolve) {
+      const existing = document.getElementById(CSS_ID);
+      if (existing) {
+        resolve();
+        return;
+      }
+      const link = document.createElement("link");
+      link.id = CSS_ID;
+      link.rel = "stylesheet";
+      link.href = cssUrl;
+      link.addEventListener("load", resolve, { once: true });
+      link.addEventListener("error", resolve, { once: true });
+      document.head.appendChild(link);
+    });
+  };
 
   const ensureAdScript = function (client) {
     return new Promise(function (resolve, reject) {
@@ -81,63 +105,98 @@
     });
   };
 
+  const setBannerMounted = function (isMounted) {
+    if (!document.body || !document.body.dataset) return;
+    document.body.dataset[ROOT_FLAG] = isMounted ? "1" : "0";
+    document.body.classList.toggle(BODY_ACTIVE_CLASS, isMounted);
+  };
+
+  const setDemoCompensation = function (isEnabled) {
+    const root = document.documentElement;
+    if (root) {
+      root.classList.toggle(DEMO_ACTIVE_CLASS, isEnabled);
+    }
+    if (document.body) {
+      document.body.classList.toggle(DEMO_ACTIVE_CLASS, isEnabled);
+    }
+  };
+
+  const setSafeSpace = function (value) {
+    const root = document.documentElement;
+    if (!root) return;
+    if (Number.isFinite(value) && value > 0) {
+      root.style.setProperty(SAFE_SPACE_VAR, Math.ceil(value) + "px");
+      return;
+    }
+    root.style.setProperty(SAFE_SPACE_VAR, "0px");
+  };
+
+  const updateSafeSpace = function (banner) {
+    if (!banner) {
+      setSafeSpace(0);
+      return;
+    }
+    const rect = banner.getBoundingClientRect();
+    const safeSpace = Math.max(0, rect.height + SAFE_SPACE_EXTRA);
+    setSafeSpace(safeSpace);
+  };
+
+  const appendFallback = function (container, text) {
+    container.innerHTML = "";
+    const fallback = document.createElement("div");
+    fallback.className = "playground-ad-placeholder";
+    fallback.textContent = text || FALLBACK_TEXT;
+    container.appendChild(fallback);
+  };
+
   const mountBanner = function (config) {
     if (document.getElementById(BANNER_ID)) return;
+    if (!document.body) return;
 
     const banner = document.createElement("div");
     banner.id = BANNER_ID;
+    banner.className = "playground-ad-shell playground-ad-fixed";
     banner.setAttribute("role", "complementary");
     banner.setAttribute("aria-label", "Advertisement");
-    banner.style.position = "fixed";
-    banner.style.left = "0";
-    banner.style.right = "0";
-    banner.style.bottom = "0";
-    banner.style.zIndex = "2147483000";
-    banner.style.display = "block";
-    banner.style.padding = "8px 48px 8px 12px";
-    banner.style.borderTop = "1px solid rgba(0, 0, 0, 0.2)";
-    banner.style.background = "rgba(18, 18, 18, 0.94)";
-    banner.style.backdropFilter = "blur(4px)";
-    banner.style.minHeight = "64px";
-    banner.style.boxShadow = "0 -10px 24px rgba(0, 0, 0, 0.28)";
-    banner.style.color = "#f3f3f3";
 
     const closeButton = document.createElement("button");
     closeButton.type = "button";
+    closeButton.className = "playground-ad-close";
     closeButton.setAttribute("aria-label", "Close advertisement");
     closeButton.textContent = "×";
-    closeButton.style.position = "absolute";
-    closeButton.style.top = "8px";
-    closeButton.style.right = "10px";
-    closeButton.style.width = "28px";
-    closeButton.style.height = "28px";
-    closeButton.style.border = "1px solid rgba(255, 255, 255, 0.4)";
-    closeButton.style.borderRadius = "999px";
-    closeButton.style.background = "rgba(0, 0, 0, 0.4)";
-    closeButton.style.color = "#fff";
-    closeButton.style.fontSize = "18px";
-    closeButton.style.lineHeight = "1";
-    closeButton.style.cursor = "pointer";
-    closeButton.addEventListener("click", function () {
+    let bannerResizeObserver = null;
+    const handleViewportChange = function () {
+      updateSafeSpace(banner);
+    };
+    const teardownBanner = function () {
       banner.remove();
-      if (document.body && document.body.dataset) {
-        document.body.dataset[ROOT_FLAG] = "0";
+      setBannerMounted(false);
+      setSafeSpace(0);
+      setDemoCompensation(false);
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("orientationchange", handleViewportChange);
+      if (bannerResizeObserver) {
+        bannerResizeObserver.disconnect();
       }
-    });
+    };
+    closeButton.addEventListener("click", teardownBanner);
 
     const content = document.createElement("div");
-    content.style.minHeight = "50px";
-    content.style.width = "100%";
-    content.style.display = "flex";
-    content.style.alignItems = "center";
-    content.style.justifyContent = "center";
+    content.className = "playground-ad-content";
 
     banner.appendChild(closeButton);
     banner.appendChild(content);
     document.body.appendChild(banner);
-
-    if (document.body && document.body.dataset) {
-      document.body.dataset[ROOT_FLAG] = "1";
+    setBannerMounted(true);
+    setDemoCompensation(isPlaygroundDemoPath);
+    updateSafeSpace(banner);
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("orientationchange", handleViewportChange);
+    if (typeof ResizeObserver !== "undefined") {
+      bannerResizeObserver = new ResizeObserver(function () {
+        updateSafeSpace(banner);
+      });
+      bannerResizeObserver.observe(banner);
     }
 
     const slot = config && typeof config.slot === "string" ? config.slot.trim() : "";
@@ -146,9 +205,6 @@
     if (config && config.shouldServeAds && config.client && hasValidSlot) {
       const adSlot = document.createElement("ins");
       adSlot.className = "adsbygoogle";
-      adSlot.style.display = "block";
-      adSlot.style.width = "100%";
-      adSlot.style.minHeight = "50px";
       adSlot.setAttribute("data-ad-client", config.client);
       adSlot.setAttribute("data-ad-slot", slot);
       adSlot.setAttribute("data-ad-format", "horizontal");
@@ -161,33 +217,22 @@
             (window.adsbygoogle = window.adsbygoogle || []).push({});
             adSlot.dataset.adsInitialized = "1";
           } catch {
-            content.innerHTML = "";
-            const fallback = document.createElement("div");
-            fallback.textContent = "광고 영역";
-            fallback.style.fontSize = "13px";
-            fallback.style.color = "#d0d0d0";
-            content.appendChild(fallback);
+            appendFallback(content, "광고 영역");
           }
         })
         .catch(function () {
-          content.innerHTML = "";
-          const fallback = document.createElement("div");
-          fallback.textContent = "광고 영역";
-          fallback.style.fontSize = "13px";
-          fallback.style.color = "#d0d0d0";
-          content.appendChild(fallback);
+          appendFallback(content, "광고 영역");
         });
       return;
     }
 
-    const placeholder = document.createElement("div");
-    placeholder.textContent = "광고 영역 · Google AdSense 설정 후 활성화됩니다.";
-    placeholder.style.fontSize = "13px";
-    placeholder.style.color = "#d0d0d0";
-    content.appendChild(placeholder);
+    appendFallback(content, FALLBACK_TEXT);
   };
 
-  fetch(configUrl, { credentials: "same-origin" })
+  ensureAdStyles()
+    .then(function () {
+      return fetch(configUrl, { credentials: "same-origin" });
+    })
     .then(function (res) {
       if (!res.ok) throw new Error("Failed to load ad config.");
       return res.json();

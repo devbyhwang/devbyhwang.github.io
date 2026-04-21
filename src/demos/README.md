@@ -14,6 +14,8 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
    - 데모는 사이트 전역 CSS/JS에 의존하지 않도록 구성
    - 데모 내부 리소스는 상대 경로 기반으로 작성
    - `../` 백 링크를 포함해 Playground 목록으로 복귀 가능하게 유지
+   - 광고 배너는 `../../../assets/playground-bottom-ad.js`만 포함 (스크립트가 `playground-bottom-ad.css`를 자동 로드)
+   - 광고에 UI가 가려지지 않도록 핵심 루트에 `data-playground-safe-root` 부여
 
 3. **`studio.js`에 카드 엔트리 추가** (`src/_data/studio.js`)
    ```js
@@ -41,6 +43,20 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
 - **PATH_PREFIX 호환**: 절대 경로 하드코딩 지양, 상대 경로 우선
 - **백 네비게이션**: `../` 링크 유지
 - **비밀키 금지**: 데모 HTML/JS에 API 키 하드코딩 금지
+- **광고 UI 공통화**: playground 목록/데모 모두 `playground-bottom-ad.js + playground-bottom-ad.css` 공통 규약 사용
+- **광고 안전영역 적용**: 핵심 루트는 `var(--playground-ad-safe-space, 0px)`를 반영해 하단 가림 방지
+
+## 광고 안전영역 규약
+
+```html
+<div
+  id="demo-container"
+  data-playground-safe-root
+  style="height: calc(100vh - var(--playground-ad-safe-space, 0px));"
+>
+  <!-- demo UI -->
+</div>
+```
 
 ## LLM 연동 시 권장 아키텍처
 - 정적 데모(`src/demos/*`)는 프록시 서버 엔드포인트만 호출
