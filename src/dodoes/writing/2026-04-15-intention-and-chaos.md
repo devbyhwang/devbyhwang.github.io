@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "의도와 혼돈"
 date: 2026-04-15
 category: notes

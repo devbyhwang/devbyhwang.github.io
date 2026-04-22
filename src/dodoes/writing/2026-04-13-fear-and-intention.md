@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "선택과 집중"
 date: 2026-04-13
 category: notes

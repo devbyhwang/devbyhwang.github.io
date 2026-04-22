@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "의식의 흐름 (2026.04.06)"
 date: 2026-04-06
 category: notes

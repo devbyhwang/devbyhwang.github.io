@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "구조적 소설은 죽게 될 것이다."
 date: 2026-04-11
 category: notes

@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "생각없이 하다."
 date: 2026-04-11
 category: notes
