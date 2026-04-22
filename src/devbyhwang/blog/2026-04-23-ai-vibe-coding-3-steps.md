@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/devbyhwang-post.njk
 title: "그냥 \"짜 줘!\"보다 훨씬 강력한 3단계 바이브 코딩 비법!"
 date: 2026-04-23
 category: info

@@ -38,12 +38,12 @@
 ### A. DevByHwang 글
 - 경로: `src/devbyhwang/blog/YYYY-MM-DD-title.md`
 - 참고: `src/devbyhwang/blog/` 디렉터리가 없다면 먼저 생성한 뒤 글 파일을 추가하세요.
-- 레이아웃: `layouts/post.njk`
+- 레이아웃: `layouts/devbyhwang-post.njk`
 - 카테고리: `devlog | info | freelance | games`
 
 ```yaml
 ---
-layout: layouts/post.njk
+layout: layouts/devbyhwang-post.njk
 title: "글 제목"
 date: 2026-04-04
 category: devlog
@@ -53,12 +53,12 @@ excerpt: "한 줄 요약"
 
 ### B. Underground Novel 글
 - 경로: `src/dodoes/writing/YYYY-MM-DD-title.md`
-- 레이아웃: `layouts/writing.njk`
+- 레이아웃: `layouts/dodoes-writing.njk`
 - 카테고리: `novel | notes`
 
 ```yaml
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "글 제목"
 date: 2026-04-04
 category: notes

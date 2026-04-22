@@ -1,5 +1,5 @@
 ---
-layout: layouts/writing.njk
+layout: layouts/dodoes-writing.njk
 title: "천사의 의무"
 date: 2026-04-09
 category: novel

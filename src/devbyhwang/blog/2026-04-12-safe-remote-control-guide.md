@@ -1,5 +1,5 @@
 ---
-layout: layouts/post.njk
+layout: layouts/devbyhwang-post.njk
 title: "완전 쉽고 안전한 내 PC 원격 제어 가이드!"
 date: 2026-04-12
 category: info
