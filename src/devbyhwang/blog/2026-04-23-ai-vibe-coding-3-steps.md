@@ -2,7 +2,7 @@
 layout: layouts/writing.njk
 title: "그냥 \"짜 줘!\"보다 훨씬 강력한 3단계 바이브 코딩 비법!"
 date: 2026-04-23
-category: notes
+category: info
 excerpt: "단순한 명령을 넘어 AI 모델별 장점을 극대화해 개발 속도와 정확도를 높이는 '초효율 바이브 코딩' 전략을 소개합니다."
 ---
 
