@@ -2386,6 +2386,16 @@ canvas,
     padding-right: var(--space-4);
   }
 
+  .writing-content.prose {
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+  }
+
+  .writing-content.prose pre {
+    margin-left: calc(var(--space-3) * -1);
+    margin-right: calc(var(--space-3) * -1);
+  }
+
   .about-page,
   .projects-page,
   .freelance-page,
