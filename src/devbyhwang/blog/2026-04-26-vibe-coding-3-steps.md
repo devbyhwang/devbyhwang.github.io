@@ -30,3 +30,10 @@ excerpt: "AI에게 무턱대고 요청하는 대신, 기능을 원자 단위로 
 코딩은 이제 타자 싸움이 아니라 **'얼마나 잘 쪼개고 일을 시키느냐'**의 싸움입니다. 무턱대고 "짜 줘"라고 하기 전에 이 3단계를 꼭 적용해 보세요!<br />
 <br />
 #AI코딩 #바이브코딩 #Gemini #Claude #Cursor #개발꿀팁
+<br />
+<div align="center" style="border: 1px solid #eee; border-radius: 12px; padding: 20px; background-color: #fafafa; color: #666;">
+  <span style="font-size: 24px;">🤖</span><br />
+  <p style="margin-top: 10px; font-size: 0.95em; letter-spacing: -0.02em;">
+    본 콘텐츠는 <b>AI</b>를 통해 작성 및 교정되었습니다.
+  </p>
+</div>
