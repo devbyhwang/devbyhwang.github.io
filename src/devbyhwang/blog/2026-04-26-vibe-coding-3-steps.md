@@ -32,7 +32,7 @@ excerpt: "AI에게 무턱대고 요청하는 대신, 기능을 원자 단위로 
 #AI코딩 #바이브코딩 #Gemini #Claude #Cursor #개발꿀팁
 <br />
 <div align="center">
-  <div style="display: inline-block; border: 1px solid #eee; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; color: #999;">
+  <div style="display: inline-block; border: 1px solid #555; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; color: #555;">
     본 콘텐츠는 AI의 도움을 받아 작성되었습니다.
   </div>
 </div>
