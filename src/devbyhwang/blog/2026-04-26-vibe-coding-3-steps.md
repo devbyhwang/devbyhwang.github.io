@@ -2,7 +2,7 @@
 layout: layouts/writing.njk
 title: "\"그냥 짜 줘\"보다 10배 빠른 바이브 코딩 3단계 비법"
 date: 2026-04-26
-category: notes
+category: info
 excerpt: "AI에게 무턱대고 요청하는 대신, 기능을 원자 단위로 쪼개어 코딩 속도를 10배 높이는 전략"
 ---
 
