@@ -27,20 +27,6 @@ module.exports = {
       type: "demo",
       preview: "/assets/nemo-game-preview.png",
     },
-    {
-      title: "소설 작성 어시스턴트",
-      slug: "novel-assistant",
-      role: "Playground",
-      status: "Live",
-      blurb: "원고 입력 + 점검 항목 선택 기반 피드백 도구. 서버 프록시(OpenAI) 연동 구조.",
-      links: [
-        { label: "Try", href: "/devbyhwang/playground/novel-assistant/" },
-      ],
-      postCategory: "games",
-      tags: ["writing", "assistant", "llm", "analysis"],
-      type: "demo",
-      preview: "/assets/novel-assistant-preview.png",
-    },
   ],
   freelance: {
     summary: [
