@@ -75,4 +75,3 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
 ## 현재 Playground 목록
 - **Embercraft Fireplace** - Three.js + Cannon.js 기반 실시간 장작불 시뮬레이션
 - **네모게임 (NEMO GAME)** - 100% 풀이 가능한 논리 퍼즐
-- **소설 작성 어시스턴트** - 원고 + 점검 항목 기반 LLM 피드백 데모

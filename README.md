@@ -77,7 +77,6 @@ excerpt: "본문 일부 요약"
 - 현재 등록 데모:
   - Embercraft Fireplace (`/devbyhwang/playground/embercraft/`)
   - 네모게임 (NEMO GAME) (`/devbyhwang/playground/nemo-game/`)
-  - 소설 작성 어시스턴트 (`/devbyhwang/playground/novel-assistant/`)
 
 ### LLM 데모 보안 원칙
 - GitHub Pages 리포지토리/정적 코드에 API 키를 저장하지 않습니다.
@@ -105,7 +104,7 @@ excerpt: "본문 일부 요약"
 - 콘텐츠: CC BY-NC-SA 4.0 (`LICENSE-CONTENT`)
 - 콘텐츠 경로는 `LICENSE-CONTENT`의 Scope를 따릅니다.
   - 포함: `src/devbyhwang/blog/**`, `src/dodoes/writing/**`, `src/demos/**`
-  - 포함: Playground 전용 자산(`src/assets/embercraft.js`, `src/assets/novel-assistant.js`, `src/assets/*-preview.png`, `src/assets/profile.png`, `src/assets/dodoes-profile.png`)
+  - 포함: Playground 전용 자산(`src/assets/embercraft.js`, `src/assets/*-preview.png`, `src/assets/profile.png`, `src/assets/dodoes-profile.png`)
 - 그 외 레이아웃/테마/템플릿/빌드/워커를 포함한 코드성 파일은 MIT를 따릅니다.
 - 제3자 라이브러리/폰트/SDK 등은 각 원저작권 및 원라이선스가 우선합니다.
 
