@@ -45,6 +45,7 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
 - **비밀키 금지**: 데모 HTML/JS에 API 키 하드코딩 금지
 - **광고 UI 공통화**: playground 목록/데모 모두 `playground-bottom-ad.js + playground-bottom-ad.css` 공통 규약 사용
 - **광고 안전영역 적용**: 핵심 루트는 `var(--playground-ad-safe-space, 0px)`를 반영해 하단 가림 방지
+- **CSP/SRI 검토**: 외부 스크립트/CDN을 쓰는 데모는 CSP와 SRI 적용 여부 확인
 
 ## 광고 안전영역 규약
 
@@ -57,13 +58,6 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
   <!-- demo UI -->
 </div>
 ```
-
-## LLM 연동 시 권장 아키텍처
-- 정적 데모(`src/demos/*`)는 프록시 서버 엔드포인트만 호출
-- API 키는 프록시 환경변수/시크릿에만 저장
-- 프록시에 CORS Origin 제한 + Turnstile 검증 적용
-- rate limit은 Durable Object 같은 원자적 카운터 사용
-- 개인 API 키 입력 UI는 기본 제외(필요 시 별도 정책과 경고 문구 필수)
 
 ## 태그 예시
 - `webgl` - Three.js/WebGL
