@@ -80,12 +80,6 @@ excerpt: "본문 일부 요약"
   - 네모게임 (NEMO GAME) (`/devbyhwang/playground/nemo-game/`)
 - 자세한 데모 추가 가이드는 `src/demos/README.md`를 따릅니다.
 
-### LLM 데모 보안 원칙
-- GitHub Pages 리포지토리/정적 코드에 API 키를 저장하지 않습니다.
-- 브라우저에서 직접 LLM API를 호출하지 않고, 별도 프록시 서버(예: Cloudflare Workers)를 통해 호출합니다.
-- 프록시 서버에만 서버 키를 저장하고, CORS Origin 제한 + Turnstile 검증을 적용합니다.
-- rate limit은 KV 대신 Durable Object 등 원자적 카운터로 강제합니다.
-
 ### 광고 운영 메모
 - DevByHwang 브랜드에서만 공통 광고 기능을 사용합니다.
 - 기본 글/페이지 광고는 `GOOGLE_ADS_CLIENT`, `GOOGLE_ADS_ENABLE`, `GOOGLE_ADS_SLOT_DEFAULT`로 설정합니다.
@@ -93,9 +87,9 @@ excerpt: "본문 일부 요약"
 - 광고 슬롯 값이 비어 있거나 `0000000000`이면 placeholder만 표시됩니다.
 
 ### CSP/SRI 운영 메모
-- 주요 페이지는 `meta` 기반 CSP를 사용합니다(GitHub Pages 환경).
-- 고정 CDN 스크립트는 SRI(`integrity`)를 유지합니다.
-- CDN URL을 변경하면 아래 명령으로 SHA-384를 다시 계산해 `integrity` 값을 갱신하세요.
+- 기본 Eleventy 레이아웃과 일부 독립형 데모는 `meta` 기반 CSP를 사용합니다(GitHub Pages 환경).
+- CDN 스크립트를 추가하거나 변경할 때는 SRI(`integrity`) 적용 여부를 확인합니다.
+- SRI를 적용하는 CDN URL을 변경하면 아래 명령으로 SHA-384를 다시 계산해 `integrity` 값을 갱신하세요.
   - `curl -sL <cdn-url> | openssl dgst -sha384 -binary | openssl base64 -A`
 
 ## GitHub Pages 배포
