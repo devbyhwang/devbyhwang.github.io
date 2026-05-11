@@ -108,6 +108,8 @@ excerpt: "본문 일부 요약"
 - 그 외 레이아웃/테마/템플릿/빌드/워커를 포함한 코드성 파일은 MIT를 따릅니다.
 - 제3자 라이브러리/폰트/SDK 등은 각 원저작권 및 원라이선스가 우선합니다.
 
-## 기여
-- 오타 수정, 빌드/설정 개선, 문서 개선 PR을 환영합니다.
-- 상세 가이드는 `CONTRIBUTING.md`를 참고하세요.
+## 템플릿
+이 저장소는 개인 블로그 운영용입니다.
+레이아웃을 재사용해 새 블로그를 만들고 싶다면 별도 템플릿 저장소를 사용하세요.
+
+- DevByHwang Blog Template: https://github.com/devbyhwang/devbyhwang-blog-template

@@ -8,7 +8,6 @@
 - [ ] Docs update
 - [ ] Build/CI
 - [ ] UI/Style
-- [ ] Content update
 
 ## 영향 범위
 
