@@ -41,6 +41,10 @@
     {% elif siteName %}
       {% set docTitle = siteName %}
     {% endif %}
+    {% set metaDescription = excerpt or description or (activeBrand and activeBrand.description) or site.description %}
+    {% set canonicalHref = canonicalUrl or (site.url + (page.url | url)) %}
+    {% set ogType = 'article' if layout and (layout == 'layouts/devbyhwang-post.njk' or layout == 'layouts/dodoes-writing.njk') else 'website' %}
+    {% set ogSiteName = siteName or 'DevByHwang Blog' %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="google-site-verification" content="rVaruXdp2AVKgk3fj5q2DvvVZu4Ia3wJ5bQOXDGTcWU" />
@@ -50,8 +54,17 @@
       content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self'"
     />
     <title>{{ docTitle }}</title>
-    <meta name="description" content="{{ excerpt or description or (activeBrand and activeBrand.description) or site.description }}" />
-    <link rel="canonical" href="{{ canonicalUrl or (site.url + (page.url | url)) }}" />
+    <meta name="description" content="{{ metaDescription }}" />
+    <link rel="canonical" href="{{ canonicalHref }}" />
+    <meta property="og:title" content="{{ docTitle }}" />
+    <meta property="og:description" content="{{ metaDescription }}" />
+    <meta property="og:url" content="{{ canonicalHref }}" />
+    <meta property="og:type" content="{{ ogType }}" />
+    <meta property="og:site_name" content="{{ ogSiteName }}" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="{{ docTitle }}" />
+    <meta name="twitter:description" content="{{ metaDescription }}" />
     <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/icons/favicon-32x32.png' | url }}" />
     <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/icons/favicon-16x16.png' | url }}" />
     <link rel="shortcut icon" href="{{ '/assets/icons/favicon.png' | url }}" />

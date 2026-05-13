@@ -3,7 +3,7 @@ module.exports = {
     displayName: "DevByHwang",
     slug: "devbyhwang",
     tagline: "playground · devlog",
-    description: "Playground와 개발 기록을 모아두는 개발자 블로그.",
+    description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.",
     homeHref: "/devbyhwang/",
     nav: [
       { label: "홈", href: "/devbyhwang/" },
