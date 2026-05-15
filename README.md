@@ -143,7 +143,7 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 - 목록 페이지: `/devbyhwang/playground/`
 - 데모 파일: `src/demos/<slug>/index.html`
 - 빌드 결과: `/devbyhwang/playground/<slug>/`
-- 카드 데이터: `src/_data/studio.js`의 `games` 배열, `type: "demo"`
+- 카드 데이터: `src/_data/studio.js`의 `games` 배열
 
 현재 등록된 데모:
 
