@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">PDF OCR Extractor preview</title>
+  <desc id="desc">A stylized document scanner interface with OCR text extraction cards.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#efe4c9"/>
+      <stop offset="0.55" stop-color="#fff8e8"/>
+      <stop offset="1" stop-color="#dfe8ce"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#244f38"/>
+      <stop offset="1" stop-color="#d99a30"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="30" stdDeviation="28" flood-color="#1c2614" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <rect width="1280" height="720" fill="url(#bg)"/>
+  <g opacity="0.2" stroke="#192015" stroke-width="1">
+    <path d="M0 84H1280M0 168H1280M0 252H1280M0 336H1280M0 420H1280M0 504H1280M0 588H1280M0 672H1280"/>
+    <path d="M92 0V720M184 0V720M276 0V720M368 0V720M460 0V720M552 0V720M644 0V720M736 0V720M828 0V720M920 0V720M1012 0V720M1104 0V720M1196 0V720"/>
+  </g>
+  <circle cx="1040" cy="110" r="190" fill="#244f38" opacity="0.13"/>
+  <circle cx="210" cy="30" r="250" fill="#d99a30" opacity="0.2"/>
+  <g filter="url(#shadow)">
+    <rect x="92" y="86" width="1096" height="548" rx="44" fill="#fffaf0" fill-opacity="0.82" stroke="#192015" stroke-opacity="0.14"/>
+    <rect x="136" y="136" width="390" height="448" rx="28" fill="#244f38"/>
+    <rect x="176" y="180" width="310" height="360" rx="18" fill="#fffaf0"/>
+    <rect x="209" y="220" width="120" height="18" rx="9" fill="#d99a30"/>
+    <rect x="209" y="268" width="228" height="12" rx="6" fill="#244f38" opacity="0.35"/>
+    <rect x="209" y="302" width="190" height="12" rx="6" fill="#244f38" opacity="0.28"/>
+    <rect x="209" y="336" width="242" height="12" rx="6" fill="#244f38" opacity="0.28"/>
+    <rect x="209" y="370" width="170" height="12" rx="6" fill="#244f38" opacity="0.28"/>
+    <rect x="209" y="430" width="98" height="34" rx="17" fill="#244f38" opacity="0.12"/>
+    <rect x="322" y="430" width="132" height="34" rx="17" fill="#244f38" opacity="0.12"/>
+    <path d="M164 160h344v400H164z" fill="none" stroke="#d99a30" stroke-width="6" stroke-dasharray="22 16" opacity="0.8"/>
+    <text x="590" y="232" fill="#192015" font-family="Georgia, 'Times New Roman', serif" font-size="78" font-weight="700" letter-spacing="-5">PDF OCR</text>
+    <text x="594" y="286" fill="#5e6759" font-family="Arial, sans-serif" font-size="24" font-weight="700">browser-only text extraction lab</text>
+    <g font-family="Arial, sans-serif" font-weight="800">
+      <rect x="594" y="350" width="164" height="62" rx="24" fill="#244f38" fill-opacity="0.12"/>
+      <text x="624" y="389" fill="#244f38" font-size="22">EMAIL</text>
+      <rect x="780" y="350" width="166" height="62" rx="24" fill="#244f38" fill-opacity="0.12"/>
+      <text x="810" y="389" fill="#244f38" font-size="22">PHONE</text>
+      <rect x="968" y="350" width="132" height="62" rx="24" fill="#244f38" fill-opacity="0.12"/>
+      <text x="998" y="389" fill="#244f38" font-size="22">DATE</text>
+      <rect x="594" y="444" width="506" height="22" rx="11" fill="#192015" opacity="0.18"/>
+      <rect x="594" y="488" width="428" height="22" rx="11" fill="#192015" opacity="0.14"/>
+      <rect x="594" y="532" width="350" height="22" rx="11" fill="#192015" opacity="0.12"/>
+    </g>
+    <circle cx="1110" cy="170" r="54" fill="url(#green)"/>
+    <text x="1110" y="184" text-anchor="middle" fill="#fffaf0" font-family="Arial, sans-serif" font-size="36" font-weight="900">Aa</text>
+  </g>
+</svg>

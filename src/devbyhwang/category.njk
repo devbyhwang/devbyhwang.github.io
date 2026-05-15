@@ -13,11 +13,7 @@ eleventyComputed:
 {% set categoryPosts = collections.devPosts | postsByCategory(category) %}
 {% set gamesPlayground = [] %}
 {% if category.key == 'games' %}
-  {% for project in studio.games %}
-    {% if project.type == 'demo' %}
-      {% set gamesPlayground = (gamesPlayground.push(project), gamesPlayground) %}
-    {% endif %}
-  {% endfor %}
+  {% set gamesPlayground = studio.games %}
 {% endif %}
 
 <section class="page-hero">
@@ -48,10 +44,6 @@ eleventyComputed:
               <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
             </div>
             {% endif %}
-            <div class="project-meta">
-              {% if item.status %}<span class="badge">{{ item.status }}</span>{% endif %}
-              {% if item.role %}<span class="pill">{{ item.role }}</span>{% endif %}
-            </div>
             <h3>{{ item.title }}</h3>
             <p class="muted">{{ item.blurb }}</p>
             {% if launch %}

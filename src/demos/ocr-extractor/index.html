@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://pagead2.googlesyndication.com; worker-src 'self' blob: https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' https://cdn.jsdelivr.net; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'"
+  >
+  <title>PDF OCR Extractor | DevByHwang</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a href="../" class="back-link">← Playground</a>
+
+  <main class="shell" data-playground-safe-root>
+    <section class="tool-header">
+      <div>
+        <h1>PDF OCR Extractor</h1>
+        <p class="lead">PDF와 이미지에서 텍스트를 추출합니다.<br>이메일, 전화번호, 날짜, 금액, URL은 자동 정리됩니다. 모든 처리는 브라우저에서 실행됩니다.</p>
+      </div>
+      <div class="support-pills" aria-label="지원 기능">
+        <span>PDF</span>
+        <span>Image OCR</span>
+        <span>TXT/JSON/CSV</span>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div>
+        <label class="dropzone" id="dropzone" for="fileInput">
+          <input class="file-input" id="fileInput" type="file" accept="application/pdf,image/*" multiple>
+          <div>
+            <div class="drop-icon">Aa</div>
+            <h2>파일을 끌어오거나 추가</h2>
+            <p>스캔은 OCR, 텍스트 PDF는 내장 텍스트 우선.</p>
+            <div class="button-row"><span class="pick-button">파일 추가</span></div>
+          </div>
+        </label>
+
+        <div class="page-range-modal" id="pageRangeModal">
+          <section class="page-range-panel" id="pageRangePanel" role="dialog" aria-modal="true" aria-labelledby="pageRangeTitle" aria-describedby="pageRangeMessage" tabindex="-1">
+            <div class="page-range-header">
+              <span class="page-range-kicker">PDF</span>
+              <h2 id="pageRangeTitle">처리 범위 확인</h2>
+            </div>
+            <p id="pageRangeMessage">큰 PDF입니다. 처리할 페이지 범위를 확인하세요.</p>
+            <div class="pdf-range-list" id="pdfRangeList"></div>
+            <button class="secondary" id="pageRangeProcessBtn" type="button">이 범위로 처리</button>
+          </section>
+        </div>
+
+        <section class="panel work-panel" aria-labelledby="workStatusTitle">
+          <div class="work-panel-heading">
+            <div>
+              <h2 id="workStatusTitle">처리 상태</h2>
+              <p class="hint">파일을 넣은 뒤 처리 범위와 진행 상태를 여기에서 확인합니다.</p>
+            </div>
+            <button class="secondary" id="cancelBtn" type="button" disabled>취소</button>
+          </div>
+          <div class="meter" aria-label="진행률"><span id="progressBar"></span></div>
+          <p class="status-line" id="statusLine">대기 중</p>
+          <div class="file-list" id="fileList" aria-label="선택한 파일"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="settingsTitle">
+          <h2 id="settingsTitle">추출 설정</h2>
+          <p class="hint">기본값은 일반 스캔 PDF/문서 사진 기준 정확도 우선 추천값입니다. 다국어 선택은 첫 실행 때 언어 데이터를 더 내려받을 수 있습니다.</p>
+          <div class="controls">
+            <label class="control">언어
+              <select id="languageSelect">
+                <option value="kor+eng" selected>한국어 + English</option>
+                <option value="eng">English</option>
+                <option value="kor">한국어</option>
+                <option value="jpn+eng">일본어 + English</option>
+                <option value="chi_sim+eng">중국어 간체 + English</option>
+                <option value="chi_tra+eng">중국어 번체 + English</option>
+                <option value="spa+eng">스페인어 + English</option>
+                <option value="fra+eng">프랑스어 + English</option>
+                <option value="deu+eng">독일어 + English</option>
+                <option value="ita+eng">이탈리아어 + English</option>
+                <option value="por+eng">포르투갈어 + English</option>
+                <option value="rus+eng">러시아어 + English</option>
+                <option value="ara+eng">아랍어 + English</option>
+                <option value="hin+eng">힌디어 + English</option>
+              </select>
+            </label>
+            <label class="control">PDF 렌더링 품질
+              <select id="pdfQualitySelect">
+                <option value="2400" selected>정확도 우선 · 2400px</option>
+                <option value="1800">균형형 · 1800px</option>
+                <option value="1200">빠르게 · 1200px</option>
+                <option value="3000">고해상도 · 3000px</option>
+              </select>
+            </label>
+            <label class="control">OCR 페이지 구조
+              <select id="psmSelect">
+                <option value="3" selected>자동 · 일반 문서</option>
+                <option value="4">단일 컬럼</option>
+                <option value="6">단일 문단/블록</option>
+                <option value="7">한 줄</option>
+                <option value="11">흩어진 텍스트</option>
+                <option value="5">세로쓰기/세로 블록</option>
+              </select>
+            </label>
+            <label class="control">이미지 전처리
+              <select id="preprocessSelect">
+                <option value="contrast" selected>고대비 흑백</option>
+                <option value="grayscale">그레이스케일</option>
+                <option value="threshold">강한 이진화</option>
+                <option value="none">원본 유지</option>
+              </select>
+            </label>
+            <label class="control">작은 이미지 보정
+              <select id="upscaleSelect">
+                <option value="auto" selected>자동 확대</option>
+                <option value="none">확대 안 함</option>
+              </select>
+            </label>
+            <label class="control">단어 사전 보정
+              <select id="dictionarySelect">
+                <option value="normal" selected>일반 문장 우선</option>
+                <option value="off">코드/영수증 우선</option>
+              </select>
+            </label>
+            <label class="control">문자 인식 범위
+              <select id="charModeSelect">
+                <option value="all" selected>전체 문자</option>
+                <option value="numbers">숫자/금액/날짜 중심</option>
+                <option value="contact">연락처/이메일/URL 중심</option>
+              </select>
+            </label>
+            <label class="check-row">
+              <input id="autoRotateInput" type="checkbox" checked>
+              <span>90도 회전된 이미지 방향 자동 보정</span>
+            </label>
+            <label class="check-row">
+              <input id="borderPaddingInput" type="checkbox" checked>
+              <span>이미지 가장자리 흰 여백 보정</span>
+            </label>
+            <label class="check-row">
+              <input id="forceOcrInput" type="checkbox">
+              <span>필요할 때만 · PDF 안에 선택 가능한 텍스트가 있어도 이미지 OCR 강제 실행</span>
+            </label>
+            <label class="check-row">
+              <input id="preserveSpacesInput" type="checkbox" checked>
+              <span>공백을 최대한 보존해서 표/영수증 형태 유지</span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <div class="result-stack">
+        <section class="result-card" aria-labelledby="rawTitle">
+          <div class="result-toolbar">
+            <div>
+              <h2 id="rawTitle">원문 텍스트</h2>
+              <p class="hint">OCR 결과는 문서 상태와 글꼴에 따라 오차가 있습니다.</p>
+            </div>
+            <div class="result-actions">
+              <button class="secondary" id="copyTextBtn" type="button" disabled>복사</button>
+              <button class="secondary" id="downloadTxtBtn" type="button" disabled>TXT</button>
+              <button class="secondary" id="downloadPdfBtn" type="button" disabled>PDF</button>
+              <button class="secondary" id="downloadRawJsonBtn" type="button" disabled>JSON</button>
+              <button id="clearBtn" type="button" disabled>초기화</button>
+            </div>
+          </div>
+          <textarea id="textOutput" spellcheck="false" placeholder="추출된 텍스트가 여기에 표시됩니다."></textarea>
+        </section>
+
+        <section class="result-card" aria-labelledby="structuredTitle">
+          <div class="result-toolbar">
+            <div>
+              <h2 id="structuredTitle">자동 추출 데이터</h2>
+              <p class="hint" id="summaryLine">아직 분석한 파일이 없습니다.</p>
+            </div>
+            <div class="result-actions">
+              <button class="secondary" id="selectFieldsBtn" type="button" disabled>전체 선택</button>
+              <button class="secondary" id="clearFieldsBtn" type="button" disabled>전체 해제</button>
+              <button class="secondary" id="copyStructuredBtn" type="button" disabled>복사</button>
+              <button class="secondary" id="downloadStructuredTxtBtn" type="button" disabled>TXT</button>
+              <button class="secondary" id="downloadStructuredJsonBtn" type="button" disabled>JSON</button>
+              <button class="secondary" id="downloadCsvBtn" type="button" disabled>CSV</button>
+            </div>
+          </div>
+          <div class="field-grid" id="fieldGrid"></div>
+        </section>
+
+        <section class="result-card page-log-card" aria-labelledby="pagesTitle">
+          <h2 id="pagesTitle">페이지 / 파일 로그</h2>
+          <div class="page-list" id="pageList"><div class="empty">파일을 넣으면 처리 로그와 미리보기가 표시됩니다.</div></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist/tesseract.min.js"
+    integrity="sha384-r1ru3tcf6FhnCFR4B7pIFG+BhFF9LlFtz/P1y4pblWn3AGs9y3lBx5SKLNf4+rED"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"
+    integrity="sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI"
+    crossorigin="anonymous"
+    defer
+  ></script>
+  <script type="module" src="./app.js"></script>
+  <script src="../../../assets/playground-bottom-ad.js" defer></script>
+</body>
+</html>

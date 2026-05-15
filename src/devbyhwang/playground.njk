@@ -5,12 +5,7 @@ title: Playground
 description: "실험과 데모를 모아둔 Playground"
 permalink: /devbyhwang/playground/
 ---
-{% set playgroundItems = [] %}
-{% for project in studio.games %}
-  {% if project.type == 'demo' %}
-    {% set playgroundItems = (playgroundItems.push(project), playgroundItems) %}
-  {% endif %}
-{% endfor %}
+{% set playgroundItems = studio.games %}
 
 <div data-playground-page hidden></div>
 
@@ -28,10 +23,6 @@ permalink: /devbyhwang/playground/
           <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
         </div>
         {% endif %}
-        <div class="project-meta">
-          {% if item.status %}<span class="badge">{{ item.status }}</span>{% endif %}
-          {% if item.role %}<span class="pill">{{ item.role }}</span>{% endif %}
-        </div>
         <h3>{{ item.title }}</h3>
         <p class="muted">{{ item.blurb }}</p>
         {% if launch %}

@@ -4,12 +4,7 @@ brand: devbyhwang
 title: 홈
 description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그."
 ---
-{% set playgroundItems = [] %}
-{% for project in studio.games %}
-  {% if project.type == 'demo' %}
-    {% set playgroundItems = (playgroundItems.push(project), playgroundItems) %}
-  {% endif %}
-{% endfor %}
+{% set playgroundItems = studio.games %}
 {% set devPosts = collections.devPosts %}
 
 <section class="page-hero">
@@ -29,10 +24,6 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
               <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
             </div>
             {% endif %}
-            <div class="project-meta">
-              {% if item.status %}<span class="badge">{{ item.status }}</span>{% endif %}
-              {% if item.role %}<span class="pill">{{ item.role }}</span>{% endif %}
-            </div>
             <h3>{{ item.title }}</h3>
             <p class="muted">{{ item.blurb }}</p>
             {% if launch %}
