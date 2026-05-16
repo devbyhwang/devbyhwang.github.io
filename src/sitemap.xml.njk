@@ -7,7 +7,7 @@ eleventyExcludeFromCollections: true
 {% set baseUrl = site.url %}
 {% for page in collections.all | sitemapFilter %}
   <url>
-    <loc>{{ baseUrl }}{{ page.url | url }}</loc>
+    <loc>{{ (baseUrl + (page.url | url)) | sitemapUrl }}</loc>
     {% if page.date %}
     <lastmod>{{ page.date | isoDate }}</lastmod>
     {% endif %}
