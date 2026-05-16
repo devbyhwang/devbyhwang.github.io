@@ -63,10 +63,15 @@
           <div class="file-list" id="fileList" aria-label="선택한 파일"></div>
         </section>
 
-        <section class="panel" aria-labelledby="settingsTitle">
-          <h2 id="settingsTitle">추출 설정</h2>
-          <p class="hint">기본값은 일반 스캔 PDF/문서 사진 기준 정확도 우선 추천값입니다. 다국어 선택은 첫 실행 때 언어 데이터를 더 내려받을 수 있습니다.</p>
-          <div class="controls">
+        <section class="panel settings-panel" id="settingsPanel" aria-labelledby="settingsTitle">
+          <div class="settings-heading">
+            <div class="settings-heading-copy">
+              <h2 id="settingsTitle">추출 설정</h2>
+              <p class="hint">기본값은 일반 스캔 PDF/문서 사진 기준 정확도 우선 추천값입니다. 다국어 선택은 첫 실행 때 언어 데이터를 더 내려받을 수 있습니다.</p>
+            </div>
+            <button class="secondary settings-toggle" id="settingsToggleBtn" type="button" aria-expanded="true" aria-controls="settingsControls">설정 접기</button>
+          </div>
+          <div class="controls" id="settingsControls">
             <label class="control">언어
               <select id="languageSelect">
                 <option value="kor+eng" selected>한국어 + English</option>

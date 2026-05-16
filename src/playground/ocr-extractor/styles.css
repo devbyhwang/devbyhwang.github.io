@@ -196,6 +196,25 @@
       border-radius: var(--radius);
       padding: 22px;
     }
+    .settings-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .settings-heading-copy {
+      min-width: 0;
+    }
+    .settings-toggle {
+      flex: 0 0 auto;
+      min-height: 38px;
+      padding: 10px 13px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .settings-panel.is-collapsed .controls {
+      display: none;
+    }
     .controls {
       display: grid;
       gap: 14px;
@@ -631,6 +650,13 @@
         font-size: 28px;
       }
       .controls { gap: 12px; }
+      .settings-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .settings-toggle {
+        width: 100%;
+      }
       .work-panel-heading {
         align-items: stretch;
         flex-direction: column;
