@@ -71,6 +71,11 @@ const jsonScript = (value) =>
     .replace(/\u2028/g, "\\u2028")
     .replace(/\u2029/g, "\\u2029");
 
+const sitemapUrl = (value) => {
+  if (typeof value !== "string") return "";
+  return encodeURI(value).replace(/&/g, "&amp;");
+};
+
 const shuffle = (items) => {
   const shuffled = Array.isArray(items) ? [...items] : [];
   for (let i = shuffled.length - 1; i > 0; i -= 1) {
@@ -206,6 +211,7 @@ module.exports = function (eleventyConfig) {
     return items.slice(0, count);
   });
   eleventyConfig.addFilter("jsonScript", (value) => jsonScript(value));
+  eleventyConfig.addFilter("sitemapUrl", sitemapUrl);
   eleventyConfig.addFilter("injectInlineAds", (html, site, env, options = {}) =>
     injectInlineAds(html, site, env, options)
   );
