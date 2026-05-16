@@ -3,7 +3,6 @@ import {
   LIMITS,
   TESSERACT_BASE_URL,
   TESSERACT_CORE_URL,
-  TESSERACT_LANG_URL,
   installReadableStreamIteratorPolyfill,
   loadPdfJs,
 } from "./modules/constants.js";
@@ -429,7 +428,6 @@ const {
           },
           workerPath: `${TESSERACT_BASE_URL}/worker.min.js`,
           corePath: TESSERACT_CORE_URL,
-          langPath: TESSERACT_LANG_URL,
         }, getDictionaryConfig());
       } catch (error) {
         console.error(error);

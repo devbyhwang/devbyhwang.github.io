@@ -3,7 +3,6 @@ export const PDFJS_BASE_URL = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_V
 
 export const TESSERACT_BASE_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist";
 export const TESSERACT_CORE_URL = "https://cdn.jsdelivr.net/npm/tesseract.js-core@6.0.0";
-export const TESSERACT_LANG_URL = "https://tessdata.projectnaptha.com/4.0.0";
 
 export const LIMITS = {
   maxTotalBytes: 200 * 1024 * 1024,
