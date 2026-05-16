@@ -11,10 +11,6 @@ eleventyComputed:
   description: "{{ category.name }} 카테고리 글 모음"
 ---
 {% set categoryPosts = collections.devPosts | postsByCategory(category) %}
-{% set gamesPlayground = [] %}
-{% if category.key == 'games' %}
-  {% set gamesPlayground = studio.games %}
-{% endif %}
 
 <section class="page-hero">
   <h1>{{ category.name }}</h1>
@@ -29,33 +25,6 @@ eleventyComputed:
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
     {% include "partials/writing-feed-cards.njk" %}
-
-    {% if gamesPlayground.length > 0 %}
-    <section class="related-cards">
-      <div class="section-header">
-        <h2>Playground</h2>
-      </div>
-      <div class="playground-grid">
-        {% for item in gamesPlayground %}
-          {% set launch = item.links | first %}
-          <article class="playground-card">
-            {% if item.preview %}
-            <div class="card-preview">
-              <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
-            </div>
-            {% endif %}
-            <h3>{{ item.title }}</h3>
-            <p class="muted">{{ item.blurb }}</p>
-            {% if launch %}
-            <div class="inline-links">
-              <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
-            </div>
-            {% endif %}
-          </article>
-        {% endfor %}
-      </div>
-    </section>
-    {% endif %}
   </div>
   <aside class="sidebar">
     <div class="sidebar-categories">

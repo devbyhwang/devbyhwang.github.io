@@ -34,9 +34,9 @@ npm run clean    # _site/ 삭제
 
 - `src/index.njk`: 브랜드 선택 허브 홈.
 - `src/devbyhwang/`: DevByHwang 홈, 소개, 글 목록, 카테고리, Playground 목록.
-- `src/devbyhwang/blog/`: DevByHwang 글 파일.
+- `src/devbyhwang/blog/`: DevByHwang 글 파일. 빌드 URL은 `/devbyhwang/posts/`.
 - `src/dodoes/`: Underground Novel 홈, 소개, 글 목록, 카테고리.
-- `src/dodoes/writing/`: Underground Novel 글 파일.
+- `src/dodoes/writing/`: Underground Novel 글 파일. 빌드 URL은 `/dodoes/posts/`.
 - `src/demos/`: `/devbyhwang/playground/`로 복사되는 독립형 Playground 데모.
 - `src/_includes/layouts/base.njk`: 공통 레이아웃, canonical, description, Open Graph, Twitter card, CSP.
 - `src/_includes/layouts/devbyhwang-post.njk`: DevByHwang 글 상세 레이아웃.
@@ -59,6 +59,12 @@ npm run clean    # _site/ 삭제
 
 ```text
 src/devbyhwang/blog/YYYY-MM-DD-title.md
+```
+
+빌드 URL:
+
+```text
+/devbyhwang/posts/YYYY-MM-DD-title/
 ```
 
 권장 front matter:
@@ -88,6 +94,12 @@ excerpt: "이번 주 렌더링 병목 분석과 수정 기록"
 
 ```text
 src/dodoes/writing/YYYY-MM-DD-title.md
+```
+
+빌드 URL:
+
+```text
+/dodoes/posts/YYYY-MM-DD-title/
 ```
 
 권장 front matter:
