@@ -13,7 +13,7 @@ module.exports = {
         href: "/devbyhwang/playground/",
         matchPrefix: "/devbyhwang/playground/",
       },
-      { label: "글", href: "/devbyhwang/blog/", matchPrefix: "/devbyhwang/blog/" },
+      { label: "글", href: "/devbyhwang/posts/", matchPrefix: "/devbyhwang/posts/" },
     ],
     crossLink: {
       label: "Underground Novel",
@@ -33,7 +33,7 @@ module.exports = {
     nav: [
       { label: "홈", href: "/dodoes/" },
       { label: "소개", href: "/dodoes/about/", matchPrefix: "/dodoes/about/" },
-      { label: "글", href: "/dodoes/writing/", matchPrefix: "/dodoes/writing/" },
+      { label: "글", href: "/dodoes/posts/", matchPrefix: "/dodoes/posts/" },
     ],
     crossLink: {
       label: "DevByHwang",

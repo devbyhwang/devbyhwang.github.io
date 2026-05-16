@@ -241,13 +241,13 @@ module.exports = function (eleventyConfig) {
       grouped[key].push(item);
     });
 
-    return [...order, ...Object.keys(grouped).filter((key) => !order.includes(key)).sort()].map(
-      (key) => ({
+    return [...order, ...Object.keys(grouped).filter((key) => !order.includes(key)).sort()]
+      .map((key) => ({
         key,
         name: labels[key] || key,
         count: grouped[key] ? grouped[key].length : 0,
-      })
-    );
+      }))
+      .filter((category) => category.count > 0);
   };
 
   eleventyConfig.addCollection("devPosts", (collectionApi) => getDevPosts(collectionApi));
