@@ -39,6 +39,7 @@ const state = createInitialState();
 let currentLocale = "ko";
 let hasUserSelectedOcrLanguage = false;
 const getCurrentLocale = () => currentLocale;
+const SESSION_CANCELLED = Symbol("SESSION_CANCELLED");
 
 const outputUi = createOutputUiHelpers({
   state,
@@ -270,6 +271,53 @@ const {
       }
     }
 
+    function createSessionCancellation() {
+      let signalCancel = () => {};
+      const cancellationPromise = new Promise((resolve) => {
+        signalCancel = resolve;
+      });
+      return { cancellationPromise, signalCancel };
+    }
+
+    function notifySessionCancelled(ocrSession) {
+      if (!ocrSession || ocrSession.cancelSignaled) return;
+      ocrSession.cancelSignaled = true;
+      ocrSession.signalCancel?.(SESSION_CANCELLED);
+    }
+
+    async function terminateWorkerSafely(worker) {
+      if (!worker?.terminate) return;
+      try {
+        await worker.terminate();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    async function destroyPdfLoadingTaskSafely(loadingTask) {
+      if (!loadingTask?.destroy) return;
+      try {
+        await loadingTask.destroy();
+      } catch (error) {
+        // pdf.destroy() can race with loadingTask.destroy(); ignore redundant teardown errors.
+      }
+    }
+
+    async function awaitWithSessionCancellation(promise, ocrSession) {
+      if (!ocrSession?.cancellationPromise) {
+        return await promise;
+      }
+
+      const result = await Promise.race([
+        promise,
+        ocrSession.cancellationPromise,
+      ]);
+      if (result === SESSION_CANCELLED || isSessionCancelled(ocrSession)) {
+        throw new Error(CANCELLED_ERROR);
+      }
+      return result;
+    }
+
     function markCancelledPages() {
       let marked = false;
       state.pages = state.pages.map((page) => {
@@ -296,13 +344,14 @@ const {
 
       state.cancelRequested = true;
       session.cancelled = true;
+      notifySessionCancelled(session);
       setProgress(0, t("canceling"));
       showToast(t("cancelingToast"));
 
       if (session.worker) {
         const worker = session.worker;
         session.worker = null;
-        worker.terminate().catch((error) => console.error(error));
+        terminateWorkerSafely(worker);
       }
     }
 
@@ -453,9 +502,26 @@ const {
 
     async function getOcrWorker(ocrSession) {
       throwIfCancelled(ocrSession);
-      if (!ocrSession.worker) {
-        ocrSession.worker = await createOcrWorker();
+      if (!ocrSession.worker && !ocrSession.workerCreationPromise) {
+        const workerCreationPromise = createOcrWorker().then(async (worker) => {
+          if (isSessionCancelled(ocrSession) || ocrSession.workerCreationPromise !== workerCreationPromise) {
+            await terminateWorkerSafely(worker);
+            return null;
+          }
+          ocrSession.worker = worker;
+          return worker;
+        });
+        ocrSession.workerCreationPromise = workerCreationPromise;
+        workerCreationPromise.finally(() => {
+          if (ocrSession.workerCreationPromise === workerCreationPromise) {
+            ocrSession.workerCreationPromise = null;
+          }
+        });
       }
+      if (!ocrSession.worker) {
+        await awaitWithSessionCancellation(ocrSession.workerCreationPromise, ocrSession);
+      }
+      if (!ocrSession.worker) throw new Error(CANCELLED_ERROR);
       throwIfCancelled(ocrSession);
       return ocrSession.worker;
     }
@@ -464,12 +530,19 @@ const {
       throwIfCancelled(ocrSession);
       createOcrWorker.currentTask = { label, basePercent, spanPercent };
       try {
-        await applyOcrParameters(worker);
+        await awaitWithSessionCancellation(applyOcrParameters(worker), ocrSession);
         throwIfCancelled(ocrSession);
-        const result = await worker.recognize(canvas, {
-          pdfTitle: label,
-          rotateAuto: els.autoRotateInput.checked,
-        }, { text: true, pdf: true });
+        const result = await awaitWithSessionCancellation(
+          worker.recognize(
+            canvas,
+            {
+              pdfTitle: label,
+              rotateAuto: els.autoRotateInput.checked,
+            },
+            { text: true, pdf: true }
+          ),
+          ocrSession
+        );
         throwIfCancelled(ocrSession);
         return {
           text: result.data.text.trim(),
@@ -485,12 +558,12 @@ const {
       const fileKey = getFileKey(file);
       const label = file.name;
       const base = (index / total) * 100;
-      const canvas = await imageFileToCanvas(file);
+      const canvas = await awaitWithSessionCancellation(imageFileToCanvas(file), ocrSession);
       throwIfCancelled(ocrSession);
-      const thumb = await canvasToThumb(canvas);
+      const thumb = await awaitWithSessionCancellation(canvasToThumb(canvas), ocrSession);
       state.pages.push({ fileKey, label, detail: `${canvas.width}x${canvas.height}`, status: "OCR 중", text: "", thumb });
       renderPages();
-      const ocrWorker = await getOcrWorker(ocrSession);
+      const ocrWorker = await awaitWithSessionCancellation(getOcrWorker(ocrSession), ocrSession);
       const { text, pdfBytes } = await recognizeCanvas(ocrWorker, canvas, label, base, 100 / total, ocrSession);
       throwIfCancelled(ocrSession);
       if (pdfBytes) {
@@ -504,22 +577,24 @@ const {
       throwIfCancelled(ocrSession);
       const fileKey = getFileKey(file);
       ensurePdfEngine();
-      const bytes = new Uint8Array(await file.arrayBuffer());
+      const bytes = new Uint8Array(await awaitWithSessionCancellation(file.arrayBuffer(), ocrSession));
       const sourceId = state.pdfSources.push({ fileKey, name: file.name, bytes }) - 1;
-      const pdf = await pdfjsLib.getDocument({ data: bytes.slice() }).promise;
-      const { start, end } = getSelectedPageRange(file, pdf.numPages);
-      const pageCount = end - start + 1;
-      const fileBase = (index / total) * 100;
-      const fileSpan = 100 / total;
-
-      if (pageCount < pdf.numPages) {
-        showToast(t("pdfRangeLimited", { total: pdf.numPages, start, end }));
-      }
-
+      const loadingTask = pdfjsLib.getDocument({ data: bytes.slice() });
+      let pdf = null;
       try {
+        pdf = await awaitWithSessionCancellation(loadingTask.promise, ocrSession);
+        const { start, end } = getSelectedPageRange(file, pdf.numPages);
+        const pageCount = end - start + 1;
+        const fileBase = (index / total) * 100;
+        const fileSpan = 100 / total;
+
+        if (pageCount < pdf.numPages) {
+          showToast(t("pdfRangeLimited", { total: pdf.numPages, start, end }));
+        }
+
         for (let pageNumber = start; pageNumber <= end; pageNumber += 1) {
           throwIfCancelled(ocrSession);
-          const page = await pdf.getPage(pageNumber);
+          const page = await awaitWithSessionCancellation(pdf.getPage(pageNumber), ocrSession);
           try {
             const label = `${file.name} · p.${pageNumber}`;
             const pageBase = fileBase + ((pageNumber - start) / pageCount) * fileSpan;
@@ -530,14 +605,14 @@ const {
             let detail = t("nativeTextDetail");
             let thumb = "";
             if (!els.forceOcrInput.checked) {
-              text = await extractNativePdfText(page);
+              text = await awaitWithSessionCancellation(extractNativePdfText(page), ocrSession);
             }
             if (!text || text.length < 40 || els.forceOcrInput.checked) {
-              const canvas = await renderPdfPage(page);
-              thumb = await canvasToThumb(canvas);
+              const canvas = await awaitWithSessionCancellation(renderPdfPage(page), ocrSession);
+              thumb = await awaitWithSessionCancellation(canvasToThumb(canvas), ocrSession);
               state.pages.push({ fileKey, label, detail: `${canvas.width}x${canvas.height}`, status: "OCR 중", text: "", thumb });
               renderPages();
-              const ocrWorker = await getOcrWorker(ocrSession);
+              const ocrWorker = await awaitWithSessionCancellation(getOcrWorker(ocrSession), ocrSession);
               const ocrResult = await recognizeCanvas(ocrWorker, canvas, label, pageBase, pageSpan, ocrSession);
               throwIfCancelled(ocrSession);
               text = ocrResult.text;
@@ -568,7 +643,10 @@ const {
           updateOutput();
         }
       } finally {
-        await pdf.destroy?.();
+        await pdf?.destroy?.();
+        if (!pdf || isSessionCancelled(ocrSession)) {
+          await destroyPdfLoadingTaskSafely(loadingTask);
+        }
       }
     }
 
@@ -646,8 +724,11 @@ const {
 
       const ocrSession = {
         worker: null,
+        workerCreationPromise: null,
         cancelled: false,
         id: state.sessionId + 1,
+        ...createSessionCancellation(),
+        cancelSignaled: false,
       };
       state.sessionId = ocrSession.id;
       state.currentSession = ocrSession;
@@ -686,7 +767,15 @@ const {
       } finally {
         createOcrWorker.currentTask = null;
         if (ocrSession.worker) {
-          await ocrSession.worker.terminate();
+          await terminateWorkerSafely(ocrSession.worker);
+          ocrSession.worker = null;
+        }
+        if (ocrSession.workerCreationPromise) {
+          try {
+            await ocrSession.workerCreationPromise;
+          } catch (_) {
+            // Cancellation path can reject before worker setup settles.
+          }
         }
         if (state.currentSession === ocrSession) {
           state.currentSession = null;
