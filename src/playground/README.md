@@ -6,11 +6,11 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
 
 1. **디렉터리 생성**
    ```bash
-   mkdir -p src/demos/your-demo-name
+   mkdir -p src/playground/your-demo-name
    ```
 
 2. **`index.html` 작성**
-   - `src/demos/_template.html`을 복사해 시작
+   - `src/playground/_template.html`을 복사해 시작
    - 데모는 사이트 전역 CSS/JS에 의존하지 않도록 구성
    - 데모 내부 리소스는 상대 경로 기반으로 작성
    - `../` 백 링크를 포함해 Playground 목록으로 복귀 가능하게 유지
@@ -32,6 +32,8 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
    npm run dev
    # http://localhost:8080/devbyhwang/playground/your-demo-name/
    ```
+
+빌드는 `src/playground/<slug>/` 형태의 디렉터리를 자동으로 `/devbyhwang/playground/<slug>/`에 복사합니다. `_`로 시작하는 디렉터리와 `README.md`, `_template.html` 같은 소스용 파일은 배포 산출물에 포함하지 않습니다.
 
 ## 요구사항
 - **반응형**: 모바일/데스크톱 모두 동작

@@ -20,6 +20,17 @@ const DODOES_CATEGORY_LABELS = {
 const DEV_CATEGORY_ORDER = ["devlog", "info", "freelance", "games"];
 const DODOES_CATEGORY_ORDER = ["novel", "notes"];
 
+const getPlaygroundDemoDirectories = () => {
+  const playgroundDir = path.join(__dirname, "src", "playground");
+  if (!fs.existsSync(playgroundDir)) return [];
+
+  return fs
+    .readdirSync(playgroundDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith("_"))
+    .map((entry) => entry.name)
+    .sort();
+};
+
 const loadEnv = () => {
   const envPath = path.join(__dirname, ".env");
   if (!fs.existsSync(envPath)) return;
@@ -191,13 +202,18 @@ const injectInlineAds = (html, site, env, options = {}) => {
 module.exports = function (eleventyConfig) {
   loadEnv();
 
-  eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
+  eleventyConfig.addPassthroughCopy({ "src/assets/*.{js,css,png,svg}": "assets" });
+  eleventyConfig.addPassthroughCopy({ "src/assets/icons": "assets/icons" });
   eleventyConfig.addPassthroughCopy({ "src/styles": "styles" });
-  eleventyConfig.addPassthroughCopy({ "src/demos": "devbyhwang/playground" });
+  getPlaygroundDemoDirectories().forEach((demoDirectory) => {
+    eleventyConfig.addPassthroughCopy({
+      [`src/playground/${demoDirectory}`]: `devbyhwang/playground/${demoDirectory}`,
+    });
+  });
   eleventyConfig.addPassthroughCopy({ "src/ads.txt": "ads.txt" });
   eleventyConfig.addWatchTarget("src/styles");
-  eleventyConfig.addWatchTarget("src/demos");
-  eleventyConfig.ignores.add("src/demos/**");
+  eleventyConfig.addWatchTarget("src/playground");
+  eleventyConfig.ignores.add("src/playground/**");
 
   eleventyConfig.addFilter("slugify", slugify);
   eleventyConfig.addFilter("readableDate", (dateObj, format = "yyyy.MM.dd") =>
