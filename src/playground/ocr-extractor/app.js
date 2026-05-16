@@ -40,6 +40,7 @@ let currentLocale = "ko";
 let hasUserSelectedOcrLanguage = false;
 const getCurrentLocale = () => currentLocale;
 const SESSION_CANCELLED = Symbol("SESSION_CANCELLED");
+const SETTINGS_MOBILE_QUERY = "(max-width: 640px)";
 
 const outputUi = createOutputUiHelpers({
   state,
@@ -89,6 +90,20 @@ const {
       return fieldsToTxt(getSelectedFields());
     }
 
+    function syncSettingsToggleLabel() {
+      if (!els.settingsPanel || !els.settingsToggleBtn) return;
+      const isCollapsed = els.settingsPanel.classList.contains("is-collapsed");
+      els.settingsToggleBtn.textContent = isCollapsed ? t("settingsExpand") : t("settingsCollapse");
+      els.settingsToggleBtn.setAttribute("aria-expanded", String(!isCollapsed));
+    }
+
+    function setSettingsCollapsed(isCollapsed) {
+      if (!els.settingsPanel || !els.settingsControls) return;
+      els.settingsPanel.classList.toggle("is-collapsed", isCollapsed);
+      els.settingsControls.hidden = isCollapsed;
+      syncSettingsToggleLabel();
+    }
+
     function applyLanguageOptionLabels() {
       const labels = LANGUAGE_OPTION_LABELS[currentLocale] || LANGUAGE_OPTION_LABELS.en;
       [...els.languageSelect.options].forEach((option) => {
@@ -122,6 +137,7 @@ const {
 
       setText("#settingsTitle", t("settingsTitle"));
       setText("#settingsTitle + .hint", t("settingsHint"));
+      syncSettingsToggleLabel();
       setControlLabel(els.languageSelect, t("language"));
       setControlLabel(els.pdfQualitySelect, t("pdfQuality"));
       setControlLabel(els.psmSelect, t("psm"));
@@ -804,6 +820,9 @@ const {
       }
     }
 
+    els.settingsToggleBtn.addEventListener("click", () => {
+      setSettingsCollapsed(!els.settingsPanel.classList.contains("is-collapsed"));
+    });
     els.fileInput.addEventListener("change", (event) => processFiles(event.target.files));
     els.fileList.addEventListener("click", (event) => {
       if (!(event.target instanceof Element)) return;
@@ -941,6 +960,7 @@ const {
     });
 
     applyLocale(detectLocale());
+    setSettingsCollapsed(window.matchMedia(SETTINGS_MOBILE_QUERY).matches);
 
     if (pdfjsLoadError) {
       setPdfUnavailable(t("pdfUnavailableImageOnly"));

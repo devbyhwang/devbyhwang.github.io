@@ -2,6 +2,9 @@ export function createElements() {
   return {
     dropzone: document.getElementById("dropzone"),
     fileInput: document.getElementById("fileInput"),
+    settingsPanel: document.getElementById("settingsPanel"),
+    settingsToggleBtn: document.getElementById("settingsToggleBtn"),
+    settingsControls: document.getElementById("settingsControls"),
     languageSelect: document.getElementById("languageSelect"),
     pdfQualitySelect: document.getElementById("pdfQualitySelect"),
     psmSelect: document.getElementById("psmSelect"),
