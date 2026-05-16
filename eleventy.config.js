@@ -84,7 +84,7 @@ const jsonScript = (value) =>
 
 const sitemapUrl = (value) => {
   if (typeof value !== "string") return "";
-  return encodeURI(value).replace(/&/g, "&amp;");
+  return encodeURI(value.trim()).replace(/&/g, "&amp;");
 };
 
 const shuffle = (items) => {
