@@ -37,7 +37,7 @@ npm run clean    # _site/ 삭제
 - `src/devbyhwang/blog/`: DevByHwang 글 파일. 빌드 URL은 `/devbyhwang/posts/`.
 - `src/dodoes/`: Underground Novel 홈, 소개, 글 목록, 카테고리.
 - `src/dodoes/writing/`: Underground Novel 글 파일. 빌드 URL은 `/dodoes/posts/`.
-- `src/demos/`: `/devbyhwang/playground/`로 복사되는 독립형 Playground 데모.
+- `src/playground/`: `/devbyhwang/playground/`로 복사되는 독립형 Playground 데모.
 - `src/_includes/layouts/base.njk`: 공통 레이아웃, canonical, description, Open Graph, Twitter card, CSP.
 - `src/_includes/layouts/devbyhwang-post.njk`: DevByHwang 글 상세 레이아웃.
 - `src/_includes/layouts/dodoes-writing.njk`: Underground Novel 글 상세 레이아웃.
@@ -153,7 +153,7 @@ excerpt: "본문 일부 요약"
 Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 
 - 목록 페이지: `/devbyhwang/playground/`
-- 데모 파일: `src/demos/<slug>/index.html`
+- 데모 파일: `src/playground/<slug>/index.html`
 - 빌드 결과: `/devbyhwang/playground/<slug>/`
 - 카드 데이터: `src/_data/studio.js`의 `games` 배열
 
@@ -162,7 +162,7 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 - Embercraft Fireplace: Three.js + Cannon.js 기반 실시간 장작불 시뮬레이션.
 - 네모게임 (NEMO GAME): 100% 풀이 가능한 논리 퍼즐.
 
-새 데모를 추가할 때는 `src/demos/<slug>/index.html`을 만들고 `src/_data/studio.js`에 카드 엔트리를 추가합니다. 자세한 규칙은 `src/demos/README.md`를 따릅니다.
+새 데모를 추가할 때는 `src/playground/<slug>/index.html`을 만들고 `src/_data/studio.js`에 카드 엔트리를 추가합니다. 자세한 규칙은 `src/playground/README.md`를 따릅니다.
 
 ## 광고와 환경변수
 
@@ -221,7 +221,7 @@ GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세
 
 - `src/devbyhwang/blog/**`
 - `src/dodoes/writing/**`
-- `src/demos/**`
+- `src/playground/**`
 - Playground 전용 자산: `src/assets/embercraft.js`, `src/assets/embercraft-preview.png`, `src/assets/nemo-game-preview.png`
 - 프로필 이미지: `src/assets/profile.png`, `src/assets/dodoes-profile.png`
 
