@@ -44,10 +44,9 @@ jobs:
           else
             echo "SITE_URL=https://$OWNER.github.io" >> "$GITHUB_ENV"
           fi
-      - name: Validate AdSense config
+      - name: Configure AdSense
         env:
           GOOGLE_ADS_CLIENT: ca-pub-8933203312924164
-          GOOGLE_ADS_ENABLE: "true"
           GOOGLE_ADS_SLOT_DEFAULT: ${{ vars.GOOGLE_ADS_SLOT_DEFAULT }}
           GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
         run: |
@@ -59,14 +58,14 @@ jobs:
           done
 
           if (( ${#missing[@]} > 0 )); then
-            printf 'Missing required AdSense configuration: %s\n' "${missing[*]}" >&2
-            printf 'Create AdSense ad units and set the corresponding GitHub repository variables before deploying.\n' >&2
-            exit 1
+            printf 'AdSense disabled: missing configuration: %s\n' "${missing[*]}"
+            printf 'GOOGLE_ADS_ENABLE=false\n' >> "$GITHUB_ENV"
+          else
+            printf 'GOOGLE_ADS_ENABLE=true\n' >> "$GITHUB_ENV"
           fi
       - name: Build
         env:
           GOOGLE_ADS_CLIENT: ca-pub-8933203312924164
-          GOOGLE_ADS_ENABLE: "true"
           GOOGLE_ADS_SLOT_DEFAULT: ${{ vars.GOOGLE_ADS_SLOT_DEFAULT }}
           GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
         run: npm run build

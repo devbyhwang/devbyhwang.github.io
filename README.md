@@ -183,7 +183,8 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 - 공통 광고는 DevByHwang 브랜드에서만 사용합니다.
 - 글 본문 inline 광고는 문단 수 기준으로 삽입됩니다.
 - Playground 하단 광고 설정은 `/assets/playground-ad-config.json`으로 빌드됩니다.
-- GitHub Pages 배포에서는 `GOOGLE_ADS_SLOT_DEFAULT`와 `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT`을 repository variables로 설정해야 합니다.
+- GitHub Pages 배포에서는 `GOOGLE_ADS_SLOT_DEFAULT`와 `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT`을 repository variables로 설정하면 광고가 활성화됩니다.
+- GitHub Pages 배포에서 광고 슬롯이 없으면 배포는 계속 진행되고 `GOOGLE_ADS_ENABLE=false`로 처리됩니다.
 - 광고 슬롯이 비어 있거나 `0000000000`이면 실제 광고 대신 placeholder 또는 비활성 상태로 처리합니다.
 - Google Analytics는 production 빌드에서만 로드합니다.
 
