@@ -164,6 +164,7 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 | `GOOGLE_ADS_ENABLE` | 광고 활성화 여부, `true`일 때 활성 | `false` |
 | `GOOGLE_ADS_SLOT_DEFAULT` | 기본 글/페이지 광고 슬롯 | 빈 값 |
 | `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT` | Playground 하단 광고 슬롯 | 빈 값 |
+| `GOOGLE_ANALYTICS_ID` | Google Analytics 4 Measurement ID | `G-F1FV4MKDPN` |
 
 광고 동작:
 
@@ -171,6 +172,7 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 - 글 본문 inline 광고는 문단 수 기준으로 삽입됩니다.
 - Playground 하단 광고 설정은 `/assets/playground-ad-config.json`으로 빌드됩니다.
 - 광고 슬롯이 비어 있거나 `0000000000`이면 실제 광고 대신 placeholder 또는 비활성 상태로 처리합니다.
+- Google Analytics는 production 빌드에서만 로드합니다.
 
 ## CSP와 외부 리소스
 

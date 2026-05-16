@@ -35,4 +35,7 @@ module.exports = {
     defaultSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_DEFAULT || ""),
     playgroundBottomSlot: normalizeAdSlot(env.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT || ""),
   },
+  googleAnalytics: {
+    measurementId: env.GOOGLE_ANALYTICS_ID || "G-F1FV4MKDPN",
+  },
 };
