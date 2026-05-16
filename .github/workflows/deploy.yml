@@ -44,7 +44,31 @@ jobs:
           else
             echo "SITE_URL=https://$OWNER.github.io" >> "$GITHUB_ENV"
           fi
+      - name: Validate AdSense config
+        env:
+          GOOGLE_ADS_CLIENT: ca-pub-8933203312924164
+          GOOGLE_ADS_ENABLE: "true"
+          GOOGLE_ADS_SLOT_DEFAULT: ${{ vars.GOOGLE_ADS_SLOT_DEFAULT }}
+          GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
+        run: |
+          missing=()
+          for name in GOOGLE_ADS_CLIENT GOOGLE_ADS_SLOT_DEFAULT GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT; do
+            if [[ -z "${!name}" || "${!name}" == "0000000000" ]]; then
+              missing+=("$name")
+            fi
+          done
+
+          if (( ${#missing[@]} > 0 )); then
+            printf 'Missing required AdSense configuration: %s\n' "${missing[*]}" >&2
+            printf 'Create AdSense ad units and set the corresponding GitHub repository variables before deploying.\n' >&2
+            exit 1
+          fi
       - name: Build
+        env:
+          GOOGLE_ADS_CLIENT: ca-pub-8933203312924164
+          GOOGLE_ADS_ENABLE: "true"
+          GOOGLE_ADS_SLOT_DEFAULT: ${{ vars.GOOGLE_ADS_SLOT_DEFAULT }}
+          GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
         run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

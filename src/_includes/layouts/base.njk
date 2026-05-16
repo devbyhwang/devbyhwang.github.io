@@ -28,6 +28,8 @@
 {% endif %}
 {% set defaultAdSlot = site.googleAds.defaultSlot or "" %}
 {% set isDefaultAdSlotValid = defaultAdSlot and defaultAdSlot != "0000000000" %}
+{% set shouldLoadAdSense = activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultAdSlotValid %}
+{% set shouldInitializeAdSlots = shouldLoadAdSense %}
 <!doctype html>
 <html lang="ko">
   <head>
@@ -89,7 +91,7 @@
     ></script>
     {% endif %}
 
-    {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultAdSlotValid %}
+    {% if shouldLoadAdSense %}
     <script
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ site.googleAds.client }}"
@@ -181,7 +183,7 @@
       </footer>
     </div>
 
-    {% if activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultAdSlotValid %}
+    {% if shouldInitializeAdSlots %}
       <script src="{{ '/assets/ads-init.js' | url }}" defer></script>
     {% endif %}
     <script src="{{ '/assets/base-ui.js' | url }}" defer></script>
