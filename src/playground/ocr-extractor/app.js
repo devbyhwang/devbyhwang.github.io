@@ -2,6 +2,7 @@ import {
   CANCELLED_ERROR,
   LIMITS,
   TESSERACT_BASE_URL,
+  TESSERACT_CACHE_PATH,
   TESSERACT_CORE_URL,
   installReadableStreamIteratorPolyfill,
   loadPdfJs,
@@ -428,6 +429,7 @@ const {
           },
           workerPath: `${TESSERACT_BASE_URL}/worker.min.js`,
           corePath: TESSERACT_CORE_URL,
+          cachePath: TESSERACT_CACHE_PATH,
         }, getDictionaryConfig());
       } catch (error) {
         console.error(error);
