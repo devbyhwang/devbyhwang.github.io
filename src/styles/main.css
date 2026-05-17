@@ -2365,10 +2365,6 @@ canvas,
     font-size: var(--text-sm);
   }
 
-  .playground-page .playground-grid {
-    grid-template-columns: 1fr;
-  }
-
   /* Code blocks - full width with smaller font */
   .prose pre {
     margin-left: calc(var(--space-4) * -1);
@@ -3257,47 +3253,56 @@ canvas,
     font-size: clamp(1.75rem, 8vw, 2.5rem);
   }
 
-  .playground-section-home .playground-grid {
+  .playground-section-home .playground-grid,
+  .playground-page .playground-grid {
     max-width: none;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
   }
 
-  .playground-section-home .playground-card {
+  .playground-section-home .playground-card,
+  .playground-page .playground-card {
     padding: var(--space-3);
   }
 
-  .playground-section-home .playground-card h3 {
+  .playground-section-home .playground-card h3,
+  .playground-page .playground-card h3 {
     font-size: var(--text-sm);
     line-height: 1.35;
   }
 
-  .playground-section-home .playground-card p {
+  .playground-section-home .playground-card p,
+  .playground-page .playground-card p {
     font-size: 12px;
     line-height: 1.45;
     margin-bottom: var(--space-2);
   }
 
-  .playground-section-home .project-meta {
+  .playground-section-home .project-meta,
+  .playground-page .project-meta {
     gap: var(--space-1);
     flex-wrap: wrap;
   }
 
   .playground-section-home .badge,
-  .playground-section-home .pill {
+  .playground-section-home .pill,
+  .playground-page .badge,
+  .playground-page .pill {
     min-height: auto;
     min-width: 0;
     font-size: 10px;
     padding: 0.2rem 0.35rem;
   }
 
-  .playground-section-home .inline-links a {
+  .playground-section-home .inline-links a,
+  .playground-page .inline-links a {
     min-height: auto;
     font-size: 11px;
     padding: 0;
   }
 
-  .playground-section-home .card-preview {
+  .playground-section-home .card-preview,
+  .playground-page .card-preview {
     margin-bottom: var(--space-2);
   }
 }
