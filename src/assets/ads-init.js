@@ -1,5 +1,6 @@
 (function () {
   const MIN_SLOT_WIDTH = 1;
+  const SECOND_PASS_DELAY_MS = 500;
   let resizeFrame = 0;
 
   const getAvailableWidth = function (slot) {
@@ -36,7 +37,12 @@
     });
   };
 
-  initializeVisibleSlots();
+  const runInitialInit = function () {
+    scheduleInitialize();
+    window.setTimeout(scheduleInitialize, SECOND_PASS_DELAY_MS);
+  };
+
+  runInitialInit();
   window.addEventListener("resize", scheduleInitialize, { passive: true });
   window.addEventListener("orientationchange", scheduleInitialize, { passive: true });
 })();
