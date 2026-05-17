@@ -211,6 +211,7 @@
       padding: 10px 13px;
       font-size: 12px;
       white-space: nowrap;
+      display: none;
     }
     .settings-panel.is-collapsed .controls {
       display: none;
@@ -655,6 +656,7 @@
         flex-direction: column;
       }
       .settings-toggle {
+        display: inline-flex;
         width: 100%;
       }
       .work-panel-heading {
