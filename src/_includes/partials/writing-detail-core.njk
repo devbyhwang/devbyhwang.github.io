@@ -11,7 +11,12 @@
 <div class="post-detail-rails">
   <aside class="post-rail post-rail-left" aria-label="왼쪽 광고 영역">
     <div class="post-rail-sticky">
-      {% include "ad-slot.njk" %}
+      {% set adDisplaySlot = site.googleAds.railDisplaySlot or site.googleAds.defaultSlot %}
+      {% set adDisplayFormat = "vertical" %}
+      {% set adDisplayKind = "rail-display" %}
+      {% set adDisplayClass = "ad-shell-rail" %}
+      {% set adDisplayPlaceholder = true %}
+      {% include "ads/display.njk" %}
     </div>
   </aside>
 
@@ -37,9 +42,6 @@
       {{ detailContent | safe }}
     </div>
 
-    {% if showBottomAd %}
-      {% include "ad-slot.njk" %}
-    {% endif %}
   </article>
 
   {% set relatedPosts = detailRelated | hybridRelatedPosts(page.url, 4) %}
@@ -65,12 +67,21 @@
     {% endif %}
   </section>
 
+  {% if showMultiplexAd %}
+    {% include "ads/multiplex.njk" %}
+  {% endif %}
+
 {% if showRails %}
   </div>
 
   <aside class="post-rail post-rail-right" aria-label="오른쪽 광고 영역">
     <div class="post-rail-sticky">
-      {% include "ad-slot.njk" %}
+      {% set adDisplaySlot = site.googleAds.railDisplaySlot or site.googleAds.defaultSlot %}
+      {% set adDisplayFormat = "vertical" %}
+      {% set adDisplayKind = "rail-display" %}
+      {% set adDisplayClass = "ad-shell-rail" %}
+      {% set adDisplayPlaceholder = true %}
+      {% include "ads/display.njk" %}
     </div>
   </aside>
 </div>

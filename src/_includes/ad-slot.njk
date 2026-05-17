@@ -1,18 +1,6 @@
-<div class="ad-shell" aria-label="Advertisement">
-  {% set defaultSlot = site.googleAds.defaultSlot or "" %}
-  {% set isDefaultSlotValid = defaultSlot and defaultSlot != "0000000000" %}
-  {% if site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultSlotValid %}
-    <ins
-      class="adsbygoogle"
-      style="display:block"
-      data-ad-client="{{ site.googleAds.client }}"
-      data-ad-slot="{{ defaultSlot }}"
-      data-ad-format="auto"
-      data-full-width-responsive="true"
-    ></ins>
-  {% else %}
-    <div class="ad-placeholder">
-      광고 영역 · Google AdSense client ID 설정 후 활성화됩니다.
-    </div>
-  {% endif %}
-</div>
+{% set adDisplaySlot = site.googleAds.defaultSlot or "" %}
+{% set adDisplayFormat = "auto" %}
+{% set adDisplayKind = "default-display" %}
+{% set adDisplayClass = "" %}
+{% set adDisplayPlaceholder = true %}
+{% include "ads/display.njk" %}

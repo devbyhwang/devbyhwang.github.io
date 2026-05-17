@@ -18,6 +18,8 @@ permalink: /devbyhwang/posts/
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
+    {% set showInFeedAd = true %}
+    {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
   </div>
   <aside class="sidebar">
@@ -32,6 +34,11 @@ permalink: /devbyhwang/posts/
         {% endfor %}
       </ul>
     </div>
-    {% include "ad-slot.njk" %}
+    {% set adDisplaySlot = site.googleAds.sidebarDisplaySlot or site.googleAds.defaultSlot %}
+    {% set adDisplayFormat = "auto" %}
+    {% set adDisplayKind = "sidebar-display" %}
+    {% set adDisplayClass = "ad-shell-sidebar" %}
+    {% set adDisplayPlaceholder = true %}
+    {% include "ads/display.njk" %}
   </aside>
 </section>

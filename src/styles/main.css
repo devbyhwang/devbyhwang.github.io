@@ -1890,12 +1890,43 @@ canvas,
 
 .adsbygoogle {
   display: block;
+  width: 100%;
   min-height: inherit;
 }
 
 .ad-shell-inline {
   margin: var(--space-8) 0;
   min-height: 280px;
+}
+
+.ad-shell-in-article {
+  min-height: 240px;
+}
+
+.ad-feed-item {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  margin: var(--space-3) 0;
+  padding: var(--space-5);
+}
+
+.ad-feed-label {
+  align-self: flex-start;
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.ad-feed-item .adsbygoogle {
+  min-height: 180px;
+}
+
+.ad-multiplex-section {
+  margin-top: var(--space-8);
+}
+
+.ad-shell-multiplex {
+  min-height: 320px;
 }
 
 /* ===========================================

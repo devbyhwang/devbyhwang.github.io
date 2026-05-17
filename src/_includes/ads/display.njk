@@ -1,0 +1,24 @@
+{% set resolvedDisplaySlot = adDisplaySlot or "" %}
+{% set resolvedDisplayFormat = adDisplayFormat or "auto" %}
+{% set resolvedDisplayClass = adDisplayClass or "" %}
+{% set resolvedDisplayKind = adDisplayKind or "display" %}
+{% set shouldShowDisplayPlaceholder = adDisplayPlaceholder !== false %}
+{% set isDisplaySlotValid = resolvedDisplaySlot and resolvedDisplaySlot != "0000000000" %}
+{% if site.googleAds.enable and site.googleAds.client and env.isProd and isDisplaySlotValid %}
+<div class="ad-shell ad-shell-display {{ resolvedDisplayClass }}" data-ad-kind="{{ resolvedDisplayKind }}" aria-label="Advertisement">
+  <ins
+    class="adsbygoogle"
+    style="display:block"
+    data-ad-client="{{ site.googleAds.client }}"
+    data-ad-slot="{{ resolvedDisplaySlot }}"
+    data-ad-format="{{ resolvedDisplayFormat }}"
+    data-full-width-responsive="true"
+  ></ins>
+</div>
+{% elif shouldShowDisplayPlaceholder %}
+<div class="ad-shell ad-shell-display {{ resolvedDisplayClass }}" data-ad-kind="{{ resolvedDisplayKind }}" aria-label="Advertisement">
+  <div class="ad-placeholder">
+    광고 영역 · Google AdSense slot 설정 후 활성화됩니다.
+  </div>
+</div>
+{% endif %}

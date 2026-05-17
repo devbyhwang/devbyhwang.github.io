@@ -5,6 +5,11 @@
 {% set feedListClass = listClass or 'post-list archive-list writing-feed-list' %}
 {% set feedItemClass = itemClass or 'writing-feed-item' %}
 {% set shouldShowExcerpt = showExcerpt !== false %}
+{% set shouldInsertInFeedAd = showInFeedAd === true %}
+{% set inFeedInsertAfter = inFeedAfter or 3 %}
+{% if feedPosts.length > 0 and feedPosts.length < inFeedInsertAfter %}
+  {% set inFeedInsertAfter = feedPosts.length %}
+{% endif %}
 
 <div class="{{ feedListClass }}">
   {% if feedPosts.length > 0 %}
@@ -19,6 +24,10 @@
       <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
       {% endif %}
     </a>
+    {% if shouldInsertInFeedAd and loop.index == inFeedInsertAfter %}
+      {% set feedItemClass = itemClass or 'writing-feed-item' %}
+      {% include "ads/in-feed.njk" %}
+    {% endif %}
     {% endfor %}
   {% else %}
   <p class="muted">{{ emptyMessage or '아직 글이 없습니다.' }}</p>

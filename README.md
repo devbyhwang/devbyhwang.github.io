@@ -174,18 +174,27 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 | `PATH_PREFIX` | GitHub Pages 하위 경로 배포 prefix | `/` |
 | `GOOGLE_ADS_CLIENT` | Google AdSense client ID | 빈 값 |
 | `GOOGLE_ADS_ENABLE` | 광고 활성화 여부, `true`일 때 활성 | `false` |
-| `GOOGLE_ADS_SLOT_DEFAULT` | 기본 글/페이지 광고 슬롯 | 빈 값 |
-| `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT` | Playground 하단 광고 슬롯 | 빈 값 |
+| `GOOGLE_ADS_SLOT_DEFAULT` | display 광고 fallback 슬롯 | 빈 값 |
+| `GOOGLE_ADS_SLOT_SIDEBAR_DISPLAY` | 홈/글 목록 sidebar display 광고 슬롯 | `GOOGLE_ADS_SLOT_DEFAULT` |
+| `GOOGLE_ADS_SLOT_RAIL_DISPLAY` | 글 상세 좌우 rail display 광고 슬롯 | `GOOGLE_ADS_SLOT_DEFAULT` |
+| `GOOGLE_ADS_SLOT_IN_ARTICLE` | 글 본문 중간 In-article 광고 슬롯 | 빈 값 |
+| `GOOGLE_ADS_SLOT_IN_FEED` | 홈/글 목록 In-feed 광고 슬롯 | 빈 값 |
+| `GOOGLE_ADS_IN_FEED_LAYOUT_KEY` | AdSense In-feed 코드의 `data-ad-layout-key` 값 | 빈 값 |
+| `GOOGLE_ADS_SLOT_MULTIPLEX` | 글 상세 관련 글 아래 Multiplex 광고 슬롯 | 빈 값 |
+| `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT` | Playground 하단 display 광고 슬롯 | 빈 값 |
 | `GOOGLE_ANALYTICS_ID` | Google Analytics 4 Measurement ID | `G-F1FV4MKDPN` |
 
 광고 동작:
 
 - 공통 광고는 DevByHwang 브랜드에서만 사용합니다.
-- 글 본문 inline 광고는 문단 수 기준으로 삽입됩니다.
+- `GOOGLE_ADS_ENABLE=true`이고 `GOOGLE_ADS_CLIENT`가 있을 때 AdSense 스크립트를 로드합니다.
+- Sidebar/rail display 광고는 전용 슬롯이 없으면 `GOOGLE_ADS_SLOT_DEFAULT`를 fallback으로 사용합니다.
+- 글 본문 inline 광고는 In-article 전용 슬롯으로만 삽입됩니다. 8문단 이상이면 1개, 18문단 이상이면 2개까지 삽입됩니다.
+- 홈/글 목록 feed에는 In-feed 전용 슬롯이 있을 때 글 목록 안에 광고를 삽입합니다.
+- 글 상세 관련 글 아래에는 Multiplex 전용 슬롯이 있을 때만 광고를 삽입합니다.
 - Playground 하단 광고 설정은 `/assets/playground-ad-config.json`으로 빌드됩니다.
-- GitHub Pages 배포에서는 `GOOGLE_ADS_SLOT_DEFAULT`와 `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT`을 repository variables로 설정하면 광고가 활성화됩니다.
-- GitHub Pages 배포에서 광고 슬롯이 없으면 배포는 계속 진행되고 `GOOGLE_ADS_ENABLE=false`로 처리됩니다.
-- 광고 슬롯이 비어 있거나 `0000000000`이면 실제 광고 대신 placeholder 또는 비활성 상태로 처리합니다.
+- GitHub Pages 배포에서는 위 `GOOGLE_ADS_*` 값을 repository variables로 설정합니다.
+- 광고 슬롯이 비어 있거나 `0000000000`이면 해당 위치의 광고는 fallback, placeholder 또는 비활성 상태로 처리합니다.
 - Google Analytics는 production 빌드에서만 로드합니다.
 
 ## CSP와 외부 리소스

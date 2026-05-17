@@ -47,9 +47,9 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
+    {% set showInFeedAd = true %}
+    {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
-
-    {% include "ad-slot.njk" %}
   </div>
 
   <aside class="sidebar">
@@ -69,6 +69,11 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
       </ul>
     </div>
 
-    {% include "ad-slot.njk" %}
+    {% set adDisplaySlot = site.googleAds.sidebarDisplaySlot or site.googleAds.defaultSlot %}
+    {% set adDisplayFormat = "auto" %}
+    {% set adDisplayKind = "sidebar-display" %}
+    {% set adDisplayClass = "ad-shell-sidebar" %}
+    {% set adDisplayPlaceholder = true %}
+    {% include "ads/display.njk" %}
   </aside>
 </section>

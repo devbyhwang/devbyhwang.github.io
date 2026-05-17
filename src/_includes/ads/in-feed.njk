@@ -1,0 +1,16 @@
+{% set inFeedSlot = site.googleAds.inFeedSlot or "" %}
+{% set inFeedLayoutKey = site.googleAds.inFeedLayoutKey or "" %}
+{% set isInFeedSlotValid = inFeedSlot and inFeedSlot != "0000000000" %}
+{% if site.googleAds.enable and site.googleAds.client and env.isProd and isInFeedSlotValid %}
+<div class="post-item compact {{ feedItemClass or 'writing-feed-item' }} ad-feed-item" data-ad-kind="in-feed" aria-label="Advertisement">
+  <span class="ad-feed-label">광고</span>
+  <ins
+    class="adsbygoogle"
+    style="display:block"
+    data-ad-client="{{ site.googleAds.client }}"
+    data-ad-slot="{{ inFeedSlot }}"
+    data-ad-format="fluid"
+    {% if inFeedLayoutKey %}data-ad-layout-key="{{ inFeedLayoutKey }}"{% endif %}
+  ></ins>
+</div>
+{% endif %}
