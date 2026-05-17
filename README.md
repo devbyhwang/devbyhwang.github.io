@@ -236,7 +236,7 @@ GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세
 - Playground 전용 자산: `src/assets/embercraft.js`, `src/assets/embercraft-preview.png`, `src/assets/nemo-game-preview.png`
 - 프로필 이미지: `src/assets/profile.png`, `src/assets/dodoes-profile.png`
 
-그 외 레이아웃, 템플릿, 스타일, 빌드 코드는 MIT License를 따릅니다. 제3자 라이브러리, 폰트, SDK는 각 원저작권과 라이선스가 우선합니다. 
+그 외 레이아웃, 템플릿, 스타일, 빌드 코드는 MIT License를 따릅니다. 제3자 라이브러리, 폰트, SDK는 각 원저작권과 라이선스가 우선합니다.
 
 ## 템플릿
 
