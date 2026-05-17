@@ -47,18 +47,13 @@ jobs:
       - name: Configure AdSense
         env:
           GOOGLE_ADS_CLIENT: ca-pub-8933203312924164
-          GOOGLE_ADS_SLOT_DEFAULT: ${{ vars.GOOGLE_ADS_SLOT_DEFAULT }}
-          GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
+          GOOGLE_ADS_ENABLE_CONFIG: ${{ vars.GOOGLE_ADS_ENABLE }}
         run: |
-          missing=()
-          for name in GOOGLE_ADS_CLIENT GOOGLE_ADS_SLOT_DEFAULT GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT; do
-            if [[ -z "${!name}" || "${!name}" == "0000000000" ]]; then
-              missing+=("$name")
-            fi
-          done
-
-          if (( ${#missing[@]} > 0 )); then
-            printf 'AdSense disabled: missing configuration: %s\n' "${missing[*]}"
+          if [[ -z "$GOOGLE_ADS_CLIENT" ]]; then
+            printf 'AdSense disabled: missing GOOGLE_ADS_CLIENT\n'
+            printf 'GOOGLE_ADS_ENABLE=false\n' >> "$GITHUB_ENV"
+          elif [[ "$GOOGLE_ADS_ENABLE_CONFIG" != "true" ]]; then
+            printf 'AdSense disabled: GOOGLE_ADS_ENABLE is not true\n'
             printf 'GOOGLE_ADS_ENABLE=false\n' >> "$GITHUB_ENV"
           else
             printf 'GOOGLE_ADS_ENABLE=true\n' >> "$GITHUB_ENV"
@@ -67,6 +62,12 @@ jobs:
         env:
           GOOGLE_ADS_CLIENT: ca-pub-8933203312924164
           GOOGLE_ADS_SLOT_DEFAULT: ${{ vars.GOOGLE_ADS_SLOT_DEFAULT }}
+          GOOGLE_ADS_SLOT_SIDEBAR_DISPLAY: ${{ vars.GOOGLE_ADS_SLOT_SIDEBAR_DISPLAY }}
+          GOOGLE_ADS_SLOT_RAIL_DISPLAY: ${{ vars.GOOGLE_ADS_SLOT_RAIL_DISPLAY }}
+          GOOGLE_ADS_SLOT_IN_ARTICLE: ${{ vars.GOOGLE_ADS_SLOT_IN_ARTICLE }}
+          GOOGLE_ADS_SLOT_IN_FEED: ${{ vars.GOOGLE_ADS_SLOT_IN_FEED }}
+          GOOGLE_ADS_IN_FEED_LAYOUT_KEY: ${{ vars.GOOGLE_ADS_IN_FEED_LAYOUT_KEY }}
+          GOOGLE_ADS_SLOT_MULTIPLEX: ${{ vars.GOOGLE_ADS_SLOT_MULTIPLEX }}
           GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
         run: npm run build
       - name: Upload artifact

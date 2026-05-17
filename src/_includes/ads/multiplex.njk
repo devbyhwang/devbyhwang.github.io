@@ -1,0 +1,15 @@
+{% set multiplexSlot = site.googleAds.multiplexSlot or "" %}
+{% set isMultiplexSlotValid = multiplexSlot and multiplexSlot != "0000000000" %}
+{% if site.googleAds.enable and site.googleAds.client and env.isProd and isMultiplexSlotValid %}
+<section class="ad-multiplex-section" data-ad-kind="multiplex" aria-label="Advertisement">
+  <div class="ad-shell ad-shell-multiplex">
+    <ins
+      class="adsbygoogle"
+      style="display:block"
+      data-ad-client="{{ site.googleAds.client }}"
+      data-ad-slot="{{ multiplexSlot }}"
+      data-ad-format="autorelaxed"
+    ></ins>
+  </div>
+</section>
+{% endif %}

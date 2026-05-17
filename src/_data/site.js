@@ -33,6 +33,12 @@ module.exports = {
     client: env.GOOGLE_ADS_CLIENT || "",
     enable: toBool(env.GOOGLE_ADS_ENABLE, false),
     defaultSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_DEFAULT || ""),
+    sidebarDisplaySlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_SIDEBAR_DISPLAY || ""),
+    railDisplaySlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_RAIL_DISPLAY || ""),
+    inArticleSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_IN_ARTICLE || ""),
+    inFeedSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_IN_FEED || ""),
+    inFeedLayoutKey: normalizeAdSlot(env.GOOGLE_ADS_IN_FEED_LAYOUT_KEY || ""),
+    multiplexSlot: normalizeAdSlot(env.GOOGLE_ADS_SLOT_MULTIPLEX || ""),
     playgroundBottomSlot: normalizeAdSlot(env.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT || ""),
   },
   googleAnalytics: {

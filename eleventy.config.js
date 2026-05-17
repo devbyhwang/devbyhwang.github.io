@@ -97,9 +97,9 @@ const shuffle = (items) => {
 };
 
 const INLINE_AD_DEFAULTS = {
-  minParagraphs: 10,
-  paragraphsPerAd: 10,
-  maxAds: 3,
+  minParagraphs: 8,
+  secondAdParagraphs: 18,
+  maxAds: 2,
   scope: "devbyhwang-post",
 };
 
@@ -109,31 +109,25 @@ const isValidAdSlot = (slot) => {
   return Boolean(normalized && normalized !== "0000000000");
 };
 
-const buildInlineAdMarkup = ({ isEnabled, client, slot, scope }) => {
-  if (isEnabled) {
-    return `
-<div class="ad-shell ad-shell-inline" data-inline-ad-slot="1" data-inline-ad-scope="${scope}" aria-label="Advertisement">
+const buildInlineAdMarkup = ({ client, slot, scope }) => `
+<div class="ad-shell ad-shell-inline ad-shell-in-article" data-ad-kind="in-article" data-inline-ad-slot="1" data-inline-ad-scope="${scope}" aria-label="Advertisement">
   <ins
     class="adsbygoogle"
     style="display:block"
     data-ad-client="${client}"
     data-ad-slot="${slot}"
-    data-ad-format="auto"
+    data-ad-layout="in-article"
+    data-ad-format="fluid"
     data-full-width-responsive="true"
   ></ins>
 </div>`;
-  }
-
-  return `
-<div class="ad-shell ad-shell-inline" data-inline-ad-slot="1" data-inline-ad-scope="${scope}" aria-label="Advertisement">
-  <div class="ad-placeholder">
-    광고 영역 · Google AdSense client ID 설정 후 활성화됩니다.
-  </div>
-</div>`;
-};
 
 const injectInlineAds = (html, site, env, options = {}) => {
   if (typeof html !== "string" || !html.includes("</p>")) return html;
+  const ads = site && site.googleAds ? site.googleAds : {};
+  const inArticleSlot = typeof ads.inArticleSlot === "string" ? ads.inArticleSlot.trim() : "";
+  const canRenderAd = Boolean(ads.enable && ads.client && env && env.isProd && isValidAdSlot(inArticleSlot));
+  if (!canRenderAd) return html;
 
   const config = {
     ...INLINE_AD_DEFAULTS,
@@ -143,9 +137,9 @@ const injectInlineAds = (html, site, env, options = {}) => {
   const minParagraphs = Number.isFinite(Number(config.minParagraphs))
     ? Math.max(1, Number(config.minParagraphs))
     : INLINE_AD_DEFAULTS.minParagraphs;
-  const paragraphsPerAd = Number.isFinite(Number(config.paragraphsPerAd))
-    ? Math.max(1, Number(config.paragraphsPerAd))
-    : INLINE_AD_DEFAULTS.paragraphsPerAd;
+  const secondAdParagraphs = Number.isFinite(Number(config.secondAdParagraphs))
+    ? Math.max(minParagraphs + 1, Number(config.secondAdParagraphs))
+    : INLINE_AD_DEFAULTS.secondAdParagraphs;
   const maxAds = Number.isFinite(Number(config.maxAds))
     ? Math.max(1, Number(config.maxAds))
     : INLINE_AD_DEFAULTS.maxAds;
@@ -156,7 +150,7 @@ const injectInlineAds = (html, site, env, options = {}) => {
   const paragraphCount = (html.match(/<\/p>/gi) || []).length;
   if (paragraphCount < minParagraphs) return html;
 
-  const targetAds = Math.min(maxAds, Math.floor(paragraphCount / paragraphsPerAd));
+  const targetAds = Math.min(maxAds, paragraphCount >= secondAdParagraphs ? 2 : 1);
   if (targetAds < 1) return html;
 
   const positions = [];
@@ -172,21 +166,9 @@ const injectInlineAds = (html, site, env, options = {}) => {
   }
   if (!positions.length) return html;
 
-  const defaultSlot = site && site.googleAds && typeof site.googleAds.defaultSlot === "string"
-    ? site.googleAds.defaultSlot.trim()
-    : "";
   const adMarkup = buildInlineAdMarkup({
-    isEnabled: Boolean(
-      site &&
-      site.googleAds &&
-      site.googleAds.enable &&
-      site.googleAds.client &&
-      env &&
-      env.isProd &&
-      isValidAdSlot(defaultSlot)
-    ),
-    client: (site && site.googleAds && site.googleAds.client) || "",
-    slot: defaultSlot,
+    client: ads.client,
+    slot: inArticleSlot,
     scope,
   });
   const insertAfter = new Set(positions);

@@ -26,9 +26,7 @@
 {% else %}
   {% set brandNewest = null %}
 {% endif %}
-{% set defaultAdSlot = site.googleAds.defaultSlot or "" %}
-{% set isDefaultAdSlotValid = defaultAdSlot and defaultAdSlot != "0000000000" %}
-{% set shouldLoadAdSense = activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd and isDefaultAdSlotValid %}
+{% set shouldLoadAdSense = activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd %}
 {% set shouldInitializeAdSlots = shouldLoadAdSense %}
 <!doctype html>
 <html lang="ko">
@@ -53,7 +51,7 @@
     <meta name="naver-site-verification" content="ab2e46c2dc81f8888025be5afad65b27e7d3e139" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+      content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://ep1.adtrafficquality.google; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self'"
     />
     <title>{{ docTitle }}</title>
     <meta name="description" content="{{ metaDescription }}" />
