@@ -731,6 +731,7 @@ const {
         state.pendingFiles = [];
         hidePdfRangePanel();
         setProgress(0, t("idle"));
+        els.fileInput.value = "";
         return;
       }
 
@@ -835,6 +836,9 @@ const {
         setSettingsCollapsed(!els.settingsPanel.classList.contains("is-collapsed"));
       });
     }
+    els.fileInput.addEventListener("click", () => {
+      els.fileInput.value = "";
+    });
     els.fileInput.addEventListener("change", (event) => processFiles(event.target.files));
     els.fileList.addEventListener("click", (event) => {
       if (!(event.target instanceof Element)) return;
