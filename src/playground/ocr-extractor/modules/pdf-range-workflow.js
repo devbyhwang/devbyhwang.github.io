@@ -16,6 +16,36 @@ export function createPdfRangeWorkflow({
   isPdfFile,
   getPdfDocument,
 }) {
+  const pdfInspectionCache = new WeakMap();
+  const encryptMarker = new TextEncoder().encode("/Encrypt");
+
+  function bytesIncludeMarker(bytes, marker) {
+    if (!bytes || bytes.length < marker.length) return false;
+    for (let index = 0; index <= bytes.length - marker.length; index += 1) {
+      let matches = true;
+      for (let markerIndex = 0; markerIndex < marker.length; markerIndex += 1) {
+        if (bytes[index + markerIndex] !== marker[markerIndex]) {
+          matches = false;
+          break;
+        }
+      }
+      if (matches) return true;
+    }
+    return false;
+  }
+
+  function isPdfProtectionError(error) {
+    const name = String(error?.name || "");
+    const message = String(error?.message || error || "").toLowerCase();
+    return name === "PasswordException" || message.includes("password") || message.includes("encrypted");
+  }
+
+  function createProtectedPdfError(file) {
+    const error = new Error(t("pdfProtectedRejected", { name: file.name }));
+    error.code = "PDF_PROTECTED";
+    return error;
+  }
+
   function showPdfRangePanel() {
     els.pageRangeModal.classList.add("is-visible");
     els.pageRangePanel.classList.add("is-visible");
@@ -139,12 +169,65 @@ export function createPdfRangeWorkflow({
     return normalizeRangeWithNotice(totalPages, range.start, range.end);
   }
 
-  async function getPdfPageCount(file) {
+  async function inspectPdfFile(file) {
+    if (pdfInspectionCache.has(file)) return pdfInspectionCache.get(file);
+
     const bytes = await file.arrayBuffer();
-    const pdf = await getPdfDocument(new Uint8Array(bytes));
-    const pageCount = pdf.numPages;
-    await pdf.destroy?.();
+    const data = new Uint8Array(bytes);
+    if (bytesIncludeMarker(data, encryptMarker)) {
+      throw createProtectedPdfError(file);
+    }
+
+    let pdf = null;
+    try {
+      pdf = await getPdfDocument(data.slice());
+      const info = { file, pageCount: pdf.numPages };
+      pdfInspectionCache.set(file, info);
+      return info;
+    } catch (error) {
+      if (isPdfProtectionError(error)) {
+        throw createProtectedPdfError(file);
+      }
+      throw error;
+    } finally {
+      await pdf?.destroy?.();
+    }
+  }
+
+  async function getPdfPageCount(file) {
+    const { pageCount } = await inspectPdfFile(file);
     return pageCount;
+  }
+
+  async function rejectProtectedPdfFiles(files) {
+    const acceptedFiles = [];
+    const rejectedNames = [];
+
+    for (const file of files) {
+      if (!isPdfFile(file)) {
+        acceptedFiles.push(file);
+        continue;
+      }
+
+      try {
+        await inspectPdfFile(file);
+        acceptedFiles.push(file);
+      } catch (error) {
+        if (error?.code === "PDF_PROTECTED") {
+          rejectedNames.push(file.name);
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (rejectedNames.length) {
+      const previewNames = rejectedNames.slice(0, 3).join(", ");
+      const extraCount = Math.max(0, rejectedNames.length - 3);
+      showToast(t("pdfProtectedRejected", { name: extraCount ? `${previewNames} +${extraCount}` : previewNames }));
+    }
+
+    return acceptedFiles;
   }
 
   async function preparePageRangeForFiles(files) {
@@ -196,6 +279,7 @@ export function createPdfRangeWorkflow({
     applyMaxEndPage,
     getLargePageRangeSelections,
     getSelectedPageRange,
+    rejectProtectedPdfFiles,
     preparePageRangeForFiles,
   };
 }
