@@ -484,7 +484,7 @@ export const I18N = {
     pdfEngineMissing: "PDF 엔진을 불러오지 못했습니다. 네트워크 연결 후 새로고침하세요.",
     pdfUnavailableImageOnly: "PDF 엔진을 불러오지 못했습니다. 이미지 OCR은 계속 사용할 수 있습니다.",
     skipPdfUseImages: "PDF 파일 {pdfs}개는 건너뛰고 이미지 {images}개만 처리합니다.",
-    pdfProtectedRejected: "보호되었거나 암호화된 PDF는 추가할 수 없습니다: {name}. 이 도구는 문서 보호조치를 우회하지 않습니다.",
+    pdfProtectedRejected: "보호되었거나 암호화된 PDF는 추가할 수 없습니다: {name}.",
     pdfRangeLimited: "PDF {total}페이지 중 {start}-{end}페이지만 처리합니다.",
     omittedLabel: "{name} · 생략",
     omittedDetail: "총 {total}페이지 중 {start}-{end}페이지만 처리됨",
