@@ -41,6 +41,7 @@ let hasUserSelectedOcrLanguage = false;
 const getCurrentLocale = () => currentLocale;
 const SESSION_CANCELLED = Symbol("SESSION_CANCELLED");
 const SETTINGS_MOBILE_QUERY = "(max-width: 640px)";
+const settingsMobileMediaQuery = window.matchMedia(SETTINGS_MOBILE_QUERY);
 
 const outputUi = createOutputUiHelpers({
   state,
@@ -820,9 +821,11 @@ const {
       }
     }
 
-    els.settingsToggleBtn.addEventListener("click", () => {
-      setSettingsCollapsed(!els.settingsPanel.classList.contains("is-collapsed"));
-    });
+    if (els.settingsToggleBtn) {
+      els.settingsToggleBtn.addEventListener("click", () => {
+        setSettingsCollapsed(!els.settingsPanel.classList.contains("is-collapsed"));
+      });
+    }
     els.fileInput.addEventListener("change", (event) => processFiles(event.target.files));
     els.fileList.addEventListener("click", (event) => {
       if (!(event.target instanceof Element)) return;
@@ -960,7 +963,10 @@ const {
     });
 
     applyLocale(detectLocale());
-    setSettingsCollapsed(window.matchMedia(SETTINGS_MOBILE_QUERY).matches);
+    setSettingsCollapsed(settingsMobileMediaQuery.matches);
+    settingsMobileMediaQuery.addEventListener("change", (event) => {
+      setSettingsCollapsed(event.matches);
+    });
 
     if (pdfjsLoadError) {
       setPdfUnavailable(t("pdfUnavailableImageOnly"));
