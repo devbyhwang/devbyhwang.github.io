@@ -66,6 +66,22 @@ export function buildStructuredExportJson(selectedFieldKeys, selectedFields) {
   };
 }
 
+function isEncryptedPdfLoadError(error) {
+  const message = String(error?.message || error || "");
+  return error?.name === "EncryptedPDFError" || (message.includes("PDFDocument.load") && message.includes("encrypted"));
+}
+
+async function loadPdfForExport(PDFLib, bytes, t) {
+  try {
+    return await PDFLib.PDFDocument.load(bytes);
+  } catch (error) {
+    if (isEncryptedPdfLoadError(error)) {
+      throw new Error(t("pdfEncryptedSaveUnsupported"));
+    }
+    throw error;
+  }
+}
+
 export async function buildSearchablePdfBytes(state, waitForGlobalFn, t) {
   if (!state.pdfParts.length) {
     throw new Error(t("noPdfToSave"));
@@ -83,7 +99,7 @@ export async function buildSearchablePdfBytes(state, waitForGlobalFn, t) {
 
   for (const part of state.pdfParts) {
     if (part.kind === "ocr-pdf") {
-      const sourcePdf = await PDFLib.PDFDocument.load(part.bytes);
+      const sourcePdf = await loadPdfForExport(PDFLib, part.bytes, t);
       const copiedPages = await outputPdf.copyPages(sourcePdf, sourcePdf.getPageIndices());
       copiedPages.forEach((page) => outputPdf.addPage(page));
       continue;
@@ -94,7 +110,7 @@ export async function buildSearchablePdfBytes(state, waitForGlobalFn, t) {
       if (!sourcePdf) {
         const source = state.pdfSources[part.sourceId];
         if (!source) continue;
-        sourcePdf = await PDFLib.PDFDocument.load(source.bytes);
+        sourcePdf = await loadPdfForExport(PDFLib, source.bytes, t);
         sourceCache.set(part.sourceId, sourcePdf);
       }
       const [copiedPage] = await outputPdf.copyPages(sourcePdf, [part.pageIndex]);
