@@ -395,6 +395,7 @@ const {
       applyMaxEndPage,
       getLargePageRangeSelections,
       getSelectedPageRange,
+      rejectProtectedPdfFiles,
       preparePageRangeForFiles,
     } = pdfRangeWorkflow;
 
@@ -723,6 +724,14 @@ const {
         state.pendingFiles = [];
         hidePdfRangePanel();
         showToast(t("skipPdfUseImages", { pdfs: pdfFiles.length, images: imageFiles.length }));
+      }
+
+      processTargets = await rejectProtectedPdfFiles(processTargets);
+      if (!processTargets.length) {
+        state.pendingFiles = [];
+        hidePdfRangePanel();
+        setProgress(0, t("idle"));
+        return;
       }
 
       if (!validateFiles(processTargets)) return;
