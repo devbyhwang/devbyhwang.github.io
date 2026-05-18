@@ -345,12 +345,15 @@ module.exports = function (eleventyConfig) {
     return results;
   });
 
-  eleventyConfig.addFilter("sitemapFilter", (items) => {
+  eleventyConfig.addFilter("sitemapFilter", (items, prefix = "") => {
     if (!Array.isArray(items)) return [];
+    const normalizedPrefix = typeof prefix === "string" ? prefix : "";
     return items.filter((item) => {
       if (!item || !item.url) return false;
       if (item.data && item.data.sitemap === false) return false;
-      if (item.url === "/sitemap.xml" || item.url === "/robots.txt") return false;
+      if (item.url === "/robots.txt") return false;
+      if (item.url.endsWith("/sitemap.xml")) return false;
+      if (normalizedPrefix && !item.url.startsWith(normalizedPrefix)) return false;
       return true;
     });
   });
