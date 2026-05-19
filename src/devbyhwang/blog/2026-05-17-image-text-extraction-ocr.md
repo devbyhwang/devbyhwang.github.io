@@ -3,7 +3,6 @@ layout: layouts/devbyhwang-post.njk
 title: "이미지 글자 추출하는 법: OCR 사이트 쓰기 전 개인정보 확인하기"
 date: 2026-05-17
 category: info
-excerpt: "이미지 글자 추출과 PDF OCR을 할 때 파일 유형별로 어떤 방법을 쓰면 좋은지, 온라인 OCR 사이트에 올리기 전 개인정보 체크까지 정리합니다."
 ---
 
 ## 결론 먼저
