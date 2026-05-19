@@ -126,6 +126,7 @@ excerpt: "본문 일부 요약"
 
 - 필수 필드: `layout`, `title`, `date`, `category`
 - `excerpt`는 글 목록 요약, SEO description, Open Graph description, Twitter description에 사용됩니다.
+- 글 상세 헤더에는 기본적으로 `excerpt`를 표시하지 않습니다. `excerpt`는 부제목이 아니라 목록/검색/공유용 요약으로 관리합니다.
 - `description`은 페이지/글별 보조 설명으로 사용할 수 있습니다.
 - 카테고리 목록은 `eleventy.config.js`의 컬렉션과 `postsByCategory` 필터를 따릅니다.
 - 이미지가 필요하면 `src/assets/`에 추가하고 사이트 경로 기준으로 참조합니다.

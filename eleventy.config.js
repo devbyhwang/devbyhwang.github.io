@@ -66,6 +66,93 @@ const slugify = (value) => {
     .replace(/-+/g, "-");
 };
 
+const decodeHtmlEntities = (value) => {
+  if (typeof value !== "string") return "";
+  return value
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'");
+};
+
+const stripHtmlForText = (html) => {
+  if (typeof html !== "string") return "";
+  return decodeHtmlEntities(
+    html
+      .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, " ")
+      .replace(/<\/?(br|p|div|section|article|header|footer|main|aside|nav|ul|ol|li|blockquote|pre|table|thead|tbody|tfoot|tr|th|td|h[1-6])\b[^>]*>/gi, " ")
+      .replace(/<[^>]*>/g, "")
+  );
+};
+
+const getHeadingText = (html) =>
+  stripHtmlForText(String(html || "")).replace(/\s+/g, " ").trim();
+
+const truncateText = (text, maxLength = 160) => {
+  if (typeof text !== "string") return "";
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  if (!Number.isFinite(Number(maxLength)) || Number(maxLength) < 1) return normalized;
+  const limit = Number(maxLength);
+  if (normalized.length <= limit) return normalized;
+  const candidate = normalized.slice(0, Math.max(1, limit)).trim();
+  const sentenceEnd = Math.max(candidate.lastIndexOf("."), candidate.lastIndexOf("?"), candidate.lastIndexOf("!"));
+  if (sentenceEnd >= Math.floor(limit * 0.45)) {
+    return candidate.slice(0, sentenceEnd + 1).trim();
+  }
+
+  const wordEnd = candidate.lastIndexOf(" ");
+  if (wordEnd >= Math.floor(limit * 0.6)) {
+    return `${candidate.slice(0, wordEnd).trim()}…`;
+  }
+
+  return `${candidate}…`;
+};
+
+const firstParagraphText = (html, maxLength = 160) => {
+  if (typeof html !== "string") return "";
+  const firstParagraphMatch = html.match(/<p\b[^>]*>([\s\S]*?)<\/p>/i);
+  const paragraphHtml = firstParagraphMatch ? firstParagraphMatch[1] : html;
+  const text = stripHtmlForText(paragraphHtml);
+  return truncateText(text, maxLength);
+};
+
+const createUniqueHeadingId = (text, counts) => {
+  const base = slugify(text) || "section";
+  counts[base] = (counts[base] || 0) + 1;
+  return counts[base] === 1 ? base : `${base}-${counts[base]}`;
+};
+
+const addHeadingIds = (html) => {
+  if (typeof html !== "string") return html;
+  const counts = {};
+  return html.replace(/<h([1-3])([^>]*)>([\s\S]*?)<\/h\1>/gi, (match, level, attrs, inner) => {
+    const existingId = attrs.match(/\sid=(["'])(.*?)\1/i);
+    if (existingId) return match;
+    const id = createUniqueHeadingId(getHeadingText(inner), counts);
+    return `<h${level}${attrs} id="${id}">${inner}</h${level}>`;
+  });
+};
+
+const extractHeadings = (html) => {
+  if (typeof html !== "string") return [];
+  const headings = [];
+  html.replace(/<h([1-3])([^>]*)>([\s\S]*?)<\/h\1>/gi, (match, level, attrs, inner) => {
+    const idMatch = attrs.match(/\sid=(["'])(.*?)\1/i);
+    const text = getHeadingText(inner);
+    if (!idMatch || !text) return match;
+    headings.push({
+      id: idMatch[2],
+      level: Number(level),
+      text,
+    });
+    return match;
+  });
+  return headings;
+};
+
 const normalizePostPath = (value) => {
   if (typeof value !== "string") return "";
   const trimmed = value.trim();
@@ -210,6 +297,11 @@ module.exports = function (eleventyConfig) {
   });
   eleventyConfig.addFilter("jsonScript", (value) => jsonScript(value));
   eleventyConfig.addFilter("sitemapUrl", sitemapUrl);
+  eleventyConfig.addFilter("addHeadingIds", addHeadingIds);
+  eleventyConfig.addFilter("extractHeadings", extractHeadings);
+  eleventyConfig.addFilter("firstParagraphText", (html, maxLength = 160) =>
+    firstParagraphText(html, maxLength)
+  );
   eleventyConfig.addFilter("injectInlineAds", (html, site, env, options = {}) =>
     injectInlineAds(html, site, env, options)
   );

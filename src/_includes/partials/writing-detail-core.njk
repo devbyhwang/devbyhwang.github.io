@@ -1,24 +1,31 @@
 {% set detailBrand = brands[brandKey] %}
 {% set detailDefaultCategory = defaultCategory or 'notes' %}
 {% set detailRelated = relatedCollection or [] %}
+{% set detailRailMode = postRailMode or 'both' %}
+{% set detailShowExcerpt = showDetailExcerpt === true %}
+{% set detailContentWithHeadings = content | addHeadingIds %}
+{% set detailTocItems = detailContentWithHeadings | extractHeadings %}
+{% set detailHasShell = showRails or showPostToc %}
 {% if renderInlineAds %}
-  {% set detailContent = content | injectInlineAds(site, env) %}
+  {% set detailContent = detailContentWithHeadings | injectInlineAds(site, env) %}
 {% else %}
-  {% set detailContent = content %}
+  {% set detailContent = detailContentWithHeadings %}
 {% endif %}
 
-{% if showRails %}
-<div class="post-detail-rails">
+{% if detailHasShell %}
+<div class="post-detail-rails{% if detailRailMode == 'left-only' %} post-detail-rails-left-only{% endif %}{% if showPostToc and not showRails %} post-detail-toc-only{% endif %}">
+  {% if showRails %}
   <aside class="post-rail post-rail-left" aria-label="왼쪽 광고 영역">
     <div class="post-rail-sticky">
       {% set adDisplaySlot = site.googleAds.railDisplaySlot or site.googleAds.defaultSlot %}
-      {% set adDisplayFormat = "vertical" %}
+      {% set adDisplayFormat = adRailDisplayFormat or "vertical" %}
       {% set adDisplayKind = "rail-display" %}
       {% set adDisplayClass = "ad-shell-rail" %}
       {% set adDisplayPlaceholder = true %}
       {% include "ads/display.njk" %}
     </div>
   </aside>
+  {% endif %}
 
   <div class="post-detail-main">
 {% endif %}
@@ -29,12 +36,16 @@
       <div class="writing-kicker">{{ category or detailDefaultCategory }}</div>
       {% endif %}
       <h1 class="writing-title">{{ title }}</h1>
-      {% if excerpt %}
+      {% if detailShowExcerpt and excerpt %}
       <p class="writing-description">{{ excerpt }}</p>
       {% endif %}
       <div class="writing-meta">
+        {% if writingDateFormat %}
+        <span class="writing-date">{{ date | readableDate(writingDateFormat) }}</span>
+        {% else %}
         <span class="writing-date">{{ date | readableDate }}</span>
-        <span class="writing-author">by {{ detailBrand.displayName }}</span>
+        {% endif %}
+        <span class="writing-author">{% if showAuthorByPrefix !== false %}by {% endif %}{{ detailAuthorLabel or detailBrand.displayName }}</span>
       </div>
     </header>
 
@@ -71,18 +82,39 @@
     {% include "ads/multiplex.njk" %}
   {% endif %}
 
-{% if showRails %}
+{% if detailHasShell %}
   </div>
 
+  {% if showPostToc and detailTocItems.length > 0 %}
+  <aside class="post-toc" aria-label="글 목차">
+    <nav class="post-toc-inner">
+      <div class="post-toc-rail" aria-hidden="true">
+        {% for heading in detailTocItems %}
+        <span class="post-toc-rail-marker post-toc-rail-level-{{ heading.level }}" data-toc-target="{{ heading.id }}"></span>
+        {% endfor %}
+      </div>
+      <div class="post-toc-flyout">
+        {% for heading in detailTocItems %}
+        <div class="post-toc-item post-toc-level-{{ heading.level }}">
+          <a class="post-toc-link" href="#{{ heading.id }}">{{ heading.text }}</a>
+        </div>
+        {% endfor %}
+      </div>
+    </nav>
+  </aside>
+  {% endif %}
+
+  {% if showRails and detailRailMode != 'left-only' %}
   <aside class="post-rail post-rail-right" aria-label="오른쪽 광고 영역">
     <div class="post-rail-sticky">
       {% set adDisplaySlot = site.googleAds.railDisplaySlot or site.googleAds.defaultSlot %}
-      {% set adDisplayFormat = "vertical" %}
+      {% set adDisplayFormat = adRailDisplayFormat or "vertical" %}
       {% set adDisplayKind = "rail-display" %}
       {% set adDisplayClass = "ad-shell-rail" %}
       {% set adDisplayPlaceholder = true %}
       {% include "ads/display.njk" %}
     </div>
   </aside>
+  {% endif %}
 </div>
 {% endif %}

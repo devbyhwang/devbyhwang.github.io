@@ -3,7 +3,6 @@ layout: layouts/devbyhwang-post.njk
 title: "구글 AI 개요 끄기: AI 답변 없이 검색 결과만 보는 법"
 date: 2026-05-17
 category: info
-excerpt: "구글 AI 개요는 완전히 끌 수 없지만 Web 필터와 udm=14를 쓰면 AI 답변 없이 링크 중심 검색 결과를 볼 수 있습니다."
 ---
 
 ## 결론 먼저
@@ -97,9 +96,8 @@ https://www.google.com/search?q=구글+AI+개요+끄기&udm=14
 
 이 주소를 브라우저 주소창에 입력하면 AI 개요가 없는 링크 중심 검색 결과를 볼 수 있습니다.
 
-주의할 점은 있습니다.
-`udm=14`는 “AI Overviews를 계정 설정에서 꺼버리는 기능”이 아닙니다.
-그 검색 요청을 Web 모드로 여는 우회 방법에 가깝습니다.
+> `udm=14`는 “AI Overviews를 계정 설정에서 꺼버리는 기능”이 아닙니다.
+> 그 검색 요청을 Web 모드로 여는 우회 방법에 가깝습니다.
 
 ## 방법 3. 크롬 PC 주소창 검색을 Web 모드로 바꾸기
 
