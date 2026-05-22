@@ -6,8 +6,8 @@ const DEV_BRAND = "devbyhwang";
 const DODOES_BRAND = "dodoes";
 
 const DEV_CATEGORY_LABELS = {
-  devlog: "개발일지",
-  info: "정보글",
+  devlog: "개발 일지",
+  info: "정보 글",
   freelance: "외주",
   games: "게임",
 };
@@ -19,6 +19,8 @@ const DODOES_CATEGORY_LABELS = {
 
 const DEV_CATEGORY_ORDER = ["devlog", "info", "freelance", "games"];
 const DODOES_CATEGORY_ORDER = ["novel", "notes"];
+const ARCHIVE_PAGE_SIZE = 8;
+const PLAYGROUND_ARCHIVE_PAGE_SIZE = 8;
 
 const getPlaygroundDemoDirectories = () => {
   const playgroundDir = path.join(__dirname, "src", "playground");
@@ -159,6 +161,54 @@ const normalizePostPath = (value) => {
   if (!trimmed) return "";
   const withSlash = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   return withSlash.replace(/\/+/g, "/");
+};
+
+const normalizeArchiveBasePath = (value) => {
+  const normalized = normalizePostPath(value);
+  if (!normalized) return "/";
+  return normalized.endsWith("/") ? normalized : `${normalized}/`;
+};
+
+const buildPaginatedArchive = (items, basePath, pageSize, extra = {}) => {
+  const sourceItems = Array.isArray(items) ? items : [];
+  const normalizedPageSize = Number.isFinite(Number(pageSize))
+    ? Math.max(1, Number(pageSize))
+    : ARCHIVE_PAGE_SIZE;
+  const pageCount = Math.max(1, Math.ceil(sourceItems.length / normalizedPageSize));
+  const normalizedBasePath = normalizeArchiveBasePath(basePath);
+  const hrefForPageIndex = (pageIndex) =>
+    pageIndex === 0 ? normalizedBasePath : `${normalizedBasePath}page/${pageIndex + 1}/`;
+  const hrefs = Array.from({ length: pageCount }, (_, pageIndex) => hrefForPageIndex(pageIndex));
+
+  return hrefs.map((href, pageIndex) => ({
+    ...extra,
+    items: sourceItems.slice(
+      pageIndex * normalizedPageSize,
+      (pageIndex + 1) * normalizedPageSize
+    ),
+    href,
+    hrefs,
+    baseHref: normalizedBasePath,
+    previousHref: pageIndex > 0 ? hrefForPageIndex(pageIndex - 1) : "",
+    nextHref: pageIndex + 1 < pageCount ? hrefForPageIndex(pageIndex + 1) : "",
+    pageIndex,
+    pageNumber: pageIndex + 1,
+    pageCount,
+    pageSize: normalizedPageSize,
+    totalItems: sourceItems.length,
+  }));
+};
+
+const getPostCategoryKey = (post) => {
+  const fallback = post && post.data && post.data.brand === DODOES_BRAND ? "notes" : "devlog";
+  return (post && post.data && post.data.category) || fallback;
+};
+
+const filterPostsByCategory = (posts, category) => {
+  if (!Array.isArray(posts)) return [];
+  const categoryKey = typeof category === "string" ? category : category && category.key;
+  if (!categoryKey) return [];
+  return posts.filter((post) => getPostCategoryKey(post) === categoryKey);
 };
 
 const jsonScript = (value) =>
@@ -347,6 +397,20 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("devPosts", (collectionApi) => getDevPosts(collectionApi));
   eleventyConfig.addCollection("posts", (collectionApi) => getDevPosts(collectionApi));
   eleventyConfig.addCollection("dodoesWriting", (collectionApi) => getDodoesWriting(collectionApi));
+  eleventyConfig.addCollection("devPostPages", (collectionApi) =>
+    buildPaginatedArchive(getDevPosts(collectionApi), "/devbyhwang/posts/", ARCHIVE_PAGE_SIZE)
+  );
+  eleventyConfig.addCollection("dodoesWritingPages", (collectionApi) =>
+    buildPaginatedArchive(getDodoesWriting(collectionApi), "/dodoes/posts/", ARCHIVE_PAGE_SIZE)
+  );
+  eleventyConfig.addCollection("playgroundPages", () => {
+    const studio = require("./src/_data/studio");
+    return buildPaginatedArchive(
+      studio.games,
+      "/devbyhwang/playground/",
+      PLAYGROUND_ARCHIVE_PAGE_SIZE
+    );
+  });
 
   eleventyConfig.addCollection("devCategoryList", (collectionApi) =>
     buildCategoryList(
@@ -365,15 +429,33 @@ module.exports = function (eleventyConfig) {
       "notes"
     )
   );
+  eleventyConfig.addCollection("devCategoryPages", (collectionApi) => {
+    const posts = getDevPosts(collectionApi);
+    return buildCategoryList(posts, DEV_CATEGORY_ORDER, DEV_CATEGORY_LABELS, "devlog")
+      .flatMap((category) =>
+        buildPaginatedArchive(
+          filterPostsByCategory(posts, category),
+          `/devbyhwang/categories/${category.key}/`,
+          ARCHIVE_PAGE_SIZE,
+          { category }
+        )
+      );
+  });
+  eleventyConfig.addCollection("dodoesCategoryPages", (collectionApi) => {
+    const posts = getDodoesWriting(collectionApi);
+    return buildCategoryList(posts, DODOES_CATEGORY_ORDER, DODOES_CATEGORY_LABELS, "notes")
+      .flatMap((category) =>
+        buildPaginatedArchive(
+          filterPostsByCategory(posts, category),
+          `/dodoes/categories/${category.key}/`,
+          ARCHIVE_PAGE_SIZE,
+          { category }
+        )
+      );
+  });
 
   eleventyConfig.addFilter("postsByCategory", (posts, category) => {
-    if (!Array.isArray(posts)) return [];
-    const categoryKey = typeof category === "string" ? category : category && category.key;
-    if (!categoryKey) return [];
-    return posts.filter((post) => {
-      const fallback = post.data.brand === DODOES_BRAND ? "notes" : "devlog";
-      return (post.data.category || fallback) === categoryKey;
-    });
+    return filterPostsByCategory(posts, category);
   });
 
   eleventyConfig.addFilter("hybridRelatedPosts", (posts, currentUrl, limit = 4) => {

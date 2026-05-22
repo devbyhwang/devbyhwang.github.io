@@ -3,9 +3,13 @@ layout: layouts/base.njk
 brand: devbyhwang
 title: Playground
 description: "실험과 데모를 모아둔 Playground"
-permalink: /devbyhwang/playground/
+pagination:
+  data: collections.playgroundPages
+  size: 1
+  alias: archivePage
+permalink: "{{ archivePage.href }}"
 ---
-{% set playgroundItems = studio.games %}
+{% set playgroundItems = archivePage.items %}
 
 <div data-playground-page hidden></div>
 
@@ -14,25 +18,9 @@ permalink: /devbyhwang/playground/
 </section>
 
 <section class="playground-page">
-  <div class="playground-grid">
-    {% for item in playgroundItems %}
-      {% set launch = item.links | first %}
-      <article class="playground-card">
-        {% if item.preview %}
-        <div class="card-preview">
-          <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
-        </div>
-        {% endif %}
-        <h3>{{ item.title }}</h3>
-        <p class="muted">{{ item.blurb }}</p>
-        {% if launch %}
-        <div class="inline-links">
-          <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
-        </div>
-        {% endif %}
-      </article>
-    {% endfor %}
-  </div>
+  {% include "partials/playground-grid.njk" %}
+  {% set paginationPage = archivePage %}
+  {% include "partials/pagination.njk" %}
 </section>
 
 <script src="{{ '/assets/playground-bottom-ad.js' | url }}" defer></script>

@@ -1,0 +1,27 @@
+{% set page = paginationPage or archivePage %}
+{% if page and page.pageCount > 1 %}
+<nav class="pagination" aria-label="페이지네이션">
+  {% if page.previousHref %}
+  <a class="pagination-link pagination-edge" href="{{ page.previousHref | url }}">이전</a>
+  {% else %}
+  <span class="pagination-link pagination-edge disabled" aria-disabled="true">이전</span>
+  {% endif %}
+
+  <div class="pagination-pages">
+    {% for href in page.hrefs %}
+      {% set pageNumber = loop.index %}
+      {% if pageNumber == page.pageNumber %}
+      <span class="pagination-link active" aria-current="page">{{ pageNumber }}</span>
+      {% else %}
+      <a class="pagination-link" href="{{ href | url }}">{{ pageNumber }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% if page.nextHref %}
+  <a class="pagination-link pagination-edge" href="{{ page.nextHref | url }}">다음</a>
+  {% else %}
+  <span class="pagination-link pagination-edge disabled" aria-disabled="true">다음</span>
+  {% endif %}
+</nav>
+{% endif %}

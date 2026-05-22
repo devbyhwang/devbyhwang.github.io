@@ -2,15 +2,15 @@
 layout: layouts/base.njk
 brand: dodoes
 pagination:
-  data: collections.dodoesCategoryList
+  data: collections.dodoesCategoryPages
   size: 1
-  alias: category
-permalink: "/dodoes/categories/{{ category.key }}/"
+  alias: archivePage
+permalink: "{{ archivePage.href }}"
 eleventyComputed:
-  title: "{{ category.name }}"
-  description: "Underground Novel {{ category.name }} 글 모음"
+  title: "{{ archivePage.category.name }}"
+  description: "Underground Novel {{ archivePage.category.name }} 글 모음"
 ---
-{% set categoryPosts = collections.dodoesWriting | postsByCategory(category) %}
+{% set category = archivePage.category %}
 
 <section class="page-hero">
   <h1>{{ category.name }}</h1>
@@ -18,13 +18,15 @@ eleventyComputed:
 
 <section class="layout-two archive">
   <div class="feed">
-    {% set posts = categoryPosts %}
+    {% set posts = archivePage.items %}
     {% set defaultCategory = "notes" %}
     {% set emptyMessage = "아직 이 카테고리에 작성된 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
     {% include "partials/writing-feed-cards.njk" %}
+    {% set paginationPage = archivePage %}
+    {% include "partials/pagination.njk" %}
   </div>
 
   <aside class="sidebar">

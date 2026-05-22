@@ -1,0 +1,26 @@
+{% set playgroundCards = playgroundItems or [] %}
+{% set gridClassName = playgroundGridClass or 'playground-grid' %}
+
+{% if playgroundCards.length > 0 %}
+<div class="{{ gridClassName }}">
+  {% for item in playgroundCards %}
+    {% set launch = item.links | first %}
+    <article class="playground-card">
+      {% if item.preview %}
+      <div class="card-preview">
+        <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+      </div>
+      {% endif %}
+      <h3>{{ item.title }}</h3>
+      <p class="muted">{{ item.blurb }}</p>
+      {% if launch %}
+      <div class="inline-links">
+        <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
+      </div>
+      {% endif %}
+    </article>
+  {% endfor %}
+</div>
+{% else %}
+<p class="muted">{{ emptyMessage or '아직 공개된 Playground가 없습니다.' }}</p>
+{% endif %}

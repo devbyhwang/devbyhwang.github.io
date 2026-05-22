@@ -3,7 +3,11 @@ layout: layouts/base.njk
 brand: dodoes
 title: 글
 description: "Underground Novel 글 아카이브"
-permalink: /dodoes/posts/
+pagination:
+  data: collections.dodoesWritingPages
+  size: 1
+  alias: archivePage
+permalink: "{{ archivePage.href }}"
 ---
 {% set dodoesPosts = collections.dodoesWriting %}
 <section class="page-hero">
@@ -12,13 +16,15 @@ permalink: /dodoes/posts/
 
 <section class="layout-two archive">
   <div class="feed">
-    {% set posts = dodoesPosts %}
+    {% set posts = archivePage.items %}
     {% set defaultCategory = "notes" %}
     {% set emptyMessage = "아직 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
     {% include "partials/writing-feed-cards.njk" %}
+    {% set paginationPage = archivePage %}
+    {% include "partials/pagination.njk" %}
   </div>
 
   <aside class="sidebar">

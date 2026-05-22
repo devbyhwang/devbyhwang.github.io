@@ -13,4 +13,25 @@ eleventyExcludeFromCollections: true
     {% endif %}
   </url>
 {% endfor %}
+{% for archivePage in collections.devPostPages %}
+  {% if archivePage.pageIndex > 0 %}
+  <url>
+    <loc>{{ (baseUrl + (archivePage.href | url)) | sitemapUrl }}</loc>
+  </url>
+  {% endif %}
+{% endfor %}
+{% for archivePage in collections.devCategoryPages %}
+  {% if not loop.first or archivePage.pageIndex > 0 %}
+  <url>
+    <loc>{{ (baseUrl + (archivePage.href | url)) | sitemapUrl }}</loc>
+  </url>
+  {% endif %}
+{% endfor %}
+{% for archivePage in collections.playgroundPages %}
+  {% if archivePage.pageIndex > 0 %}
+  <url>
+    <loc>{{ (baseUrl + (archivePage.href | url)) | sitemapUrl }}</loc>
+  </url>
+  {% endif %}
+{% endfor %}
 </urlset>

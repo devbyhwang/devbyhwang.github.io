@@ -4,7 +4,9 @@ brand: devbyhwang
 title: 홈
 description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그."
 ---
-{% set playgroundItems = studio.games %}
+{% set homePlaygroundLimit = 6 %}
+{% set homePostLimit = 6 %}
+{% set playgroundItems = studio.games | head(homePlaygroundLimit) %}
 {% set devPosts = collections.devPosts %}
 {% set devHumanPosts = devPosts | withoutAiGenerated %}
 
@@ -16,25 +18,16 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
   <div class="feed">
     {% if playgroundItems.length > 0 %}
     <div class="playground-section playground-section-home">
-      <div class="playground-grid home-playground-grid">
-        {% for item in playgroundItems %}
-          {% set launch = item.links | first %}
-          <article class="playground-card">
-            {% if item.preview %}
-            <div class="card-preview">
-              <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
-            </div>
-            {% endif %}
-            <h3>{{ item.title }}</h3>
-            <p class="muted">{{ item.blurb }}</p>
-            {% if launch %}
-            <div class="inline-links">
-              <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
-            </div>
-            {% endif %}
-          </article>
-        {% endfor %}
+      <div class="section-header">
+        <h2>Playground</h2>
       </div>
+      {% set playgroundGridClass = "playground-grid home-playground-grid" %}
+      {% include "partials/playground-grid.njk" %}
+      {% if studio.games.length > homePlaygroundLimit %}
+      <div class="section-more-row">
+        <a class="section-more-link" href="{{ '/devbyhwang/playground/' | url }}" aria-label="Playground 더보기">더보기</a>
+      </div>
+      {% endif %}
     </div>
     {% endif %}
 
@@ -43,7 +36,7 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
     </div>
     {% set posts = devPosts %}
     {% set defaultCategory = "devlog" %}
-    {% set limit = 8 %}
+    {% set limit = homePostLimit %}
     {% set emptyMessage = "아직 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
@@ -52,6 +45,11 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
     {% set showInFeedAd = true %}
     {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
+    {% if devPosts.length > homePostLimit %}
+    <div class="section-more-row">
+      <a class="section-more-link" href="{{ '/devbyhwang/posts/' | url }}" aria-label="글 더보기">더보기</a>
+    </div>
+    {% endif %}
   </div>
 
   <aside class="sidebar">
@@ -66,7 +64,7 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
       </div>
       <ul class="category-tree">
         <li>
-          <a href="{{ '/devbyhwang/posts/' | url }}">전체글</a>
+          <a href="{{ '/devbyhwang/posts/' | url }}">전체 글</a>
           <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
         </li>
         {% for cat in collections.devCategoryList %}
