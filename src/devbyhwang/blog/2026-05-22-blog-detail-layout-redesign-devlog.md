@@ -4,6 +4,7 @@ title: "블로그 상세 페이지 레이아웃을 다시 설계한 기록"
 date: 2026-05-22
 category: devlog
 excerpt: "Velog와 Notion에서 읽기 구조의 힌트를 얻고, DevByHwang와 dodoes 블로그에 맞는 상세 페이지 레이아웃으로 다시 정리한 개발 로그"
+ai_generated: true
 ---
 
 블로그 상세 글 화면을 다시 손봤다.
