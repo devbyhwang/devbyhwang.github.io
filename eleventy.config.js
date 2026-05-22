@@ -208,6 +208,10 @@ module.exports = function (eleventyConfig) {
     if (!Array.isArray(items)) return [];
     return items.slice(0, count);
   });
+  eleventyConfig.addFilter("withoutAiGenerated", (items) => {
+    if (!Array.isArray(items)) return [];
+    return items.filter((item) => !(item.data && item.data.ai_generated === true));
+  });
   eleventyConfig.addFilter("jsonScript", (value) => jsonScript(value));
   eleventyConfig.addFilter("sitemapUrl", sitemapUrl);
   eleventyConfig.addFilter("injectInlineAds", (html, site, env, options = {}) =>

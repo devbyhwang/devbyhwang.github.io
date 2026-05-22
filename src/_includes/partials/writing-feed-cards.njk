@@ -1,5 +1,6 @@
 {% set feedPosts = posts or [] %}
-{% if limit %}
+{% set shouldUseAiFilter = enableAiFilter === true %}
+{% if limit and not shouldUseAiFilter %}
   {% set feedPosts = feedPosts | head(limit) %}
 {% endif %}
 {% set feedListClass = listClass or 'post-list archive-list writing-feed-list' %}
@@ -11,10 +12,11 @@
   {% set inFeedInsertAfter = feedPosts.length %}
 {% endif %}
 
-<div class="{{ feedListClass }}">
+<div class="{{ feedListClass }}"{% if limit and shouldUseAiFilter %} data-feed-limit="{{ limit }}"{% endif %}>
   {% if feedPosts.length > 0 %}
     {% for post in feedPosts %}
-    <a class="post-item compact {{ feedItemClass }}" href="{{ post.url | url }}">
+    {% set isAiGenerated = post.data.ai_generated === true %}
+    <a class="post-item compact {{ feedItemClass }}" href="{{ post.url | url }}" data-ai-generated="{{ 'true' if isAiGenerated else 'false' }}">
       <div class="post-item-top">
         <span class="badge">{{ post.data.category | default(defaultCategory or 'notes') }}</span>
         <span class="post-meta">{{ post.date | readableDate }}</span>
@@ -29,6 +31,7 @@
       {% include "ads/in-feed.njk" %}
     {% endif %}
     {% endfor %}
+    <p class="muted ai-filter-empty" hidden>표시할 글이 없습니다.</p>
   {% else %}
   <p class="muted">{{ emptyMessage or '아직 글이 없습니다.' }}</p>
   {% endif %}

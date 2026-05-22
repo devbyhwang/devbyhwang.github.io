@@ -42,6 +42,12 @@
       {{ detailContent | safe }}
     </div>
 
+    {% if ai_generated === true %}
+    <div class="ai-content-notice" role="note">
+      본 콘텐츠는 AI의 도움을 받아 작성되었습니다.
+    </div>
+    {% endif %}
+
   </article>
 
   {% set relatedPosts = detailRelated | hybridRelatedPosts(page.url, 4) %}

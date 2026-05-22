@@ -48,3 +48,79 @@
     pre.appendChild(btn);
   });
 })();
+
+(function () {
+  const toggles = Array.prototype.slice.call(document.querySelectorAll("[data-ai-post-toggle]"));
+  const postItems = Array.prototype.slice.call(document.querySelectorAll("[data-ai-generated]"));
+  if (!toggles.length || !postItems.length) return;
+
+  const storageKey = "devbyhwang:show-ai-posts";
+
+  function readInitialState() {
+    const params = new URLSearchParams(window.location.search);
+    const aiParam = params.get("ai");
+    if (aiParam === "0") return false;
+    if (aiParam === "1") return true;
+    return window.localStorage.getItem(storageKey) !== "false";
+  }
+
+  function updateEmptyStates() {
+    document.querySelectorAll(".writing-feed-list").forEach(function (list) {
+      const visiblePosts = list.querySelectorAll("[data-ai-generated]:not([hidden])").length;
+      const emptyMessage = list.querySelector(".ai-filter-empty");
+      const feedAds = list.querySelectorAll("[data-ad-kind='in-feed']");
+
+      if (emptyMessage) emptyMessage.hidden = visiblePosts > 0;
+      feedAds.forEach(function (ad) {
+        ad.hidden = visiblePosts === 0;
+      });
+    });
+  }
+
+  function updatePostLists(showAiPosts) {
+    document.querySelectorAll(".writing-feed-list").forEach(function (list) {
+      const limit = Number(list.dataset.feedLimit || 0);
+      let visibleCount = 0;
+
+      list.querySelectorAll("[data-ai-generated]").forEach(function (item) {
+        const hideByAiFilter = !showAiPosts && item.dataset.aiGenerated === "true";
+        const hideByLimit = limit > 0 && !hideByAiFilter && visibleCount >= limit;
+
+        item.hidden = hideByAiFilter || hideByLimit;
+
+        if (!item.hidden) {
+          visibleCount += 1;
+        }
+      });
+    });
+  }
+
+  function updateCounts(showAiPosts) {
+    document.querySelectorAll("[data-ai-count]").forEach(function (count) {
+      const nextCount = showAiPosts ? count.dataset.totalCount : count.dataset.humanCount;
+      count.textContent = "(" + (nextCount || "0") + ")";
+    });
+  }
+
+  function applyState(showAiPosts, shouldPersist) {
+    toggles.forEach(function (toggle) {
+      toggle.checked = showAiPosts;
+    });
+
+    updatePostLists(showAiPosts);
+    updateEmptyStates();
+    updateCounts(showAiPosts);
+
+    if (shouldPersist) {
+      window.localStorage.setItem(storageKey, String(showAiPosts));
+    }
+  }
+
+  toggles.forEach(function (toggle) {
+    toggle.addEventListener("change", function () {
+      applyState(toggle.checked, true);
+    });
+  });
+
+  applyState(readInitialState(), false);
+})();
