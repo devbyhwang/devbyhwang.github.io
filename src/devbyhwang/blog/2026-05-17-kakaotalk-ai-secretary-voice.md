@@ -213,8 +213,8 @@ AI 국민비서를 쓰기 전 아래를 확인하세요.
 
 ## 관련 글
 
-- [카카오톡 선물하기 같이쓰기 사용법](/devbyhwang/blog/2026-05-17-kakaotalk-gift-sharing/)
-- [구글 AI 개요 끄기: AI 답변 없이 검색 결과만 보는 법](/devbyhwang/blog/2026-05-17-google-ai-overviews-off/)
+- [카카오톡 선물하기 같이쓰기 사용법](/devbyhwang/posts/2026-05-17-kakaotalk-gift-sharing/)
+- [구글 AI 개요 끄기: AI 답변 없이 검색 결과만 보는 법](/devbyhwang/posts/2026-05-17-google-ai-overviews-off/)
 
 ## 참고 자료
 

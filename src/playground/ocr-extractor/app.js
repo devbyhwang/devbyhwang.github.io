@@ -726,11 +726,22 @@ const {
         showToast(t("skipPdfUseImages", { pdfs: pdfFiles.length, images: imageFiles.length }));
       }
 
-      processTargets = await rejectProtectedPdfFiles(processTargets);
+      try {
+        processTargets = await rejectProtectedPdfFiles(processTargets);
+      } catch (error) {
+        console.error(error);
+        state.pendingFiles = [];
+        hidePdfRangePanel();
+        const message = error.message || t("genericError");
+        setProgress(0, t("errorPrefix", { message }));
+        showToast(message);
+        els.fileInput.value = "";
+        return;
+      }
       if (!processTargets.length) {
         state.pendingFiles = [];
         hidePdfRangePanel();
-        setProgress(0, t("idle"));
+        setProgress(0, pdfFiles.length ? t("noProcessableFiles") : t("idle"));
         els.fileInput.value = "";
         return;
       }
