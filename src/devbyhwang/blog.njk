@@ -42,7 +42,7 @@ permalink: /devbyhwang/posts/
         {% for cat in collections.devCategoryList %}
           {% set catPosts = devPosts | postsByCategory(cat) %}
           {% set catHumanPosts = catPosts | withoutAiGenerated %}
-          <li>
+          <li class="sub">
             <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
             <span class="count" data-ai-count data-total-count="{{ catPosts | length }}" data-human-count="{{ catHumanPosts | length }}">({{ catPosts | length }})</span>
           </li>
