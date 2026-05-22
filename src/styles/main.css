@@ -290,7 +290,9 @@ canvas,
 }
 
 .brand-home {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
   color: var(--color-text);
   transition: color var(--transition-fast);
 }
@@ -298,6 +300,21 @@ canvas,
 .brand-home:hover,
 .brand-home:focus-visible {
   color: var(--color-primary);
+}
+
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.brand-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .brand-title {
@@ -4246,8 +4263,15 @@ canvas,
 
   .theme-devbyhwang .brand-title,
   .theme-dodoes .brand-title {
-    max-width: calc(100vw - 6rem);
+    max-width: calc(100vw - 10rem);
     font-size: var(--text-lg);
+  }
+
+  .theme-devbyhwang .brand-mark,
+  .theme-dodoes .brand-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 5px;
   }
 
   .theme-devbyhwang .menu-btn,
