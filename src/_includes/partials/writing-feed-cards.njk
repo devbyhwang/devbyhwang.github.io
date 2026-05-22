@@ -22,8 +22,9 @@
         <span class="post-meta">{{ post.date | readableDate }}</span>
       </div>
       <div class="post-item-title">{{ post.data.title }}</div>
-      {% if shouldShowExcerpt and post.data.excerpt %}
-      <div class="post-item-excerpt muted">{{ post.data.excerpt }}</div>
+      {% set postExcerpt = post.data.excerpt or (post.templateContent | firstParagraphText(70)) %}
+      {% if shouldShowExcerpt and postExcerpt %}
+      <div class="post-item-excerpt muted">{{ postExcerpt }}</div>
       {% endif %}
     </a>
     {% if shouldInsertInFeedAd and loop.index == inFeedInsertAfter %}

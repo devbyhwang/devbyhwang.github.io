@@ -37,21 +37,6 @@
     body.has-modal {
       overflow: hidden;
     }
-    .back-link {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      z-index: 20;
-      color: #fdf8e9;
-      background: rgba(25, 32, 21, 0.82);
-      border: 1px solid rgba(255, 250, 240, 0.26);
-      border-radius: 999px;
-      padding: 10px 15px;
-      text-decoration: none;
-      font: 700 13px/1.2 ui-sans-serif, system-ui, sans-serif;
-      box-shadow: 0 10px 26px rgba(25, 32, 21, 0.2);
-      backdrop-filter: blur(12px);
-    }
     .shell {
       width: min(1180px, calc(100% - 28px));
       margin: 0 auto;
@@ -622,7 +607,6 @@
       .support-pills { justify-content: flex-start; }
     }
     @media (max-width: 640px) {
-      .back-link { top: 12px; left: 12px; padding: 8px 11px; font-size: 12px; }
       .shell {
         width: min(100% - 18px, 1180px);
         padding-top: 68px;

@@ -41,7 +41,8 @@
     {% elif siteName %}
       {% set docTitle = siteName %}
     {% endif %}
-    {% set metaDescription = excerpt or description or (activeBrand and activeBrand.description) or site.description %}
+    {% set contentSummary = content | firstParagraphText(160) %}
+    {% set metaDescription = excerpt or description or contentSummary or (activeBrand and activeBrand.description) or site.description %}
     {% set canonicalHref = canonicalUrl or (site.url + (page.url | url)) %}
     {% set ogType = 'article' if layout and (layout == 'layouts/devbyhwang-post.njk' or layout == 'layouts/dodoes-writing.njk') else 'website' %}
     {% set ogSiteName = siteName or 'DevByHwang Blog' %}

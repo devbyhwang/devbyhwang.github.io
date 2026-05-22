@@ -3,7 +3,6 @@ layout: layouts/dodoes-writing.njk
 title: "천사의 의무"
 date: 2026-04-09
 category: novel
-excerpt: "천사의 의무라 함은 사람들을 구원하는 것이다."
 ---
 
 천사의 의무라 함은 사람들을 구원하는 것이다.<br />
