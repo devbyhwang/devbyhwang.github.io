@@ -46,6 +46,20 @@ export function createPdfRangeWorkflow({
     return error;
   }
 
+  function createUnreadablePdfError(file, cause) {
+    const error = new Error(t("pdfUnreadableRejected", { name: file.name }));
+    error.code = "PDF_UNREADABLE";
+    error.cause = cause;
+    return error;
+  }
+
+  function showRejectedPdfToast(messageKey, rejectedNames) {
+    if (!rejectedNames.length) return;
+    const previewNames = rejectedNames.slice(0, 3).join(", ");
+    const extraCount = Math.max(0, rejectedNames.length - 3);
+    showToast(t(messageKey, { name: extraCount ? `${previewNames} +${extraCount}` : previewNames }));
+  }
+
   function showPdfRangePanel() {
     els.pageRangeModal.classList.add("is-visible");
     els.pageRangePanel.classList.add("is-visible");
@@ -172,23 +186,26 @@ export function createPdfRangeWorkflow({
   async function inspectPdfFile(file) {
     if (pdfInspectionCache.has(file)) return pdfInspectionCache.get(file);
 
-    const bytes = await file.arrayBuffer();
-    const data = new Uint8Array(bytes);
-    if (bytesIncludeMarker(data, encryptMarker)) {
-      throw createProtectedPdfError(file);
-    }
-
     let pdf = null;
     try {
+      const bytes = await file.arrayBuffer();
+      const data = new Uint8Array(bytes);
+      if (bytesIncludeMarker(data, encryptMarker)) {
+        throw createProtectedPdfError(file);
+      }
+
       pdf = await getPdfDocument(data.slice());
       const info = { file, pageCount: pdf.numPages };
       pdfInspectionCache.set(file, info);
       return info;
     } catch (error) {
+      if (error?.code === "PDF_PROTECTED" || error?.code === "PDF_UNREADABLE") {
+        throw error;
+      }
       if (isPdfProtectionError(error)) {
         throw createProtectedPdfError(file);
       }
-      throw error;
+      throw createUnreadablePdfError(file, error);
     } finally {
       await pdf?.destroy?.();
     }
@@ -201,7 +218,8 @@ export function createPdfRangeWorkflow({
 
   async function rejectProtectedPdfFiles(files) {
     const acceptedFiles = [];
-    const rejectedNames = [];
+    const protectedNames = [];
+    const unreadableNames = [];
 
     for (const file of files) {
       if (!isPdfFile(file)) {
@@ -214,18 +232,20 @@ export function createPdfRangeWorkflow({
         acceptedFiles.push(file);
       } catch (error) {
         if (error?.code === "PDF_PROTECTED") {
-          rejectedNames.push(file.name);
+          protectedNames.push(file.name);
+          continue;
+        }
+        if (error?.code === "PDF_UNREADABLE") {
+          console.error(error.cause || error);
+          unreadableNames.push(file.name);
           continue;
         }
         throw error;
       }
     }
 
-    if (rejectedNames.length) {
-      const previewNames = rejectedNames.slice(0, 3).join(", ");
-      const extraCount = Math.max(0, rejectedNames.length - 3);
-      showToast(t("pdfProtectedRejected", { name: extraCount ? `${previewNames} +${extraCount}` : previewNames }));
-    }
+    showRejectedPdfToast("pdfProtectedRejected", protectedNames);
+    showRejectedPdfToast("pdfUnreadableRejected", unreadableNames);
 
     return acceptedFiles;
   }

@@ -1,5 +1,6 @@
 export const PDFJS_VERSION = "5.7.284";
-export const PDFJS_BASE_URL = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VERSION}/legacy/build`;
+export const PDFJS_MODULE_URL = new URL("../vendor/pdfjs/pdf.min.js", import.meta.url).toString();
+export const PDFJS_WORKER_URL = new URL("../vendor/pdfjs/pdf.worker.min.js", import.meta.url).toString();
 
 export const TESSERACT_BASE_URL = "https://cdn.jsdelivr.net/npm/tesseract.js@6.0.1/dist";
 export const TESSERACT_CORE_URL = "https://cdn.jsdelivr.net/npm/tesseract.js-core@6.0.0";
@@ -81,8 +82,8 @@ export async function loadPdfJs() {
   let pdfjsLib = null;
   let pdfjsLoadError = null;
   try {
-    pdfjsLib = await import(`${PDFJS_BASE_URL}/pdf.mjs`);
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `${PDFJS_BASE_URL}/pdf.worker.mjs`;
+    pdfjsLib = await import(PDFJS_MODULE_URL);
+    pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER_URL;
   } catch (error) {
     pdfjsLoadError = error;
     console.error(error);
