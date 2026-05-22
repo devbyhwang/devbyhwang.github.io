@@ -16,7 +16,8 @@
   {% if feedPosts.length > 0 %}
     {% for post in feedPosts %}
     {% set isAiGenerated = post.data.ai_generated === true %}
-    <a class="post-item compact {{ feedItemClass }}" href="{{ post.url | url }}" data-ai-generated="{{ 'true' if isAiGenerated else 'false' }}">
+    {% set shouldHideByInitialLimit = limit and shouldUseAiFilter and loop.index > limit %}
+    <a class="post-item compact {{ feedItemClass }}" href="{{ post.url | url }}" data-ai-generated="{{ 'true' if isAiGenerated else 'false' }}"{% if shouldHideByInitialLimit %} hidden{% endif %}>
       <div class="post-item-top">
         <span class="badge">{{ post.data.category | default(defaultCategory or 'notes') }}</span>
         <span class="post-meta">{{ post.date | readableDate }}</span>

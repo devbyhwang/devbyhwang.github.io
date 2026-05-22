@@ -522,8 +522,9 @@ canvas,
 }
 
 .ai-content-notice {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  justify-content: center;
   margin-top: var(--space-8);
   padding: 6px 12px;
   border: 1px solid var(--color-border);
@@ -532,6 +533,7 @@ canvas,
   background: var(--color-surface);
   font-size: var(--text-xs);
   line-height: var(--leading-normal);
+  text-align: center;
 }
 
 .pill {
@@ -643,6 +645,72 @@ canvas,
 
 .post-item.compact:hover .post-item-title {
   color: var(--color-primary);
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pagination-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  background: var(--color-surface);
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.pagination-link:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pagination-link.active {
+  border-color: var(--color-primary);
+  color: white;
+  background: var(--color-primary);
+}
+
+.pagination-link.disabled {
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .pagination {
+    gap: var(--space-2);
+  }
+
+  .pagination-pages {
+    gap: var(--space-1);
+  }
+
+  .pagination-link {
+    min-width: 2rem;
+    min-height: 2rem;
+    padding: 0 var(--space-2);
+  }
 }
 
 .post-item-excerpt {
@@ -2590,6 +2658,22 @@ canvas,
 .section-header p {
   font-size: var(--text-sm);
   color: var(--color-text-muted);
+}
+
+.section-more-link {
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+}
+
+.section-more-link:hover {
+  color: var(--color-primary-hover);
+}
+
+.section-more-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-4);
 }
 
 .playground-grid {

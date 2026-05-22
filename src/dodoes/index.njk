@@ -4,6 +4,7 @@ brand: dodoes
 title: 홈
 description: "Underground Novel 최신 글"
 ---
+{% set homePostLimit = 6 %}
 {% set dodoesPosts = collections.dodoesWriting %}
 <section class="page-hero">
   <h1>최신 글</h1>
@@ -13,12 +14,17 @@ description: "Underground Novel 최신 글"
   <div class="feed">
     {% set posts = dodoesPosts %}
     {% set defaultCategory = "notes" %}
-    {% set limit = 8 %}
+    {% set limit = homePostLimit %}
     {% set emptyMessage = "아직 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
     {% include "partials/writing-feed-cards.njk" %}
+    {% if dodoesPosts.length > homePostLimit %}
+    <div class="section-more-row">
+      <a class="section-more-link" href="{{ '/dodoes/posts/' | url }}" aria-label="글 더보기">더보기</a>
+    </div>
+    {% endif %}
   </div>
 
   <aside class="sidebar">
@@ -26,7 +32,7 @@ description: "Underground Novel 최신 글"
       <div class="sidebar-title">카테고리</div>
       <ul class="category-tree">
         <li>
-          <a href="{{ '/dodoes/posts/' | url }}">전체글</a>
+          <a href="{{ '/dodoes/posts/' | url }}">전체 글</a>
           <span class="count">({{ dodoesPosts | length }})</span>
         </li>
         {% for cat in collections.dodoesCategoryList %}

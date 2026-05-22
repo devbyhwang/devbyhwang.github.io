@@ -3,7 +3,11 @@ layout: layouts/base.njk
 brand: devbyhwang
 title: 글
 description: "DevByHwang 개발 글 아카이브"
-permalink: /devbyhwang/posts/
+pagination:
+  data: collections.devPostPages
+  size: 1
+  alias: archivePage
+permalink: "{{ archivePage.href }}"
 ---
 {% set devPosts = collections.devPosts %}
 {% set devHumanPosts = devPosts | withoutAiGenerated %}
@@ -13,7 +17,7 @@ permalink: /devbyhwang/posts/
 
 <section class="layout-two archive">
   <div class="feed">
-    {% set posts = devPosts %}
+    {% set posts = archivePage.items %}
     {% set defaultCategory = "devlog" %}
     {% set emptyMessage = "아직 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
@@ -23,6 +27,8 @@ permalink: /devbyhwang/posts/
     {% set showInFeedAd = true %}
     {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
+    {% set paginationPage = archivePage %}
+    {% include "partials/pagination.njk" %}
   </div>
   <aside class="sidebar">
     <div class="sidebar-categories">
@@ -36,7 +42,7 @@ permalink: /devbyhwang/posts/
       </div>
       <ul class="category-tree">
         <li>
-          <a href="{{ '/devbyhwang/posts/' | url }}">전체글</a>
+          <a href="{{ '/devbyhwang/posts/' | url }}">전체 글</a>
           <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
         </li>
         {% for cat in collections.devCategoryList %}

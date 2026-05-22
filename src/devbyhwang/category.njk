@@ -2,15 +2,15 @@
 layout: layouts/base.njk
 brand: devbyhwang
 pagination:
-  data: collections.devCategoryList
+  data: collections.devCategoryPages
   size: 1
-  alias: category
-permalink: "/devbyhwang/categories/{{ category.key }}/"
+  alias: archivePage
+permalink: "{{ archivePage.href }}"
 eleventyComputed:
-  title: "{{ category.name }}"
-  description: "{{ category.name }} 카테고리 글 모음"
+  title: "{{ archivePage.category.name }}"
+  description: "{{ archivePage.category.name }} 카테고리 글 모음"
 ---
-{% set categoryPosts = collections.devPosts | postsByCategory(category) %}
+{% set category = archivePage.category %}
 {% set devPosts = collections.devPosts %}
 {% set devHumanPosts = devPosts | withoutAiGenerated %}
 
@@ -20,7 +20,7 @@ eleventyComputed:
 
 <section class="layout-two archive">
   <div class="feed">
-    {% set posts = categoryPosts %}
+    {% set posts = archivePage.items %}
     {% set defaultCategory = "devlog" %}
     {% set emptyMessage = "아직 이 카테고리에 작성된 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
@@ -28,6 +28,8 @@ eleventyComputed:
     {% set showExcerpt = true %}
     {% set enableAiFilter = true %}
     {% include "partials/writing-feed-cards.njk" %}
+    {% set paginationPage = archivePage %}
+    {% include "partials/pagination.njk" %}
   </div>
   <aside class="sidebar">
     <div class="sidebar-categories">
@@ -41,7 +43,7 @@ eleventyComputed:
       </div>
       <ul class="category-tree">
         <li{% if not category.key %} class="active"{% endif %}>
-          <a href="{{ '/devbyhwang/posts/' | url }}">전체글</a>
+          <a href="{{ '/devbyhwang/posts/' | url }}">전체 글</a>
           <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
         </li>
         {% for cat in collections.devCategoryList %}

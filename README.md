@@ -85,8 +85,8 @@ AI 생성 글은 front matter에 `ai_generated: true`를 추가합니다. 생략
 
 카테고리:
 
-- `devlog`: 개발일지
-- `info`: 정보글
+- `devlog`: 개발 일지
+- `info`: 정보 글
 - `freelance`: 외주
 - `games`: 게임
 
