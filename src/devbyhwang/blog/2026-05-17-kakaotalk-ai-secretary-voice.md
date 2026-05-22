@@ -3,6 +3,8 @@ layout: layouts/devbyhwang-post.njk
 title: "카카오톡 AI 국민비서 음성 사용법: 등본 발급·공공시설 예약하는 법"
 date: 2026-05-17
 category: info
+ai_generated: true
+excerpt: "카카오톡 AI 국민비서 음성 기능으로 주민등록등본 발급과 공공시설 예약을 요청하는 방법, 국민비서 구삐 채널, 안 보일 때 확인할 점을 정리했습니다."
 ---
 
 ## 결론 먼저
@@ -219,10 +221,3 @@ AI 국민비서를 쓰기 전 아래를 확인하세요.
 - [카카오 공식 보도자료 - AI 국민비서 음성 기능 추가](https://www.kakaocorp.com/page/detail/12036)
 - [카카오 공식 보도자료 - AI 국민비서 시범서비스 출시](https://www.kakaocorp.com/page/detail/11962)
 - [행정안전부 국민비서 서비스](https://www.ips.go.kr/)
-
-<br />
-<div align="center">
-  <div style="display: inline-block; border: 1px solid #555; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; color: #555;">
-    본 콘텐츠는 AI의 도움을 받아 작성되었습니다.
-  </div>
-</div>

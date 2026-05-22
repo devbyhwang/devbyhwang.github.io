@@ -3,6 +3,8 @@ layout: layouts/devbyhwang-post.njk
 title: "이미지 글자 추출하는 법: OCR 사이트 쓰기 전 개인정보 확인하기"
 date: 2026-05-17
 category: info
+ai_generated: true
+excerpt: "이미지 글자 추출과 PDF OCR을 할 때 파일 유형별로 어떤 방법을 쓰면 좋은지, 온라인 OCR 사이트에 올리기 전 개인정보 체크까지 정리합니다."
 ---
 
 ## 결론 먼저
@@ -236,10 +238,3 @@ Tesseract.js FAQ도 손글씨 인식은 모델의 가정과 맞지 않아 결과
 - [Tesseract.js FAQ](https://github.com/naptha/tesseract.js/blob/master/docs/faq.md)
 - [PDF.js 공식 사이트](https://mozilla.github.io/pdf.js/)
 - [Adobe Acrobat PDF OCR](https://www.adobe.com/kr/acrobat/online/ocr-pdf.html)
-
-<br />
-<div align="center">
-  <div style="display: inline-block; border: 1px solid #555; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; color: #555;">
-    본 콘텐츠는 AI의 도움을 받아 작성되었습니다.
-  </div>
-</div>

@@ -11,6 +11,8 @@ eleventyComputed:
   description: "{{ category.name }} 카테고리 글 모음"
 ---
 {% set categoryPosts = collections.devPosts | postsByCategory(category) %}
+{% set devPosts = collections.devPosts %}
+{% set devHumanPosts = devPosts | withoutAiGenerated %}
 
 <section class="page-hero">
   <h1>{{ category.name }}</h1>
@@ -24,16 +26,30 @@ eleventyComputed:
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
+    {% set enableAiFilter = true %}
     {% include "partials/writing-feed-cards.njk" %}
   </div>
   <aside class="sidebar">
     <div class="sidebar-categories">
-      <div class="sidebar-title">카테고리</div>
+      <div class="sidebar-title sidebar-title-row">
+        <span>카테고리</span>
+        <label class="ai-post-toggle">
+          <span class="ai-post-toggle-text">AI 글</span>
+          <input class="ai-post-toggle-input" type="checkbox" data-ai-post-toggle checked aria-label="AI 글 표시" />
+          <span class="ai-post-toggle-switch" aria-hidden="true"></span>
+        </label>
+      </div>
       <ul class="category-tree">
+        <li{% if not category.key %} class="active"{% endif %}>
+          <a href="{{ '/devbyhwang/posts/' | url }}">전체글</a>
+          <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
+        </li>
         {% for cat in collections.devCategoryList %}
+          {% set catPosts = devPosts | postsByCategory(cat) %}
+          {% set catHumanPosts = catPosts | withoutAiGenerated %}
           <li{% if cat.key == category.key %} class="active"{% endif %}>
             <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
-            <span class="count">({{ cat.count }})</span>
+            <span class="count" data-ai-count data-total-count="{{ catPosts | length }}" data-human-count="{{ catHumanPosts | length }}">({{ catPosts | length }})</span>
           </li>
         {% endfor %}
       </ul>

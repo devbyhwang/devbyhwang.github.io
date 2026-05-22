@@ -6,6 +6,7 @@ description: "DevByHwang 개발 글 아카이브"
 permalink: /devbyhwang/posts/
 ---
 {% set devPosts = collections.devPosts %}
+{% set devHumanPosts = devPosts | withoutAiGenerated %}
 <section class="page-hero">
   <h1>글</h1>
 </section>
@@ -18,18 +19,32 @@ permalink: /devbyhwang/posts/
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
+    {% set enableAiFilter = true %}
     {% set showInFeedAd = true %}
     {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
   </div>
   <aside class="sidebar">
     <div class="sidebar-categories">
-      <div class="sidebar-title">카테고리</div>
+      <div class="sidebar-title sidebar-title-row">
+        <span>카테고리</span>
+        <label class="ai-post-toggle">
+          <span class="ai-post-toggle-text">AI 글</span>
+          <input class="ai-post-toggle-input" type="checkbox" data-ai-post-toggle checked aria-label="AI 글 표시" />
+          <span class="ai-post-toggle-switch" aria-hidden="true"></span>
+        </label>
+      </div>
       <ul class="category-tree">
+        <li>
+          <a href="{{ '/devbyhwang/posts/' | url }}">전체글</a>
+          <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
+        </li>
         {% for cat in collections.devCategoryList %}
+          {% set catPosts = devPosts | postsByCategory(cat) %}
+          {% set catHumanPosts = catPosts | withoutAiGenerated %}
           <li>
             <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
-            <span class="count">({{ cat.count }})</span>
+            <span class="count" data-ai-count data-total-count="{{ catPosts | length }}" data-human-count="{{ catHumanPosts | length }}">({{ catPosts | length }})</span>
           </li>
         {% endfor %}
       </ul>

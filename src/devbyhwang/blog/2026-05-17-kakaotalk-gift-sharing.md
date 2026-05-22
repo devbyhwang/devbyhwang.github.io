@@ -3,6 +3,8 @@ layout: layouts/devbyhwang-post.njk
 title: "카카오톡 선물하기 같이쓰기 사용법: 가족 기프티콘 공유와 중복 사용 방지"
 date: 2026-05-17
 category: info
+ai_generated: true
+excerpt: "카카오톡 선물하기 같이쓰기로 기프티콘을 가족·지인과 공유하는 방법, 패밀리계정 설정, 사용 여부 확인, 중복 사용 방지와 취소·삭제 주의점을 정리했습니다."
 ---
 
 ## 결론 먼저
@@ -196,10 +198,3 @@ category: info
 - [카카오 공식 보도자료 - 선물하기 같이쓰기 기능 출시](https://www.kakaocorp.com/page/detail/12008)
 - [카카오톡 선물하기 공식 서비스 소개](https://www.kakaocorp.com/page/service/service/KakaoTalkGift)
 - [카카오톡 선물하기 가정의 달 프로모션](https://www.kakaocorp.com/page/detail/12014?lang=KOR)
-
-<br />
-<div align="center">
-  <div style="display: inline-block; border: 1px solid #555; border-radius: 4px; padding: 4px 10px; font-size: 0.8em; color: #555;">
-    본 콘텐츠는 AI의 도움을 받아 작성되었습니다.
-  </div>
-</div>
