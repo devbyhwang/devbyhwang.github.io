@@ -3564,7 +3564,30 @@ canvas,
 }
 
 .theme-dodoes .writing-note {
+  position: relative;
+  isolation: isolate;
   margin-top: 5.5rem;
+}
+
+.theme-dodoes .writing-note::before {
+  content: "";
+  position: absolute;
+  inset: -2.75rem;
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 8px 22px -24px rgba(47, 43, 38, 0.32),
+    0 0 54px -42px rgba(47, 43, 38, 0.34);
+}
+
+@media (max-width: 900px) {
+  .theme-dodoes .writing-note::before {
+    inset: -1rem;
+    border-radius: 14px;
+  }
 }
 
 .theme-dodoes .writing-header {
@@ -3920,23 +3943,30 @@ canvas,
   }
 }
 
-.theme-devbyhwang .writing-content {
+.theme-devbyhwang .writing-content,
+.theme-dodoes .writing-content {
+  --post-code-bg: #fbfcfd;
+  --post-code-text: #24292e;
+  --post-code-border: var(--color-border-light);
   min-height: clamp(14rem, 28vh, 20rem);
   font-size: 1.125rem;
   line-height: 1.7;
   letter-spacing: 0;
 }
 
-.theme-devbyhwang .writing-content.prose {
+.theme-devbyhwang .writing-content.prose,
+.theme-dodoes .writing-content.prose {
   padding-left: 0;
   padding-right: 0;
 }
 
-.theme-devbyhwang .writing-content.prose p {
+.theme-devbyhwang .writing-content.prose p,
+.theme-dodoes .writing-content.prose p {
   margin-bottom: var(--space-5);
 }
 
-.theme-devbyhwang .writing-content.prose h2 {
+.theme-devbyhwang .writing-content.prose h2,
+.theme-dodoes .writing-content.prose h2 {
   position: relative;
   margin: var(--space-16) 0 var(--space-4);
   padding-top: 0.875rem;
@@ -3947,7 +3977,8 @@ canvas,
   letter-spacing: -0.024em;
 }
 
-.theme-devbyhwang .writing-content.prose h2::before {
+.theme-devbyhwang .writing-content.prose h2::before,
+.theme-dodoes .writing-content.prose h2::before {
   content: "";
   position: absolute;
   top: 0;
@@ -3959,12 +3990,16 @@ canvas,
 }
 
 .theme-devbyhwang .writing-content.prose h1,
+.theme-dodoes .writing-content.prose h1,
 .theme-devbyhwang .writing-content.prose h2,
-.theme-devbyhwang .writing-content.prose h3 {
+.theme-dodoes .writing-content.prose h2,
+.theme-devbyhwang .writing-content.prose h3,
+.theme-dodoes .writing-content.prose h3 {
   scroll-margin-top: var(--space-8);
 }
 
-.theme-devbyhwang .writing-content.prose h3 {
+.theme-devbyhwang .writing-content.prose h3,
+.theme-dodoes .writing-content.prose h3 {
   position: relative;
   margin: var(--space-10) 0 var(--space-3);
   padding-left: 0.875rem;
@@ -3973,7 +4008,8 @@ canvas,
   letter-spacing: -0.015em;
 }
 
-.theme-devbyhwang .writing-content.prose h3::before {
+.theme-devbyhwang .writing-content.prose h3::before,
+.theme-dodoes .writing-content.prose h3::before {
   content: "";
   position: absolute;
   top: 0.18em;
@@ -3984,22 +4020,26 @@ canvas,
   background: color-mix(in srgb, var(--color-text-muted) 34%, var(--color-border));
 }
 
-.theme-devbyhwang .writing-content.prose h4 {
+.theme-devbyhwang .writing-content.prose h4,
+.theme-dodoes .writing-content.prose h4 {
   margin: var(--space-8) 0 var(--space-3);
   font-size: 1.125rem;
   line-height: 1.5;
 }
 
-.theme-devbyhwang .writing-content.prose a {
+.theme-devbyhwang .writing-content.prose a,
+.theme-dodoes .writing-content.prose a {
   color: var(--color-primary);
   text-decoration: none;
 }
 
-.theme-devbyhwang .writing-content.prose a:hover {
+.theme-devbyhwang .writing-content.prose a:hover,
+.theme-dodoes .writing-content.prose a:hover {
   text-decoration: underline;
 }
 
-.theme-devbyhwang .writing-content.prose code {
+.theme-devbyhwang .writing-content.prose code,
+.theme-dodoes .writing-content.prose code {
   padding: 0.14em 0.38em;
   border: 0;
   border-radius: 4px;
@@ -4008,7 +4048,8 @@ canvas,
   font-size: 0.88em;
 }
 
-.theme-devbyhwang .writing-content.prose pre {
+.theme-devbyhwang .writing-content.prose pre,
+.theme-dodoes .writing-content.prose pre {
   margin: var(--space-6) 0 var(--space-8);
   padding: 1.125rem 1.25rem;
   border: 0;
@@ -4022,7 +4063,8 @@ canvas,
   scrollbar-width: thin;
 }
 
-.theme-devbyhwang .writing-content.prose pre code {
+.theme-devbyhwang .writing-content.prose pre code,
+.theme-dodoes .writing-content.prose pre code {
   padding: 0;
   background: transparent;
   border-radius: 0;
@@ -4033,12 +4075,14 @@ canvas,
   white-space: pre;
 }
 
-.theme-devbyhwang .writing-content.prose pre .code-copy-btn {
+.theme-devbyhwang .writing-content.prose pre .code-copy-btn,
+.theme-dodoes .writing-content.prose pre .code-copy-btn {
   top: 0.65rem;
   right: 0.8rem;
 }
 
-.theme-devbyhwang .writing-content.prose blockquote {
+.theme-devbyhwang .writing-content.prose blockquote,
+.theme-dodoes .writing-content.prose blockquote {
   position: relative;
   margin: var(--space-8) 0;
   padding: 1rem 1.125rem 1rem 1.35rem;
@@ -4053,32 +4097,74 @@ canvas,
     inset 8px 0 16px -18px color-mix(in srgb, var(--color-text) 24%, transparent);
 }
 
-.theme-devbyhwang .writing-content.prose blockquote p:last-child {
+.theme-devbyhwang .writing-content.prose blockquote p:last-child,
+.theme-dodoes .writing-content.prose blockquote p:last-child {
   margin-bottom: 0;
 }
 
-.theme-devbyhwang .writing-content.prose img {
+.theme-devbyhwang .writing-content.prose img,
+.theme-dodoes .writing-content.prose img {
   margin: var(--space-12) auto;
 }
 
-.theme-devbyhwang .writing-content.prose table {
+.theme-devbyhwang .writing-content.prose table,
+.theme-dodoes .writing-content.prose table {
   margin: var(--space-6) 0 var(--space-8);
   border-color: color-mix(in srgb, var(--color-border) 72%, transparent);
   background: var(--color-bg);
 }
 
-.theme-devbyhwang .writing-content.prose thead th {
+.theme-devbyhwang .writing-content.prose thead th,
+.theme-dodoes .writing-content.prose thead th {
   border-bottom-color: color-mix(in srgb, var(--color-border) 72%, transparent);
   background: color-mix(in srgb, var(--color-surface) 78%, transparent);
 }
 
 .theme-devbyhwang .writing-content.prose th,
-.theme-devbyhwang .writing-content.prose td {
+.theme-dodoes .writing-content.prose th,
+.theme-devbyhwang .writing-content.prose td,
+.theme-dodoes .writing-content.prose td {
   border-bottom-color: color-mix(in srgb, var(--color-border) 62%, transparent);
 }
 
-.theme-devbyhwang .writing-content.prose tbody tr:nth-child(even) {
+.theme-devbyhwang .writing-content.prose tbody tr:nth-child(even),
+.theme-dodoes .writing-content.prose tbody tr:nth-child(even) {
   background: color-mix(in srgb, var(--color-surface) 52%, transparent);
+}
+
+.theme-dodoes .writing-content {
+  color: #241f1a;
+  font-size: 1.2rem;
+  line-height: 1.86;
+}
+
+.theme-dodoes .writing-content.prose p {
+  margin-bottom: var(--space-6);
+}
+
+.theme-dodoes .writing-content.prose li {
+  margin-bottom: 0.7em;
+}
+
+.theme-dodoes .writing-content.prose p,
+.theme-dodoes .writing-content.prose li,
+.theme-dodoes .writing-content.prose blockquote {
+  color: #241f1a;
+}
+
+.theme-dodoes .writing-content.prose h2 {
+  color: #211c18;
+  font-size: clamp(1.95rem, 3vw, 2.25rem);
+}
+
+.theme-dodoes .writing-content.prose h3 {
+  color: #211c18;
+  font-size: clamp(1.36rem, 2.2vw, 1.58rem);
+}
+
+.theme-dodoes .writing-content.prose h4 {
+  color: #211c18;
+  font-size: 1.2rem;
 }
 
 .theme-devbyhwang .writing-related-posts {
@@ -4101,6 +4187,15 @@ canvas,
 }
 
 @media (prefers-color-scheme: dark) {
+  .theme-devbyhwang .writing-content,
+  .theme-dodoes .writing-content {
+    --post-code-bg: #1e1e1e;
+    --post-code-text: #e0e6f1;
+    --post-code-border: #2a2a2a;
+    --post-inline-code-bg: color-mix(in srgb, var(--color-surface-hover) 72%, var(--color-surface));
+    --post-inline-code-text: var(--color-text);
+  }
+
   .theme-devbyhwang .post-detail-main,
   .theme-devbyhwang .writing-note,
   .theme-devbyhwang .writing-related-posts {
@@ -4111,7 +4206,8 @@ canvas,
     --post-inline-code-text: var(--color-text);
   }
 
-  .theme-devbyhwang .writing-content.prose blockquote {
+  .theme-devbyhwang .writing-content.prose blockquote,
+.theme-dodoes .writing-content.prose blockquote {
     background: color-mix(in srgb, var(--color-surface-hover) 52%, var(--color-surface));
     color: var(--color-text);
     box-shadow:
@@ -4205,6 +4301,11 @@ canvas,
     margin-top: var(--space-8);
   }
 
+  .theme-dodoes .writing-note::before {
+    inset: -1rem;
+    border-radius: 14px;
+  }
+
   .theme-dodoes .writing-header {
     margin-bottom: var(--space-8);
     padding-bottom: var(--space-6);
@@ -4278,12 +4379,19 @@ canvas,
     line-height: 1.6;
   }
 
-  .theme-devbyhwang .writing-content {
+  .theme-devbyhwang .writing-content,
+.theme-dodoes .writing-content {
     font-size: var(--text-md);
     line-height: 1.75;
   }
 
-  .theme-devbyhwang .writing-content.prose h2 {
+  .theme-dodoes .writing-content {
+    font-size: 1.08rem;
+    line-height: 1.84;
+  }
+
+  .theme-devbyhwang .writing-content.prose h2,
+.theme-dodoes .writing-content.prose h2 {
     margin-top: var(--space-10);
     padding-top: 0.75rem;
     padding-left: 0;
@@ -4291,27 +4399,39 @@ canvas,
     line-height: 1.25;
   }
 
-  .theme-devbyhwang .writing-content.prose h2::before {
+  .theme-dodoes .writing-content.prose h2 {
+    font-size: clamp(1.72rem, 7.2vw, 1.98rem);
+  }
+
+  .theme-devbyhwang .writing-content.prose h2::before,
+.theme-dodoes .writing-content.prose h2::before {
     top: 0;
     width: 2rem;
     height: 1px;
   }
 
-  .theme-devbyhwang .writing-content.prose h3 {
+  .theme-devbyhwang .writing-content.prose h3,
+.theme-dodoes .writing-content.prose h3 {
     margin-top: var(--space-8);
     padding-left: 0.75rem;
     font-size: clamp(1.18rem, 5.2vw, 1.32rem);
     line-height: 1.32;
   }
 
-  .theme-devbyhwang .writing-content.prose pre {
+  .theme-dodoes .writing-content.prose h3 {
+    font-size: clamp(1.24rem, 5.4vw, 1.4rem);
+  }
+
+  .theme-devbyhwang .writing-content.prose pre,
+.theme-dodoes .writing-content.prose pre {
     margin-left: 0;
     margin-right: 0;
     padding: 1rem;
     border-radius: var(--radius-md);
   }
 
-  .theme-devbyhwang .writing-content.prose pre code {
+  .theme-devbyhwang .writing-content.prose pre code,
+.theme-dodoes .writing-content.prose pre code {
     font-size: 0.82rem;
     line-height: 1.65;
   }
