@@ -47,7 +47,7 @@ eleventyComputed:
         {% for cat in collections.devCategoryList %}
           {% set catPosts = devPosts | postsByCategory(cat) %}
           {% set catHumanPosts = catPosts | withoutAiGenerated %}
-          <li{% if cat.key == category.key %} class="active"{% endif %}>
+          <li class="sub{% if cat.key == category.key %} active{% endif %}">
             <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
             <span class="count" data-ai-count data-total-count="{{ catPosts | length }}" data-human-count="{{ catHumanPosts | length }}">({{ catPosts | length }})</span>
           </li>
