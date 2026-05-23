@@ -18,9 +18,6 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
   <div class="feed">
     {% if playgroundItems.length > 0 %}
     <div class="playground-section playground-section-home">
-      <div class="section-header">
-        <h2>Playground</h2>
-      </div>
       {% set playgroundGridClass = "playground-grid home-playground-grid" %}
       {% include "partials/playground-grid.njk" %}
       {% if studio.games.length > homePlaygroundLimit %}
