@@ -541,8 +541,10 @@ canvas,
 .ai-content-notice {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin-top: var(--space-8);
+  gap: var(--space-3);
+  width: fit-content;
+  max-width: 100%;
+  margin: var(--space-16) auto 0;
   padding: 6px 12px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
@@ -550,7 +552,29 @@ canvas,
   background: var(--color-surface);
   font-size: var(--text-xs);
   line-height: var(--leading-normal);
-  text-align: center;
+  text-align: left;
+}
+
+.ai-content-notice-icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.7rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.04em;
+}
+
+.ai-content-notice-copy {
+  display: grid;
 }
 
 .pill {
@@ -3904,13 +3928,13 @@ canvas,
 
 .theme-devbyhwang .writing-title {
   font-size: clamp(2.35rem, 4.2vw, 3.35rem);
-  line-height: 1.18;
+  line-height: 1.24;
   letter-spacing: -0.032em;
   font-weight: 800;
   word-break: keep-all;
   overflow-wrap: break-word;
   order: 1;
-  margin-bottom: 1.125rem;
+  margin-bottom: 2.1rem;
 }
 
 .theme-devbyhwang .writing-description {
@@ -4398,9 +4422,9 @@ canvas,
 
   .theme-devbyhwang .writing-title {
     font-size: clamp(2rem, 10vw, 2.45rem);
-    line-height: 1.2;
+    line-height: 1.25;
     letter-spacing: -0.028em;
-    margin-bottom: var(--space-4);
+    margin-bottom: 1.75rem;
   }
 
   .theme-devbyhwang .writing-meta {
