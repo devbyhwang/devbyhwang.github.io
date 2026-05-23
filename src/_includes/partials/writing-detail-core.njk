@@ -54,8 +54,11 @@
     </div>
 
     {% if ai_generated === true %}
-    <div class="ai-content-notice" role="note">
-      본 콘텐츠는 AI의 도움을 받아 작성되었습니다.
+    <div class="ai-content-notice" role="note" aria-label="AI 작성 도움 안내">
+      <span class="ai-content-notice-icon" aria-hidden="true">AI</span>
+      <span class="ai-content-notice-copy">
+        <span>본 콘텐츠는 AI의 도움을 받아 작성되었습니다.</span>
+      </span>
     </div>
     {% endif %}
 
