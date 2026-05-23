@@ -3575,21 +3575,23 @@ canvas,
   line-height: 1.85;
 }
 
+.theme-dodoes .post-detail-main,
 .theme-dodoes .writing-note,
 .theme-dodoes .writing-related-posts {
   max-width: var(--detail-content-width, 800px);
 }
 
-.theme-dodoes .writing-note {
+.theme-dodoes .post-detail-main {
   position: relative;
   isolation: isolate;
-  margin-top: 5.5rem;
+  display: flow-root;
+  margin-inline: auto;
 }
 
-.theme-dodoes .writing-note::before {
+.theme-dodoes .post-detail-main::before {
   content: "";
   position: absolute;
-  inset: -2.75rem;
+  inset: 2.75rem -2.75rem 1.25rem;
   z-index: -1;
   pointer-events: none;
   background: rgba(255, 255, 255, 0.72);
@@ -3600,9 +3602,18 @@ canvas,
     0 0 54px -42px rgba(47, 43, 38, 0.34);
 }
 
+.theme-dodoes .writing-note {
+  position: relative;
+  margin-top: 5.5rem;
+}
+
+.theme-dodoes .writing-note::before {
+  content: none;
+}
+
 @media (max-width: 900px) {
-  .theme-dodoes .writing-note::before {
-    inset: -1rem;
+  .theme-dodoes .post-detail-main::before {
+    inset: 1rem -1rem;
     border-radius: 14px;
   }
 }
@@ -4318,8 +4329,8 @@ canvas,
     margin-top: var(--space-8);
   }
 
-  .theme-dodoes .writing-note::before {
-    inset: -1rem;
+  .theme-dodoes .post-detail-main::before {
+    inset: 1rem -1rem;
     border-radius: 14px;
   }
 
