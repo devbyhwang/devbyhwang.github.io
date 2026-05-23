@@ -46,6 +46,7 @@
     {% set canonicalHref = canonicalUrl or (site.url + (page.url | url)) %}
     {% set ogType = 'article' if layout and (layout == 'layouts/devbyhwang-post.njk' or layout == 'layouts/dodoes-writing.njk') else 'website' %}
     {% set ogSiteName = siteName or 'DevByHwang Blog' %}
+    {% set iconSet = activeBrand.icon if activeBrand and activeBrand.icon else brands.devbyhwang.icon %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="google-site-verification" content="rVaruXdp2AVKgk3fj5q2DvvVZu4Ia3wJ5bQOXDGTcWU" />
@@ -66,11 +67,11 @@
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="{{ docTitle }}" />
     <meta name="twitter:description" content="{{ metaDescription }}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/icons/favicon-32x32.png' | url }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/icons/favicon-16x16.png' | url }}" />
-    <link rel="shortcut icon" href="{{ '/assets/icons/favicon.png' | url }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/icons/apple-touch-icon.png' | url }}" />
-    <meta name="msapplication-TileImage" content="{{ '/assets/icons/android-chrome-192x192.png' | url }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ iconSet.favicon32 | url }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ iconSet.favicon16 | url }}" />
+    <link rel="shortcut icon" href="{{ iconSet.favicon512 | url }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ iconSet.appleTouch | url }}" />
+    <meta name="msapplication-TileImage" content="{{ iconSet.tile | url }}" />
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
@@ -122,11 +123,18 @@
         {% set brandTaglineText = activeBrand.tagline if activeBrand else site.tagline %}
         <div class="brand{% if not brandTitleText and not brandTaglineText %} is-empty{% endif %}">
           <a class="brand-home" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
-            {% if brandTitleText %}
-            <div class="brand-title">{{ brandTitleText }}</div>
+            {% if activeBrand and activeBrand.icon %}
+            <img class="brand-mark" src="{{ activeBrand.icon.title | url }}" alt="" width="36" height="36" decoding="async" />
             {% endif %}
-            {% if brandTaglineText %}
-            <div class="brand-tagline">{{ brandTaglineText }}</div>
+            {% if brandTitleText or brandTaglineText %}
+            <span class="brand-copy">
+              {% if brandTitleText %}
+              <span class="brand-title">{{ brandTitleText }}</span>
+              {% endif %}
+              {% if brandTaglineText %}
+              <span class="brand-tagline">{{ brandTaglineText }}</span>
+              {% endif %}
+            </span>
             {% endif %}
           </a>
           {% if activeBrand and activeBrand.crossLink %}
