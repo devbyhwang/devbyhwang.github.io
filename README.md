@@ -1,6 +1,6 @@
 # DevByHwang Blog
 
-Eleventy 3와 GitHub Pages로 운영하는 개인 블로그입니다. 하나의 코드베이스에서 두 브랜드를 함께 다룹니다.
+Eleventy 3와 GitHub Pages로 운영하는 멀티 브랜드 정적 사이트입니다. 하나의 코드베이스에서 DevByHwang 블로그, Underground Novel 글쓰기 공간, DevByHwang Playground 데모를 함께 빌드합니다.
 
 - DevByHwang: 게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
 - Underground Novel: 소설과 메모를 쌓아가는 글쓰기 공간.
@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-개발 서버는 기본적으로 `http://localhost:8080`에서 실행됩니다.
+개발 서버는 기본적으로 `http://localhost:8080`에서 실행됩니다. 프로덕션 빌드는 `_site/`에 생성됩니다.
 
 주요 명령:
 
@@ -42,13 +42,17 @@ npm run clean    # _site/ 삭제
 - `src/_includes/layouts/devbyhwang-post.njk`: DevByHwang 글 상세 레이아웃.
 - `src/_includes/layouts/dodoes-writing.njk`: Underground Novel 글 상세 레이아웃.
 - `src/_includes/partials/`: 글 목록과 글 상세 공통 파셜.
+- `src/_includes/ads/`: display, in-feed, multiplex 광고 파셜.
 - `src/_data/brands.js`: 브랜드 네비게이션, 테마, 설명, 광고 사용 여부.
 - `src/_data/site.js`: 사이트 메타데이터, 소셜 링크, Google Ads 환경변수.
 - `src/_data/studio.js`: Playground 카드와 DevByHwang 소개 데이터.
 - `src/assets/`: 이미지, 아이콘, 공통 JS, Playground 광고 설정 템플릿.
 - `src/styles/main.css`: 공통 스타일.
 - `src/robots.txt.njk`: `/robots.txt` 생성.
-- `src/sitemap.xml.njk`: `/sitemap.xml` 생성.
+- `src/sitemap.xml.njk`: sitemap index(`/sitemap.xml`) 생성.
+- `src/root-sitemap.xml.njk`: 허브 홈 sitemap(`/root-sitemap.xml`) 생성.
+- `src/devbyhwang/sitemap.xml.njk`: DevByHwang sitemap 생성.
+- `src/dodoes/sitemap.xml.njk`: Underground Novel sitemap 생성.
 - `eleventy.config.js`: 컬렉션, 필터, passthrough copy, 출력 설정.
 
 ## 콘텐츠 작성
@@ -128,9 +132,11 @@ excerpt: "본문 일부 요약"
 
 - 필수 필드: `layout`, `title`, `date`, `category`
 - `excerpt`는 글 목록 요약, SEO description, Open Graph description, Twitter description에 사용됩니다.
+- `excerpt`가 없으면 본문 첫 문단을 160자 기준으로 잘라 meta description에 사용합니다.
 - 글 상세 헤더에는 기본적으로 `excerpt`를 표시하지 않습니다. `excerpt`는 부제목이 아니라 목록/검색/공유용 요약으로 관리합니다.
 - `description`은 페이지/글별 보조 설명으로 사용할 수 있습니다.
-- 카테고리 목록은 `eleventy.config.js`의 컬렉션과 `postsByCategory` 필터를 따릅니다.
+- DevByHwang 글은 `ai_generated: true`를 설정하면 글 목록의 AI 글 토글과 글 상세의 AI 작성 도움 안내에 반영됩니다.
+- 카테고리 목록과 페이지네이션은 `eleventy.config.js`의 컬렉션, `postsByCategory` 필터, `buildPaginatedArchive`를 따릅니다.
 - 이미지가 필요하면 `src/assets/`에 추가하고 사이트 경로 기준으로 참조합니다.
 
 ## SEO와 공유 미리보기
@@ -138,16 +144,20 @@ excerpt: "본문 일부 요약"
 공통 SEO 메타는 `src/_includes/layouts/base.njk`에서 생성합니다.
 
 - `<title>`은 페이지 `title`과 브랜드명을 조합합니다.
-- `meta description`은 `excerpt -> description -> 브랜드 설명 -> 사이트 설명` 순서로 선택합니다.
+- `meta description`은 `excerpt -> description -> 본문 첫 문단 -> 브랜드 설명 -> 사이트 설명` 순서로 선택합니다.
 - canonical URL은 `SITE_URL`과 Eleventy `page.url`을 기준으로 생성합니다.
 - Open Graph 태그를 모든 페이지에 출력합니다: `og:title`, `og:description`, `og:url`, `og:type`, `og:site_name`, `og:locale`.
 - Twitter card 태그를 모든 페이지에 출력합니다: `twitter:card`, `twitter:title`, `twitter:description`.
 - 글 상세 페이지의 `og:type`은 `article`, 일반 페이지는 `website`입니다.
+- 글 상세 본문의 `h1`~`h3`에는 자동 heading id가 붙고, 목차 UI에 사용됩니다.
 
 검색 엔진 파일:
 
 - `src/robots.txt.njk` -> `/robots.txt`
-- `src/sitemap.xml.njk` -> `/sitemap.xml`
+- `src/sitemap.xml.njk` -> `/sitemap.xml` sitemap index
+- `src/root-sitemap.xml.njk` -> `/root-sitemap.xml`
+- `src/devbyhwang/sitemap.xml.njk` -> `/devbyhwang/sitemap.xml`
+- `src/dodoes/sitemap.xml.njk` -> `/dodoes/sitemap.xml`
 - `robots.txt`에는 `Sitemap: {SITE_URL}/sitemap.xml`이 포함됩니다.
 - RSS/Atom feed는 현재 생성하지 않습니다.
 
@@ -164,12 +174,14 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 
 - Embercraft Fireplace: Three.js + Cannon.js 기반 실시간 장작불 시뮬레이션.
 - 네모게임 (NEMO GAME): 100% 풀이 가능한 논리 퍼즐.
+- PDF OCR Extractor: PDF와 이미지에서 텍스트와 이메일, 전화번호, 날짜, 금액 같은 필드를 추출하는 브라우저 도구.
+- Local LLM Chat: 브라우저에서 실행해보는 가벼운 로컬 AI 채팅 Playground.
 
 새 데모를 추가할 때는 `src/playground/<slug>/index.html`을 만들고 `src/_data/studio.js`에 카드 엔트리를 추가합니다. 자세한 규칙은 `src/playground/README.md`를 따릅니다.
 
 ## 광고와 환경변수
 
-환경변수는 로컬 `.env` 또는 GitHub Actions 환경에서 읽습니다. `eleventy.config.js`가 `.env`를 로드하고, `src/_data/site.js`가 값을 정규화합니다.
+환경변수는 로컬 `.env` 또는 GitHub Actions 환경에서 읽습니다. `eleventy.config.js`가 루트 `.env`를 로드하고, `src/_data/site.js`와 `src/_data/env.js`가 값을 정규화합니다.
 
 | 변수 | 용도 | 기본값 |
 | --- | --- | --- |
@@ -191,12 +203,13 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 
 - 공통 광고는 DevByHwang 브랜드에서만 사용합니다.
 - `GOOGLE_ADS_ENABLE=true`이고 `GOOGLE_ADS_CLIENT`가 있을 때 AdSense 스크립트를 로드합니다.
+- 광고는 `ELEVENTY_ENV=production`인 빌드에서만 실제로 렌더링됩니다. 개발 서버에서는 placeholder가 표시될 수 있습니다.
 - Sidebar/rail display 광고는 전용 슬롯이 없으면 `GOOGLE_ADS_SLOT_DEFAULT`를 fallback으로 사용합니다.
 - 글 본문 inline 광고는 In-article 전용 슬롯으로만 삽입됩니다. 8문단 이상이면 1개, 18문단 이상이면 2개까지 삽입됩니다.
 - 홈/글 목록 feed에는 In-feed 전용 슬롯이 있을 때 글 목록 안에 광고를 삽입합니다.
-- 글 상세 관련 글 아래에는 Multiplex 전용 슬롯이 있을 때만 광고를 삽입합니다.
+- DevByHwang 글 상세 관련 글 아래에는 Multiplex 전용 슬롯이 있을 때 광고를 삽입합니다.
 - Playground 하단 광고 설정은 `/assets/playground-ad-config.json`으로 빌드됩니다.
-- GitHub Pages 배포에서는 위 `GOOGLE_ADS_*` 값을 repository variables로 설정합니다.
+- GitHub Pages 배포에서는 `GOOGLE_ADS_CLIENT`가 workflow에 설정되어 있고, `GOOGLE_ADS_ENABLE`과 슬롯 값은 repository variables에서 읽습니다.
 - 광고 슬롯이 비어 있거나 `0000000000`이면 해당 위치의 광고는 fallback, placeholder 또는 비활성 상태로 처리합니다.
 - Google Analytics는 production 빌드에서만 로드합니다.
 
