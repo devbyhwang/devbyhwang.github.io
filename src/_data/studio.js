@@ -24,5 +24,13 @@ module.exports = {
       ],
       preview: "/assets/ocr-extractor-preview.svg",
     },
+    {
+      title: "Local LLM Chat",
+      blurb: "시작 버튼만 누르면 브라우저에서 바로 써보는 가벼운 로컬 AI 채팅 playground.",
+      links: [
+        { label: "Launch", href: "/devbyhwang/playground/local-llm/" },
+      ],
+      preview: "/assets/local-llm-preview.svg",
+    },
   ],
 };
