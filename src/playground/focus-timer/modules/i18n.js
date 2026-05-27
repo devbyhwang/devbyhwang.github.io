@@ -157,6 +157,7 @@ const TEXT = {
     "confirm.settingsRunning": "실행 중입니다. 설정 변경 시 타이머를 초기화합니다. 계속할까요?",
     "confirm.applyPresetRunning": "실행 중입니다. 프리셋 적용 시 타이머를 초기화합니다. 적용할까요?",
     "confirm.deletePreset": "프리셋을 삭제할까요?",
+    "confirm.deleteActivePresetRunning": "현재 타이머의 활성 프리셋입니다. 삭제하면 현재 타이머가 초기화됩니다. 삭제할까요?",
     "confirm.applySavedPresetRunning": "실행 중입니다. 저장한 프리셋 적용 시 타이머를 초기화합니다. 적용할까요?",
     "insights.currentSelection": "현재 선택",
     "unit.count": "{count}회",
@@ -286,6 +287,7 @@ const TEXT = {
     "confirm.settingsRunning": "The timer is running. Changing settings will reset it. Continue?",
     "confirm.applyPresetRunning": "The timer is running. Applying a preset will reset it. Apply?",
     "confirm.deletePreset": "Delete this preset?",
+    "confirm.deleteActivePresetRunning": "This is the active preset for the current timer. Deleting it will reset the current timer. Delete it?",
     "confirm.applySavedPresetRunning": "The timer is running. Applying the saved preset will reset it. Apply?",
     "insights.currentSelection": "Current selection",
     "unit.count": "{count} times",
@@ -419,6 +421,7 @@ const ALIASES = {
     "confirm.settingsRunning": "タイマーが作動しています。設定を変更するとリセットされます。続く？",
     "confirm.applyPresetRunning": "タイマーが作動しています。プリセットを適用するとリセットされます。適用する？",
     "confirm.deletePreset": "このプリセットを削除しますか?",
+    "confirm.deleteActivePresetRunning": "これは現在のタイマーのアクティブなプリセットです。削除すると現在のタイマーがリセットされます。削除しますか？",
     "confirm.applySavedPresetRunning": "タイマーが作動しています。保存したプリセットを適用するとリセットされます。適用する？",
     "insights.currentSelection": "現在の選択内容"
   },
@@ -545,6 +548,7 @@ const ALIASES = {
     "confirm.settingsRunning": "计时器正在运行。更改设置将重置它。继续？",
     "confirm.applyPresetRunning": "计时器正在运行。应用预设将重置它。申请？",
     "confirm.deletePreset": "删除这个预设吗？",
+    "confirm.deleteActivePresetRunning": "这是当前计时器的活动预设。删除它将重置当前计时器。删除吗？",
     "confirm.applySavedPresetRunning": "计时器正在运行。应用保存的预设将重置它。申请？",
     "insights.currentSelection": "当前选择"
   },
@@ -671,6 +675,7 @@ const ALIASES = {
     "confirm.settingsRunning": "計時器正在運作。更改設定將重置它。繼續？",
     "confirm.applyPresetRunning": "計時器正在運作。應用預設將重置它。申請？",
     "confirm.deletePreset": "刪除這個預設嗎？",
+    "confirm.deleteActivePresetRunning": "這是目前計時器的作用中預設。刪除它會重置目前計時器。要刪除嗎？",
     "confirm.applySavedPresetRunning": "計時器正在運作。應用已儲存的預設將重置它。申請？",
     "insights.currentSelection": "目前選擇"
   },
@@ -797,6 +802,7 @@ const ALIASES = {
     "confirm.settingsRunning": "El cronómetro está funcionando. Cambiar la configuración lo restablecerá. ¿Continuar?",
     "confirm.applyPresetRunning": "El cronómetro está funcionando. La aplicación de un ajuste preestablecido lo restablecerá. ¿Aplicar?",
     "confirm.deletePreset": "¿Eliminar este ajuste preestablecido?",
+    "confirm.deleteActivePresetRunning": "Este es el ajuste preestablecido activo del cronómetro actual. Al eliminarlo, se restablecerá el cronómetro actual. ¿Eliminarlo?",
     "confirm.applySavedPresetRunning": "El cronómetro está funcionando. La aplicación del ajuste preestablecido guardado lo restablecerá. ¿Aplicar?",
     "insights.currentSelection": "Selección actual"
   },
@@ -923,6 +929,7 @@ const ALIASES = {
     "confirm.settingsRunning": "La minuterie est en marche. La modification des paramètres le réinitialisera. Continuer?",
     "confirm.applyPresetRunning": "La minuterie est en marche. L’application d’un préréglage le réinitialisera. Appliquer?",
     "confirm.deletePreset": "Supprimer ce préréglage ?",
+    "confirm.deleteActivePresetRunning": "C’est le préréglage actif de la minuterie actuelle. Le supprimer réinitialisera la minuterie actuelle. Le supprimer ?",
     "confirm.applySavedPresetRunning": "La minuterie est en marche. L’application du préréglage enregistré le réinitialisera. Appliquer?",
     "insights.currentSelection": "Sélection actuelle"
   },
@@ -1049,6 +1056,7 @@ const ALIASES = {
     "confirm.settingsRunning": "Der Timer läuft. Durch Ändern der Einstellungen wird es zurückgesetzt. Weitermachen?",
     "confirm.applyPresetRunning": "Der Timer läuft. Durch Anwenden einer Voreinstellung wird diese zurückgesetzt. Anwenden?",
     "confirm.deletePreset": "Diese Voreinstellung löschen?",
+    "confirm.deleteActivePresetRunning": "Dies ist die aktive Voreinstellung für den aktuellen Timer. Durch Löschen wird der aktuelle Timer zurückgesetzt. Löschen?",
     "confirm.applySavedPresetRunning": "Der Timer läuft. Durch Anwenden der gespeicherten Voreinstellung wird diese zurückgesetzt. Anwenden?",
     "insights.currentSelection": "Aktuelle Auswahl"
   },
@@ -1175,6 +1183,7 @@ const ALIASES = {
     "confirm.settingsRunning": "O cronômetro está funcionando. Alterar as configurações irá redefini-lo. Continuar?",
     "confirm.applyPresetRunning": "O cronômetro está funcionando. Aplicar uma predefinição irá redefini-la. Aplicar?",
     "confirm.deletePreset": "Excluir esta predefinição?",
+    "confirm.deleteActivePresetRunning": "Esta é a predefinição ativa do cronômetro atual. Excluí-la irá redefinir o cronômetro atual. Excluir?",
     "confirm.applySavedPresetRunning": "O cronômetro está funcionando. Aplicar a predefinição salva irá redefini-la. Aplicar?",
     "insights.currentSelection": "Seleção atual"
   },
@@ -1301,6 +1310,7 @@ const ALIASES = {
     "confirm.settingsRunning": "Таймер работает. Изменение настроек приведет к его сбросу. Продолжать?",
     "confirm.applyPresetRunning": "Таймер работает. Применение пресета приведет к его сбросу. Применять?",
     "confirm.deletePreset": "Удалить эту предустановку?",
+    "confirm.deleteActivePresetRunning": "Это активный пресет текущего таймера. При удалении текущий таймер будет сброшен. Удалить?",
     "confirm.applySavedPresetRunning": "Таймер работает. Применение сохраненного пресета приведет к его сбросу. Применять?",
     "insights.currentSelection": "Текущий выбор"
   },
@@ -1427,6 +1437,7 @@ const ALIASES = {
     "confirm.settingsRunning": "الموقت قيد التشغيل. سيؤدي تغيير الإعدادات إلى إعادة تعيينها. يكمل؟",
     "confirm.applyPresetRunning": "الموقت قيد التشغيل. سيؤدي تطبيق إعداد مسبق إلى إعادة تعيينه. يتقدم؟",
     "confirm.deletePreset": "هل تريد حذف هذا الإعداد المسبق؟",
+    "confirm.deleteActivePresetRunning": "هذا هو الإعداد المسبق النشط للمؤقت الحالي. سيؤدي حذفه إلى إعادة تعيين المؤقت الحالي. هل تريد حذفه؟",
     "confirm.applySavedPresetRunning": "الموقت قيد التشغيل. سيؤدي تطبيق الإعداد المسبق المحفوظ إلى إعادة تعيينه. يتقدم؟",
     "insights.currentSelection": "الاختيار الحالي"
   },
@@ -1553,6 +1564,7 @@ const ALIASES = {
     "confirm.settingsRunning": "टाइमर चल रहा है. सेटिंग बदलने से यह रीसेट हो जाएगा. जारी रखना?",
     "confirm.applyPresetRunning": "टाइमर चल रहा है. प्रीसेट लगाने से यह रीसेट हो जाएगा. आवेदन करना?",
     "confirm.deletePreset": "यह प्रीसेट हटाएं?",
+    "confirm.deleteActivePresetRunning": "यह वर्तमान टाइमर का सक्रिय प्रीसेट है. इसे हटाने से वर्तमान टाइमर रीसेट हो जाएगा. हटाएं?",
     "confirm.applySavedPresetRunning": "टाइमर चल रहा है. सहेजे गए प्रीसेट को लागू करने से यह रीसेट हो जाएगा। आवेदन करना?",
     "insights.currentSelection": "वर्तमान चयन"
   }
