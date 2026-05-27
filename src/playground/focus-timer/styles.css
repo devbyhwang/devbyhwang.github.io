@@ -865,7 +865,10 @@
 
     @media (max-width: 560px) {
       :root {
-        --dial-tick-label-size: 21px;
+        --dial-tick-label-size: 14px;
+      }
+      .tick-label {
+        font-size: 14px;
       }
       .shell {
         padding-top: 66px;
@@ -891,4 +894,10 @@
       .summary-grid { grid-template-columns: 1fr; }
       .bottom-time { font-size: clamp(2.1rem, 9vw, 3rem); }
       .phase { font-size: 1.7rem; }
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      .tick-label {
+        font-size: 14px;
+      }
     }
