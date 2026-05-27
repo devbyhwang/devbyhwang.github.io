@@ -2,6 +2,9 @@ import {
   STORAGE_GUIDE_SEEN_V1,
 } from "./state-store.js";
 
+const FOCUS_TIMER_ICON_URL = new URL("../icons/focus-timer-192.png", import.meta.url).href;
+const FOCUS_TIMER_BADGE_URL = new URL("../icons/focus-timer-32.png", import.meta.url).href;
+
 export function createNotificationService(ctx) {
   const { state, els, utils, i18n } = ctx;
   const { formatMMSS } = utils;
@@ -151,21 +154,74 @@ export function createNotificationService(ctx) {
     const ctx2 = canvas.getContext("2d");
     if (!ctx2) return;
 
-    ctx2.fillStyle = "#d7c1b0";
+    ctx2.fillStyle = "#f3e8db";
     if (typeof ctx2.roundRect === "function") {
       ctx2.beginPath();
-      ctx2.roundRect(2, 2, 60, 60, 12);
+      ctx2.roundRect(0, 0, 64, 64, 14);
       ctx2.fill();
     } else {
-      ctx2.fillRect(2, 2, 60, 60);
+      ctx2.fillRect(0, 0, 64, 64);
     }
 
+    ctx2.lineCap = "round";
+    ctx2.lineJoin = "round";
     ctx2.fillStyle = "#2b2622";
-    ctx2.font = "700 20px Avenir";
-    ctx2.textAlign = "center";
-    ctx2.textBaseline = "middle";
-    const short = remain.length > 5 ? remain.slice(-5) : remain;
-    ctx2.fillText(short, 32, 35);
+    if (typeof ctx2.roundRect === "function") {
+      ctx2.beginPath();
+      ctx2.roundRect(24, 7, 16, 8, 4);
+      ctx2.fill();
+    } else {
+      ctx2.fillRect(24, 7, 16, 8);
+    }
+
+    ctx2.save();
+    ctx2.translate(19, 13);
+    ctx2.rotate(-Math.PI / 4);
+    ctx2.fillRect(-5, -5, 10, 10);
+    ctx2.restore();
+
+    ctx2.save();
+    ctx2.translate(45, 13);
+    ctx2.rotate(Math.PI / 4);
+    ctx2.fillRect(-5, -5, 10, 10);
+    ctx2.restore();
+
+    ctx2.beginPath();
+    ctx2.arc(32, 36, 22, 0, Math.PI * 2);
+    ctx2.fill();
+
+    ctx2.fillStyle = "#fff9f1";
+    ctx2.beginPath();
+    ctx2.arc(32, 36, 17, 0, Math.PI * 2);
+    ctx2.fill();
+
+    ctx2.strokeStyle = "#2b2622";
+    ctx2.lineWidth = 3;
+    [
+      [32, 18, 32, 22],
+      [32, 50, 32, 54],
+      [14, 36, 18, 36],
+      [46, 36, 50, 36],
+    ].forEach(function (line) {
+      ctx2.beginPath();
+      ctx2.moveTo(line[0], line[1]);
+      ctx2.lineTo(line[2], line[3]);
+      ctx2.stroke();
+    });
+
+    ctx2.strokeStyle = "#1a73e8";
+    ctx2.lineWidth = 4;
+    ctx2.beginPath();
+    ctx2.moveTo(32, 36);
+    ctx2.lineTo(32, 25);
+    ctx2.moveTo(32, 36);
+    ctx2.lineTo(43, 43);
+    ctx2.stroke();
+
+    ctx2.fillStyle = "#2b2622";
+    ctx2.beginPath();
+    ctx2.arc(32, 36, 4, 0, Math.PI * 2);
+    ctx2.fill();
 
     let icon = document.querySelector('link[rel="icon"]');
     if (!icon) {
@@ -173,6 +229,8 @@ export function createNotificationService(ctx) {
       icon.rel = "icon";
       document.head.appendChild(icon);
     }
+    icon.type = "image/png";
+    icon.setAttribute("sizes", "64x64");
     icon.href = canvas.toDataURL("image/png");
   };
 
@@ -198,7 +256,13 @@ export function createNotificationService(ctx) {
 
   const notify = function (title, body) {
     if ("Notification" in window && Notification.permission === "granted") {
-      const n = new Notification(title, { body: body, tag: "focus-timer", renotify: true });
+      const n = new Notification(title, {
+        body: body,
+        tag: "focus-timer",
+        renotify: true,
+        icon: FOCUS_TIMER_ICON_URL,
+        badge: FOCUS_TIMER_BADGE_URL,
+      });
       n.onclick = function () { window.focus(); n.close(); };
     }
     beep();
