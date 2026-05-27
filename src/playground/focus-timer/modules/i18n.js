@@ -36,7 +36,7 @@ const TIME_ZONE_LOCALES = [
 
 const TEXT = {
   ko: {
-    "app.title": "Focus Timer | DevByHwang",
+    "app.title": "Focus Timer",
     "phase.focus": "집중",
     "phase.shortBreak": "짧은 휴식",
     "phase.longBreak": "긴 휴식",
@@ -165,7 +165,7 @@ const TEXT = {
     "unit.hoursMinutes": "{hours}시간 {minutes}분"
   },
   en: {
-    "app.title": "Focus Timer | DevByHwang",
+    "app.title": "Focus Timer",
     "phase.focus": "Focus",
     "phase.shortBreak": "Short Break",
     "phase.longBreak": "Long Break",

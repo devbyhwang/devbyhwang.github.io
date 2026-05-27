@@ -1,0 +1,22 @@
+{
+  "name": "Focus Timer",
+  "short_name": "Focus Timer",
+  "description": "A simple focus timer playground.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f3e8db",
+  "theme_color": "#f3e8db",
+  "icons": [
+    {
+      "src": "./icons/focus-timer-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/focus-timer-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
