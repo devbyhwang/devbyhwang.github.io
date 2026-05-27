@@ -1,0 +1,219 @@
+export function createDisplayLabelService(ctx) {
+  const { state, els, utils } = ctx;
+  const { normalizeDisplayMode, normalizeTodoText, getDisplayContent, clampInt } = utils;
+
+  const isBottomTodoEditable = function () {
+    return !!state.display.bottomLabelEnabled && normalizeDisplayMode(state.display.bottomLabelMode) === "todo";
+  };
+
+  const renderDisplayLabels = function () {
+    const time = utils.formatMMSS(state.timer.remainingMs);
+    const todoText = normalizeTodoText(state.display.todoText);
+    const centerEnabled = !!state.display.centerLabelEnabled;
+    const bottomEnabled = !!state.display.bottomLabelEnabled;
+    const centerMode = normalizeDisplayMode(state.display.centerLabelMode);
+    const bottomMode = normalizeDisplayMode(state.display.bottomLabelMode);
+
+    els.bottomTime.textContent = getDisplayContent(centerMode, time, todoText);
+    els.bottomTime.dataset.mode = centerMode;
+    els.bottomTime.style.display = centerEnabled ? "" : "none";
+    if (!state.ui.bottomTodoEditing) {
+      els.bottomCustomLabel.textContent = getDisplayContent(bottomMode, time, todoText);
+    }
+    els.bottomCustomLabel.dataset.active = bottomEnabled ? "true" : "false";
+    els.bottomCustomLabel.dataset.mode = bottomMode;
+    els.bottomCustomLabel.dataset.editing = state.ui.bottomTodoEditing ? "true" : "false";
+  };
+
+  const syncDisplayInputs = function () {
+    if (document.activeElement !== els.todoTextInput) {
+      els.todoTextInput.value = String(state.display.todoText);
+    }
+    if (document.activeElement !== els.centerLabelModeInput) {
+      els.centerLabelModeInput.value = normalizeDisplayMode(state.display.centerLabelMode);
+    }
+    if (document.activeElement !== els.bottomLabelModeInput) {
+      els.bottomLabelModeInput.value = normalizeDisplayMode(state.display.bottomLabelMode);
+    }
+    if (document.activeElement !== els.centerLabelEnabledInput) {
+      els.centerLabelEnabledInput.checked = !!state.display.centerLabelEnabled;
+    }
+    if (document.activeElement !== els.bottomLabelEnabledInput) {
+      els.bottomLabelEnabledInput.checked = !!state.display.bottomLabelEnabled;
+    }
+  };
+
+  const readSettingsFormValues = function () {
+    return {
+      next: {
+        focusMin: clampInt(els.focusMinInput.value, 1, 180),
+        shortBreakMin: clampInt(els.shortMinInput.value, 1, 60),
+        longBreakMin: clampInt(els.longMinInput.value, 1, 120),
+        longBreakEvery: clampInt(els.longEveryInput.value, 1, 12),
+        maxPomodoros: clampInt(els.maxPomodorosInput.value, 1, 24),
+      },
+      customLabel: String(els.presetLabelTextInput.value || "").trim().slice(0, 30) || "Custom",
+      display: {
+        todoText: normalizeTodoText(els.todoTextInput.value),
+        centerLabelEnabled: !!els.centerLabelEnabledInput.checked,
+        centerLabelMode: normalizeDisplayMode(els.centerLabelModeInput.value),
+        bottomLabelEnabled: !!els.bottomLabelEnabledInput.checked,
+        bottomLabelMode: normalizeDisplayMode(els.bottomLabelModeInput.value),
+      },
+    };
+  };
+
+  const commitSettingsFromForm = function () {
+    const payload = readSettingsFormValues();
+    const next = payload.next;
+    const customLabel = payload.customLabel;
+    const display = payload.display;
+
+    const paramsChanged =
+      next.focusMin !== state.settings.focusMin ||
+      next.shortBreakMin !== state.settings.shortBreakMin ||
+      next.longBreakMin !== state.settings.longBreakMin ||
+      next.longBreakEvery !== state.settings.longBreakEvery ||
+      next.maxPomodoros !== state.settings.maxPomodoros ||
+      customLabel !== ctx.getActiveLabel();
+
+    const displayChanged =
+      display.todoText !== state.display.todoText ||
+      display.centerLabelEnabled !== state.display.centerLabelEnabled ||
+      display.centerLabelMode !== state.display.centerLabelMode ||
+      display.bottomLabelEnabled !== state.display.bottomLabelEnabled ||
+      display.bottomLabelMode !== state.display.bottomLabelMode;
+
+    if (!paramsChanged && !displayChanged) return;
+
+    if (paramsChanged && state.timer.status === "running") {
+      const ok = window.confirm("실행 중입니다. 설정 변경 시 타이머를 초기화합니다. 계속할까요?");
+      if (!ok) {
+        ctx.render();
+        return;
+      }
+    }
+
+    state.display.todoText = display.todoText;
+    state.display.centerLabelEnabled = display.centerLabelEnabled;
+    state.display.centerLabelMode = display.centerLabelMode;
+    state.display.bottomLabelEnabled = display.bottomLabelEnabled;
+    state.display.bottomLabelMode = display.bottomLabelMode;
+
+    if (paramsChanged) {
+      ctx.timer.applySettings(next, null, customLabel);
+      ctx.setStatus("설정 자동 저장됨");
+      ctx.renderPresetList();
+    } else {
+      ctx.setStatus("표시 설정 자동 저장됨");
+    }
+
+    ctx.render();
+    ctx.storage.persistState();
+  };
+
+  const bindAutoSaveSettings = function () {
+    let timerId = null;
+    const queueCommit = function () {
+      if (timerId !== null) window.clearTimeout(timerId);
+      timerId = window.setTimeout(function () {
+        timerId = null;
+        commitSettingsFromForm();
+      }, 220);
+    };
+
+    const inputTargets = [
+      els.presetLabelTextInput,
+      els.focusMinInput,
+      els.shortMinInput,
+      els.longMinInput,
+      els.longEveryInput,
+      els.maxPomodorosInput,
+      els.todoTextInput,
+    ];
+    inputTargets.forEach(function (el) {
+      if (!el) return;
+      el.addEventListener("input", queueCommit);
+      el.addEventListener("change", queueCommit);
+    });
+
+    const changeOnlyTargets = [
+      els.centerLabelEnabledInput,
+      els.centerLabelModeInput,
+      els.bottomLabelEnabledInput,
+      els.bottomLabelModeInput,
+    ];
+    changeOnlyTargets.forEach(function (el) {
+      if (!el) return;
+      el.addEventListener("change", queueCommit);
+    });
+  };
+
+  const endBottomTodoEdit = function (commit) {
+    if (!state.ui.bottomTodoEditing) return;
+    state.ui.bottomTodoEditing = false;
+    els.bottomCustomLabel.removeAttribute("contenteditable");
+
+    if (commit) {
+      state.display.todoText = normalizeTodoText(els.bottomCustomLabel.textContent || "");
+      ctx.storage.persistState();
+      ctx.setStatus("하단 Todo 라벨 저장됨");
+    } else {
+      state.display.todoText = normalizeTodoText(state.ui.bottomTodoBeforeEdit);
+      ctx.setStatus("하단 Todo 라벨 편집 취소");
+    }
+
+    ctx.render();
+  };
+
+  const beginBottomTodoEdit = function () {
+    if (!isBottomTodoEditable()) return;
+    if (state.ui.bottomTodoEditing) return;
+
+    state.ui.bottomTodoEditing = true;
+    state.ui.bottomTodoBeforeEdit = state.display.todoText;
+    els.bottomCustomLabel.dataset.editing = "true";
+    els.bottomCustomLabel.setAttribute("contenteditable", "true");
+    els.bottomCustomLabel.textContent = state.display.todoText || "";
+    els.bottomCustomLabel.focus();
+
+    const sel = window.getSelection && window.getSelection();
+    if (sel && typeof document.createRange === "function") {
+      const range = document.createRange();
+      range.selectNodeContents(els.bottomCustomLabel);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  };
+
+  const bindBottomLabelEditing = function () {
+    els.bottomCustomLabel.addEventListener("dblclick", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      beginBottomTodoEdit();
+    });
+    els.bottomCustomLabel.addEventListener("keydown", function (event) {
+      if (!state.ui.bottomTodoEditing) return;
+      if (event.key === "Enter") {
+        event.preventDefault();
+        endBottomTodoEdit(true);
+        return;
+      }
+      if (event.key === "Escape") {
+        event.preventDefault();
+        endBottomTodoEdit(false);
+      }
+    });
+    els.bottomCustomLabel.addEventListener("blur", function () {
+      if (!state.ui.bottomTodoEditing) return;
+      endBottomTodoEdit(true);
+    });
+  };
+
+  return {
+    renderDisplayLabels,
+    syncDisplayInputs,
+    bindAutoSaveSettings,
+    bindBottomLabelEditing,
+  };
+}
