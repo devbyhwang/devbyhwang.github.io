@@ -10,6 +10,7 @@
       --tick: #5f6368;
       --minor: #dadce0;
       --ring: #dadce0;
+      --dial-tick-label-size: 7px;
       --time-ink: #202124;
       --time-shadow: none;
       --shadow: 0 20px 42px rgba(22, 33, 50, 0.15);
@@ -223,7 +224,7 @@
 
     .tick-label {
       fill: var(--tick);
-      font-size: 7px;
+      font-size: var(--dial-tick-label-size);
       font-weight: 700;
       text-anchor: middle;
       dominant-baseline: middle;
@@ -863,6 +864,9 @@
     }
 
     @media (max-width: 560px) {
+      :root {
+        --dial-tick-label-size: 21px;
+      }
       .shell {
         padding-top: 66px;
         padding-bottom: 66px;
