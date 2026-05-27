@@ -245,9 +245,8 @@ export function createStorageService(ctx) {
   };
 
   const migrateV1IfNeeded = function () {
-    if (localStorage.getItem(STORAGE_STATE_V2)) return;
-
     try {
+      if (localStorage.getItem(STORAGE_STATE_V2)) return;
       const raw = localStorage.getItem(STORAGE_STATE_V1);
       if (!raw) return;
       const legacy = JSON.parse(raw);

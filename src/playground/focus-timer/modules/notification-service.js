@@ -8,6 +8,7 @@ const FOCUS_TIMER_BADGE_URL = new URL("../icons/focus-timer-32.png", import.meta
 export function createNotificationService(ctx) {
   const { state, els, utils, i18n } = ctx;
   const { formatMMSS } = utils;
+  let cachedFaviconHref = "";
 
   const setStatus = function (text) {
     els.statusLine.textContent = text;
@@ -143,11 +144,8 @@ export function createNotificationService(ctx) {
     }
   };
 
-  const updateTitleAndFavicon = function () {
-    const remain = formatMMSS(state.timer.remainingMs);
-    const baseTitle = i18n.t("app.title");
-    document.title = state.timer.status === "running" ? (remain + " · " + baseTitle) : baseTitle;
-
+  const ensureFavicon = function () {
+    if (cachedFaviconHref) return;
     const canvas = document.createElement("canvas");
     canvas.width = 64;
     canvas.height = 64;
@@ -231,7 +229,15 @@ export function createNotificationService(ctx) {
     }
     icon.type = "image/png";
     icon.setAttribute("sizes", "64x64");
-    icon.href = canvas.toDataURL("image/png");
+    cachedFaviconHref = canvas.toDataURL("image/png");
+    icon.href = cachedFaviconHref;
+  };
+
+  const updateTitleAndFavicon = function () {
+    const remain = formatMMSS(state.timer.remainingMs);
+    const baseTitle = i18n.t("app.title");
+    document.title = state.timer.status === "running" ? (remain + " · " + baseTitle) : baseTitle;
+    ensureFavicon();
   };
 
   const beep = function () {

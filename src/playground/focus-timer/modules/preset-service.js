@@ -75,7 +75,11 @@ export function createPresetService(ctx) {
       delBtn.className = "mini warn";
       delBtn.textContent = i18n.t("preset.delete");
       delBtn.addEventListener("click", function () {
-        const ok = window.confirm(i18n.t("confirm.deletePreset"));
+        const shouldWarnReset = ["running", "paused"].includes(state.timer.status) && state.timer.activePresetId === preset.id;
+        const confirmKey = shouldWarnReset
+          ? "confirm.deleteActivePresetRunning"
+          : "confirm.deletePreset";
+        const ok = window.confirm(i18n.t(confirmKey));
         if (!ok) return;
 
         if (preset.builtin) {
