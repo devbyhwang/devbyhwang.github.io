@@ -9,7 +9,7 @@ import {
 } from "./state-store.js";
 
 export function createStorageService(ctx) {
-  const { state, store, utils } = ctx;
+  const { state, store, utils, i18n } = ctx;
   const { clampInt, two, normalizeLabel, normalizeTodoText, normalizeDisplayMode } = utils;
 
   const persistState = function () {
@@ -77,9 +77,9 @@ export function createStorageService(ctx) {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
-      ctx.setStatus("백업 파일을 저장했습니다");
+      ctx.setStatus(i18n.t("status.backupSaved"));
     } catch {
-      ctx.setStatus("백업 저장에 실패했습니다");
+      ctx.setStatus(i18n.t("status.backupSaveFailed"));
     }
   };
 
@@ -90,7 +90,7 @@ export function createStorageService(ctx) {
       .map(function (p) {
         return {
           id: String(p.id),
-          name: String(p.name || "사용자 프리셋").slice(0, 30),
+          name: String(p.name || i18n.t("presets.custom")).slice(0, 30),
           focusMin: clampInt(p.focusMin, 1, 180),
           shortBreakMin: clampInt(p.shortBreakMin, 1, 60),
           longBreakMin: clampInt(p.longBreakMin, 1, 120),
@@ -193,7 +193,7 @@ export function createStorageService(ctx) {
     persistFocusHistory();
     ctx.renderPresetList();
     ctx.render();
-    ctx.setStatus("백업 파일을 불러왔습니다");
+    ctx.setStatus(i18n.t("status.backupLoaded"));
   };
 
   const loadUserPresets = function () {

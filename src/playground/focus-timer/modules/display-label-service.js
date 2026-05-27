@@ -1,5 +1,5 @@
 export function createDisplayLabelService(ctx) {
-  const { state, els, utils } = ctx;
+  const { state, els, utils, i18n } = ctx;
   const { normalizeDisplayMode, normalizeTodoText, getDisplayContent, clampInt } = utils;
 
   const isBottomTodoEditable = function () {
@@ -52,7 +52,7 @@ export function createDisplayLabelService(ctx) {
         longBreakEvery: clampInt(els.longEveryInput.value, 1, 12),
         maxPomodoros: clampInt(els.maxPomodorosInput.value, 1, 24),
       },
-      customLabel: String(els.presetLabelTextInput.value || "").trim().slice(0, 30) || "Custom",
+      customLabel: String(els.presetLabelTextInput.value || "").trim().slice(0, 30) || i18n.t("presets.custom"),
       display: {
         todoText: normalizeTodoText(els.todoTextInput.value),
         centerLabelEnabled: !!els.centerLabelEnabledInput.checked,
@@ -87,7 +87,7 @@ export function createDisplayLabelService(ctx) {
     if (!paramsChanged && !displayChanged) return;
 
     if (paramsChanged && state.timer.status === "running") {
-      const ok = window.confirm("실행 중입니다. 설정 변경 시 타이머를 초기화합니다. 계속할까요?");
+      const ok = window.confirm(i18n.t("confirm.settingsRunning"));
       if (!ok) {
         ctx.render();
         return;
@@ -102,10 +102,10 @@ export function createDisplayLabelService(ctx) {
 
     if (paramsChanged) {
       ctx.timer.applySettings(next, null, customLabel);
-      ctx.setStatus("설정 자동 저장됨");
+      ctx.setStatus(i18n.t("status.settingsSaved"));
       ctx.renderPresetList();
     } else {
-      ctx.setStatus("표시 설정 자동 저장됨");
+      ctx.setStatus(i18n.t("status.displaySaved"));
     }
 
     ctx.render();
@@ -157,10 +157,10 @@ export function createDisplayLabelService(ctx) {
     if (commit) {
       state.display.todoText = normalizeTodoText(els.bottomCustomLabel.textContent || "");
       ctx.storage.persistState();
-      ctx.setStatus("하단 Todo 라벨 저장됨");
+      ctx.setStatus(i18n.t("status.bottomTodoSaved"));
     } else {
       state.display.todoText = normalizeTodoText(state.ui.bottomTodoBeforeEdit);
-      ctx.setStatus("하단 Todo 라벨 편집 취소");
+      ctx.setStatus(i18n.t("status.bottomTodoCancelled"));
     }
 
     ctx.render();

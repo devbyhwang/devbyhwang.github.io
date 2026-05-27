@@ -1,5 +1,5 @@
 export function createDialUi(ctx) {
-  const { state, els, utils, RADIUS, CX, CY } = ctx;
+  const { state, els, utils, i18n, RADIUS, CX, CY } = ctx;
   const { clampInt, polar } = utils;
 
   const buildSectorPath = function (progress) {
@@ -135,7 +135,7 @@ export function createDialUi(ctx) {
     const nextMinutes = clampInt(minutes, 1, 180);
     state.settings.focusMin = nextMinutes;
     state.timer.activePresetId = null;
-    state.timer.customLabel = utils.normalizeLabel(state.timer.customLabel) || "Custom";
+    state.timer.customLabel = i18n.normalizePresetName(utils.normalizeLabel(state.timer.customLabel)) || i18n.t("presets.custom");
     state.timer.phase = "focus";
     state.timer.status = "idle";
     state.timer.completedFocusCount = 0;
@@ -202,7 +202,7 @@ export function createDialUi(ctx) {
       const dy = event.clientY - state.ui.dialStartY;
       if (Math.hypot(dx, dy) < 6) return;
       state.ui.dialDragStarted = true;
-      ctx.setStatus("다이얼로 시간 조절 중");
+      ctx.setStatus(i18n.t("status.dialAdjusting"));
     }
 
     moveDialByPointer(event);
@@ -231,9 +231,9 @@ export function createDialUi(ctx) {
       ctx.renderPresetList();
       ctx.storage.persistState();
       state.ui.preventToggleUntil = Date.now() + 260;
-      ctx.setStatus("다이얼 설정: " + state.settings.focusMin + "분");
+      ctx.setStatus(i18n.t("status.dialSet", { minutes: state.settings.focusMin }));
     } else {
-      ctx.setStatus("준비됨");
+      ctx.setStatus(i18n.t("status.ready"));
     }
 
     state.ui.dialChanged = false;

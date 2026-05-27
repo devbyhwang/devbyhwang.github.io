@@ -18,18 +18,25 @@ import { createTimerMachine } from "./modules/timer-machine.js";
 import { createDialUi } from "./modules/dial-ui.js";
 import { createDisplayLabelService } from "./modules/display-label-service.js";
 import { createPresetService } from "./modules/preset-service.js";
+import { createFocusTimerI18n } from "./modules/i18n.js";
 
 (function () {
+  const i18n = createFocusTimerI18n();
+  i18n.applyStaticTranslations();
+
   const store = createStore();
+  store.state.timer.customLabel = i18n.normalizePresetName(store.state.timer.customLabel) || i18n.t("presets.standard");
+
   const els = getElements();
 
   const ctx = {
     store,
     state: store.state,
     els,
+    i18n,
     utils: timeUtils,
     PHASE_META,
-    BUILTIN_PRESETS,
+    BUILTIN_PRESETS: i18n.localizeBuiltInPresets(BUILTIN_PRESETS),
     MAX_USER_PRESETS,
     BACKUP_SCHEMA_V1,
     RADIUS,
@@ -96,7 +103,10 @@ import { createPresetService } from "./modules/preset-service.js";
     document.documentElement.style.setProperty("--phase", meta.phaseColor || "#ebe4dc");
 
     els.phaseTitle.textContent = ctx.getActiveLabel();
-    els.cycleLabel.textContent = ctx.state.timer.completedFocusCount + " / " + ctx.state.settings.maxPomodoros + " 포모도로 완료";
+    els.cycleLabel.textContent = i18n.t("cycle.completed", {
+      completed: ctx.state.timer.completedFocusCount,
+      max: ctx.state.settings.maxPomodoros,
+    });
 
     ctx.services.display.renderDisplayLabels();
     syncSettingInputs();
@@ -138,7 +148,7 @@ import { createPresetService } from "./modules/preset-service.js";
 
     els.importBackupBtn.addEventListener("click", function () {
       if (ctx.state.timer.status === "running") {
-        const ok = window.confirm("실행 중입니다. 백업을 불러오면 현재 상태가 덮어써집니다. 계속할까요?");
+        const ok = window.confirm(i18n.t("confirm.importRunning"));
         if (!ok) return;
       }
       els.backupFileInput.click();
@@ -155,13 +165,13 @@ import { createPresetService } from "./modules/preset-service.js";
           const parsed = JSON.parse(String(reader.result || "{}"));
           ctx.storage.applyBackupPayload(parsed);
         } catch {
-          ctx.setStatus("백업 파일 형식이 올바르지 않습니다");
+          ctx.setStatus(i18n.t("status.backupInvalid"));
         } finally {
           input.value = "";
         }
       };
       reader.onerror = function () {
-        ctx.setStatus("백업 파일을 읽지 못했습니다");
+        ctx.setStatus(i18n.t("status.backupReadFailed"));
         input.value = "";
       };
       reader.readAsText(file);
@@ -211,12 +221,11 @@ import { createPresetService } from "./modules/preset-service.js";
 
     if (!ctx.services.notification.hasSeenGuide()) {
       ctx.services.overlay.openGuide();
-      if ("Notification" in window && Notification.permission === "default") {
-        window.setTimeout(function () {
-          ctx.services.notification.requestNotificationPermission().then(ctx.services.notification.syncPermission);
-        }, 120);
-      }
     }
+
+    window.setTimeout(function () {
+      ctx.services.notification.requestPermissionOnBoot();
+    }, 120);
 
     if (ctx.state.timer.status === "running") {
       ctx.stopTicker();
@@ -228,6 +237,6 @@ import { createPresetService } from "./modules/preset-service.js";
     boot();
   } catch (error) {
     console.error("Focus Timer bootstrap failed:", error);
-    ctx.setStatus("초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요.");
+    ctx.setStatus(i18n.t("status.bootError"));
   }
 })();

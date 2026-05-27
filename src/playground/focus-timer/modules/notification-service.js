@@ -1,10 +1,9 @@
 import {
-  BASE_TITLE,
   STORAGE_GUIDE_SEEN_V1,
 } from "./state-store.js";
 
 export function createNotificationService(ctx) {
-  const { state, els, utils } = ctx;
+  const { state, els, utils, i18n } = ctx;
   const { formatMMSS } = utils;
 
   const setStatus = function (text) {
@@ -18,30 +17,30 @@ export function createNotificationService(ctx) {
     };
 
     if (!("Notification" in window)) {
-      els.permissionLabel.textContent = "미지원";
+      els.permissionLabel.textContent = i18n.t("permission.unsupported");
       updateGuidePermissionButton(true);
       if (els.guidePermissionState) {
-        els.guidePermissionState.textContent = "이 브라우저는 알림 기능을 지원하지 않습니다.";
+        els.guidePermissionState.textContent = i18n.t("permission.unsupportedDetail");
       }
       return;
     }
     const map = {
-      default: "요청 전",
-      granted: "허용됨",
-      denied: "차단됨",
+      default: i18n.t("permission.default"),
+      granted: i18n.t("permission.granted"),
+      denied: i18n.t("permission.denied"),
     };
     els.permissionLabel.textContent = map[Notification.permission] || Notification.permission;
     updateGuidePermissionButton(Notification.permission !== "granted");
     if (!els.guidePermissionState) return;
     if (Notification.permission === "granted") {
-      els.guidePermissionState.textContent = "현재 알림 권한이 허용되어 있습니다.";
+      els.guidePermissionState.textContent = i18n.t("permission.grantedDetail");
       return;
     }
     if (Notification.permission === "denied") {
-      els.guidePermissionState.textContent = "알림 권한이 차단되어 있습니다. 브라우저 사이트 설정에서 다시 허용해 주세요.";
+      els.guidePermissionState.textContent = i18n.t("permission.deniedDetail");
       return;
     }
-    els.guidePermissionState.textContent = "알림 권한이 아직 요청 전입니다. 아래 버튼으로 권한 요청을 진행해 주세요.";
+    els.guidePermissionState.textContent = i18n.t("permission.defaultDetail");
   };
 
   const hasSeenGuide = function () {
@@ -86,16 +85,52 @@ export function createNotificationService(ctx) {
       return;
     }
     if (Notification.permission === "denied") {
-      window.alert("알림 권한이 차단되어 있습니다. 브라우저 사이트 설정에서 알림을 허용해 주세요.");
+      window.alert(i18n.t("permission.deniedAlert"));
       syncPermission();
       return;
     }
     requestNotificationPermission().then(syncPermission);
   };
 
+  const requestPermissionOnBoot = function () {
+    if (!("Notification" in window)) {
+      syncPermission();
+      return;
+    }
+    if (Notification.permission !== "default") {
+      syncPermission();
+      return;
+    }
+
+    const maybeRequest = function () {
+      if (Notification.permission !== "default") {
+        syncPermission();
+        return Promise.resolve(Notification.permission);
+      }
+      return requestNotificationPermission();
+    };
+
+    // Try immediately first.
+    maybeRequest().then(function (result) {
+      if (result !== "default") return;
+
+      // If browser defers non-gesture prompts, retry once on first interaction.
+      const retryOnce = function () {
+        window.removeEventListener("pointerdown", retryOnce, true);
+        window.removeEventListener("keydown", retryOnce, true);
+        window.removeEventListener("touchstart", retryOnce, true);
+        maybeRequest().then(syncPermission);
+      };
+
+      window.addEventListener("pointerdown", retryOnce, true);
+      window.addEventListener("keydown", retryOnce, true);
+      window.addEventListener("touchstart", retryOnce, true);
+    });
+  };
+
   const updateBadge = function () {
     if (typeof navigator.setAppBadge !== "function") return;
-    const remain = Math.max(0, Math.ceil(state.timer.remainingMs / 1000));
+    const remain = Math.max(0, Math.ceil(state.timer.remainingMs / 60000));
     if (state.timer.status === "running" && remain > 0) {
       navigator.setAppBadge(remain).catch(function () {});
       return;
@@ -107,7 +142,8 @@ export function createNotificationService(ctx) {
 
   const updateTitleAndFavicon = function () {
     const remain = formatMMSS(state.timer.remainingMs);
-    document.title = state.timer.status === "running" ? (remain + " · " + BASE_TITLE) : BASE_TITLE;
+    const baseTitle = i18n.t("app.title");
+    document.title = state.timer.status === "running" ? (remain + " · " + baseTitle) : baseTitle;
 
     const canvas = document.createElement("canvas");
     canvas.width = 64;
@@ -174,6 +210,7 @@ export function createNotificationService(ctx) {
     hasSeenGuide,
     markGuideSeen,
     requestNotificationPermission,
+    requestPermissionOnBoot,
     requestPermissionFromGuide,
     updateBadge,
     updateTitleAndFavicon,

@@ -1,11 +1,10 @@
 export function createInsightsService(ctx) {
-  const { state, store, els, utils } = ctx;
+  const { state, store, els, utils, i18n } = ctx;
   const {
     clampInt,
     toDayKey,
     two,
     formatHHMMFromMinutes,
-    formatHumanMinutes,
     normalizeLabel,
   } = utils;
 
@@ -26,7 +25,7 @@ export function createInsightsService(ctx) {
   };
 
   const getCurrentSessionLabel = function () {
-    return normalizeLabel(ctx.getActiveLabel()) || "현재 선택";
+    return i18n.normalizePresetName(normalizeLabel(ctx.getActiveLabel())) || i18n.t("insights.currentSelection");
   };
 
   const getScopedHistory = function () {
@@ -181,21 +180,21 @@ export function createInsightsService(ctx) {
 
     if (els.trendTitle) {
       els.trendTitle.textContent = useAll
-        ? "전체 프리셋 추세"
-        : "현재 선택 섹션 추세";
+        ? i18n.t("trend.titleAll")
+        : i18n.t("trend.titlePreset");
     }
     if (els.trendScopeHint) {
       els.trendScopeHint.textContent = useAll
-        ? "모든 프리셋의 누적 통계"
-        : "현재 선택한 프리셋 기준 통계";
+        ? i18n.t("trend.hintAll")
+        : i18n.t("trend.hintPreset");
     }
     if (els.trendToday) els.trendToday.textContent = formatHHMMFromMinutes(todayMinutes);
     if (els.trendWeek) els.trendWeek.textContent = formatHHMMFromMinutes(weekMinutes);
     if (els.trendMonth) els.trendMonth.textContent = formatHHMMFromMinutes(monthMinutes);
     if (els.trendRecent7) els.trendRecent7.textContent = formatHHMMFromMinutes(recent7Minutes);
     if (els.trendTotal) els.trendTotal.textContent = formatHHMMFromMinutes(totalMinutes);
-    if (els.summaryCount) els.summaryCount.textContent = totalCount + "회";
-    if (els.summaryToday) els.summaryToday.textContent = formatHumanMinutes(todayMinutes);
+    if (els.summaryCount) els.summaryCount.textContent = i18n.t("unit.count", { count: totalCount });
+    if (els.summaryToday) els.summaryToday.textContent = i18n.formatHumanMinutes(todayMinutes);
 
     renderWeeklyChart(history);
     renderSessionList(history);
