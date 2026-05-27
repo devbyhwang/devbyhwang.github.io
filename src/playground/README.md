@@ -69,3 +69,4 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
 - **네모게임 (NEMO GAME)** - 100% 풀이 가능한 논리 퍼즐
 - **PDF OCR Extractor** - 브라우저에서 PDF/이미지 텍스트를 인식하고 주요 데이터를 자동으로 정리하는 도구
 - **Local LLM Chat** - 브라우저에서 실행해보는 가벼운 로컬 AI 채팅 playground
+- **Focus Timer** - 구글 타이머 스타일의 집중 타이머. 종료 알림과 남은 시간 아이콘 표시 지원

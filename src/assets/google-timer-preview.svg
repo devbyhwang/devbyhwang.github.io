@@ -1,0 +1,21 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="40" x2="1040" y2="590" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F3F8FF"/>
+      <stop offset="1" stop-color="#E8F0FA"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="600" y1="145" x2="600" y2="485" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F6FEB"/>
+      <stop offset="1" stop-color="#0D7D52"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <g opacity="0.8">
+    <circle cx="600" cy="315" r="166" stroke="#D7E1ED" stroke-width="18"/>
+    <circle cx="600" cy="315" r="166" stroke="url(#ring)" stroke-width="18" stroke-linecap="round" stroke-dasharray="760" stroke-dashoffset="212"/>
+  </g>
+  <text x="600" y="300" text-anchor="middle" fill="#1D252D" font-family="Avenir Next, Pretendard, sans-serif" font-size="98" font-weight="700">24:59</text>
+  <text x="600" y="352" text-anchor="middle" fill="#4D5D70" font-family="Avenir Next, Pretendard, sans-serif" font-size="34" font-weight="600">Focus Timer Playground</text>
+  <rect x="432" y="390" width="336" height="52" rx="26" fill="#DCE9FF"/>
+  <text x="600" y="424" text-anchor="middle" fill="#1F6FEB" font-family="Avenir Next, Pretendard, sans-serif" font-size="28" font-weight="700">알림 + 아이콘 카운트다운</text>
+</svg>

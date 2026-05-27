@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Focus Timer | DevByHwang</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-playground-page="google-timer">
+  <main class="shell" data-playground-safe-root>
+    <section class="app">
+      <div class="top">
+        <button id="openInsightsBtn" class="panel-btn" type="button" aria-label="추세 패널 열기">☰</button>
+        <div>
+          <h1 id="phaseTitle" class="phase">집중</h1>
+          <p id="cycleLabel" class="meta">0 / 12 포모도로 완료</p>
+        </div>
+        <button id="openSettingsBtn" class="icon-btn" type="button" aria-label="설정 열기">⚙</button>
+      </div>
+
+      <div class="dial-area">
+        <div id="dialShell" class="dial-shell" role="button" aria-label="타이머 시작 또는 일시정지" tabindex="0">
+          <svg id="dialSvg" class="dial-svg" viewBox="0 0 320 320" aria-live="polite">
+            <g id="tickLayer"></g>
+            <path id="wedgeAccumPath" class="wedge-accum" d=""></path>
+            <path id="wedgePath" class="wedge" d=""></path>
+            <line id="wedgeHand" class="wedge-hand" x1="160" y1="160" x2="160" y2="46"></line>
+            <circle id="wedgeKnob" class="wedge-knob" cx="160" cy="46" r="9"></circle>
+          </svg>
+          <div id="dialCenter" class="dial-center">
+            <strong id="bottomTime">25:00</strong>
+          </div>
+        </div>
+        <p id="bottomCustomLabel" class="bottom-custom-label" data-active="false"></p>
+      </div>
+
+      <p id="statusLine" class="status">준비됨</p>
+      <p class="status">알림 권한: <strong id="permissionLabel">확인 전</strong> · 탭 아이콘/제목 + 설치형 앱 배지</p>
+    </section>
+  </main>
+
+      <div id="insightsOverlay" class="overlay" data-open="false">
+    <div id="insightsBackdrop" class="backdrop"></div>
+    <section class="sheet sheet-left" role="dialog" aria-modal="true" aria-label="집중 추세 패널">
+      <div class="sheet-top">
+        <div>
+          <h2 id="trendTitle" class="sheet-title">현재 선택 섹션 추세</h2>
+          <p id="trendScopeHint" class="hint" style="margin-top:4px;">현재 선택한 프리셋 기준 통계</p>
+          <div class="scope-toggle" role="tablist" aria-label="추세 범위">
+            <button id="trendScopePresetBtn" class="scope-btn" type="button" data-active="true">현재 프리셋</button>
+            <button id="trendScopeAllBtn" class="scope-btn" type="button" data-active="false">전체 프리셋</button>
+          </div>
+        </div>
+        <button id="closeInsightsBtn" class="icon-btn" type="button" aria-label="추세 닫기">✕</button>
+      </div>
+
+      <div class="sheet-block">
+        <div class="trend-grid">
+          <div class="trend-cell top-row">
+            <p class="trend-label">오늘</p>
+            <p id="trendToday" class="trend-value">00:00</p>
+          </div>
+          <div class="trend-cell top-row">
+            <p class="trend-label">이번 주</p>
+            <p id="trendWeek" class="trend-value">00:00</p>
+          </div>
+          <div class="trend-cell top-row">
+            <p class="trend-label">이번 달</p>
+            <p id="trendMonth" class="trend-value">00:00</p>
+          </div>
+          <div class="trend-cell bottom-row">
+            <p class="trend-label">최근 7일</p>
+            <p id="trendRecent7" class="trend-value">00:00</p>
+          </div>
+          <div class="trend-cell bottom-row">
+            <p class="trend-label">전체</p>
+            <p id="trendTotal" class="trend-value">00:00</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-block">
+        <h3>차트</h3>
+        <svg id="weeklyChart" class="mini-chart" viewBox="0 0 320 180" aria-label="최근 7일 집중 차트"></svg>
+      </div>
+
+      <div class="sheet-block">
+        <h3>합계</h3>
+        <div class="summary-grid">
+          <div class="summary-card">
+            <p>집중 횟수</p>
+            <strong id="summaryCount">0회</strong>
+          </div>
+          <div class="summary-card">
+            <p>오늘 집중 시간 합계</p>
+            <strong id="summaryToday">0분</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="settingsOverlay" class="overlay" data-open="false">
+    <div id="sheetBackdrop" class="backdrop"></div>
+    <section class="sheet" role="dialog" aria-modal="true" aria-label="포모도로 설정">
+      <div class="sheet-top">
+        <h2 class="sheet-title">포모도로 설정</h2>
+        <div class="sheet-top-actions">
+          <button id="openGuideBtn" class="mini" type="button">사용 안내</button>
+          <button id="closeSettingsBtn" class="icon-btn" type="button" aria-label="설정 닫기">✕</button>
+        </div>
+      </div>
+
+      <div class="sheet-block">
+        <h3>타이머 파라미터</h3>
+        <div class="grid">
+          <div class="field">
+            <label for="presetLabelTextInput">프리셋 라벨 텍스트</label>
+            <input id="presetLabelTextInput" type="text" maxlength="30" value="표준" />
+          </div>
+          <div class="field">
+            <label for="focusMinInput">집중 (분)</label>
+            <input id="focusMinInput" type="number" min="1" max="180" value="25" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="shortMinInput">짧은 휴식 (분)</label>
+            <input id="shortMinInput" type="number" min="1" max="60" value="5" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="longMinInput">긴 휴식 (분)</label>
+            <input id="longMinInput" type="number" min="1" max="120" value="15" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="longEveryInput">긴 휴식 간격</label>
+            <input id="longEveryInput" type="number" min="1" max="12" value="4" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="maxPomodorosInput">최대 포모도로</label>
+            <input id="maxPomodorosInput" type="number" min="1" max="24" value="12" inputmode="numeric" />
+          </div>
+        </div>
+        <p class="hint">값을 변경하면 자동 저장됩니다. 실행 중 변경/적용은 확인 후 타이머를 안전하게 초기화해 반영됩니다.</p>
+      </div>
+
+      <div class="sheet-block">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+          <h3 style="margin:0;">프리셋</h3>
+          <button id="addPresetBtn" class="mini primary" type="button">+ 프리셋 추가</button>
+        </div>
+
+        <ul id="presetList" class="presets"></ul>
+
+        <div id="presetEditor" class="editor" data-open="false">
+          <div class="field">
+            <label for="presetNameInput">이름</label>
+            <input id="presetNameInput" type="text" maxlength="30" placeholder="예: 회의 전 집중" />
+          </div>
+          <div class="grid">
+            <div class="field">
+              <label for="presetFocusInput">집중</label>
+              <input id="presetFocusInput" type="number" min="1" max="180" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="presetShortInput">짧은 휴식</label>
+              <input id="presetShortInput" type="number" min="1" max="60" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="presetLongInput">긴 휴식</label>
+              <input id="presetLongInput" type="number" min="1" max="120" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="presetEveryInput">긴 휴식 간격</label>
+              <input id="presetEveryInput" type="number" min="1" max="12" inputmode="numeric" />
+            </div>
+            <div class="field">
+              <label for="presetMaxInput">최대 포모도로</label>
+              <input id="presetMaxInput" type="number" min="1" max="24" inputmode="numeric" />
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="savePresetBtn" class="mini primary" type="button">저장</button>
+            <button id="cancelPresetBtn" class="mini" type="button">취소</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sheet-block">
+        <h3>표시 커스텀</h3>
+        <div class="grid">
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="todoTextInput">Todo 작업명 텍스트</label>
+            <input id="todoTextInput" type="text" maxlength="60" placeholder="예: 제안서 1차 초안 작성" />
+          </div>
+          <div class="field">
+            <div class="toggle-row">
+              <label for="centerLabelEnabledInput" style="margin:0;">중앙 라벨 표시</label>
+              <input id="centerLabelEnabledInput" type="checkbox" checked />
+            </div>
+          </div>
+          <div class="field">
+            <label for="centerLabelModeInput">중앙 라벨 내용</label>
+            <select id="centerLabelModeInput">
+              <option value="time">남은 시간</option>
+              <option value="todo">Todo</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="toggle-row">
+              <label for="bottomLabelEnabledInput" style="margin:0;">하단 라벨 표시</label>
+              <input id="bottomLabelEnabledInput" type="checkbox" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="bottomLabelModeInput">하단 라벨 내용</label>
+            <select id="bottomLabelModeInput">
+              <option value="time">남은 시간</option>
+              <option value="todo">Todo</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">중앙/하단 라벨을 각각 켜고 끌 수 있고, 남은 시간 또는 Todo 텍스트를 선택할 수 있습니다.</p>
+      </div>
+
+      <div class="sheet-block">
+        <h3>백업</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button id="exportBackupBtn" class="mini" type="button">백업 내보내기</button>
+          <button id="importBackupBtn" class="mini" type="button">백업 불러오기</button>
+          <input id="backupFileInput" type="file" accept="application/json,.json" hidden />
+        </div>
+        <p class="hint">브라우저 캐시/사이트 데이터 삭제 전에 백업 파일을 저장해 두세요.</p>
+      </div>
+    </section>
+  </div>
+
+  <div id="guideOverlay" class="overlay" data-open="false">
+    <div id="guideBackdrop" class="backdrop"></div>
+    <div class="guide-wrap">
+      <section class="guide-card" role="dialog" aria-modal="true" aria-label="사용 안내 및 권한 안내">
+        <div class="guide-top">
+          <h2 class="guide-title">사용 안내</h2>
+          <button id="closeGuideBtn" class="icon-btn" type="button" aria-label="안내 닫기">✕</button>
+        </div>
+        <ul class="guide-list">
+          <li>타이머는 다이얼 클릭으로 시작/일시정지, 더블클릭으로 초기화됩니다.</li>
+          <li>알림 권한을 허용하지 않으면 시간 종료/단계 전환 알림을 받을 수 없습니다.</li>
+          <li>브라우저 캐시/사이트 데이터 삭제 시 기록이 사라질 수 있으므로 백업 내보내기를 권장합니다.</li>
+        </ul>
+        <p id="guidePermissionState" class="guide-note">알림 권한 상태 확인 중...</p>
+        <div class="guide-actions">
+          <button id="guideRequestPermissionBtn" class="mini primary" type="button">알림 권한 요청</button>
+          <button id="guideAcknowledgeBtn" class="btn" type="button">확인했어요</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+  <script src="../../../assets/playground-bottom-ad.js" defer></script>
+</body>
+</html>
