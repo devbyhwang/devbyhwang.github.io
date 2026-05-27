@@ -170,13 +170,6 @@ Playground는 DevByHwang 브랜드의 독립형 데모 영역입니다.
 - 빌드 결과: `/devbyhwang/playground/<slug>/`
 - 카드 데이터: `src/_data/studio.js`의 `games` 배열
 
-현재 등록된 데모:
-
-- Embercraft Fireplace: Three.js + Cannon.js 기반 실시간 장작불 시뮬레이션.
-- 네모게임 (NEMO GAME): 100% 풀이 가능한 논리 퍼즐.
-- PDF OCR Extractor: PDF와 이미지에서 텍스트와 이메일, 전화번호, 날짜, 금액 같은 필드를 추출하는 브라우저 도구.
-- Local LLM Chat: 브라우저에서 실행해보는 가벼운 로컬 AI 채팅 Playground.
-
 새 데모를 추가할 때는 `src/playground/<slug>/index.html`을 만들고 `src/_data/studio.js`에 카드 엔트리를 추가합니다. 자세한 규칙은 `src/playground/README.md`를 따릅니다.
 
 ## 광고와 환경변수

@@ -28,9 +28,9 @@ module.exports = {
       title: "Focus Timer",
       blurb: "구글 타이머 느낌으로 빠르게 시작하고, 완료 시 알림과 아이콘 카운트다운까지 제공하는 집중 타이머.",
       links: [
-        { label: "Start", href: "/devbyhwang/playground/google-timer/" },
+        { label: "Start", href: "/devbyhwang/playground/focus-timer/" },
       ],
-      preview: "/assets/google-timer-preview.svg",
+      preview: "/assets/focus-timer-preview.svg",
     },
     {
       title: "Local LLM Chat",

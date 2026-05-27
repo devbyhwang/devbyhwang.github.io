@@ -1,5 +1,5 @@
 export function createTimerMachine(ctx) {
-  const { state, store, PHASE_META, utils } = ctx;
+  const { state, store, utils, i18n } = ctx;
   const { clampInt, msFromMin } = utils;
 
   const getPhaseDurationMs = function (phase) {
@@ -10,10 +10,40 @@ export function createTimerMachine(ctx) {
 
   const getAllPresets = function () {
     const hidden = new Set(store.hiddenBuiltinPresetIds);
-    const builtins = ctx.BUILTIN_PRESETS.filter(function (preset) {
-      return !hidden.has(preset.id);
+    const userById = new Map(
+      store.userPresets.map(function (preset) {
+        return [preset.id, preset];
+      })
+    );
+    const builtins = [];
+
+    ctx.BUILTIN_PRESETS.forEach(function (builtin) {
+      const override = userById.get(builtin.id);
+      userById.delete(builtin.id);
+      if (hidden.has(builtin.id)) return;
+
+      if (override) {
+        builtins.push({
+          id: builtin.id,
+          name: override.name,
+          focusMin: override.focusMin,
+          shortBreakMin: override.shortBreakMin,
+          longBreakMin: override.longBreakMin,
+          longBreakEvery: override.longBreakEvery,
+          maxPomodoros: override.maxPomodoros,
+          builtin: true,
+        });
+        return;
+      }
+
+      builtins.push(builtin);
     });
-    return builtins.concat(store.userPresets);
+
+    const userPresets = Array.from(userById.values()).map(function (preset) {
+      return { ...preset, builtin: false };
+    });
+
+    return builtins.concat(userPresets);
   };
 
   const getPresetById = function (id) {
@@ -27,9 +57,9 @@ export function createTimerMachine(ctx) {
 
   const getActiveLabel = function () {
     const preset = getPresetById(state.timer.activePresetId);
-    if (preset && preset.name) return utils.normalizeLabel(preset.name);
+    if (preset && preset.name) return i18n.normalizePresetName(preset.name);
     const custom = utils.normalizeLabel(state.timer.customLabel);
-    return custom || "Custom";
+    return i18n.normalizePresetName(custom) || i18n.t("presets.custom");
   };
 
   const stopTicker = function () {
@@ -75,8 +105,8 @@ export function createTimerMachine(ctx) {
       if (state.timer.completedFocusCount >= state.settings.maxPomodoros) {
         completeSession();
         if (!silent) {
-          ctx.setStatus("세션 완료");
-          ctx.services.notification.notify("포모도로 완료", "최대 포모도로 횟수를 달성했습니다.");
+          ctx.setStatus(i18n.t("status.sessionComplete"));
+          ctx.services.notification.notify(i18n.t("notification.pomodoroTitle"), i18n.t("notification.pomodoroBody"));
         }
         ctx.render();
         ctx.storage.persistState();
@@ -88,9 +118,10 @@ export function createTimerMachine(ctx) {
         : "shortBreak";
       startPhase(next, nextPhaseStartAt);
       if (!silent) {
-        const label = PHASE_META[next].label;
-        ctx.setStatus("집중 완료, " + label + " 시작");
-        ctx.services.notification.notify("단계 전환", "집중 완료, " + label + " 시작");
+        const label = i18n.phaseLabel(next);
+        const message = i18n.t("message.focusCompleteStart", { phase: label });
+        ctx.setStatus(message);
+        ctx.services.notification.notify(i18n.t("notification.transitionTitle"), message);
       }
       ctx.render();
       ctx.storage.persistState();
@@ -99,8 +130,9 @@ export function createTimerMachine(ctx) {
 
     startPhase("focus", nextPhaseStartAt);
     if (!silent) {
-      ctx.setStatus(PHASE_META[nowPhase].label + " 완료, 집중 시작");
-      ctx.services.notification.notify("단계 전환", PHASE_META[nowPhase].label + " 완료, 집중 시작");
+      const message = i18n.t("message.phaseCompleteFocus", { phase: i18n.phaseLabel(nowPhase) });
+      ctx.setStatus(message);
+      ctx.services.notification.notify(i18n.t("notification.transitionTitle"), message);
     }
     ctx.render();
     ctx.storage.persistState();
@@ -129,7 +161,7 @@ export function createTimerMachine(ctx) {
     stopTicker();
     store.tickerId = window.setInterval(tick, 200);
     ctx.services.notification.requestNotificationPermission();
-    ctx.setStatus("집중 시작");
+    ctx.setStatus(i18n.t("status.focusStart"));
     ctx.render();
     ctx.storage.persistState();
   };
@@ -140,7 +172,7 @@ export function createTimerMachine(ctx) {
     state.timer.status = "paused";
     state.timer.endAt = null;
     stopTicker();
-    ctx.setStatus("일시정지");
+    ctx.setStatus(i18n.t("status.paused"));
     ctx.render();
     ctx.storage.persistState();
   };
@@ -152,14 +184,14 @@ export function createTimerMachine(ctx) {
     stopTicker();
     store.tickerId = window.setInterval(tick, 200);
     ctx.services.notification.requestNotificationPermission();
-    ctx.setStatus("재개");
+    ctx.setStatus(i18n.t("status.resumed"));
     ctx.render();
     ctx.storage.persistState();
   };
 
   const resetTimer = function () {
     setToFocusIdle();
-    ctx.setStatus("초기화됨");
+    ctx.setStatus(i18n.t("status.reset"));
     ctx.render();
     ctx.storage.persistState();
   };
