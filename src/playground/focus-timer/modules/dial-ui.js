@@ -31,7 +31,7 @@ export function createDialUi(ctx) {
 
   const drawTicks = function () {
     const ns = "http://www.w3.org/2000/svg";
-    const tickLabelRadius = isMobileDialLayout() ? 154 : 148;
+    const tickLabelRadius = isMobileDialLayout() ? 146 : 148;
     els.tickLayer.innerHTML = "";
 
     for (let i = 0; i < 60; i += 1) {
