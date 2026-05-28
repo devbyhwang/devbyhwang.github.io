@@ -160,6 +160,9 @@ export function createStorageService(ctx) {
     state.display.centerLabelMode = normalizeDisplayMode(display.centerLabelMode);
     state.display.bottomLabelEnabled = display.bottomLabelEnabled === true;
     state.display.bottomLabelMode = normalizeDisplayMode(display.bottomLabelMode);
+    state.display.topLabelOffsetY = clampInt(display.topLabelOffsetY ?? 0, -80, 80);
+    state.display.dialOffsetY = clampInt(display.dialOffsetY ?? 0, -90, 90);
+    state.display.bottomLabelOffsetY = clampInt(display.bottomLabelOffsetY ?? 0, -80, 80);
 
     const behavior = stateV2.behavior || {};
     state.behavior.keepScreenAwake = behavior.keepScreenAwake === true;
