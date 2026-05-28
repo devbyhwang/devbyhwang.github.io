@@ -4,9 +4,16 @@
 
 .playground-ad-shell {
   --playground-ad-min-height: 68px;
-  --playground-ad-bg: rgba(18, 18, 18, 0.94);
-  --playground-ad-border: rgba(255, 255, 255, 0.12);
-  --playground-ad-shadow: 0 -10px 24px rgba(0, 0, 0, 0.28);
+  --playground-ad-bg: rgba(255, 255, 255, 0.94);
+  --playground-ad-border: rgba(15, 23, 42, 0.12);
+  --playground-ad-color: #111827;
+  --playground-ad-muted: #4b5563;
+  --playground-ad-close-bg: rgba(255, 255, 255, 0.76);
+  --playground-ad-close-bg-hover: rgba(243, 244, 246, 0.92);
+  --playground-ad-close-border: rgba(15, 23, 42, 0.22);
+  --playground-ad-close-color: #111827;
+  --playground-ad-focus: #2563eb;
+  --playground-ad-shadow: 0 -10px 24px rgba(15, 23, 42, 0.12);
   position: fixed;
   left: 0;
   right: 0;
@@ -19,7 +26,7 @@
   background: var(--playground-ad-bg);
   box-shadow: var(--playground-ad-shadow);
   backdrop-filter: blur(4px);
-  color: #f3f3f3;
+  color: var(--playground-ad-color);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
   font-size: 14px;
   font-weight: 400;
@@ -89,10 +96,10 @@ html.playground-ad-demo .shell {
   right: 10px;
   width: 30px;
   height: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--playground-ad-close-border);
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
+  background: var(--playground-ad-close-bg);
+  color: var(--playground-ad-close-color);
   font-size: 20px;
   font-family: inherit;
   font-weight: 400;
@@ -104,11 +111,11 @@ html.playground-ad-demo .shell {
 }
 
 .playground-ad-close:hover {
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--playground-ad-close-bg-hover);
 }
 
 .playground-ad-close:focus-visible {
-  outline: 2px solid #93c5fd;
+  outline: 2px solid var(--playground-ad-focus);
   outline-offset: 2px;
 }
 
@@ -117,7 +124,22 @@ html.playground-ad-demo .shell {
   font-weight: 400;
   font-size: 13px;
   line-height: 1.4;
-  color: #d0d0d0;
+  color: var(--playground-ad-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  .playground-ad-shell {
+    --playground-ad-bg: rgba(18, 18, 18, 0.94);
+    --playground-ad-border: rgba(255, 255, 255, 0.12);
+    --playground-ad-color: #f3f3f3;
+    --playground-ad-muted: #d0d0d0;
+    --playground-ad-close-bg: rgba(0, 0, 0, 0.4);
+    --playground-ad-close-bg-hover: rgba(0, 0, 0, 0.55);
+    --playground-ad-close-border: rgba(255, 255, 255, 0.4);
+    --playground-ad-close-color: #fff;
+    --playground-ad-focus: #93c5fd;
+    --playground-ad-shadow: 0 -10px 24px rgba(0, 0, 0, 0.28);
+  }
 }
 
 @media (max-width: 768px) {
