@@ -18,6 +18,7 @@ export function createStorageService(ctx) {
         settings: state.settings,
         timer: state.timer,
         display: state.display,
+        behavior: state.behavior,
       }));
     } catch {
       // ignore
@@ -56,6 +57,7 @@ export function createStorageService(ctx) {
         settings: state.settings,
         timer: state.timer,
         display: state.display,
+        behavior: state.behavior,
       },
       presetsV1: store.userPresets,
       hiddenBuiltinsV1: store.hiddenBuiltinPresetIds,
@@ -158,6 +160,9 @@ export function createStorageService(ctx) {
     state.display.centerLabelMode = normalizeDisplayMode(display.centerLabelMode);
     state.display.bottomLabelEnabled = display.bottomLabelEnabled === true;
     state.display.bottomLabelMode = normalizeDisplayMode(display.bottomLabelMode);
+
+    const behavior = stateV2.behavior || {};
+    state.behavior.keepScreenAwake = behavior.keepScreenAwake === true;
   };
 
   const applyBackupPayload = function (payload) {
@@ -193,6 +198,7 @@ export function createStorageService(ctx) {
     persistFocusHistory();
     ctx.renderPresetList();
     ctx.render();
+    if (ctx.services.wakeLock) ctx.services.wakeLock.sync();
     ctx.setStatus(i18n.t("status.backupLoaded"));
   };
 

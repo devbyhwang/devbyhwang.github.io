@@ -49,6 +49,7 @@ export function getElements() {
     centerLabelModeInput: document.getElementById("centerLabelModeInput"),
     bottomLabelEnabledInput: document.getElementById("bottomLabelEnabledInput"),
     bottomLabelModeInput: document.getElementById("bottomLabelModeInput"),
+    keepScreenAwakeInput: document.getElementById("keepScreenAwakeInput"),
     shortMinInput: document.getElementById("shortMinInput"),
     longMinInput: document.getElementById("longMinInput"),
     longEveryInput: document.getElementById("longEveryInput"),

@@ -321,14 +321,6 @@
       cursor: not-allowed;
     }
 
-    .status {
-      margin: 0;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.9rem;
-      min-height: 1.35em;
-    }
-
     .overlay {
       position: fixed;
       inset: 0;

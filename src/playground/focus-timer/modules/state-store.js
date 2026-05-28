@@ -77,6 +77,9 @@ export function createStore() {
         bottomLabelEnabled: false,
         bottomLabelMode: "todo",
       },
+      behavior: {
+        keepScreenAwake: false,
+      },
       ui: {
         editingPresetId: null,
         dialDragging: false,

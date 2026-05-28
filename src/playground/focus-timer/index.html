@@ -43,8 +43,6 @@
         <p id="bottomCustomLabel" class="bottom-custom-label" data-active="false"></p>
       </div>
 
-      <p id="statusLine" class="status">준비됨</p>
-      <p class="status">알림 권한: <strong id="permissionLabel">확인 전</strong> · 탭 아이콘/제목 + 설치형 앱 배지</p>
     </section>
   </main>
 
@@ -230,6 +228,17 @@
           </div>
         </div>
         <p id="displayHint" class="hint">중앙/하단 라벨을 각각 켜고 끌 수 있고, 남은 시간 또는 Todo 텍스트를 선택할 수 있습니다.</p>
+      </div>
+
+      <div class="sheet-block">
+        <h3 id="behaviorTitle">동작 설정</h3>
+        <div class="field">
+          <div class="toggle-row">
+            <label id="keepScreenAwakeLabel" for="keepScreenAwakeInput" style="margin:0;">타이머 실행 중 화면 켜짐 유지</label>
+            <input id="keepScreenAwakeInput" type="checkbox" />
+          </div>
+        </div>
+        <p id="keepScreenAwakeHint" class="hint">모바일 지원 브라우저에서 타이머가 실행 중일 때 화면이 자동으로 꺼지지 않도록 시도합니다.</p>
       </div>
 
       <div class="sheet-block">

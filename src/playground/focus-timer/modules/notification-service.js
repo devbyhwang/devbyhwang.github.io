@@ -11,6 +11,7 @@ export function createNotificationService(ctx) {
   let cachedFaviconHref = "";
 
   const setStatus = function (text) {
+    if (!els.statusLine) return;
     els.statusLine.textContent = text;
   };
 
@@ -21,7 +22,9 @@ export function createNotificationService(ctx) {
     };
 
     if (!("Notification" in window)) {
-      els.permissionLabel.textContent = i18n.t("permission.unsupported");
+      if (els.permissionLabel) {
+        els.permissionLabel.textContent = i18n.t("permission.unsupported");
+      }
       updateGuidePermissionButton(true);
       if (els.guidePermissionState) {
         els.guidePermissionState.textContent = i18n.t("permission.unsupportedDetail");
@@ -33,7 +36,9 @@ export function createNotificationService(ctx) {
       granted: i18n.t("permission.granted"),
       denied: i18n.t("permission.denied"),
     };
-    els.permissionLabel.textContent = map[Notification.permission] || Notification.permission;
+    if (els.permissionLabel) {
+      els.permissionLabel.textContent = map[Notification.permission] || Notification.permission;
+    }
     updateGuidePermissionButton(Notification.permission !== "granted");
     if (!els.guidePermissionState) return;
     if (Notification.permission === "granted") {
