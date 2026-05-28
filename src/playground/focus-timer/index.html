@@ -226,8 +226,28 @@
               <option value="todo">Todo</option>
             </select>
           </div>
+          <div class="field label-offset-field">
+            <label id="topLabelOffsetYLabel" for="topLabelOffsetYInput">상단 라벨 Y 위치</label>
+            <div class="label-offset-control">
+              <input id="topLabelOffsetYInput" type="range" min="-80" max="80" step="1" value="0" />
+              <button id="resetTopLabelOffsetBtn" class="mini" type="button">리셋</button>
+            </div>
+          </div>
+          <div class="field label-offset-field">
+            <label id="dialOffsetYLabel" for="dialOffsetYInput">타이머 다이얼 Y 위치</label>
+            <div class="label-offset-control">
+              <input id="dialOffsetYInput" type="range" min="-90" max="90" step="1" value="0" />
+              <button id="resetDialOffsetBtn" class="mini" type="button">리셋</button>
+            </div>
+          </div>
+          <div class="field label-offset-field">
+            <label id="bottomLabelOffsetYLabel" for="bottomLabelOffsetYInput">하단 Todo 라벨 Y 위치</label>
+            <div class="label-offset-control">
+              <input id="bottomLabelOffsetYInput" type="range" min="-80" max="80" step="1" value="0" />
+              <button id="resetBottomLabelOffsetBtn" class="mini" type="button">리셋</button>
+            </div>
+          </div>
         </div>
-        <p id="displayHint" class="hint">중앙/하단 라벨을 각각 켜고 끌 수 있고, 남은 시간 또는 Todo 텍스트를 선택할 수 있습니다.</p>
       </div>
 
       <div class="sheet-block">
@@ -238,7 +258,6 @@
             <input id="keepScreenAwakeInput" type="checkbox" />
           </div>
         </div>
-        <p id="keepScreenAwakeHint" class="hint">모바일 지원 브라우저에서 타이머가 실행 중일 때 화면이 자동으로 꺼지지 않도록 시도합니다.</p>
       </div>
 
       <div class="sheet-block">

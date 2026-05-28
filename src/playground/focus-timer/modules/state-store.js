@@ -76,6 +76,9 @@ export function createStore() {
         centerLabelMode: "time",
         bottomLabelEnabled: false,
         bottomLabelMode: "todo",
+        topLabelOffsetY: 0,
+        dialOffsetY: 0,
+        bottomLabelOffsetY: 0,
       },
       behavior: {
         keepScreenAwake: false,

@@ -1,6 +1,12 @@
 export function createDisplayLabelService(ctx) {
   const { state, els, utils, i18n } = ctx;
   const { normalizeDisplayMode, normalizeTodoText, getDisplayContent, clampInt } = utils;
+  const TOP_LABEL_OFFSET_MIN = -80;
+  const TOP_LABEL_OFFSET_MAX = 80;
+  const DIAL_OFFSET_MIN = -90;
+  const DIAL_OFFSET_MAX = 90;
+  const BOTTOM_LABEL_OFFSET_MIN = -80;
+  const BOTTOM_LABEL_OFFSET_MAX = 80;
 
   const isBottomTodoEditable = function () {
     return !!state.display.bottomLabelEnabled && normalizeDisplayMode(state.display.bottomLabelMode) === "todo";
@@ -13,6 +19,13 @@ export function createDisplayLabelService(ctx) {
     const bottomEnabled = !!state.display.bottomLabelEnabled;
     const centerMode = normalizeDisplayMode(state.display.centerLabelMode);
     const bottomMode = normalizeDisplayMode(state.display.bottomLabelMode);
+    const topLabelOffsetY = clampInt(state.display.topLabelOffsetY ?? 0, TOP_LABEL_OFFSET_MIN, TOP_LABEL_OFFSET_MAX);
+    const dialOffsetY = clampInt(state.display.dialOffsetY ?? 0, DIAL_OFFSET_MIN, DIAL_OFFSET_MAX);
+    const bottomLabelOffsetY = clampInt(state.display.bottomLabelOffsetY ?? 0, BOTTOM_LABEL_OFFSET_MIN, BOTTOM_LABEL_OFFSET_MAX);
+
+    document.documentElement.style.setProperty("--top-label-offset-y", topLabelOffsetY + "px");
+    document.documentElement.style.setProperty("--dial-offset-y", dialOffsetY + "px");
+    document.documentElement.style.setProperty("--bottom-label-offset-y", bottomLabelOffsetY + "px");
 
     els.bottomTime.textContent = getDisplayContent(centerMode, time, todoText);
     els.bottomTime.dataset.mode = centerMode;
@@ -41,6 +54,15 @@ export function createDisplayLabelService(ctx) {
     if (document.activeElement !== els.bottomLabelEnabledInput) {
       els.bottomLabelEnabledInput.checked = !!state.display.bottomLabelEnabled;
     }
+    if (document.activeElement !== els.topLabelOffsetYInput) {
+      els.topLabelOffsetYInput.value = String(clampInt(state.display.topLabelOffsetY ?? 0, TOP_LABEL_OFFSET_MIN, TOP_LABEL_OFFSET_MAX));
+    }
+    if (document.activeElement !== els.dialOffsetYInput) {
+      els.dialOffsetYInput.value = String(clampInt(state.display.dialOffsetY ?? 0, DIAL_OFFSET_MIN, DIAL_OFFSET_MAX));
+    }
+    if (document.activeElement !== els.bottomLabelOffsetYInput) {
+      els.bottomLabelOffsetYInput.value = String(clampInt(state.display.bottomLabelOffsetY ?? 0, BOTTOM_LABEL_OFFSET_MIN, BOTTOM_LABEL_OFFSET_MAX));
+    }
     if (document.activeElement !== els.keepScreenAwakeInput) {
       els.keepScreenAwakeInput.checked = !!state.behavior.keepScreenAwake;
     }
@@ -62,6 +84,9 @@ export function createDisplayLabelService(ctx) {
         centerLabelMode: normalizeDisplayMode(els.centerLabelModeInput.value),
         bottomLabelEnabled: !!els.bottomLabelEnabledInput.checked,
         bottomLabelMode: normalizeDisplayMode(els.bottomLabelModeInput.value),
+        topLabelOffsetY: clampInt(els.topLabelOffsetYInput.value || 0, TOP_LABEL_OFFSET_MIN, TOP_LABEL_OFFSET_MAX),
+        dialOffsetY: clampInt(els.dialOffsetYInput.value || 0, DIAL_OFFSET_MIN, DIAL_OFFSET_MAX),
+        bottomLabelOffsetY: clampInt(els.bottomLabelOffsetYInput.value || 0, BOTTOM_LABEL_OFFSET_MIN, BOTTOM_LABEL_OFFSET_MAX),
       },
       behavior: {
         keepScreenAwake: !!els.keepScreenAwakeInput.checked,
@@ -89,7 +114,10 @@ export function createDisplayLabelService(ctx) {
       display.centerLabelEnabled !== state.display.centerLabelEnabled ||
       display.centerLabelMode !== state.display.centerLabelMode ||
       display.bottomLabelEnabled !== state.display.bottomLabelEnabled ||
-      display.bottomLabelMode !== state.display.bottomLabelMode;
+      display.bottomLabelMode !== state.display.bottomLabelMode ||
+      display.topLabelOffsetY !== clampInt(state.display.topLabelOffsetY ?? 0, TOP_LABEL_OFFSET_MIN, TOP_LABEL_OFFSET_MAX) ||
+      display.dialOffsetY !== clampInt(state.display.dialOffsetY ?? 0, DIAL_OFFSET_MIN, DIAL_OFFSET_MAX) ||
+      display.bottomLabelOffsetY !== clampInt(state.display.bottomLabelOffsetY ?? 0, BOTTOM_LABEL_OFFSET_MIN, BOTTOM_LABEL_OFFSET_MAX);
 
     const behaviorChanged =
       behavior.keepScreenAwake !== state.behavior.keepScreenAwake;
@@ -109,6 +137,9 @@ export function createDisplayLabelService(ctx) {
     state.display.centerLabelMode = display.centerLabelMode;
     state.display.bottomLabelEnabled = display.bottomLabelEnabled;
     state.display.bottomLabelMode = display.bottomLabelMode;
+    state.display.topLabelOffsetY = display.topLabelOffsetY;
+    state.display.dialOffsetY = display.dialOffsetY;
+    state.display.bottomLabelOffsetY = display.bottomLabelOffsetY;
     state.behavior.keepScreenAwake = behavior.keepScreenAwake;
 
     if (paramsChanged) {
@@ -142,6 +173,9 @@ export function createDisplayLabelService(ctx) {
       els.longEveryInput,
       els.maxPomodorosInput,
       els.todoTextInput,
+      els.topLabelOffsetYInput,
+      els.dialOffsetYInput,
+      els.bottomLabelOffsetYInput,
     ];
     inputTargets.forEach(function (el) {
       if (!el) return;
@@ -160,6 +194,18 @@ export function createDisplayLabelService(ctx) {
       if (!el) return;
       el.addEventListener("change", queueCommit);
     });
+
+    const bindOffsetReset = function (button, input) {
+      if (!button || !input) return;
+      button.addEventListener("click", function () {
+        input.value = "0";
+        commitSettingsFromForm();
+      });
+    };
+
+    bindOffsetReset(els.resetTopLabelOffsetBtn, els.topLabelOffsetYInput);
+    bindOffsetReset(els.resetDialOffsetBtn, els.dialOffsetYInput);
+    bindOffsetReset(els.resetBottomLabelOffsetBtn, els.bottomLabelOffsetYInput);
   };
 
   const endBottomTodoEdit = function (commit) {
