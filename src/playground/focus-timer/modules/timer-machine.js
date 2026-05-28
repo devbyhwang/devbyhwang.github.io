@@ -8,6 +8,10 @@ export function createTimerMachine(ctx) {
     return msFromMin(state.settings.longBreakMin);
   };
 
+  const syncWakeLock = function () {
+    if (ctx.services.wakeLock) ctx.services.wakeLock.sync();
+  };
+
   const getAllPresets = function () {
     const hidden = new Set(store.hiddenBuiltinPresetIds);
     const userById = new Map(
@@ -104,6 +108,7 @@ export function createTimerMachine(ctx) {
 
       if (state.timer.completedFocusCount >= state.settings.maxPomodoros) {
         completeSession();
+        syncWakeLock();
         if (!silent) {
           ctx.setStatus(i18n.t("status.sessionComplete"));
           ctx.services.notification.notify(i18n.t("notification.pomodoroTitle"), i18n.t("notification.pomodoroBody"));
@@ -161,6 +166,7 @@ export function createTimerMachine(ctx) {
     stopTicker();
     store.tickerId = window.setInterval(tick, 200);
     ctx.services.notification.requestNotificationPermission();
+    syncWakeLock();
     ctx.setStatus(i18n.t("status.focusStart"));
     ctx.render();
     ctx.storage.persistState();
@@ -172,6 +178,7 @@ export function createTimerMachine(ctx) {
     state.timer.status = "paused";
     state.timer.endAt = null;
     stopTicker();
+    syncWakeLock();
     ctx.setStatus(i18n.t("status.paused"));
     ctx.render();
     ctx.storage.persistState();
@@ -184,6 +191,7 @@ export function createTimerMachine(ctx) {
     stopTicker();
     store.tickerId = window.setInterval(tick, 200);
     ctx.services.notification.requestNotificationPermission();
+    syncWakeLock();
     ctx.setStatus(i18n.t("status.resumed"));
     ctx.render();
     ctx.storage.persistState();
@@ -191,6 +199,7 @@ export function createTimerMachine(ctx) {
 
   const resetTimer = function () {
     setToFocusIdle();
+    syncWakeLock();
     ctx.setStatus(i18n.t("status.reset"));
     ctx.render();
     ctx.storage.persistState();
@@ -223,6 +232,7 @@ export function createTimerMachine(ctx) {
       state.timer.customLabel = nextLabel || getActiveLabel();
     }
     setToFocusIdle();
+    syncWakeLock();
   };
 
   const recoverRunningState = function () {

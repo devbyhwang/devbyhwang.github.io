@@ -41,6 +41,9 @@ export function createDisplayLabelService(ctx) {
     if (document.activeElement !== els.bottomLabelEnabledInput) {
       els.bottomLabelEnabledInput.checked = !!state.display.bottomLabelEnabled;
     }
+    if (document.activeElement !== els.keepScreenAwakeInput) {
+      els.keepScreenAwakeInput.checked = !!state.behavior.keepScreenAwake;
+    }
   };
 
   const readSettingsFormValues = function () {
@@ -60,6 +63,9 @@ export function createDisplayLabelService(ctx) {
         bottomLabelEnabled: !!els.bottomLabelEnabledInput.checked,
         bottomLabelMode: normalizeDisplayMode(els.bottomLabelModeInput.value),
       },
+      behavior: {
+        keepScreenAwake: !!els.keepScreenAwakeInput.checked,
+      },
     };
   };
 
@@ -68,6 +74,7 @@ export function createDisplayLabelService(ctx) {
     const next = payload.next;
     const customLabel = payload.customLabel;
     const display = payload.display;
+    const behavior = payload.behavior;
 
     const paramsChanged =
       next.focusMin !== state.settings.focusMin ||
@@ -84,7 +91,10 @@ export function createDisplayLabelService(ctx) {
       display.bottomLabelEnabled !== state.display.bottomLabelEnabled ||
       display.bottomLabelMode !== state.display.bottomLabelMode;
 
-    if (!paramsChanged && !displayChanged) return;
+    const behaviorChanged =
+      behavior.keepScreenAwake !== state.behavior.keepScreenAwake;
+
+    if (!paramsChanged && !displayChanged && !behaviorChanged) return;
 
     if (paramsChanged && state.timer.status === "running") {
       const ok = window.confirm(i18n.t("confirm.settingsRunning"));
@@ -99,6 +109,7 @@ export function createDisplayLabelService(ctx) {
     state.display.centerLabelMode = display.centerLabelMode;
     state.display.bottomLabelEnabled = display.bottomLabelEnabled;
     state.display.bottomLabelMode = display.bottomLabelMode;
+    state.behavior.keepScreenAwake = behavior.keepScreenAwake;
 
     if (paramsChanged) {
       ctx.timer.applySettings(next, null, customLabel);
@@ -109,6 +120,7 @@ export function createDisplayLabelService(ctx) {
     }
 
     ctx.render();
+    if (ctx.services.wakeLock) ctx.services.wakeLock.sync();
     ctx.storage.persistState();
   };
 
@@ -142,6 +154,7 @@ export function createDisplayLabelService(ctx) {
       els.centerLabelModeInput,
       els.bottomLabelEnabledInput,
       els.bottomLabelModeInput,
+      els.keepScreenAwakeInput,
     ];
     changeOnlyTargets.forEach(function (el) {
       if (!el) return;

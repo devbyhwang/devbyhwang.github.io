@@ -19,6 +19,7 @@ import { createDialUi } from "./modules/dial-ui.js";
 import { createDisplayLabelService } from "./modules/display-label-service.js";
 import { createPresetService } from "./modules/preset-service.js";
 import { createFocusTimerI18n } from "./modules/i18n.js";
+import { createWakeLockService } from "./modules/wake-lock-service.js";
 
 (function () {
   const i18n = createFocusTimerI18n();
@@ -77,6 +78,7 @@ import { createFocusTimerI18n } from "./modules/i18n.js";
   ctx.services.dial = createDialUi(ctx);
   ctx.services.display = createDisplayLabelService(ctx);
   ctx.services.preset = createPresetService(ctx);
+  ctx.services.wakeLock = createWakeLockService(ctx);
   ctx.renderPresetList = ctx.services.preset.renderPresetList;
 
   const syncSettingInputs = function () {
@@ -141,6 +143,7 @@ import { createFocusTimerI18n } from "./modules/i18n.js";
     ctx.services.display.bindBottomLabelEditing();
     ctx.services.display.bindAutoSaveSettings();
     ctx.services.preset.bindPresetEvents();
+    ctx.services.wakeLock.bindEvents();
 
     els.exportBackupBtn.addEventListener("click", function () {
       ctx.storage.downloadBackupFile();
@@ -230,6 +233,7 @@ import { createFocusTimerI18n } from "./modules/i18n.js";
     if (ctx.state.timer.status === "running") {
       ctx.stopTicker();
       ctx.store.tickerId = window.setInterval(ctx.tick, 200);
+      ctx.services.wakeLock.sync();
     }
   };
 
