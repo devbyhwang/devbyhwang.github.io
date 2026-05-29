@@ -282,7 +282,7 @@
 
     .dial-center strong {
       display: block;
-      font-size: clamp(1.65rem, 5.1vw, 2.65rem);
+      font-size: 2.65rem;
       line-height: 1;
       letter-spacing: -0.02em;
       font-variant-numeric: tabular-nums;
@@ -293,7 +293,7 @@
     }
 
     .dial-center strong[data-mode="todo"] {
-      font-size: clamp(1.38rem, 3.4vw, 1.76rem);
+      font-size: 1.76rem;
       line-height: 1.28;
       letter-spacing: -0.01em;
       font-weight: 520;
@@ -883,12 +883,6 @@
     }
 
     @media (max-width: 560px) {
-      :root {
-        --dial-tick-label-size: 14px;
-      }
-      .tick-label {
-        font-size: 14px;
-      }
       .shell {
         padding-top: 66px;
         padding-bottom: 66px;
@@ -913,10 +907,4 @@
       .summary-grid { grid-template-columns: 1fr; }
       .bottom-time { font-size: clamp(2.1rem, 9vw, 3rem); }
       .phase { font-size: 1.7rem; }
-    }
-
-    @media (hover: none) and (pointer: coarse) {
-      .tick-label {
-        font-size: 14px;
-      }
     }

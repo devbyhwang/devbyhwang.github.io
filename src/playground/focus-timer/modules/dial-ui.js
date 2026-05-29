@@ -1,9 +1,6 @@
 export function createDialUi(ctx) {
   const { state, els, utils, i18n, RADIUS, CX, CY } = ctx;
   const { clampInt, polar } = utils;
-  const isMobileDialLayout = function () {
-    return window.matchMedia("(max-width: 560px), (hover: none) and (pointer: coarse)").matches;
-  };
 
   const buildSectorPath = function (progress) {
     if (progress <= 0) return "";
@@ -31,7 +28,7 @@ export function createDialUi(ctx) {
 
   const drawTicks = function () {
     const ns = "http://www.w3.org/2000/svg";
-    const tickLabelRadius = isMobileDialLayout() ? 154 : 148;
+    const tickLabelRadius = 148;
     els.tickLayer.innerHTML = "";
 
     for (let i = 0; i < 60; i += 1) {
