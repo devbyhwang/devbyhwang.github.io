@@ -183,6 +183,7 @@
       place-items: center;
       width: min(100%, 430px);
       margin: 0 auto;
+      container-type: inline-size;
     }
 
     .dial-shell {
@@ -282,7 +283,7 @@
 
     .dial-center strong {
       display: block;
-      font-size: 2.65rem;
+      font-size: min(9.86cqw, 2.65rem);
       line-height: 1;
       letter-spacing: -0.02em;
       font-variant-numeric: tabular-nums;
@@ -293,7 +294,7 @@
     }
 
     .dial-center strong[data-mode="todo"] {
-      font-size: 1.76rem;
+      font-size: min(6.55cqw, 1.76rem);
       line-height: 1.28;
       letter-spacing: -0.01em;
       font-weight: 520;
@@ -905,6 +906,5 @@
       .trend-cell { min-height: 82px; padding: 10px 8px; }
       .trend-value { font-size: 1.4rem; }
       .summary-grid { grid-template-columns: 1fr; }
-      .bottom-time { font-size: clamp(2.1rem, 9vw, 3rem); }
       .phase { font-size: 1.7rem; }
     }
