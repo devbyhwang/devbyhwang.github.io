@@ -65,7 +65,7 @@
       height: 100vh;
       height: 100dvh;
       margin: 0 auto;
-      padding: 72px 16px 72px;
+      padding: 72px 16px;
       display: grid;
       align-content: center;
       gap: 12px;
@@ -77,11 +77,30 @@
     }
 
     html.playground-ad-demo body[data-playground-page="focus-timer"] [data-playground-safe-root] {
-      min-height: 100vh !important;
+      min-height: calc(100vh - var(--playground-ad-safe-space, 0px));
+      min-height: calc(100dvh - var(--playground-ad-safe-space, 0px));
     }
 
     html.playground-ad-demo body[data-playground-page="focus-timer"] .shell {
+      height: calc(100vh - var(--playground-ad-safe-space, 0px));
+      height: calc(100dvh - var(--playground-ad-safe-space, 0px));
+      min-height: calc(100vh - var(--playground-ad-safe-space, 0px));
+      min-height: calc(100dvh - var(--playground-ad-safe-space, 0px));
       margin-bottom: 0 !important;
+    }
+
+    @media (max-height: 620px) {
+      html.playground-ad-demo body[data-playground-page="focus-timer"] .shell {
+        align-content: start;
+      }
+
+      html.playground-ad-demo body[data-playground-page="focus-timer"] .app {
+        transform: none;
+      }
+
+      html.playground-ad-demo body[data-playground-page="focus-timer"] .dial-area {
+        width: min(100%, 310px);
+      }
     }
 
     .app {
@@ -347,10 +366,11 @@
 
     .guide-wrap {
       position: absolute;
-      inset: 0;
+      inset: 0 0 var(--playground-ad-safe-space, 0px);
       display: grid;
       place-items: center;
-      padding: 16px;
+      padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+      overflow: auto;
     }
 
     .guide-card {
@@ -416,11 +436,12 @@
       position: absolute;
       top: 0;
       right: 0;
-      bottom: 0;
+      bottom: var(--playground-ad-safe-space, 0px);
       margin: 0;
       width: min(460px, 100%);
       max-height: none;
       height: 100%;
+      height: calc(100% - var(--playground-ad-safe-space, 0px));
       overflow: auto;
       border-radius: 20px 0 0 20px;
       border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
@@ -899,7 +920,7 @@
         left: 0;
         right: 0;
         width: 100%;
-        padding: 10px 10px 16px;
+        padding: 10px 10px calc(16px + var(--playground-ad-safe-space, 0px));
       }
       .grid { grid-template-columns: 1fr; }
       .trend-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
