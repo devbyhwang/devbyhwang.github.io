@@ -3,7 +3,7 @@
 }
 
 .playground-ad-shell {
-  --playground-ad-min-height: 68px;
+  --playground-ad-min-height: 71px;
   --playground-ad-bg: rgba(255, 255, 255, 0.94);
   --playground-ad-border: rgba(15, 23, 42, 0.12);
   --playground-ad-color: #111827;
@@ -20,7 +20,10 @@
   bottom: 0;
   z-index: 1100;
   display: block;
+  height: calc(var(--playground-ad-min-height) + env(safe-area-inset-bottom, 0px));
+  max-height: min(calc(var(--playground-ad-min-height) + env(safe-area-inset-bottom, 0px)), 24dvh);
   min-height: var(--playground-ad-min-height);
+  overflow: hidden;
   padding: 10px 52px 10px 12px;
   border-top: 1px solid var(--playground-ad-border);
   background: var(--playground-ad-bg);
@@ -74,7 +77,9 @@ html.playground-ad-demo .shell {
 }
 
 .playground-ad-content {
-  min-height: 50px;
+  height: 50px;
+  max-height: 50px;
+  min-height: 0;
   width: 100%;
   display: flex;
   align-items: center;
@@ -87,7 +92,10 @@ html.playground-ad-demo .shell {
 .playground-ad-content .adsbygoogle {
   display: block;
   width: 100%;
-  min-height: 50px;
+  height: 50px;
+  max-height: 50px;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .playground-ad-close {
