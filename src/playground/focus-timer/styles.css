@@ -72,37 +72,6 @@
       overflow: hidden;
     }
 
-    body[data-playground-page="focus-timer"].playground-ad-active {
-      padding-bottom: 0 !important;
-    }
-
-    html.playground-ad-demo body[data-playground-page="focus-timer"] [data-playground-safe-root] {
-      min-height: calc(100vh - var(--playground-ad-safe-space, 0px));
-      min-height: calc(100dvh - var(--playground-ad-safe-space, 0px));
-    }
-
-    html.playground-ad-demo body[data-playground-page="focus-timer"] .shell {
-      height: calc(100vh - var(--playground-ad-safe-space, 0px));
-      height: calc(100dvh - var(--playground-ad-safe-space, 0px));
-      min-height: calc(100vh - var(--playground-ad-safe-space, 0px));
-      min-height: calc(100dvh - var(--playground-ad-safe-space, 0px));
-      margin-bottom: 0 !important;
-    }
-
-    @media (max-height: 620px) {
-      html.playground-ad-demo body[data-playground-page="focus-timer"] .shell {
-        align-content: start;
-      }
-
-      html.playground-ad-demo body[data-playground-page="focus-timer"] .app {
-        transform: none;
-      }
-
-      html.playground-ad-demo body[data-playground-page="focus-timer"] .dial-area {
-        width: min(100%, 310px);
-      }
-    }
-
     .app {
       border: 0;
       border-radius: 0;
@@ -366,10 +335,11 @@
 
     .guide-wrap {
       position: absolute;
-      inset: 0 0 var(--playground-ad-safe-space, 0px);
+      inset: 0;
       display: grid;
-      place-items: center;
-      padding: 16px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+      align-items: start;
+      justify-items: center;
+      padding: 16px;
       overflow: auto;
     }
 
@@ -436,18 +406,17 @@
       position: absolute;
       top: 0;
       right: 0;
-      bottom: var(--playground-ad-safe-space, 0px);
+      bottom: 0;
       margin: 0;
       width: min(460px, 100%);
       max-height: none;
       height: 100%;
-      height: calc(100% - var(--playground-ad-safe-space, 0px));
       overflow: auto;
       border-radius: 20px 0 0 20px;
       border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
       background: var(--surface);
       box-shadow: -16px 0 40px rgba(0, 0, 0, 0.24);
-      padding: 14px 14px calc(22px + var(--playground-ad-safe-space, 0px));
+      padding: 14px 14px 22px;
     }
 
     .sheet-left {
@@ -456,7 +425,7 @@
       border-radius: 0 20px 20px 0;
       box-shadow: 16px 0 40px rgba(0, 0, 0, 0.24);
       width: min(540px, 100%);
-      padding: 12px 14px calc(18px + var(--playground-ad-safe-space, 0px));
+      padding: 12px 14px 18px;
     }
 
     .sheet-left .sheet-top {
@@ -920,7 +889,7 @@
         left: 0;
         right: 0;
         width: 100%;
-        padding: 10px 10px calc(16px + var(--playground-ad-safe-space, 0px));
+        padding: 10px 10px 16px;
       }
       .grid { grid-template-columns: 1fr; }
       .trend-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
