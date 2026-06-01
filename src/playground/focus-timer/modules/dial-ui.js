@@ -134,6 +134,7 @@ export function createDialUi(ctx) {
 
   const applyDialMinutes = function (minutes) {
     const nextMinutes = clampInt(minutes, 1, 180);
+    ctx.services.display.cancelPendingSettingsCommit();
     state.settings.focusMin = nextMinutes;
     state.timer.activePresetId = null;
     state.timer.customLabel = i18n.normalizePresetName(utils.normalizeLabel(state.timer.customLabel)) || i18n.t("presets.custom");

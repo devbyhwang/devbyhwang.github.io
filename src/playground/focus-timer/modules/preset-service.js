@@ -51,6 +51,7 @@ export function createPresetService(ctx) {
           const ok = window.confirm(i18n.t("confirm.applyPresetRunning"));
           if (!ok) return;
         }
+        ctx.services.display.cancelPendingSettingsCommit();
         ctx.timer.applySettings(preset, preset.id, preset.name);
         ctx.setStatus(i18n.t("status.presetApplied", { name: preset.name }));
         ctx.render();
@@ -91,6 +92,7 @@ export function createPresetService(ctx) {
         }
 
         if (state.timer.activePresetId === preset.id) {
+          ctx.services.display.cancelPendingSettingsCommit();
           const fallback = ctx.timer.getFallbackPreset();
           if (fallback) {
             ctx.timer.applySettings(fallback, fallback.id, fallback.name);
@@ -271,6 +273,7 @@ export function createPresetService(ctx) {
             return;
           }
         }
+        ctx.services.display.cancelPendingSettingsCommit();
         ctx.timer.applySettings(latest, latest.id, latest.name);
         ctx.setStatus(i18n.t("status.presetApplied", { name: latest.name }));
       }

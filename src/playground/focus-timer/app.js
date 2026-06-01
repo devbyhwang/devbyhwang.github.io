@@ -82,6 +82,10 @@ import { createWakeLockService } from "./modules/wake-lock-service.js";
   ctx.renderPresetList = ctx.services.preset.renderPresetList;
 
   const syncSettingInputs = function () {
+    const force = ctx.state.ui.forceNextSettingsInputSync === true;
+    ctx.state.ui.forceNextSettingsInputSync = false;
+    if (!force && ctx.services.display.isSettingsInputSyncHeld()) return;
+
     const inputPairs = [
       [els.presetLabelTextInput, ctx.getActiveLabel()],
       [els.focusMinInput, ctx.state.settings.focusMin],
@@ -94,10 +98,10 @@ import { createWakeLockService } from "./modules/wake-lock-service.js";
     inputPairs.forEach(function (entry) {
       const input = entry[0];
       const value = entry[1];
-      if (document.activeElement !== input) input.value = String(value);
+      if (force || document.activeElement !== input) input.value = String(value);
     });
 
-    ctx.services.display.syncDisplayInputs();
+    ctx.services.display.syncDisplayInputs(force);
   };
 
   const render = function () {
