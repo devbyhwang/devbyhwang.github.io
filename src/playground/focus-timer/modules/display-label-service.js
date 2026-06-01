@@ -7,9 +7,32 @@ export function createDisplayLabelService(ctx) {
   const DIAL_OFFSET_MAX = 90;
   const BOTTOM_LABEL_OFFSET_MIN = -80;
   const BOTTOM_LABEL_OFFSET_MAX = 80;
+  const SETTINGS_INPUT_SYNC_HOLD_MS = 520;
+  let settingsCommitTimerId = null;
 
   const isBottomTodoEditable = function () {
     return !!state.display.bottomLabelEnabled && normalizeDisplayMode(state.display.bottomLabelMode) === "todo";
+  };
+
+  const holdSettingsInputSync = function () {
+    state.ui.settingsInputSyncHoldUntil = Date.now() + SETTINGS_INPUT_SYNC_HOLD_MS;
+  };
+
+  const releaseSettingsInputSync = function () {
+    state.ui.settingsInputSyncHoldUntil = 0;
+  };
+
+  const isSettingsInputSyncHeld = function () {
+    return Date.now() < (state.ui.settingsInputSyncHoldUntil || 0);
+  };
+
+  const cancelPendingSettingsCommit = function () {
+    if (settingsCommitTimerId !== null) {
+      window.clearTimeout(settingsCommitTimerId);
+      settingsCommitTimerId = null;
+    }
+    releaseSettingsInputSync();
+    state.ui.forceNextSettingsInputSync = true;
   };
 
   const renderDisplayLabels = function () {
@@ -38,32 +61,34 @@ export function createDisplayLabelService(ctx) {
     els.bottomCustomLabel.dataset.editing = state.ui.bottomTodoEditing ? "true" : "false";
   };
 
-  const syncDisplayInputs = function () {
-    if (document.activeElement !== els.todoTextInput) {
+  const syncDisplayInputs = function (force) {
+    if (!force && isSettingsInputSyncHeld()) return;
+
+    if (force || document.activeElement !== els.todoTextInput) {
       els.todoTextInput.value = String(state.display.todoText);
     }
-    if (document.activeElement !== els.centerLabelModeInput) {
+    if (force || document.activeElement !== els.centerLabelModeInput) {
       els.centerLabelModeInput.value = normalizeDisplayMode(state.display.centerLabelMode);
     }
-    if (document.activeElement !== els.bottomLabelModeInput) {
+    if (force || document.activeElement !== els.bottomLabelModeInput) {
       els.bottomLabelModeInput.value = normalizeDisplayMode(state.display.bottomLabelMode);
     }
-    if (document.activeElement !== els.centerLabelEnabledInput) {
+    if (force || document.activeElement !== els.centerLabelEnabledInput) {
       els.centerLabelEnabledInput.checked = !!state.display.centerLabelEnabled;
     }
-    if (document.activeElement !== els.bottomLabelEnabledInput) {
+    if (force || document.activeElement !== els.bottomLabelEnabledInput) {
       els.bottomLabelEnabledInput.checked = !!state.display.bottomLabelEnabled;
     }
-    if (document.activeElement !== els.topLabelOffsetYInput) {
+    if (force || document.activeElement !== els.topLabelOffsetYInput) {
       els.topLabelOffsetYInput.value = String(clampInt(state.display.topLabelOffsetY ?? 0, TOP_LABEL_OFFSET_MIN, TOP_LABEL_OFFSET_MAX));
     }
-    if (document.activeElement !== els.dialOffsetYInput) {
+    if (force || document.activeElement !== els.dialOffsetYInput) {
       els.dialOffsetYInput.value = String(clampInt(state.display.dialOffsetY ?? 0, DIAL_OFFSET_MIN, DIAL_OFFSET_MAX));
     }
-    if (document.activeElement !== els.bottomLabelOffsetYInput) {
+    if (force || document.activeElement !== els.bottomLabelOffsetYInput) {
       els.bottomLabelOffsetYInput.value = String(clampInt(state.display.bottomLabelOffsetY ?? 0, BOTTOM_LABEL_OFFSET_MIN, BOTTOM_LABEL_OFFSET_MAX));
     }
-    if (document.activeElement !== els.keepScreenAwakeInput) {
+    if (force || document.activeElement !== els.keepScreenAwakeInput) {
       els.keepScreenAwakeInput.checked = !!state.behavior.keepScreenAwake;
     }
   };
@@ -127,6 +152,7 @@ export function createDisplayLabelService(ctx) {
     if (paramsChanged && state.timer.status === "running") {
       const ok = window.confirm(i18n.t("confirm.settingsRunning"));
       if (!ok) {
+        releaseSettingsInputSync();
         ctx.render();
         return;
       }
@@ -150,17 +176,18 @@ export function createDisplayLabelService(ctx) {
       ctx.setStatus(i18n.t("status.displaySaved"));
     }
 
+    releaseSettingsInputSync();
     ctx.render();
     if (ctx.services.wakeLock) ctx.services.wakeLock.sync();
     ctx.storage.persistState();
   };
 
   const bindAutoSaveSettings = function () {
-    let timerId = null;
     const queueCommit = function () {
-      if (timerId !== null) window.clearTimeout(timerId);
-      timerId = window.setTimeout(function () {
-        timerId = null;
+      holdSettingsInputSync();
+      if (settingsCommitTimerId !== null) window.clearTimeout(settingsCommitTimerId);
+      settingsCommitTimerId = window.setTimeout(function () {
+        settingsCommitTimerId = null;
         commitSettingsFromForm();
       }, 220);
     };
@@ -199,6 +226,7 @@ export function createDisplayLabelService(ctx) {
       if (!button || !input) return;
       button.addEventListener("click", function () {
         input.value = "0";
+        holdSettingsInputSync();
         commitSettingsFromForm();
       });
     };
@@ -272,6 +300,8 @@ export function createDisplayLabelService(ctx) {
   return {
     renderDisplayLabels,
     syncDisplayInputs,
+    isSettingsInputSyncHeld,
+    cancelPendingSettingsCommit,
     bindAutoSaveSettings,
     bindBottomLabelEditing,
   };

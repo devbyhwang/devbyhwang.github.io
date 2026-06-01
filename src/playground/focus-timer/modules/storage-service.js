@@ -175,6 +175,7 @@ export function createStorageService(ctx) {
     }
 
     ctx.stopTicker();
+    if (ctx.services.display) ctx.services.display.cancelPendingSettingsCommit();
     store.userPresets = sanitizeUserPresets(payload.presetsV1);
     store.hiddenBuiltinPresetIds = sanitizeHiddenBuiltins(payload.hiddenBuiltinsV1);
     store.sessionHistory = sanitizeHistory(payload.focusHistoryV1);
