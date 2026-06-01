@@ -1,24 +1,33 @@
 {% set playgroundCards = playgroundItems or [] %}
 {% set gridClassName = playgroundGridClass or 'playground-grid' %}
+{% macro playgroundCardContent(item, launch) %}
+  {% if item.preview %}
+  <div class="card-preview">
+    <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
+  </div>
+  {% endif %}
+  <h3>{{ item.title }}</h3>
+  <p class="muted">{{ item.blurb }}</p>
+  {% if launch %}
+  <div class="inline-links">
+    <span>{{ launch.label }} →</span>
+  </div>
+  {% endif %}
+{% endmacro %}
 
 {% if playgroundCards.length > 0 %}
 <div class="{{ gridClassName }}">
   {% for item in playgroundCards %}
     {% set launch = item.links | first %}
+    {% if launch %}
+    <a class="playground-card" href="{{ launch.href | url }}" aria-label="{{ item.title }} {{ launch.label }}">
+      {{ playgroundCardContent(item, launch) }}
+    </a>
+    {% else %}
     <article class="playground-card">
-      {% if item.preview %}
-      <div class="card-preview">
-        <img src="{{ item.preview | url }}" alt="{{ item.title }} 프리뷰" loading="lazy" />
-      </div>
-      {% endif %}
-      <h3>{{ item.title }}</h3>
-      <p class="muted">{{ item.blurb }}</p>
-      {% if launch %}
-      <div class="inline-links">
-        <a href="{{ launch.href | url }}">{{ launch.label }} →</a>
-      </div>
-      {% endif %}
+      {{ playgroundCardContent(item, launch) }}
     </article>
+    {% endif %}
   {% endfor %}
 </div>
 {% else %}
