@@ -23,7 +23,76 @@ export function createPresetService(ctx) {
     target.appendChild(els.presetEditor);
   };
 
+  const closeTopPresetMenu = function () {
+    if (!els.topPresetMenu || !els.phasePresetBtn) return;
+    els.topPresetMenu.dataset.open = "false";
+    els.phasePresetBtn.setAttribute("aria-expanded", "false");
+  };
+
+  const openTopPresetMenu = function () {
+    if (!els.topPresetMenu || !els.phasePresetBtn) return;
+    renderTopPresetMenu();
+    els.topPresetMenu.dataset.open = "true";
+    els.phasePresetBtn.setAttribute("aria-expanded", "true");
+  };
+
+  const toggleTopPresetMenu = function () {
+    if (!els.topPresetMenu) return;
+    if (els.topPresetMenu.dataset.open === "true") {
+      closeTopPresetMenu();
+      return;
+    }
+    openTopPresetMenu();
+  };
+
+  const applyPreset = function (preset) {
+    if (!preset) return false;
+    if (state.timer.status === "running") {
+      const ok = window.confirm(i18n.t("confirm.applyPresetRunning"));
+      if (!ok) return false;
+    }
+    ctx.services.display.cancelPendingSettingsCommit();
+    ctx.timer.applySettings(preset, preset.id, preset.name);
+    ctx.setStatus(i18n.t("status.presetApplied", { name: preset.name }));
+    ctx.render();
+    ctx.storage.persistState();
+    renderPresetList();
+    return true;
+  };
+
+  const renderTopPresetMenu = function () {
+    if (!els.topPresetMenu) return;
+    els.topPresetMenu.innerHTML = "";
+
+    ctx.timer.getAllPresets().forEach(function (preset) {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "top-preset-option";
+      item.dataset.active = preset.id === state.timer.activePresetId ? "true" : "false";
+      item.setAttribute("role", "menuitemradio");
+      item.setAttribute("aria-checked", item.dataset.active);
+
+      const name = document.createElement("span");
+      name.className = "top-preset-option-name";
+      name.textContent = preset.name;
+      item.appendChild(name);
+
+      const meta = document.createElement("span");
+      meta.className = "top-preset-option-meta";
+      meta.textContent = preset.focusMin + "m";
+      item.appendChild(meta);
+
+      item.addEventListener("click", function () {
+        const applied = applyPreset(preset);
+        if (applied) closeTopPresetMenu();
+      });
+
+      els.topPresetMenu.appendChild(item);
+    });
+  };
+
   const renderPresetList = function () {
+    renderTopPresetMenu();
     els.presetList.innerHTML = "";
     ctx.timer.getAllPresets().forEach(function (preset) {
       const li = document.createElement("li");
@@ -47,16 +116,7 @@ export function createPresetService(ctx) {
       applyBtn.className = "mini primary";
       applyBtn.textContent = i18n.t("preset.apply");
       applyBtn.addEventListener("click", function () {
-        if (state.timer.status === "running") {
-          const ok = window.confirm(i18n.t("confirm.applyPresetRunning"));
-          if (!ok) return;
-        }
-        ctx.services.display.cancelPendingSettingsCommit();
-        ctx.timer.applySettings(preset, preset.id, preset.name);
-        ctx.setStatus(i18n.t("status.presetApplied", { name: preset.name }));
-        ctx.render();
-        ctx.storage.persistState();
-        renderPresetList();
+        applyPreset(preset);
       });
       actions.appendChild(applyBtn);
 
@@ -175,6 +235,37 @@ export function createPresetService(ctx) {
   };
 
   const bindPresetEvents = function () {
+    if (els.phasePresetBtn && els.topPresetMenu) {
+      els.phasePresetBtn.addEventListener("click", function (event) {
+        event.stopPropagation();
+        toggleTopPresetMenu();
+      });
+
+      els.topPresetMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+      });
+
+      document.addEventListener("click", closeTopPresetMenu);
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          closeTopPresetMenu();
+          return;
+        }
+        if (els.topPresetMenu.dataset.open !== "true") return;
+        const options = Array.from(els.topPresetMenu.querySelectorAll(".top-preset-option"));
+        if (options.length === 0) return;
+        const currentIndex = options.indexOf(document.activeElement);
+        if (event.key === "ArrowDown") {
+          event.preventDefault();
+          options[(currentIndex + 1 + options.length) % options.length].focus();
+        } else if (event.key === "ArrowUp") {
+          event.preventDefault();
+          options[(currentIndex - 1 + options.length) % options.length].focus();
+        }
+      });
+    }
+
     els.addPresetBtn.addEventListener("click", function () {
       state.ui.editingPresetId = null;
       openEditor(null);
@@ -285,6 +376,8 @@ export function createPresetService(ctx) {
 
   return {
     renderPresetList,
+    renderTopPresetMenu,
+    closeTopPresetMenu,
     bindPresetEvents,
   };
 }

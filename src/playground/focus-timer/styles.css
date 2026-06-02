@@ -102,6 +102,8 @@
     }
 
     .top {
+      position: relative;
+      z-index: 5;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -111,7 +113,34 @@
     }
 
     .top > div {
+      position: relative;
       text-align: center;
+    }
+
+    .phase-heading {
+      margin: 0;
+      font-size: inherit;
+      line-height: 1;
+    }
+
+    .phase-preset-btn {
+      max-width: min(86vw, 430px);
+      margin: 0 auto;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .phase-preset-btn:focus-visible {
+      outline: 2px solid color-mix(in srgb, var(--phase) 72%, transparent);
+      outline-offset: 3px;
     }
 
     .phase {
@@ -121,6 +150,66 @@
       line-height: 1.08;
       letter-spacing: -0.006em;
       font-family: "SUIT Variable", "Pretendard Variable", "Avenir Next", "IBM Plex Sans KR", "Apple SD Gothic Neo", sans-serif;
+    }
+
+    .top-preset-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      z-index: 30;
+      width: min(280px, calc(100vw - 32px));
+      padding: 6px;
+      border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--surface) 96%, transparent);
+      box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+      backdrop-filter: blur(10px);
+      display: none;
+      transform: translateX(-50%);
+    }
+
+    .top-preset-menu[data-open="true"] {
+      display: grid;
+      gap: 4px;
+    }
+
+    .top-preset-option {
+      width: 100%;
+      min-height: 38px;
+      padding: 7px 9px;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--ink);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .top-preset-option:hover,
+    .top-preset-option:focus-visible,
+    .top-preset-option[data-active="true"] {
+      background: color-mix(in srgb, var(--phase) 14%, var(--surface));
+      outline: none;
+    }
+
+    .top-preset-option-name {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.88rem;
+      font-weight: 780;
+    }
+
+    .top-preset-option-meta {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-weight: 760;
+      font-variant-numeric: tabular-nums;
     }
 
     .meta {
