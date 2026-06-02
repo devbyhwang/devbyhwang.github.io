@@ -1,6 +1,8 @@
 export function getElements() {
   return {
     phaseTitle: document.getElementById("phaseTitle"),
+    phasePresetBtn: document.getElementById("phasePresetBtn"),
+    topPresetMenu: document.getElementById("topPresetMenu"),
     cycleLabel: document.getElementById("cycleLabel"),
     bottomTime: document.getElementById("bottomTime"),
     bottomCustomLabel: document.getElementById("bottomCustomLabel"),

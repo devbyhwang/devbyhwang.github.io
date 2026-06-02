@@ -132,7 +132,7 @@ export function createInsightsService(ctx) {
     const svg = els.weeklyChart;
     if (!svg) return;
     const series = getDailySeries(7, history);
-    const maxMinutes = Math.max(10, ...series.map(function (item) { return item.minutes; }));
+    const maxMinutes = Math.max(120, ...series.map(function (item) { return item.minutes; }));
 
     const W = 320;
     const H = 180;

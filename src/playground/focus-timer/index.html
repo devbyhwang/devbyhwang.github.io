@@ -21,9 +21,14 @@
     </div>
     <section class="app">
       <div class="top">
-        <div>
-          <h1 id="phaseTitle" class="phase">집중</h1>
+        <div class="top-label-wrap">
+          <h1 class="phase-heading">
+            <button id="phasePresetBtn" class="phase-preset-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="topPresetMenu" aria-label="프리셋 선택">
+              <span id="phaseTitle" class="phase">집중</span>
+            </button>
+          </h1>
           <p id="cycleLabel" class="meta">0 / 12 포모도로 완료</p>
+          <div id="topPresetMenu" class="top-preset-menu" data-open="false" role="menu" aria-label="프리셋"></div>
         </div>
       </div>
 
@@ -281,9 +286,10 @@
           <button id="closeGuideBtn" class="icon-btn" type="button" aria-label="안내 닫기">✕</button>
         </div>
         <ul class="guide-list">
-          <li id="guideItem1">타이머는 다이얼 클릭으로 시작/일시정지, 더블클릭으로 초기화됩니다.</li>
-          <li id="guideItem2">알림 권한을 허용하지 않으면 시간 종료/단계 전환 알림을 받을 수 없습니다.</li>
-          <li id="guideItem3">브라우저 캐시/사이트 데이터 삭제 시 기록이 사라질 수 있으므로 백업 내보내기를 권장합니다.</li>
+          <li id="guideItem1">다이얼을 클릭해 시작/일시정지하고, 더블클릭으로 초기화합니다. 정지 중에는 다이얼을 드래그해 집중 시간을 조절할 수 있습니다.</li>
+          <li id="guideItem2">상단 라벨을 클릭하면 프리셋을 바로 바꿀 수 있습니다. 실행 중 변경은 확인 후 타이머를 초기화합니다.</li>
+          <li id="guideItem3">설정에서 프리셋, 중앙/하단 표시, 라벨 위치, 화면 켜짐 유지를 조정할 수 있습니다.</li>
+          <li id="guideItem4">추세와 기록은 브라우저에 저장됩니다. 캐시/사이트 데이터 삭제 전 백업 내보내기를 권장합니다.</li>
         </ul>
         <p id="guideInstallHint" class="guide-install-hint">💡 앱을 추가하고 편리하게 알림을 받아보세요!
 iPhone / iPad: [공유] ➔ [홈 화면에 추가] (알림 수신을 위해 필수)
