@@ -40,5 +40,13 @@ module.exports = {
       ],
       preview: "/assets/local-llm-preview.svg",
     },
+    {
+      title: "YOLO Label Editor",
+      blurb: "브라우저에서 이미지와 YOLO 라벨 좌표 txt 파일을 함께 열고 bbox 확인, 수정, ZIP 다운로드까지 처리하는 라벨 편집기.",
+      links: [
+        { label: "Edit", href: "/devbyhwang/playground/yolo-labeling/" },
+      ],
+      preview: "/assets/yolo-labeling-preview.svg",
+    },
   ],
 };
