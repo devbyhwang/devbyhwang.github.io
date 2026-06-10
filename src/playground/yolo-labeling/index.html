@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self' https://pagead2.googlesyndication.com https://*.adtrafficquality.google; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob: https://*.adtrafficquality.google; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://www.google.com https://www.recaptcha.net; object-src 'none'; base-uri 'self'"
+  >
+  <title>YOLO Label Editor | DevByHwang</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a href="../" class="back-link">← Playground</a>
+
+  <main class="app-shell" data-playground-safe-root>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Browser Label Tool</p>
+        <h1>YOLO Label Editor</h1>
+      </div>
+      <div class="runtime-card">
+        <strong>브라우저 전용 편집기</strong>
+        <p class="status-text">이미지와 YOLO 라벨 좌표 txt 파일을 브라우저에서만 열고 편집합니다. 모델 다운로드, 추론, 서버 실행은 없습니다.</p>
+        <p class="status-text">파일명 기준으로 `sample.jpg`와 `sample.txt`를 자동 매칭합니다.</p>
+      </div>
+    </header>
+
+    <section class="workflow editor-workflow">
+      <article class="panel upload-panel">
+        <div class="panel-head">
+          <span class="step">1</span>
+          <div>
+            <h2>이미지와 라벨 첨부</h2>
+            <p>이미지 파일과 YOLO 라벨 좌표 txt 파일을 함께 업로드하면 바로 검수 화면에서 확인합니다.</p>
+          </div>
+        </div>
+
+        <label class="drop-zone" id="drop-zone" for="file-input">
+          <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp,image/bmp,text/plain,.txt" multiple>
+          <strong>이미지 + 라벨 좌표 txt 선택</strong>
+          <span>또는 여기에 한 번에 드래그 앤 드롭</span>
+        </label>
+
+        <div class="stats-row" aria-live="polite">
+          <div><strong id="image-count">0</strong><span>이미지</span></div>
+          <div><strong id="label-count">0</strong><span>매칭 txt</span></div>
+          <div><strong id="box-count">0</strong><span>박스</span></div>
+        </div>
+      </article>
+
+      <article class="panel options-panel">
+        <div class="panel-head">
+          <span class="step">2</span>
+          <div>
+            <h2>라벨 설정</h2>
+            <p>txt의 Class_ID 순서와 이름을 맞춰두면 검수와 `data.yaml` 다운로드가 정리됩니다.</p>
+          </div>
+        </div>
+
+        <label class="wide-field">
+          <span>클래스 이름</span>
+          <textarea id="classes" rows="5" spellcheck="false">class_1</textarea>
+        </label>
+
+        <details class="advanced-settings">
+          <summary>고급 라벨 형식</summary>
+          <div class="form-grid label-format-grid">
+            <label>
+              <span>라벨 형식</span>
+              <select id="label-format">
+                <option value="bbox">사각형 bbox</option>
+                <option value="polygon">테두리 polygon</option>
+                <option value="custom">커스텀</option>
+              </select>
+            </label>
+            <label id="custom-format-row" hidden>
+              <span>커스텀 패턴</span>
+              <input id="custom-format" type="text" value="Class_ID x_center y_center width height" spellcheck="false">
+            </label>
+          </div>
+
+          <div class="guidance">
+            <strong>지원 라벨 형식</strong>
+            <p id="format-help">사각형 bbox: 각 줄은 `Class_ID x_center y_center width height` 형식입니다. 좌표는 0~1 정규화 값으로 읽고 저장합니다.</p>
+          </div>
+        </details>
+
+        <div class="toggle-list">
+          <label class="toggle-row">
+            <input id="empty-labels" type="checkbox" checked>
+            <span>박스가 없는 이미지도 빈 txt 생성</span>
+          </label>
+          <label class="toggle-row">
+            <input id="include-images" type="checkbox">
+            <span>ZIP에 원본 이미지 포함</span>
+          </label>
+        </div>
+
+        <div class="action-row">
+          <button id="clear-files" class="secondary-button" type="button">파일 비우기</button>
+          <button id="download-labels-top" class="primary-button dark" type="button" disabled>라벨링 결과 다운로드</button>
+        </div>
+      </article>
+    </section>
+
+    <section class="review-section" id="review-section" hidden>
+      <div class="review-head">
+        <div>
+          <p class="eyebrow">Review</p>
+          <h2>라벨 검수</h2>
+        </div>
+        <div class="review-actions">
+          <label class="review-check">
+            <input id="reviewed-toggle" type="checkbox">
+            <span>검수됨</span>
+          </label>
+          <label class="auto-review-switch">
+            <input id="auto-review-toggle" type="checkbox" role="switch">
+            <span class="switch-track" aria-hidden="true"></span>
+            <span>자동 체크</span>
+          </label>
+          <button id="download-labels" class="primary-button dark" type="button">라벨링 결과 다운로드</button>
+        </div>
+      </div>
+
+      <div class="review-layout">
+        <aside class="tool-panel">
+          <div class="tool-group">
+            <h3>편집 도구</h3>
+            <div class="segmented">
+              <button class="mode-button is-active" type="button" data-mode="select">선택</button>
+              <button class="mode-button" type="button" data-mode="draw">박스 생성</button>
+            </div>
+            <label>
+              <span>현재 클래스</span>
+              <select id="active-class"></select>
+            </label>
+            <button id="delete-box" class="danger-button" type="button" disabled>선택 박스 삭제</button>
+          </div>
+
+          <div class="tool-group">
+            <h3>현재 이미지</h3>
+            <dl class="image-meta">
+              <div><dt>파일</dt><dd id="current-name">-</dd></div>
+              <div><dt>라벨</dt><dd id="current-label-file">없음</dd></div>
+              <div><dt>크기</dt><dd id="current-size">-</dd></div>
+              <div><dt>박스</dt><dd id="current-boxes">0</dd></div>
+              <div><dt>상태</dt><dd id="current-status">검수 전</dd></div>
+            </dl>
+          </div>
+
+          <div class="tool-group">
+            <h3>박스 목록</h3>
+            <div id="box-list" class="box-list"></div>
+          </div>
+        </aside>
+
+        <div class="canvas-panel">
+          <button id="prev-image" class="nav-arrow left" type="button" aria-label="이전 이미지">‹</button>
+          <div class="canvas-wrap">
+            <canvas id="label-canvas"></canvas>
+          </div>
+          <button id="next-image" class="nav-arrow right" type="button" aria-label="다음 이미지">›</button>
+          <div id="thumb-strip" class="thumb-strip"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js" defer></script>
+  <script src="../../../assets/playground-bottom-ad.js" defer></script>
+</body>
+</html>
