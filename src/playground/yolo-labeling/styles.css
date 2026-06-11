@@ -390,6 +390,10 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.9rem;
 }
 
+.toggle-row.compact {
+  padding: 8px;
+}
+
 .guidance {
   margin-top: 12px;
   padding: 12px;
@@ -584,7 +588,7 @@ input:focus, select:focus, textarea:focus {
 
 .segmented {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
   margin-bottom: 10px;
 }
@@ -597,6 +601,43 @@ input:focus, select:focus, textarea:focus {
 .mode-button.is-active {
   color: #fffaf1;
   background: var(--green);
+}
+
+.tool-options {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.range-field {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.44);
+}
+
+.range-field span {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0;
+}
+
+.range-field strong {
+  color: var(--green);
+}
+
+.range-field input {
+  min-height: 24px;
+  padding: 0;
+  accent-color: var(--green);
+}
+
+.tool-note {
+  margin: 0;
+  font-size: 0.82rem;
 }
 
 .image-meta {
@@ -677,6 +718,10 @@ input:focus, select:focus, textarea:focus {
   max-width: 100%;
   max-height: 100%;
   touch-action: none;
+}
+
+#label-canvas.is-erasing {
+  cursor: crosshair;
 }
 
 .nav-arrow {

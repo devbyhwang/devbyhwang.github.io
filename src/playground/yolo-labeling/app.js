@@ -23,6 +23,11 @@ const els = {
   autoReviewToggle: document.querySelector("#auto-review-toggle"),
   downloadLabels: document.querySelector("#download-labels"),
   modeButtons: document.querySelectorAll(".mode-button"),
+  eraserMode: document.querySelector('[data-mode="erase"]'),
+  polygonFill: document.querySelector("#polygon-fill"),
+  eraserSize: document.querySelector("#eraser-size"),
+  eraserSizeValue: document.querySelector("#eraser-size-value"),
+  eraserHelp: document.querySelector("#eraser-help"),
   activeClass: document.querySelector("#active-class"),
   deleteBox: document.querySelector("#delete-box"),
   currentName: document.querySelector("#current-name"),
@@ -48,6 +53,8 @@ const state = {
   autoReview: true,
   labelFormatManual: false,
   drag: null,
+  eraserFeedback: null,
+  eraserFeedbackTimer: null,
 };
 
 const boxColor = "#1f5d4a";
@@ -56,6 +63,11 @@ const canvasFitRatio = 0.75;
 const minBoxSize = 0.005;
 const dragThresholdPx = 6;
 const historyLimit = 80;
+const maxMaskSide = 1200;
+const minPolygonArea = 0.00002;
+const maxPolygonPoints = 120;
+const splitComponentRatio = 0.25;
+const eraserFeedbackMs = 2600;
 
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
@@ -96,11 +108,114 @@ function boundsForPoints(points) {
   };
 }
 
+function polygonArea(points) {
+  if (!points?.length) return 0;
+  let area = 0;
+  for (let index = 0; index < points.length; index += 1) {
+    const next = points[(index + 1) % points.length];
+    const point = points[index];
+    area += point.x * next.y - next.x * point.y;
+  }
+  return area / 2;
+}
+
+function validPolygon(points) {
+  if (!points || points.length < 3) return false;
+  return Math.abs(polygonArea(points)) >= minPolygonArea;
+}
+
+function pointInPolygon(point, polygon) {
+  let inside = false;
+  for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index, index += 1) {
+    const currentPoint = polygon[index];
+    const previousPoint = polygon[previous];
+    const intersects = currentPoint.y > point.y !== previousPoint.y > point.y
+      && point.x < ((previousPoint.x - currentPoint.x) * (point.y - currentPoint.y)) / (previousPoint.y - currentPoint.y) + currentPoint.x;
+    if (intersects) inside = !inside;
+  }
+  return inside;
+}
+
 function translatePoints(points, dx, dy) {
   return points.map((point) => ({
     x: point.x + dx,
     y: point.y + dy,
   }));
+}
+
+function distanceToSegment(point, start, end) {
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  if (dx === 0 && dy === 0) return Math.hypot(point.x - start.x, point.y - start.y);
+  const t = clamp(((point.x - start.x) * dx + (point.y - start.y) * dy) / (dx * dx + dy * dy));
+  return Math.hypot(point.x - (start.x + t * dx), point.y - (start.y + t * dy));
+}
+
+function imagePoint(point, item) {
+  return {
+    x: point.x * item.width,
+    y: point.y * item.height,
+  };
+}
+
+function segmentOrientation(a, b, c) {
+  return (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+}
+
+function pointOnSegment(point, start, end) {
+  return Math.abs(segmentOrientation(start, end, point)) < 0.000001
+    && point.x >= Math.min(start.x, end.x) - 0.000001
+    && point.x <= Math.max(start.x, end.x) + 0.000001
+    && point.y >= Math.min(start.y, end.y) - 0.000001
+    && point.y <= Math.max(start.y, end.y) + 0.000001;
+}
+
+function segmentsIntersect(a, b, c, d) {
+  const o1 = segmentOrientation(a, b, c);
+  const o2 = segmentOrientation(a, b, d);
+  const o3 = segmentOrientation(c, d, a);
+  const o4 = segmentOrientation(c, d, b);
+  if (o1 * o2 < 0 && o3 * o4 < 0) return true;
+  return pointOnSegment(c, a, b)
+    || pointOnSegment(d, a, b)
+    || pointOnSegment(a, c, d)
+    || pointOnSegment(b, c, d);
+}
+
+function segmentDistance(startA, endA, startB, endB) {
+  if (segmentsIntersect(startA, endA, startB, endB)) return 0;
+  return Math.min(
+    distanceToSegment(startA, startB, endB),
+    distanceToSegment(endA, startB, endB),
+    distanceToSegment(startB, startA, endA),
+    distanceToSegment(endB, startA, endA)
+  );
+}
+
+function simplifyOpenPoints(points, tolerance) {
+  if (points.length <= 2) return points;
+  let maxDistance = 0;
+  let splitIndex = 0;
+  const first = points[0];
+  const last = points[points.length - 1];
+  for (let index = 1; index < points.length - 1; index += 1) {
+    const distance = distanceToSegment(points[index], first, last);
+    if (distance > maxDistance) {
+      maxDistance = distance;
+      splitIndex = index;
+    }
+  }
+  if (maxDistance <= tolerance) return [first, last];
+  const left = simplifyOpenPoints(points.slice(0, splitIndex + 1), tolerance);
+  const right = simplifyOpenPoints(points.slice(splitIndex), tolerance);
+  return left.slice(0, -1).concat(right);
+}
+
+function simplifyClosedPoints(points, tolerance) {
+  if (points.length <= 3) return points;
+  const ring = [...points, points[0]];
+  const simplified = simplifyOpenPoints(ring, tolerance).slice(0, -1);
+  return simplified.length >= 3 ? simplified : points;
 }
 
 function scalePointsToBox(points, fromBox, toBox) {
@@ -169,6 +284,245 @@ function redoEdit() {
   item.undoStack.push(snapshotItem(item));
   if (item.undoStack.length > historyLimit) item.undoStack.shift();
   restoreSnapshot(item, item.redoStack.pop());
+}
+
+function selectedBoxFor(item) {
+  return item?.boxes.find((box) => box.id === state.selectedBoxId) || null;
+}
+
+function canErase(item) {
+  return Boolean(selectedBoxFor(item)?.points?.length);
+}
+
+function setMode(mode) {
+  if (mode === "erase" && !canErase(currentItem())) mode = "select";
+  state.mode = mode;
+  els.modeButtons.forEach((node) => node.classList.toggle("is-active", node.dataset.mode === state.mode));
+  els.canvas.classList.toggle("is-erasing", state.mode === "erase");
+}
+
+function updateEraserControls(item = currentItem()) {
+  const selected = selectedBoxFor(item);
+  const eraserAvailable = Boolean(selected?.points?.length);
+  els.eraserMode.disabled = !eraserAvailable;
+  if (!eraserAvailable && state.mode === "erase") setMode("select");
+  const feedbackActive = state.eraserFeedback && Date.now() < state.eraserFeedback.until;
+  if (feedbackActive) {
+    els.eraserHelp.textContent = state.eraserFeedback.message;
+  } else {
+    els.eraserHelp.textContent = eraserAvailable
+      ? "선택한 polygon 위를 드래그하면 해당 영역을 제외합니다."
+      : "polygon 라벨을 선택하면 지우개를 사용할 수 있습니다.";
+  }
+  els.canvas.classList.toggle("is-erasing", state.mode === "erase" && eraserAvailable);
+}
+
+function setEraserFeedback(message) {
+  state.eraserFeedback = {
+    message,
+    until: Date.now() + eraserFeedbackMs,
+  };
+  if (state.eraserFeedbackTimer) window.clearTimeout(state.eraserFeedbackTimer);
+  state.eraserFeedbackTimer = window.setTimeout(() => {
+    state.eraserFeedback = null;
+    updateEraserControls();
+  }, eraserFeedbackMs);
+}
+
+function eraserFeedbackMessage(reason) {
+  if (reason === "hole") return "내부 구멍은 저장할 수 없어 적용하지 않았습니다. polygon 경계까지 드래그해 잘라내세요.";
+  if (reason === "split") return "polygon이 크게 분리되어 적용하지 않았습니다. 작은 바깥 조각만 잘라내도록 경계 쪽에서 지워주세요.";
+  return "남은 polygon이 너무 작거나 유효하지 않아 적용하지 않았습니다.";
+}
+
+function eraserSizePx() {
+  return Number(els.eraserSize.value || 24);
+}
+
+function eraserLineWidthForImage(item) {
+  const rect = els.canvas.getBoundingClientRect();
+  const displayWidth = Math.max(1, rect.width);
+  return Math.max(1, eraserSizePx() * (item.width / displayWidth));
+}
+
+function maskSizeForItem(item) {
+  const scale = Math.min(1, maxMaskSide / Math.max(item.width, item.height));
+  return {
+    width: Math.max(1, Math.round(item.width * scale)),
+    height: Math.max(1, Math.round(item.height * scale)),
+    scale,
+  };
+}
+
+function traceComponents(binary, width, height) {
+  const visited = new Uint8Array(binary.length);
+  const components = [];
+  const stack = [];
+  for (let start = 0; start < binary.length; start += 1) {
+    if (!binary[start] || visited[start]) continue;
+    const component = [];
+    visited[start] = 1;
+    stack.push(start);
+    while (stack.length) {
+      const index = stack.pop();
+      component.push(index);
+      const x = index % width;
+      const y = Math.floor(index / width);
+      const neighbors = [
+        x > 0 ? index - 1 : -1,
+        x < width - 1 ? index + 1 : -1,
+        y > 0 ? index - width : -1,
+        y < height - 1 ? index + width : -1,
+      ];
+      neighbors.forEach((neighbor) => {
+        if (neighbor >= 0 && binary[neighbor] && !visited[neighbor]) {
+          visited[neighbor] = 1;
+          stack.push(neighbor);
+        }
+      });
+    }
+    components.push(component);
+  }
+  return components.sort((a, b) => b.length - a.length);
+}
+
+function traceBoundaryLoops(component, width, height) {
+  const inside = new Uint8Array(width * height);
+  component.forEach((index) => { inside[index] = 1; });
+  const isInside = (x, y) => x >= 0 && x < width && y >= 0 && y < height && inside[y * width + x];
+  const edges = new Map();
+  const addEdge = (startX, startY, endX, endY) => {
+    const key = `${startX},${startY}`;
+    if (!edges.has(key)) edges.set(key, []);
+    edges.get(key).push({ x: endX, y: endY });
+  };
+  component.forEach((index) => {
+    const x = index % width;
+    const y = Math.floor(index / width);
+    if (!isInside(x, y - 1)) addEdge(x + 1, y, x, y);
+    if (!isInside(x + 1, y)) addEdge(x + 1, y + 1, x + 1, y);
+    if (!isInside(x, y + 1)) addEdge(x, y + 1, x + 1, y + 1);
+    if (!isInside(x - 1, y)) addEdge(x, y, x, y + 1);
+  });
+
+  const loops = [];
+  while (edges.size) {
+    const firstKey = edges.keys().next().value;
+    const [startX, startY] = firstKey.split(",").map(Number);
+    const start = { x: startX, y: startY };
+    const loop = [start];
+    let current = start;
+    let guard = 0;
+    while (guard < width * height * 4) {
+      guard += 1;
+      const key = `${current.x},${current.y}`;
+      const targets = edges.get(key);
+      if (!targets?.length) break;
+      const next = targets.pop();
+      if (!targets.length) edges.delete(key);
+      current = next;
+      if (current.x === start.x && current.y === start.y) break;
+      loop.push(current);
+    }
+    if (loop.length >= 3) loops.push(loop);
+  }
+  return loops;
+}
+
+function eraserTouchesPolygonBoundary(box, item, path) {
+  if (!box.points?.length || !path.length) return false;
+  const radius = Math.max(1, eraserLineWidthForImage(item) / 2);
+  const polygon = box.points.map((point) => imagePoint(point, item));
+  const eraserPath = path.map((point) => imagePoint(point, item));
+  for (let polygonIndex = 0; polygonIndex < polygon.length; polygonIndex += 1) {
+    const polygonStart = polygon[polygonIndex];
+    const polygonEnd = polygon[(polygonIndex + 1) % polygon.length];
+    if (eraserPath.length === 1) {
+      if (distanceToSegment(eraserPath[0], polygonStart, polygonEnd) <= radius) return true;
+      continue;
+    }
+    for (let pathIndex = 1; pathIndex < eraserPath.length; pathIndex += 1) {
+      if (segmentDistance(eraserPath[pathIndex - 1], eraserPath[pathIndex], polygonStart, polygonEnd) <= radius) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function eraserFailure(reason) {
+  return { points: null, reason };
+}
+
+function polygonFromEraserMask(box, item, path) {
+  if (!box.points?.length || !path.length) return eraserFailure("empty");
+  if (!eraserTouchesPolygonBoundary(box, item, path)) return eraserFailure("hole");
+  const { width, height, scale } = maskSizeForItem(item);
+  const mask = document.createElement("canvas");
+  mask.width = width;
+  mask.height = height;
+  const maskCtx = mask.getContext("2d", { willReadFrequently: true });
+  maskCtx.fillStyle = "#fff";
+  maskCtx.beginPath();
+  box.points.forEach((point, index) => {
+    const x = point.x * width;
+    const y = point.y * height;
+    if (index === 0) maskCtx.moveTo(x, y);
+    else maskCtx.lineTo(x, y);
+  });
+  maskCtx.closePath();
+  maskCtx.fill();
+
+  maskCtx.globalCompositeOperation = "destination-out";
+  maskCtx.lineCap = "round";
+  maskCtx.lineJoin = "round";
+  maskCtx.lineWidth = Math.max(1, eraserLineWidthForImage(item) * scale);
+  maskCtx.beginPath();
+  path.forEach((point, index) => {
+    const x = point.x * width;
+    const y = point.y * height;
+    if (index === 0) maskCtx.moveTo(x, y);
+    else maskCtx.lineTo(x, y);
+  });
+  if (path.length === 1) {
+    const point = path[0];
+    maskCtx.arc(point.x * width, point.y * height, maskCtx.lineWidth / 2, 0, Math.PI * 2);
+    maskCtx.fill();
+  } else {
+    maskCtx.stroke();
+  }
+
+  const imageData = maskCtx.getImageData(0, 0, width, height).data;
+  const binary = new Uint8Array(width * height);
+  for (let index = 0; index < binary.length; index += 1) {
+    binary[index] = imageData[index * 4 + 3] > 0 ? 1 : 0;
+  }
+  const components = traceComponents(binary, width, height);
+  const largest = components[0] || [];
+  if (largest.length < 12) return eraserFailure("empty");
+  const secondLargest = components[1];
+  if (secondLargest && secondLargest.length / largest.length > splitComponentRatio) {
+    return eraserFailure("split");
+  }
+  const loops = traceBoundaryLoops(largest, width, height);
+  if (!loops.length) return eraserFailure("empty");
+  const largestLoop = loops.reduce((best, loop) => {
+    const area = Math.abs(polygonArea(loop));
+    return area > best.area ? { loop, area } : best;
+  }, { loop: null, area: 0 }).loop;
+  if (!largestLoop) return eraserFailure("empty");
+
+  let points = largestLoop.map((point) => ({
+    x: clamp(point.x / width),
+    y: clamp(point.y / height),
+  }));
+  let tolerance = 1.5 / Math.max(width, height);
+  points = simplifyClosedPoints(points, tolerance);
+  while (points.length > maxPolygonPoints && tolerance < 0.03) {
+    tolerance *= 1.45;
+    points = simplifyClosedPoints(points, tolerance);
+  }
+  return validPolygon(points) ? { points, reason: "" } : eraserFailure("empty");
 }
 
 function getClasses() {
@@ -522,6 +876,31 @@ function pointerDistance(startEvent, event) {
   return Math.hypot(event.clientX - startEvent.clientX, event.clientY - startEvent.clientY);
 }
 
+function applyEraser(item, box, path) {
+  const result = polygonFromEraserMask(box, item, path);
+  if (!result.points) {
+    setEraserFeedback(eraserFeedbackMessage(result.reason));
+    return false;
+  }
+  const { points } = result;
+  const bounds = boundsForPoints(points);
+  if (bounds.w <= minBoxSize || bounds.h <= minBoxSize) {
+    setEraserFeedback(eraserFeedbackMessage("empty"));
+    return false;
+  }
+  box.points = points;
+  Object.assign(box, normalizeBoxToBounds({
+    ...box,
+    x: bounds.x,
+    y: bounds.y,
+    w: bounds.w,
+    h: bounds.h,
+  }));
+  box.source = "edited";
+  markDirty(item);
+  return true;
+}
+
 function boxAt(item, point) {
   for (let i = item.boxes.length - 1; i >= 0; i -= 1) {
     const box = item.boxes[i];
@@ -587,14 +966,20 @@ function draw() {
         else ctx.lineTo(px, py);
       });
       ctx.closePath();
+      if (els.polygonFill.checked) {
+        ctx.fillStyle = selected ? "rgba(200, 135, 46, 0.24)" : "rgba(31, 93, 74, 0.18)";
+        ctx.fill();
+      }
       ctx.strokeStyle = selected ? selectedColor : boxColor;
       ctx.setLineDash([12, 8]);
       ctx.stroke();
       ctx.setLineDash([]);
     }
     ctx.strokeStyle = selected ? selectedColor : boxColor;
-    ctx.fillStyle = selected ? "rgba(200, 135, 46, 0.12)" : "rgba(31, 93, 74, 0.1)";
-    ctx.fillRect(x, y, w, h);
+    if (!box.points?.length) {
+      ctx.fillStyle = selected ? "rgba(200, 135, 46, 0.12)" : "rgba(31, 93, 74, 0.1)";
+      ctx.fillRect(x, y, w, h);
+    }
     ctx.strokeRect(x, y, w, h);
     const label = `${box.classId}: ${labelFor(box.classId)}`;
     const labelWidth = ctx.measureText(label).width + 12;
@@ -630,6 +1015,28 @@ function draw() {
       box.h * item.height
     );
     ctx.setLineDash([]);
+  }
+
+  if (state.drag?.type === "erase" && state.drag.path?.length) {
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.lineWidth = eraserLineWidthForImage(item);
+    ctx.strokeStyle = "rgba(196, 84, 73, 0.62)";
+    ctx.fillStyle = "rgba(196, 84, 73, 0.2)";
+    ctx.beginPath();
+    state.drag.path.forEach((point, index) => {
+      const px = point.x * item.width;
+      const py = point.y * item.height;
+      if (index === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    if (state.drag.path.length === 1) {
+      const point = state.drag.path[0];
+      ctx.arc(point.x * item.width, point.y * item.height, eraserLineWidthForImage(item) / 2, 0, Math.PI * 2);
+      ctx.fill();
+    } else {
+      ctx.stroke();
+    }
   }
 }
 
@@ -704,7 +1111,7 @@ function renderReview() {
     updateCounts();
   }
   els.currentName.textContent = item.name;
-  const selectedBox = item.boxes.find((box) => box.id === state.selectedBoxId);
+  const selectedBox = selectedBoxFor(item);
   if (selectedBox) els.activeClass.value = String(selectedBox.classId);
   els.currentLabelFile.textContent = item.labelFileName || "없음";
   els.currentSize.textContent = `${item.width} x ${item.height}`;
@@ -715,6 +1122,7 @@ function renderReview() {
     els.currentStatus.textContent = `일부 라벨 무시됨 (${item.invalidLabelLines.join(", ")})`;
   }
   els.deleteBox.disabled = !state.selectedBoxId;
+  updateEraserControls(item);
   renderBoxList(item);
   renderThumbs();
   draw();
@@ -891,6 +1299,11 @@ els.customFormat.addEventListener("input", () => {
   updateCounts();
   renderReview();
 });
+els.polygonFill.addEventListener("change", draw);
+els.eraserSize.addEventListener("input", () => {
+  els.eraserSizeValue.textContent = `${eraserSizePx()}px`;
+  draw();
+});
 els.clearFiles.addEventListener("click", clearFiles);
 els.prevImage.addEventListener("click", () => moveImage(-1));
 els.nextImage.addEventListener("click", () => moveImage(1));
@@ -917,8 +1330,8 @@ els.autoReviewToggle.addEventListener("change", () => {
 
 els.modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    state.mode = button.dataset.mode;
-    els.modeButtons.forEach((node) => node.classList.toggle("is-active", node === button));
+    if (button.disabled) return;
+    setMode(button.dataset.mode);
   });
 });
 
@@ -938,6 +1351,18 @@ els.canvas.addEventListener("pointerdown", (event) => {
   if (!item) return;
   els.canvas.setPointerCapture(event.pointerId);
   const point = imageToCanvas(item, event.clientX, event.clientY);
+  if (state.mode === "erase") {
+    const box = selectedBoxFor(item);
+    if (!box?.points?.length || !pointInPolygon(point, box.points)) return;
+    state.drag = {
+      type: "erase",
+      boxId: box.id,
+      before: snapshotItem(item),
+      path: [point],
+    };
+    draw();
+    return;
+  }
   if (state.mode === "draw") {
     state.drag = {
       type: "draw",
@@ -971,6 +1396,11 @@ els.canvas.addEventListener("pointermove", (event) => {
   const item = currentItem();
   if (!item || !state.drag) return;
   const point = imageToCanvas(item, event.clientX, event.clientY);
+  if (state.drag.type === "erase") {
+    state.drag.path.push(point);
+    draw();
+    return;
+  }
   if (state.drag.pending) {
     if (pointerDistance(state.drag.startEvent, event) < dragThresholdPx) return;
     state.drag.pending = false;
@@ -1033,7 +1463,12 @@ els.canvas.addEventListener("pointermove", (event) => {
 els.canvas.addEventListener("pointerup", () => {
   const item = currentItem();
   if (!item || !state.drag) return;
-  if (state.drag.type === "draw" && state.drag.preview && state.drag.preview.w > minBoxSize && state.drag.preview.h > minBoxSize) {
+  if (state.drag.type === "erase") {
+    const box = item.boxes.find((candidate) => candidate.id === state.drag.boxId);
+    if (box && applyEraser(item, box, state.drag.path)) {
+      pushUndo(item, state.drag.before);
+    }
+  } else if (state.drag.type === "draw" && state.drag.preview && state.drag.preview.w > minBoxSize && state.drag.preview.h > minBoxSize) {
     pushUndo(item, state.drag.before);
     const classId = Number(els.activeClass.value || 0);
     const box = normalizeBoxToBounds({
