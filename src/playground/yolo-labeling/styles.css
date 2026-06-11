@@ -230,6 +230,52 @@ input:focus, select:focus, textarea:focus {
 .stats-row strong { font-size: 1.32rem; }
 .stats-row span { color: var(--muted); font-size: 0.82rem; }
 
+.upload-status {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid rgba(31, 93, 74, 0.22);
+  border-radius: 8px;
+  background: rgba(31, 93, 74, 0.08);
+}
+
+.upload-status[hidden] {
+  display: none;
+}
+
+.upload-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.86rem;
+}
+
+.upload-status-row span {
+  color: var(--muted);
+}
+
+.upload-progress-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(22, 32, 29, 0.1);
+}
+
+#upload-progress-bar {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  transition: width 0.18s ease;
+}
+
+#upload-status-detail {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
 .preset-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

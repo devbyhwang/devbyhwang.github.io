@@ -4,6 +4,11 @@ const els = {
   imageCount: document.querySelector("#image-count"),
   labelCount: document.querySelector("#label-count"),
   boxCount: document.querySelector("#box-count"),
+  uploadStatus: document.querySelector("#upload-status"),
+  uploadStatusTitle: document.querySelector("#upload-status-title"),
+  uploadStatusCount: document.querySelector("#upload-status-count"),
+  uploadStatusDetail: document.querySelector("#upload-status-detail"),
+  uploadProgressBar: document.querySelector("#upload-progress-bar"),
   classes: document.querySelector("#classes"),
   labelFormat: document.querySelector("#label-format"),
   customFormatRow: document.querySelector("#custom-format-row"),
@@ -41,6 +46,7 @@ const state = {
   selectedBoxId: null,
   mode: "select",
   autoReview: true,
+  labelFormatManual: false,
   drag: null,
 };
 
@@ -48,6 +54,8 @@ const boxColor = "#1f5d4a";
 const selectedColor = "#c8872e";
 const canvasFitRatio = 0.75;
 const minBoxSize = 0.005;
+const dragThresholdPx = 6;
+const historyLimit = 80;
 
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
@@ -69,8 +77,98 @@ function normalizeBoxToBounds(box) {
   };
 }
 
+function boundsForPoints(points) {
+  const xs = points.map((point) => point.x);
+  const ys = points.map((point) => point.y);
+  const left = Math.min(...xs);
+  const right = Math.max(...xs);
+  const top = Math.min(...ys);
+  const bottom = Math.max(...ys);
+  return {
+    left,
+    right,
+    top,
+    bottom,
+    x: (left + right) / 2,
+    y: (top + bottom) / 2,
+    w: right - left,
+    h: bottom - top,
+  };
+}
+
+function translatePoints(points, dx, dy) {
+  return points.map((point) => ({
+    x: point.x + dx,
+    y: point.y + dy,
+  }));
+}
+
+function scalePointsToBox(points, fromBox, toBox) {
+  const fromLeft = fromBox.x - fromBox.w / 2;
+  const fromTop = fromBox.y - fromBox.h / 2;
+  const fromW = fromBox.w || 1;
+  const fromH = fromBox.h || 1;
+  const toLeft = toBox.x - toBox.w / 2;
+  const toTop = toBox.y - toBox.h / 2;
+  return points.map((point) => ({
+    x: clamp(toLeft + ((point.x - fromLeft) / fromW) * toBox.w),
+    y: clamp(toTop + ((point.y - fromTop) / fromH) * toBox.h),
+  }));
+}
+
 function markDirty(item) {
   if (item) item.dirty = true;
+}
+
+function cloneBox(box) {
+  return {
+    ...box,
+    points: box.points ? box.points.map((point) => ({ ...point })) : null,
+  };
+}
+
+function snapshotItem(item) {
+  return {
+    boxes: item.boxes.map(cloneBox),
+    selectedBoxId: state.selectedBoxId,
+  };
+}
+
+function restoreSnapshot(item, snapshot) {
+  item.boxes = snapshot.boxes.map(cloneBox);
+  state.selectedBoxId = item.boxes.some((box) => box.id === snapshot.selectedBoxId)
+    ? snapshot.selectedBoxId
+    : null;
+  markDirty(item);
+  updateCounts();
+  renderReview();
+}
+
+function pushUndo(item, snapshot) {
+  if (!item || !snapshot) return;
+  item.undoStack ||= [];
+  item.redoStack ||= [];
+  item.undoStack.push(snapshot);
+  if (item.undoStack.length > historyLimit) item.undoStack.shift();
+  item.redoStack = [];
+}
+
+function undoEdit() {
+  const item = currentItem();
+  if (!item?.undoStack?.length) return;
+  item.redoStack ||= [];
+  item.redoStack.push(snapshotItem(item));
+  if (item.redoStack.length > historyLimit) item.redoStack.shift();
+  restoreSnapshot(item, item.undoStack.pop());
+}
+
+function redoEdit() {
+  const item = currentItem();
+  if (!item?.redoStack?.length) return;
+  item.undoStack ||= [];
+  item.undoStack.push(snapshotItem(item));
+  if (item.undoStack.length > historyLimit) item.undoStack.shift();
+  restoreSnapshot(item, item.redoStack.pop());
 }
 
 function getClasses() {
@@ -86,6 +184,47 @@ function getLabelFormat() {
   return pattern.includes("x1") || pattern.includes("polygon") || pattern.includes("points")
     ? "polygon"
     : "bbox";
+}
+
+function setUploadStatus({ active, title = "", current = 0, total = 0, detail = "" }) {
+  els.uploadStatus.hidden = !active;
+  if (!active) return;
+  const progress = total > 0 ? Math.round((current / total) * 100) : 0;
+  els.uploadStatusTitle.textContent = title;
+  els.uploadStatusCount.textContent = `${current} / ${total}`;
+  els.uploadStatusDetail.textContent = detail;
+  els.uploadProgressBar.style.width = `${clamp(progress, 0, 100)}%`;
+}
+
+function detectLabelFormatFromText(text) {
+  let bbox = 0;
+  let polygon = 0;
+  let invalid = 0;
+  text.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    const parts = trimmed.split(/\s+/).map(Number);
+    if (parts.some((value) => !Number.isFinite(value)) || parts.length < 5) {
+      invalid += 1;
+      return;
+    }
+    const coordCount = parts.length - 1;
+    if (parts.length === 5) bbox += 1;
+    else if (coordCount >= 6 && coordCount % 2 === 0) polygon += 1;
+    else invalid += 1;
+  });
+  if (polygon > bbox) return "polygon";
+  if (bbox > 0) return "bbox";
+  if (polygon > 0) return "polygon";
+  return invalid > 0 ? "unknown" : "bbox";
+}
+
+function applyDetectedLabelFormat(format) {
+  if (state.labelFormatManual || !["bbox", "polygon"].includes(format)) return;
+  if (els.labelFormat.value !== format) {
+    els.labelFormat.value = format;
+    updateFormatHelp();
+  }
 }
 
 function updateFormatHelp() {
@@ -133,10 +272,10 @@ function updateClassSelect() {
   }
 }
 
-function parseLabelText(text, labelFileName) {
+function parseLabelText(text, labelFileName, forcedFormat = "") {
   const boxes = [];
   const invalidLines = [];
-  const labelFormat = getLabelFormat();
+  const labelFormat = forcedFormat || getLabelFormat();
   text.split(/\r?\n/).forEach((line, index) => {
     const trimmed = line.trim();
     if (!trimmed) return;
@@ -159,15 +298,8 @@ function parseLabelText(text, labelFileName) {
       for (let coordIndex = 0; coordIndex < coords.length; coordIndex += 2) {
         points.push({ x: clamp(coords[coordIndex]), y: clamp(coords[coordIndex + 1]) });
       }
-      const xs = points.map((point) => point.x);
-      const ys = points.map((point) => point.y);
-      const left = Math.min(...xs);
-      const right = Math.max(...xs);
-      const top = Math.min(...ys);
-      const bottom = Math.max(...ys);
-      const w = right - left;
-      const h = bottom - top;
-      if (w <= 0 || h <= 0) {
+      const bounds = boundsForPoints(points);
+      if (bounds.w <= 0 || bounds.h <= 0) {
         invalidLines.push(index + 1);
         return;
       }
@@ -175,10 +307,10 @@ function parseLabelText(text, labelFileName) {
         id: crypto.randomUUID(),
         classId,
         label: labelFor(classId),
-        x: (left + right) / 2,
-        y: (top + bottom) / 2,
-        w,
-        h,
+        x: bounds.x,
+        y: bounds.y,
+        w: bounds.w,
+        h: bounds.h,
         points,
         confidence: null,
         source: "polygon",
@@ -206,7 +338,7 @@ function parseLabelText(text, labelFileName) {
       source: "txt",
     }));
   });
-  return { boxes, invalidLines, labelFileName };
+  return { boxes, invalidLines, labelFileName, labelFormat };
 }
 
 async function readImageFile(file) {
@@ -215,7 +347,13 @@ async function readImageFile(file) {
   image.src = url;
   await image.decode();
   const labelSource = state.labelsByBaseName.get(baseName(file.name));
-  const parsed = labelSource ? parseLabelText(labelSource.text, labelSource.labelFileName) : null;
+  const parsed = labelSource
+    ? parseLabelText(
+      labelSource.text,
+      labelSource.labelFileName,
+      state.labelFormatManual ? getLabelFormat() : labelSource.format
+    )
+    : null;
   return {
     id: crypto.randomUUID(),
     file,
@@ -227,30 +365,70 @@ async function readImageFile(file) {
     height: image.naturalHeight,
     boxes: parsed ? parsed.boxes.map((box) => ({ ...box, id: crypto.randomUUID() })) : [],
     labelFileName: parsed?.labelFileName || "",
+    labelFormat: parsed?.labelFormat || getLabelFormat(),
     invalidLabelLines: parsed?.invalidLines || [],
     reviewed: false,
     seen: false,
     dirty: false,
+    undoStack: [],
+    redoStack: [],
   };
 }
 
 async function readLabelFile(file) {
   const text = await file.text();
-  state.labelsByBaseName.set(baseName(file.name), { text, labelFileName: file.name });
+  const detectedFormat = detectLabelFormatFromText(text);
+  state.labelsByBaseName.set(baseName(file.name), { text, labelFileName: file.name, format: detectedFormat });
+  return detectedFormat;
 }
 
 async function addFiles(fileList) {
   const files = Array.from(fileList);
   const labelFiles = files.filter((file) => file.name.toLowerCase().endsWith(".txt"));
   const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+  const totalWork = labelFiles.length + imageFiles.length;
+  if (totalWork === 0) {
+    setUploadStatus({
+      active: true,
+      title: "읽을 파일 없음",
+      current: 0,
+      total: 0,
+      detail: "이미지 파일이나 YOLO 라벨 좌표 txt 파일을 선택하세요.",
+    });
+    window.setTimeout(() => setUploadStatus({ active: false }), 1400);
+    return;
+  }
+  let completedWork = 0;
+  setUploadStatus({
+    active: true,
+    title: "파일 읽는 중",
+    current: 0,
+    total: totalWork,
+    detail: `${labelFiles.length}개 라벨 txt와 ${imageFiles.length}개 이미지를 확인합니다.`,
+  });
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  const detectedFormats = [];
 
   for (const file of labelFiles) {
     try {
-      await readLabelFile(file);
+      detectedFormats.push(await readLabelFile(file));
     } catch (error) {
       console.warn(error);
     }
+    completedWork += 1;
+    setUploadStatus({
+      active: true,
+      title: "라벨 읽는 중",
+      current: completedWork,
+      total: totalWork,
+      detail: file.name,
+    });
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
+  const bboxDetections = detectedFormats.filter((format) => format === "bbox").length;
+  const polygonDetections = detectedFormats.filter((format) => format === "polygon").length;
+  if (polygonDetections > bboxDetections) applyDetectedLabelFormat("polygon");
+  else if (bboxDetections > 0) applyDetectedLabelFormat("bbox");
 
   const existingByName = new Map(state.images.map((item) => [item.name, item]));
   const loadedImages = [];
@@ -266,6 +444,15 @@ async function addFiles(fileList) {
     } catch (error) {
       console.warn(error);
     }
+    completedWork += 1;
+    setUploadStatus({
+      active: true,
+      title: "이미지 로드 중",
+      current: completedWork,
+      total: totalWork,
+      detail: file.name,
+    });
+    await new Promise((resolve) => requestAnimationFrame(resolve));
   }
 
   state.images.push(...loadedImages);
@@ -276,6 +463,14 @@ async function addFiles(fileList) {
   updateClassSelect();
   updateCounts();
   renderReview();
+  setUploadStatus({
+    active: true,
+    title: "로드 완료",
+    current: totalWork,
+    total: totalWork,
+    detail: `${loadedImages.length}개 이미지가 추가되었습니다.`,
+  });
+  window.setTimeout(() => setUploadStatus({ active: false }), 1200);
 }
 
 function applyLabelsToExistingImages() {
@@ -283,13 +478,20 @@ function applyLabelsToExistingImages() {
     if (item.dirty) return;
     const labelSource = state.labelsByBaseName.get(item.baseName);
     if (!labelSource) return;
-    const parsed = parseLabelText(labelSource.text, labelSource.labelFileName);
+    const parsed = parseLabelText(
+      labelSource.text,
+      labelSource.labelFileName,
+      state.labelFormatManual ? getLabelFormat() : labelSource.format
+    );
     item.boxes = parsed.boxes.map((box) => ({ ...box, id: crypto.randomUUID() }));
     item.labelFileName = parsed.labelFileName;
+    item.labelFormat = parsed.labelFormat;
     item.invalidLabelLines = parsed.invalidLines;
     item.reviewed = false;
     item.seen = false;
     item.dirty = false;
+    item.undoStack = [];
+    item.redoStack = [];
   });
 }
 
@@ -314,6 +516,10 @@ function imageToCanvas(item, x, y) {
     x: clamp(((x - rect.left) * scaleX) / item.width),
     y: clamp(((y - rect.top) * scaleY) / item.height),
   };
+}
+
+function pointerDistance(startEvent, event) {
+  return Math.hypot(event.clientX - startEvent.clientX, event.clientY - startEvent.clientY);
 }
 
 function boxAt(item, point) {
@@ -372,7 +578,7 @@ function draw() {
     const y = (box.y - box.h / 2) * item.height;
     const w = box.w * item.width;
     const h = box.h * item.height;
-    if (box.points?.length && box.source !== "edited") {
+    if (box.points?.length) {
       ctx.beginPath();
       box.points.forEach((point, index) => {
         const px = point.x * item.width;
@@ -524,6 +730,7 @@ function moveImage(delta) {
 function deleteSelectedBox() {
   const item = currentItem();
   if (!item || !state.selectedBoxId) return;
+  pushUndo(item, snapshotItem(item));
   item.boxes = item.boxes.filter((box) => box.id !== state.selectedBoxId);
   markDirty(item);
   state.selectedBoxId = null;
@@ -546,11 +753,11 @@ function polygonPointsForBox(box) {
 }
 
 function saveLabelsFor(item) {
-  const labelFormat = getLabelFormat();
+  const labelFormat = state.labelFormatManual ? getLabelFormat() : (item.labelFormat || getLabelFormat());
   const lines = item.boxes.map((box) => {
     const normalized = normalizeBoxToBounds(box);
     if (labelFormat === "polygon") {
-      const points = box.points && box.source !== "edited" ? box.points : polygonPointsForBox(normalized);
+      const points = box.points?.length ? box.points : polygonPointsForBox(normalized);
       return `${box.classId} ${points.map((point) => `${point.x.toFixed(6)} ${point.y.toFixed(6)}`).join(" ")}`;
     }
     return `${box.classId} ${normalized.x.toFixed(6)} ${normalized.y.toFixed(6)} ${normalized.w.toFixed(6)} ${normalized.h.toFixed(6)}`;
@@ -661,21 +868,24 @@ els.activeClass.addEventListener("change", () => {
   const item = currentItem();
   const selectedBox = item?.boxes.find((box) => box.id === state.selectedBoxId);
   if (!selectedBox) return;
+  if (selectedBox.classId === Number(els.activeClass.value || 0)) return;
+  pushUndo(item, snapshotItem(item));
   selectedBox.classId = Number(els.activeClass.value || 0);
   selectedBox.label = labelFor(selectedBox.classId);
   selectedBox.source = "edited";
-  selectedBox.points = null;
   markDirty(item);
   updateCounts();
   renderReview();
 });
 els.labelFormat.addEventListener("change", () => {
+  state.labelFormatManual = true;
   updateFormatHelp();
   applyLabelsToExistingImages();
   updateCounts();
   renderReview();
 });
 els.customFormat.addEventListener("input", () => {
+  state.labelFormatManual = true;
   updateFormatHelp();
   applyLabelsToExistingImages();
   updateCounts();
@@ -729,14 +939,30 @@ els.canvas.addEventListener("pointerdown", (event) => {
   els.canvas.setPointerCapture(event.pointerId);
   const point = imageToCanvas(item, event.clientX, event.clientY);
   if (state.mode === "draw") {
-    state.drag = { type: "draw", start: point, preview: null };
+    state.drag = {
+      type: "draw",
+      pending: true,
+      start: point,
+      startEvent: { clientX: event.clientX, clientY: event.clientY },
+      before: snapshotItem(item),
+      preview: null,
+    };
     return;
   }
   const box = boxAt(item, point);
   state.selectedBoxId = box?.id || null;
   const handle = box ? resizeHandleAt(item, point, box) : "";
   state.drag = box
-    ? { type: handle ? "resize" : "move", handle, boxId: box.id, start: point, original: { ...box } }
+    ? {
+      type: handle ? "resize" : "move",
+      pending: true,
+      handle,
+      boxId: box.id,
+      start: point,
+      startEvent: { clientX: event.clientX, clientY: event.clientY },
+      before: snapshotItem(item),
+      original: { ...box, points: box.points ? box.points.map((boxPoint) => ({ ...boxPoint })) : null },
+    }
     : null;
   renderReview();
 });
@@ -745,6 +971,10 @@ els.canvas.addEventListener("pointermove", (event) => {
   const item = currentItem();
   if (!item || !state.drag) return;
   const point = imageToCanvas(item, event.clientX, event.clientY);
+  if (state.drag.pending) {
+    if (pointerDistance(state.drag.startEvent, event) < dragThresholdPx) return;
+    state.drag.pending = false;
+  }
   if (state.drag.type === "draw") {
     const x1 = Math.min(state.drag.start.x, point.x);
     const y1 = Math.min(state.drag.start.y, point.y);
@@ -770,24 +1000,32 @@ els.canvas.addEventListener("pointermove", (event) => {
     const right = clamp(Math.max(x1, x2));
     const top = clamp(Math.min(y1, y2));
     const bottom = clamp(Math.max(y1, y2));
-    Object.assign(box, normalizeBoxToBounds({
+    const resized = normalizeBoxToBounds({
       ...box,
       x: (left + right) / 2,
       y: (top + bottom) / 2,
       w: Math.max(minBoxSize, right - left),
       h: Math.max(minBoxSize, bottom - top),
-    }));
+    });
+    Object.assign(box, resized);
+    if (state.drag.original.points?.length) {
+      box.points = scalePointsToBox(state.drag.original.points, state.drag.original, resized);
+    }
     box.source = "edited";
-    box.points = null;
     markDirty(item);
     draw();
     return;
   }
   const nextX = state.drag.original.x + point.x - state.drag.start.x;
   const nextY = state.drag.original.y + point.y - state.drag.start.y;
-  Object.assign(box, normalizeBoxToBounds({ ...box, x: nextX, y: nextY }));
+  const moved = normalizeBoxToBounds({ ...box, x: nextX, y: nextY });
+  const dx = moved.x - state.drag.original.x;
+  const dy = moved.y - state.drag.original.y;
+  Object.assign(box, moved);
+  if (state.drag.original.points?.length) {
+    box.points = translatePoints(state.drag.original.points, dx, dy);
+  }
   box.source = "edited";
-  box.points = null;
   markDirty(item);
   draw();
 });
@@ -796,6 +1034,7 @@ els.canvas.addEventListener("pointerup", () => {
   const item = currentItem();
   if (!item || !state.drag) return;
   if (state.drag.type === "draw" && state.drag.preview && state.drag.preview.w > minBoxSize && state.drag.preview.h > minBoxSize) {
+    pushUndo(item, state.drag.before);
     const classId = Number(els.activeClass.value || 0);
     const box = normalizeBoxToBounds({
       id: crypto.randomUUID(),
@@ -809,6 +1048,8 @@ els.canvas.addEventListener("pointerup", () => {
     item.boxes.push(box);
     markDirty(item);
     state.selectedBoxId = box.id;
+  } else if ((state.drag.type === "move" || state.drag.type === "resize") && !state.drag.pending) {
+    pushUndo(item, state.drag.before);
   }
   state.drag = null;
   updateCounts();
@@ -818,6 +1059,19 @@ els.canvas.addEventListener("pointerup", () => {
 document.addEventListener("keydown", (event) => {
   const tagName = event.target?.tagName;
   if (["INPUT", "TEXTAREA", "SELECT"].includes(tagName)) return;
+  const key = event.key.toLowerCase();
+  const hasModifier = event.metaKey || event.ctrlKey;
+  if (hasModifier && key === "z") {
+    event.preventDefault();
+    if (event.shiftKey) redoEdit();
+    else undoEdit();
+    return;
+  }
+  if (event.ctrlKey && key === "y") {
+    event.preventDefault();
+    redoEdit();
+    return;
+  }
   if (event.key === "ArrowLeft") moveImage(-1);
   if (event.key === "ArrowRight") moveImage(1);
   if (event.key === "Delete" || event.key === "Backspace") deleteSelectedBox();
