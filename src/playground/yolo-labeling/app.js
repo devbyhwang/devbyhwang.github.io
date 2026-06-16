@@ -22,6 +22,15 @@ const els = {
   reviewedToggle: document.querySelector("#reviewed-toggle"),
   autoReviewToggle: document.querySelector("#auto-review-toggle"),
   downloadLabels: document.querySelector("#download-labels"),
+  runQuality: document.querySelector("#run-quality"),
+  qualityTotal: document.querySelector("#quality-total"),
+  qualityIncluded: document.querySelector("#quality-included"),
+  qualityReview: document.querySelector("#quality-review"),
+  qualityExcluded: document.querySelector("#quality-excluded"),
+  qualityFilters: document.querySelectorAll(".quality-filter"),
+  qualityReasons: document.querySelector("#quality-reasons"),
+  qualityIncludeFiltered: document.querySelector("#quality-include-filtered"),
+  qualityExcludeFiltered: document.querySelector("#quality-exclude-filtered"),
   modeButtons: document.querySelectorAll(".mode-button"),
   eraserMode: document.querySelector('[data-mode="erase"]'),
   polygonFill: document.querySelector("#polygon-fill"),
@@ -35,6 +44,9 @@ const els = {
   currentSize: document.querySelector("#current-size"),
   currentBoxes: document.querySelector("#current-boxes"),
   currentStatus: document.querySelector("#current-status"),
+  currentQuality: document.querySelector("#current-quality"),
+  currentQualityReasons: document.querySelector("#current-quality-reasons"),
+  qualityIncludeCurrent: document.querySelector("#quality-include-current"),
   boxList: document.querySelector("#box-list"),
   canvas: document.querySelector("#label-canvas"),
   canvasWrap: document.querySelector(".canvas-wrap"),
@@ -52,6 +64,8 @@ const state = {
   mode: "select",
   autoReview: true,
   labelFormatManual: false,
+  qualityFilter: "all",
+  qualityReasonFilter: "",
   drag: null,
   eraserFeedback: null,
   eraserFeedbackTimer: null,
@@ -65,9 +79,33 @@ const dragThresholdPx = 6;
 const historyLimit = 80;
 const maxMaskSide = 1200;
 const minPolygonArea = 0.00002;
-const maxPolygonPoints = 120;
-const splitComponentRatio = 0.25;
+const maxPolygonPoints = 320;
+const maxEditPolygonPoints = 900;
 const eraserFeedbackMs = 2600;
+const lowResolutionShortSide = 320;
+const extremeAspectRatio = 3;
+const tinyLabelArea = 0.0004;
+const hugeLabelArea = 0.7;
+const duplicateLabelIou = 0.95;
+const duplicateImageHashDistance = 4;
+const excessiveLabelCount = 50;
+
+const qualityReasons = {
+  missing_label: { label: "라벨 없음", severity: "exclude" },
+  empty_label: { label: "빈 라벨", severity: "exclude" },
+  parse_error: { label: "라벨 형식 오류", severity: "exclude" },
+  invalid_class: { label: "Class_ID 확인", severity: "exclude" },
+  invalid_geometry: { label: "좌표/면적 오류", severity: "exclude" },
+  low_resolution: { label: "저해상도", severity: "exclude" },
+  duplicate_image: { label: "중복 이미지", severity: "exclude" },
+  tiny_label: { label: "작은 라벨", severity: "review" },
+  huge_label: { label: "큰 라벨", severity: "review" },
+  duplicate_label: { label: "중복 라벨", severity: "review" },
+  extreme_ratio: { label: "비율 확인", severity: "review" },
+  many_labels: { label: "라벨 과다", severity: "review" },
+  edge_label: { label: "경계 라벨", severity: "review" },
+  watermark_suspect: { label: "워터마크 의심", severity: "review" },
+};
 
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
@@ -231,6 +269,14 @@ function scalePointsToBox(points, fromBox, toBox) {
   }));
 }
 
+function clonePoints(points) {
+  return points ? points.map((point) => ({ ...point })) : null;
+}
+
+function editablePointsForBox(box) {
+  return box?.editPoints?.length ? box.editPoints : box?.points || null;
+}
+
 function markDirty(item) {
   if (item) item.dirty = true;
 }
@@ -238,7 +284,8 @@ function markDirty(item) {
 function cloneBox(box) {
   return {
     ...box,
-    points: box.points ? box.points.map((point) => ({ ...point })) : null,
+    points: clonePoints(box.points),
+    editPoints: clonePoints(box.editPoints),
   };
 }
 
@@ -291,7 +338,7 @@ function selectedBoxFor(item) {
 }
 
 function canErase(item) {
-  return Boolean(selectedBoxFor(item)?.points?.length);
+  return Boolean(editablePointsForBox(selectedBoxFor(item))?.length);
 }
 
 function setMode(mode) {
@@ -303,7 +350,7 @@ function setMode(mode) {
 
 function updateEraserControls(item = currentItem()) {
   const selected = selectedBoxFor(item);
-  const eraserAvailable = Boolean(selected?.points?.length);
+  const eraserAvailable = Boolean(editablePointsForBox(selected)?.length);
   els.eraserMode.disabled = !eraserAvailable;
   if (!eraserAvailable && state.mode === "erase") setMode("select");
   const feedbackActive = state.eraserFeedback && Date.now() < state.eraserFeedback.until;
@@ -330,8 +377,7 @@ function setEraserFeedback(message) {
 }
 
 function eraserFeedbackMessage(reason) {
-  if (reason === "hole") return "내부 구멍은 저장할 수 없어 적용하지 않았습니다. polygon 경계까지 드래그해 잘라내세요.";
-  if (reason === "split") return "polygon이 크게 분리되어 적용하지 않았습니다. 작은 바깥 조각만 잘라내도록 경계 쪽에서 지워주세요.";
+  if (reason === "miss") return "선택한 polygon에 닿는 위치에서 지우개를 사용하세요.";
   return "남은 polygon이 너무 작거나 유효하지 않아 적용하지 않았습니다.";
 }
 
@@ -429,11 +475,13 @@ function traceBoundaryLoops(component, width, height) {
   return loops;
 }
 
-function eraserTouchesPolygonBoundary(box, item, path) {
-  if (!box.points?.length || !path.length) return false;
+function eraserTouchesPolygon(box, item, path) {
+  const sourcePoints = editablePointsForBox(box);
+  if (!sourcePoints?.length || !path.length) return false;
   const radius = Math.max(1, eraserLineWidthForImage(item) / 2);
-  const polygon = box.points.map((point) => imagePoint(point, item));
+  const polygon = sourcePoints.map((point) => imagePoint(point, item));
   const eraserPath = path.map((point) => imagePoint(point, item));
+  if (path.some((point) => pointInPolygon(point, sourcePoints))) return true;
   for (let polygonIndex = 0; polygonIndex < polygon.length; polygonIndex += 1) {
     const polygonStart = polygon[polygonIndex];
     const polygonEnd = polygon[(polygonIndex + 1) % polygon.length];
@@ -450,13 +498,18 @@ function eraserTouchesPolygonBoundary(box, item, path) {
   return false;
 }
 
+function eraserCanStartOnPolygon(box, item, point) {
+  return eraserTouchesPolygon(box, item, [point]);
+}
+
 function eraserFailure(reason) {
   return { points: null, reason };
 }
 
 function polygonFromEraserMask(box, item, path) {
-  if (!box.points?.length || !path.length) return eraserFailure("empty");
-  if (!eraserTouchesPolygonBoundary(box, item, path)) return eraserFailure("hole");
+  const sourcePoints = editablePointsForBox(box);
+  if (!sourcePoints?.length || !path.length) return eraserFailure("empty");
+  if (!eraserTouchesPolygon(box, item, path)) return eraserFailure("miss");
   const { width, height, scale } = maskSizeForItem(item);
   const mask = document.createElement("canvas");
   mask.width = width;
@@ -464,7 +517,7 @@ function polygonFromEraserMask(box, item, path) {
   const maskCtx = mask.getContext("2d", { willReadFrequently: true });
   maskCtx.fillStyle = "#fff";
   maskCtx.beginPath();
-  box.points.forEach((point, index) => {
+  sourcePoints.forEach((point, index) => {
     const x = point.x * width;
     const y = point.y * height;
     if (index === 0) maskCtx.moveTo(x, y);
@@ -500,10 +553,6 @@ function polygonFromEraserMask(box, item, path) {
   const components = traceComponents(binary, width, height);
   const largest = components[0] || [];
   if (largest.length < 12) return eraserFailure("empty");
-  const secondLargest = components[1];
-  if (secondLargest && secondLargest.length / largest.length > splitComponentRatio) {
-    return eraserFailure("split");
-  }
   const loops = traceBoundaryLoops(largest, width, height);
   if (!loops.length) return eraserFailure("empty");
   const largestLoop = loops.reduce((best, loop) => {
@@ -512,17 +561,24 @@ function polygonFromEraserMask(box, item, path) {
   }, { loop: null, area: 0 }).loop;
   if (!largestLoop) return eraserFailure("empty");
 
-  let points = largestLoop.map((point) => ({
+  let editPoints = largestLoop.map((point) => ({
     x: clamp(point.x / width),
     y: clamp(point.y / height),
   }));
-  let tolerance = 1.5 / Math.max(width, height);
+  let tolerance = 0.35 / Math.max(width, height);
+  editPoints = simplifyClosedPoints(editPoints, tolerance);
+  while (editPoints.length > maxEditPolygonPoints && tolerance < 0.01) {
+    tolerance *= 1.35;
+    editPoints = simplifyClosedPoints(editPoints, tolerance);
+  }
+  let points = editPoints;
+  tolerance = 0.7 / Math.max(width, height);
   points = simplifyClosedPoints(points, tolerance);
-  while (points.length > maxPolygonPoints && tolerance < 0.03) {
-    tolerance *= 1.45;
+  while (points.length > maxPolygonPoints && tolerance < 0.02) {
+    tolerance *= 1.35;
     points = simplifyClosedPoints(points, tolerance);
   }
-  return validPolygon(points) ? { points, reason: "" } : eraserFailure("empty");
+  return validPolygon(editPoints) ? { points, editPoints, reason: "" } : eraserFailure("empty");
 }
 
 function getClasses() {
@@ -626,6 +682,69 @@ function updateClassSelect() {
   }
 }
 
+function defaultQuality() {
+  return {
+    scanned: false,
+    status: "normal",
+    reasons: [],
+    includeInExport: true,
+    manualInclude: false,
+    hash: "",
+  };
+}
+
+function reasonFor(id, detail = "", severity = "") {
+  const definition = qualityReasons[id];
+  return {
+    id,
+    label: definition?.label || id,
+    severity: severity || definition?.severity || "review",
+    detail,
+  };
+}
+
+function statusForReasons(reasons) {
+  if (reasons.some((reason) => reason.severity === "exclude")) return "exclude";
+  if (reasons.length) return "review";
+  return "normal";
+}
+
+function setQualityResult(item, reasons, hash = item.quality?.hash || "") {
+  const previous = item.quality || defaultQuality();
+  const status = statusForReasons(reasons);
+  const includeInExport = previous.manualInclude ? previous.includeInExport : status !== "exclude";
+  item.quality = {
+    scanned: true,
+    status,
+    reasons,
+    includeInExport,
+    manualInclude: previous.manualInclude,
+    hash,
+  };
+}
+
+function setIncludeInExport(item, includeInExport, manual = true) {
+  item.quality ||= defaultQuality();
+  item.quality.includeInExport = includeInExport;
+  item.quality.manualInclude = manual;
+}
+
+function invalidateQuality(item) {
+  if (!item) return;
+  const previous = item.quality || defaultQuality();
+  const next = defaultQuality();
+  if (previous.manualInclude) {
+    next.includeInExport = previous.includeInExport;
+    next.manualInclude = true;
+  }
+  item.quality = next;
+}
+
+function resetQualityFilters() {
+  state.qualityFilter = "all";
+  state.qualityReasonFilter = "";
+}
+
 function parseLabelText(text, labelFileName, forcedFormat = "") {
   const boxes = [];
   const invalidLines = [];
@@ -639,12 +758,16 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
       return;
     }
     const classIdRaw = parts[0];
+    if (classIdRaw < 0 || !Number.isInteger(classIdRaw)) {
+      invalidLines.push(index + 1);
+      return;
+    }
     const classId = Math.max(0, Math.trunc(classIdRaw));
     ensureClassName(classId);
 
     if (labelFormat === "polygon") {
       const coords = parts.slice(1);
-      if (coords.length < 6 || coords.length % 2 !== 0) {
+      if (coords.length < 6 || coords.length % 2 !== 0 || coords.some((coord) => coord < 0 || coord > 1)) {
         invalidLines.push(index + 1);
         return;
       }
@@ -673,6 +796,10 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
     }
 
     const [, xRaw, yRaw, wRaw, hRaw] = parts;
+    if ([xRaw, yRaw, wRaw, hRaw].some((coord) => coord < 0 || coord > 1)) {
+      invalidLines.push(index + 1);
+      return;
+    }
     const w = clamp(wRaw);
     const h = clamp(hRaw);
     if (w <= 0 || h <= 0) {
@@ -724,6 +851,7 @@ async function readImageFile(file) {
     reviewed: false,
     seen: false,
     dirty: false,
+    quality: defaultQuality(),
     undoStack: [],
     redoStack: [],
   };
@@ -844,6 +972,7 @@ function applyLabelsToExistingImages() {
     item.reviewed = false;
     item.seen = false;
     item.dirty = false;
+    invalidateQuality(item);
     item.undoStack = [];
     item.redoStack = [];
   });
@@ -856,6 +985,186 @@ function updateCounts() {
   els.labelCount.textContent = matchedLabels;
   els.boxCount.textContent = boxes;
   els.downloadLabelsTop.disabled = !state.images.length;
+}
+
+function boxBounds(box) {
+  return {
+    left: box.x - box.w / 2,
+    top: box.y - box.h / 2,
+    right: box.x + box.w / 2,
+    bottom: box.y + box.h / 2,
+  };
+}
+
+function boxArea(box) {
+  const points = editablePointsForBox(box);
+  if (points?.length && validPolygon(points)) return Math.abs(polygonArea(points));
+  return Math.max(0, box.w) * Math.max(0, box.h);
+}
+
+function boxIou(a, b) {
+  const ab = boxBounds(a);
+  const bb = boxBounds(b);
+  const left = Math.max(ab.left, bb.left);
+  const top = Math.max(ab.top, bb.top);
+  const right = Math.min(ab.right, bb.right);
+  const bottom = Math.min(ab.bottom, bb.bottom);
+  const intersection = Math.max(0, right - left) * Math.max(0, bottom - top);
+  const union = a.w * a.h + b.w * b.h - intersection;
+  return union > 0 ? intersection / union : 0;
+}
+
+function touchesImageEdge(box) {
+  const bounds = boxBounds(box);
+  return bounds.left <= 0.002 || bounds.top <= 0.002 || bounds.right >= 0.998 || bounds.bottom >= 0.998;
+}
+
+function imageHash(item) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 8;
+  canvas.height = 8;
+  const hashCtx = canvas.getContext("2d", { willReadFrequently: true });
+  hashCtx.drawImage(item.image, 0, 0, 8, 8);
+  const data = hashCtx.getImageData(0, 0, 8, 8).data;
+  const grays = [];
+  for (let index = 0; index < data.length; index += 4) {
+    grays.push(data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114);
+  }
+  const average = grays.reduce((sum, value) => sum + value, 0) / grays.length;
+  return grays.map((value) => (value >= average ? "1" : "0")).join("");
+}
+
+function hammingDistance(a, b) {
+  if (!a || !b || a.length !== b.length) return Infinity;
+  let distance = 0;
+  for (let index = 0; index < a.length; index += 1) {
+    if (a[index] !== b[index]) distance += 1;
+  }
+  return distance;
+}
+
+function watermarkSuspect(item) {
+  const width = 96;
+  const height = Math.max(24, Math.round((item.height / item.width) * width));
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+  const sampleCtx = canvas.getContext("2d", { willReadFrequently: true });
+  sampleCtx.drawImage(item.image, 0, 0, width, height);
+  const data = sampleCtx.getImageData(0, 0, width, height).data;
+  const gray = (x, y) => {
+    const index = (y * width + x) * 4;
+    return data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114;
+  };
+  const density = (x1, y1, x2, y2) => {
+    let edges = 0;
+    let total = 0;
+    for (let y = Math.max(1, y1); y < Math.min(height - 1, y2); y += 1) {
+      for (let x = Math.max(1, x1); x < Math.min(width - 1, x2); x += 1) {
+        const gx = Math.abs(gray(x + 1, y) - gray(x - 1, y));
+        const gy = Math.abs(gray(x, y + 1) - gray(x, y - 1));
+        if (gx + gy > 72) edges += 1;
+        total += 1;
+      }
+    }
+    return total ? edges / total : 0;
+  };
+  const center = density(Math.round(width * 0.25), Math.round(height * 0.25), Math.round(width * 0.75), Math.round(height * 0.75));
+  const bottom = density(0, Math.round(height * 0.78), width, height);
+  const top = density(0, 0, width, Math.round(height * 0.16));
+  const leftCorner = density(0, 0, Math.round(width * 0.34), Math.round(height * 0.24));
+  const rightCorner = density(Math.round(width * 0.66), 0, width, Math.round(height * 0.24));
+  const baseline = Math.max(center, 0.015);
+  return bottom > 0.08 && bottom > baseline * 2.1
+    || top > 0.09 && top > baseline * 2.4
+    || leftCorner > 0.11 && leftCorner > baseline * 2.4
+    || rightCorner > 0.11 && rightCorner > baseline * 2.4;
+}
+
+function analyzeItemQuality(item, hash, duplicateOf = "") {
+  const reasons = [];
+  const classes = getClasses();
+  const shortSide = Math.min(item.width, item.height);
+  const aspectRatio = item.width / Math.max(1, item.height);
+  const labelSource = state.labelsByBaseName.get(item.baseName);
+  const canExportCurrentLabel = item.boxes.length > 0 || els.emptyLabels.checked;
+  if (!labelSource && !canExportCurrentLabel) reasons.push(reasonFor("missing_label", "매칭되는 txt 없음"));
+  else if (!labelSource && !item.boxes.length) reasons.push(reasonFor("missing_label", "빈 txt로 내보낼 수 있음", "review"));
+  else if (labelSource && !labelSource.text.trim() && !canExportCurrentLabel) reasons.push(reasonFor("empty_label", "txt가 비어 있음"));
+  else if (labelSource && !labelSource.text.trim() && !item.boxes.length) reasons.push(reasonFor("empty_label", "빈 txt로 내보낼 수 있음", "review"));
+  if (item.invalidLabelLines.length) reasons.push(reasonFor("parse_error", `${item.invalidLabelLines.length}개 줄 무시됨`));
+  if (shortSide < lowResolutionShortSide) reasons.push(reasonFor("low_resolution", `짧은 변 ${shortSide}px`));
+  if (aspectRatio > extremeAspectRatio || aspectRatio < 1 / extremeAspectRatio) {
+    reasons.push(reasonFor("extreme_ratio", `${item.width}:${item.height}`));
+  }
+  if (duplicateOf) reasons.push(reasonFor("duplicate_image", `${duplicateOf}와 유사`));
+  if (item.boxes.length > excessiveLabelCount) reasons.push(reasonFor("many_labels", `${item.boxes.length}개 라벨`));
+  item.boxes.forEach((box, index) => {
+    if (box.classId >= classes.length) reasons.push(reasonFor("invalid_class", `#${index + 1} class ${box.classId}`));
+    const area = boxArea(box);
+    if (!Number.isFinite(area) || area <= 0 || box.w <= 0 || box.h <= 0) {
+      reasons.push(reasonFor("invalid_geometry", `#${index + 1}`));
+    } else {
+      if (area < tinyLabelArea) reasons.push(reasonFor("tiny_label", `#${index + 1} ${(area * 100).toFixed(3)}%`));
+      if (area > hugeLabelArea) reasons.push(reasonFor("huge_label", `#${index + 1} ${(area * 100).toFixed(1)}%`));
+    }
+    const points = editablePointsForBox(box);
+    if (points?.length && !validPolygon(points)) reasons.push(reasonFor("invalid_geometry", `#${index + 1} polygon`));
+    if (touchesImageEdge(box)) reasons.push(reasonFor("edge_label", `#${index + 1}`));
+  });
+  for (let index = 0; index < item.boxes.length; index += 1) {
+    for (let next = index + 1; next < item.boxes.length; next += 1) {
+      if (item.boxes[index].classId === item.boxes[next].classId && boxIou(item.boxes[index], item.boxes[next]) >= duplicateLabelIou) {
+        reasons.push(reasonFor("duplicate_label", `#${index + 1} / #${next + 1}`));
+      }
+    }
+  }
+  if (watermarkSuspect(item)) reasons.push(reasonFor("watermark_suspect", "가장자리 고대비 패턴"));
+  const uniqueReasons = [];
+  const seen = new Set();
+  reasons.forEach((reason) => {
+    const key = `${reason.id}:${reason.detail}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    uniqueReasons.push(reason);
+  });
+  setQualityResult(item, uniqueReasons, hash);
+}
+
+async function runQualityScan() {
+  if (!state.images.length) return;
+  setUploadStatus({
+    active: true,
+    title: "품질 검사 중",
+    current: 0,
+    total: state.images.length,
+    detail: "이미지와 라벨 상태를 확인합니다.",
+  });
+  const seenHashes = [];
+  for (let index = 0; index < state.images.length; index += 1) {
+    const item = state.images[index];
+    const hash = imageHash(item);
+    const duplicate = seenHashes.find((candidate) => hammingDistance(candidate.hash, hash) <= duplicateImageHashDistance);
+    analyzeItemQuality(item, hash, duplicate?.name || "");
+    seenHashes.push({ name: item.name, hash });
+    setUploadStatus({
+      active: true,
+      title: "품질 검사 중",
+      current: index + 1,
+      total: state.images.length,
+      detail: item.name,
+    });
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+  }
+  renderReview();
+  setUploadStatus({
+    active: true,
+    title: "품질 검사 완료",
+    current: state.images.length,
+    total: state.images.length,
+    detail: "사유별 보기에서 포함 여부를 조정할 수 있습니다.",
+  });
+  window.setTimeout(() => setUploadStatus({ active: false }), 1400);
 }
 
 function currentItem() {
@@ -876,19 +1185,24 @@ function pointerDistance(startEvent, event) {
   return Math.hypot(event.clientX - startEvent.clientX, event.clientY - startEvent.clientY);
 }
 
+function normalizedDistance(a, b, item) {
+  return Math.hypot((a.x - b.x) * item.width, (a.y - b.y) * item.height);
+}
+
 function applyEraser(item, box, path) {
   const result = polygonFromEraserMask(box, item, path);
   if (!result.points) {
     setEraserFeedback(eraserFeedbackMessage(result.reason));
     return false;
   }
-  const { points } = result;
-  const bounds = boundsForPoints(points);
+  const { points, editPoints } = result;
+  const bounds = boundsForPoints(editPoints || points);
   if (bounds.w <= minBoxSize || bounds.h <= minBoxSize) {
     setEraserFeedback(eraserFeedbackMessage("empty"));
     return false;
   }
   box.points = points;
+  box.editPoints = editPoints || points;
   Object.assign(box, normalizeBoxToBounds({
     ...box,
     x: bounds.x,
@@ -898,19 +1212,30 @@ function applyEraser(item, box, path) {
   }));
   box.source = "edited";
   markDirty(item);
+  invalidateQuality(item);
   return true;
 }
 
-function boxAt(item, point) {
+function boxesAt(item, point) {
+  const boxes = [];
   for (let i = item.boxes.length - 1; i >= 0; i -= 1) {
     const box = item.boxes[i];
     const x1 = box.x - box.w / 2;
     const y1 = box.y - box.h / 2;
     const x2 = box.x + box.w / 2;
     const y2 = box.y + box.h / 2;
-    if (point.x >= x1 && point.x <= x2 && point.y >= y1 && point.y <= y2) return box;
+    if (point.x >= x1 && point.x <= x2 && point.y >= y1 && point.y <= y2) boxes.push(box);
   }
-  return null;
+  return boxes;
+}
+
+function boxAt(item, point) {
+  return boxesAt(item, point)[0] || null;
+}
+
+function nextStackedBoxId(candidateIds, selectedId) {
+  const currentIndex = candidateIds.indexOf(selectedId);
+  return candidateIds[(currentIndex + 1) % candidateIds.length];
 }
 
 function resizeHandleAt(item, point, box) {
@@ -957,9 +1282,10 @@ function draw() {
     const y = (box.y - box.h / 2) * item.height;
     const w = box.w * item.width;
     const h = box.h * item.height;
-    if (box.points?.length) {
+    const polygonPoints = editablePointsForBox(box);
+    if (polygonPoints?.length) {
       ctx.beginPath();
-      box.points.forEach((point, index) => {
+      polygonPoints.forEach((point, index) => {
         const px = point.x * item.width;
         const py = point.y * item.height;
         if (index === 0) ctx.moveTo(px, py);
@@ -976,7 +1302,7 @@ function draw() {
       ctx.setLineDash([]);
     }
     ctx.strokeStyle = selected ? selectedColor : boxColor;
-    if (!box.points?.length) {
+    if (!polygonPoints?.length) {
       ctx.fillStyle = selected ? "rgba(200, 135, 46, 0.12)" : "rgba(31, 93, 74, 0.1)";
       ctx.fillRect(x, y, w, h);
     }
@@ -1020,9 +1346,10 @@ function draw() {
   if (state.drag?.type === "erase" && state.drag.path?.length) {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.lineWidth = eraserLineWidthForImage(item);
-    ctx.strokeStyle = "rgba(196, 84, 73, 0.62)";
-    ctx.fillStyle = "rgba(196, 84, 73, 0.2)";
+    const eraserWidth = eraserLineWidthForImage(item);
+    ctx.lineWidth = eraserWidth;
+    ctx.strokeStyle = "rgba(196, 84, 73, 0.72)";
+    ctx.fillStyle = "rgba(196, 84, 73, 0.22)";
     ctx.beginPath();
     state.drag.path.forEach((point, index) => {
       const px = point.x * item.width;
@@ -1032,11 +1359,19 @@ function draw() {
     });
     if (state.drag.path.length === 1) {
       const point = state.drag.path[0];
-      ctx.arc(point.x * item.width, point.y * item.height, eraserLineWidthForImage(item) / 2, 0, Math.PI * 2);
+      ctx.arc(point.x * item.width, point.y * item.height, eraserWidth / 2, 0, Math.PI * 2);
       ctx.fill();
     } else {
       ctx.stroke();
     }
+    const cursor = state.drag.cursor || state.drag.path[state.drag.path.length - 1];
+    ctx.beginPath();
+    ctx.arc(cursor.x * item.width, cursor.y * item.height, eraserWidth / 2, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(196, 84, 73, 0.18)";
+    ctx.fill();
+    ctx.lineWidth = Math.max(2, item.width / 420);
+    ctx.strokeStyle = "rgba(132, 44, 37, 0.88)";
+    ctx.stroke();
   }
 }
 
@@ -1063,15 +1398,140 @@ function renderBoxList(item) {
   });
 }
 
+function qualityStatusLabel(item) {
+  const quality = item?.quality || defaultQuality();
+  if (!quality.scanned) return "미검사";
+  if (quality.status === "exclude") return "제외 권장";
+  if (quality.status === "review") return "확인 필요";
+  return "정상";
+}
+
+function qualityReasonCounts() {
+  const counts = new Map();
+  state.images.forEach((item) => {
+    (item.quality?.reasons || []).forEach((reason) => {
+      counts.set(reason.id, (counts.get(reason.id) || 0) + 1);
+    });
+  });
+  return counts;
+}
+
+function itemMatchesQualityFilter(item) {
+  const quality = item.quality || defaultQuality();
+  if (state.qualityReasonFilter && !quality.reasons.some((reason) => reason.id === state.qualityReasonFilter)) return false;
+  if (state.qualityFilter === "included") return quality.includeInExport !== false;
+  if (state.qualityFilter === "review") return quality.status === "review";
+  if (state.qualityFilter === "exclude") return quality.status === "exclude" || quality.includeInExport === false;
+  return true;
+}
+
+function visibleImageIndexes() {
+  return state.images
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => itemMatchesQualityFilter(item))
+    .map(({ index }) => index);
+}
+
+function filteredItems() {
+  return visibleImageIndexes().map((index) => state.images[index]);
+}
+
+function ensureCurrentVisible() {
+  const visible = visibleImageIndexes();
+  if (!visible.length) {
+    state.currentIndex = -1;
+    state.selectedBoxId = null;
+    return false;
+  }
+  if (!visible.includes(state.currentIndex)) {
+    state.currentIndex = visible[0];
+    state.selectedBoxId = null;
+  }
+  return true;
+}
+
+function renderQualityPanel() {
+  const total = state.images.length;
+  const included = state.images.filter((item) => item.quality?.includeInExport !== false).length;
+  const review = state.images.filter((item) => item.quality?.status === "review").length;
+  const excluded = state.images.filter((item) => item.quality?.status === "exclude" || item.quality?.includeInExport === false).length;
+  els.qualityTotal.textContent = total;
+  els.qualityIncluded.textContent = included;
+  els.qualityReview.textContent = review;
+  els.qualityExcluded.textContent = excluded;
+  els.qualityFilters.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.qualityFilter === state.qualityFilter);
+  });
+
+  const counts = qualityReasonCounts();
+  els.qualityReasons.innerHTML = "";
+  if (!counts.size) {
+    const empty = document.createElement("span");
+    empty.className = "status-text";
+    empty.textContent = "검사 후 사유가 표시됩니다.";
+    els.qualityReasons.append(empty);
+  } else {
+    [...counts.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .forEach(([id, count]) => {
+        const definition = qualityReasons[id];
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = `reason-filter${state.qualityReasonFilter === id ? " is-active" : ""}`;
+        button.textContent = `${definition?.label || id} ${count}`;
+        button.addEventListener("click", () => {
+          state.qualityReasonFilter = state.qualityReasonFilter === id ? "" : id;
+          ensureCurrentVisible();
+          renderReview();
+        });
+        els.qualityReasons.append(button);
+      });
+  }
+}
+
+function renderCurrentQuality(item) {
+  const quality = item?.quality || defaultQuality();
+  els.qualityIncludeCurrent.checked = quality.includeInExport !== false;
+  els.currentQuality.textContent = qualityStatusLabel(item);
+  els.currentQualityReasons.innerHTML = "";
+  if (!quality.scanned) {
+    const note = document.createElement("span");
+    note.className = "quality-chip";
+    note.textContent = "품질 검사 전";
+    els.currentQualityReasons.append(note);
+    return;
+  }
+  if (!quality.reasons.length) {
+    const note = document.createElement("span");
+    note.className = "quality-chip";
+    note.textContent = "사유 없음";
+    els.currentQualityReasons.append(note);
+    return;
+  }
+  quality.reasons.forEach((reason) => {
+    const chip = document.createElement("span");
+    chip.className = `quality-chip is-${reason.severity}`;
+    chip.textContent = reason.detail ? `${reason.label}: ${reason.detail}` : reason.label;
+    els.currentQualityReasons.append(chip);
+  });
+}
+
 function renderThumbs() {
   els.thumbStrip.innerHTML = "";
-  const start = Math.max(0, state.currentIndex - 3);
-  const end = Math.min(state.images.length, state.currentIndex + 4);
-  for (let index = start; index < end; index += 1) {
+  const visible = visibleImageIndexes();
+  if (!visible.length) {
+    els.thumbStrip.innerHTML = `<p class="status-text">현재 필터에 맞는 이미지가 없습니다.</p>`;
+    return;
+  }
+  const visiblePosition = Math.max(0, visible.indexOf(state.currentIndex));
+  const start = Math.max(0, visiblePosition - 3);
+  const end = Math.min(visible.length, visiblePosition + 4);
+  for (let position = start; position < end; position += 1) {
+    const index = visible[position];
     const item = state.images[index];
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `thumb${index === state.currentIndex ? " is-active" : ""}`;
+    button.className = `thumb${index === state.currentIndex ? " is-active" : ""}${item.quality?.includeInExport === false ? " is-excluded" : ""}`;
     const image = document.createElement("img");
     image.src = item.url;
     image.alt = "";
@@ -1079,7 +1539,21 @@ function renderThumbs() {
     name.textContent = item.name;
     const status = document.createElement("span");
     status.textContent = `${item.boxes.length} boxes · ${item.reviewed ? "검수됨" : "검수 전"}`;
-    button.replaceChildren(image, name, status);
+    const badges = document.createElement("div");
+    badges.className = "thumb-badges";
+    if (item.quality?.scanned) {
+      const chip = document.createElement("span");
+      chip.className = `quality-chip is-${item.quality.status === "exclude" ? "exclude" : item.quality.status === "review" ? "review" : "normal"}`;
+      chip.textContent = qualityStatusLabel(item);
+      badges.append(chip);
+    }
+    if (item.quality?.includeInExport === false) {
+      const chip = document.createElement("span");
+      chip.className = "quality-chip is-exclude";
+      chip.textContent = "다운로드 제외";
+      badges.append(chip);
+    }
+    button.replaceChildren(image, name, status, badges);
     button.addEventListener("click", () => {
       state.currentIndex = index;
       state.selectedBoxId = null;
@@ -1100,12 +1574,30 @@ function updateAutoReviewButton() {
 }
 
 function renderReview() {
-  const item = currentItem();
+  const hasVisibleItem = ensureCurrentVisible();
+  const item = hasVisibleItem ? currentItem() : null;
   els.reviewSection.hidden = !state.images.length;
   if (!item) {
+    state.selectedBoxId = null;
     ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
+    renderQualityPanel();
+    renderThumbs();
+    els.currentName.textContent = state.images.length ? "필터 결과 없음" : "-";
+    els.currentLabelFile.textContent = "없음";
+    els.currentSize.textContent = "-";
+    els.currentBoxes.textContent = "0";
+    els.currentStatus.textContent = "검수 전";
+    els.currentQuality.textContent = "미검사";
+    els.qualityIncludeCurrent.checked = false;
+    els.qualityIncludeCurrent.disabled = true;
+    els.reviewedToggle.checked = false;
+    els.reviewedToggle.disabled = true;
+    els.deleteBox.disabled = true;
+    els.currentQualityReasons.innerHTML = "";
     return;
   }
+  els.qualityIncludeCurrent.disabled = false;
+  els.reviewedToggle.disabled = false;
   if (state.autoReview && !item.reviewed) {
     markReviewed(item, true);
     updateCounts();
@@ -1123,6 +1615,8 @@ function renderReview() {
   }
   els.deleteBox.disabled = !state.selectedBoxId;
   updateEraserControls(item);
+  renderCurrentQuality(item);
+  renderQualityPanel();
   renderBoxList(item);
   renderThumbs();
   draw();
@@ -1130,7 +1624,11 @@ function renderReview() {
 
 function moveImage(delta) {
   if (!state.images.length) return;
-  state.currentIndex = clamp(state.currentIndex + delta, 0, state.images.length - 1);
+  const visible = visibleImageIndexes();
+  if (!visible.length) return;
+  const position = Math.max(0, visible.indexOf(state.currentIndex));
+  const nextPosition = clamp(position + delta, 0, visible.length - 1);
+  state.currentIndex = visible[nextPosition];
   state.selectedBoxId = null;
   renderReview();
 }
@@ -1141,6 +1639,7 @@ function deleteSelectedBox() {
   pushUndo(item, snapshotItem(item));
   item.boxes = item.boxes.filter((box) => box.id !== state.selectedBoxId);
   markDirty(item);
+  invalidateQuality(item);
   state.selectedBoxId = null;
   updateCounts();
   renderReview();
@@ -1160,12 +1659,16 @@ function polygonPointsForBox(box) {
   ];
 }
 
+function effectiveLabelFormatForItem(item) {
+  return state.labelFormatManual ? getLabelFormat() : (item?.labelFormat || getLabelFormat());
+}
+
 function saveLabelsFor(item) {
-  const labelFormat = state.labelFormatManual ? getLabelFormat() : (item.labelFormat || getLabelFormat());
+  const labelFormat = effectiveLabelFormatForItem(item);
   const lines = item.boxes.map((box) => {
     const normalized = normalizeBoxToBounds(box);
     if (labelFormat === "polygon") {
-      const points = box.points?.length ? box.points : polygonPointsForBox(normalized);
+      const points = editablePointsForBox(box) || polygonPointsForBox(normalized);
       return `${box.classId} ${points.map((point) => `${point.x.toFixed(6)} ${point.y.toFixed(6)}`).join(" ")}`;
     }
     return `${box.classId} ${normalized.x.toFixed(6)} ${normalized.y.toFixed(6)} ${normalized.w.toFixed(6)} ${normalized.h.toFixed(6)}`;
@@ -1227,7 +1730,8 @@ async function downloadZip() {
   const encoder = new TextEncoder();
   const classes = getClasses();
   const files = [];
-  state.images.forEach((item) => {
+  const exportImages = state.images.filter((item) => item.quality?.includeInExport !== false);
+  exportImages.forEach((item) => {
     const label = saveLabelsFor(item);
     if (label !== null) files.push({ name: `labels/${item.baseName}.txt`, bytes: encoder.encode(label) });
   });
@@ -1238,7 +1742,7 @@ async function downloadZip() {
     bytes: encoder.encode(`path: .\ntrain: images\nval: images\nnames:\n${classes.map((name, index) => `  ${index}: ${name}`).join("\n")}\n`),
   });
   if (els.includeImages.checked) {
-    for (const item of state.images) {
+    for (const item of exportImages) {
       files.push({ name: `images/${item.name}`, bytes: new Uint8Array(await item.file.arrayBuffer()) });
     }
   }
@@ -1257,6 +1761,7 @@ function clearFiles() {
   state.labelsByBaseName.clear();
   state.currentIndex = 0;
   state.selectedBoxId = null;
+  resetQualityFilters();
   els.fileInput.value = "";
   updateCounts();
   renderReview();
@@ -1269,6 +1774,7 @@ els.classes.addEventListener("input", () => {
     item.boxes.forEach((box) => {
       box.label = labelFor(box.classId);
     });
+    invalidateQuality(item);
   });
   renderReview();
 });
@@ -1282,6 +1788,7 @@ els.activeClass.addEventListener("change", () => {
   selectedBox.label = labelFor(selectedBox.classId);
   selectedBox.source = "edited";
   markDirty(item);
+  invalidateQuality(item);
   updateCounts();
   renderReview();
 });
@@ -1303,6 +1810,28 @@ els.polygonFill.addEventListener("change", draw);
 els.eraserSize.addEventListener("input", () => {
   els.eraserSizeValue.textContent = `${eraserSizePx()}px`;
   draw();
+});
+els.runQuality.addEventListener("click", runQualityScan);
+els.qualityFilters.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.qualityFilter = button.dataset.qualityFilter;
+    ensureCurrentVisible();
+    renderReview();
+  });
+});
+els.qualityIncludeFiltered.addEventListener("click", () => {
+  filteredItems().forEach((item) => setIncludeInExport(item, true));
+  renderReview();
+});
+els.qualityExcludeFiltered.addEventListener("click", () => {
+  filteredItems().forEach((item) => setIncludeInExport(item, false));
+  renderReview();
+});
+els.qualityIncludeCurrent.addEventListener("change", () => {
+  const item = currentItem();
+  if (!item) return;
+  setIncludeInExport(item, els.qualityIncludeCurrent.checked);
+  renderReview();
 });
 els.clearFiles.addEventListener("click", clearFiles);
 els.prevImage.addEventListener("click", () => moveImage(-1));
@@ -1353,12 +1882,19 @@ els.canvas.addEventListener("pointerdown", (event) => {
   const point = imageToCanvas(item, event.clientX, event.clientY);
   if (state.mode === "erase") {
     const box = selectedBoxFor(item);
-    if (!box?.points?.length || !pointInPolygon(point, box.points)) return;
+    if (!editablePointsForBox(box)?.length) return;
+    if (!eraserCanStartOnPolygon(box, item, point)) {
+      setEraserFeedback(eraserFeedbackMessage("miss"));
+      updateEraserControls(item);
+      draw();
+      return;
+    }
     state.drag = {
       type: "erase",
       boxId: box.id,
       before: snapshotItem(item),
       path: [point],
+      cursor: point,
     };
     draw();
     return;
@@ -1374,19 +1910,27 @@ els.canvas.addEventListener("pointerdown", (event) => {
     };
     return;
   }
-  const box = boxAt(item, point);
+  const candidates = boxesAt(item, point);
+  const candidateIds = candidates.map((candidate) => candidate.id);
+  const selectedInStack = candidateIds.includes(state.selectedBoxId);
+  const box = selectedInStack
+    ? candidates.find((candidate) => candidate.id === state.selectedBoxId)
+    : candidates[0];
+  const cycleOnClick = selectedInStack && candidates.length > 1;
   state.selectedBoxId = box?.id || null;
   const handle = box ? resizeHandleAt(item, point, box) : "";
   state.drag = box
     ? {
       type: handle ? "resize" : "move",
       pending: true,
+      cycleOnClick,
+      candidateIds,
       handle,
       boxId: box.id,
       start: point,
       startEvent: { clientX: event.clientX, clientY: event.clientY },
       before: snapshotItem(item),
-      original: { ...box, points: box.points ? box.points.map((boxPoint) => ({ ...boxPoint })) : null },
+      original: cloneBox(box),
     }
     : null;
   renderReview();
@@ -1397,7 +1941,11 @@ els.canvas.addEventListener("pointermove", (event) => {
   if (!item || !state.drag) return;
   const point = imageToCanvas(item, event.clientX, event.clientY);
   if (state.drag.type === "erase") {
-    state.drag.path.push(point);
+    state.drag.cursor = point;
+    const previous = state.drag.path[state.drag.path.length - 1];
+    if (!previous || normalizedDistance(previous, point, item) >= 1.5) {
+      state.drag.path.push(point);
+    }
     draw();
     return;
   }
@@ -1441,6 +1989,9 @@ els.canvas.addEventListener("pointermove", (event) => {
     if (state.drag.original.points?.length) {
       box.points = scalePointsToBox(state.drag.original.points, state.drag.original, resized);
     }
+    if (state.drag.original.editPoints?.length) {
+      box.editPoints = scalePointsToBox(state.drag.original.editPoints, state.drag.original, resized);
+    }
     box.source = "edited";
     markDirty(item);
     draw();
@@ -1454,6 +2005,9 @@ els.canvas.addEventListener("pointermove", (event) => {
   Object.assign(box, moved);
   if (state.drag.original.points?.length) {
     box.points = translatePoints(state.drag.original.points, dx, dy);
+  }
+  if (state.drag.original.editPoints?.length) {
+    box.editPoints = translatePoints(state.drag.original.editPoints, dx, dy);
   }
   box.source = "edited";
   markDirty(item);
@@ -1480,11 +2034,20 @@ els.canvas.addEventListener("pointerup", () => {
       confidence: null,
       source: "manual",
     });
+    if (effectiveLabelFormatForItem(item) === "polygon") {
+      box.points = polygonPointsForBox(box);
+      box.editPoints = clonePoints(box.points);
+      box.source = "manual-polygon";
+    }
     item.boxes.push(box);
     markDirty(item);
+    invalidateQuality(item);
     state.selectedBoxId = box.id;
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && !state.drag.pending) {
     pushUndo(item, state.drag.before);
+    invalidateQuality(item);
+  } else if ((state.drag.type === "move" || state.drag.type === "resize") && state.drag.pending && state.drag.cycleOnClick) {
+    state.selectedBoxId = nextStackedBoxId(state.drag.candidateIds, state.selectedBoxId);
   }
   state.drag = null;
   updateCounts();
