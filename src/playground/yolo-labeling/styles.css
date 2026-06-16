@@ -662,97 +662,6 @@ input:focus, select:focus, textarea:focus {
   font-size: 0.82rem;
 }
 
-.quality-panel {
-  display: grid;
-  gap: 10px;
-}
-
-.quality-panel h3 {
-  margin-bottom: 0;
-}
-
-.quality-stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.quality-stats div {
-  display: grid;
-  gap: 2px;
-  padding: 8px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.52);
-}
-
-.quality-stats strong {
-  font-size: 1rem;
-}
-
-.quality-stats span,
-.quality-subhead {
-  color: var(--muted);
-  font-size: 0.76rem;
-}
-
-.quality-filter-row,
-.quality-bulk-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.quality-bulk-actions {
-  grid-template-columns: 1fr 1fr;
-}
-
-.quality-filter,
-.reason-filter {
-  min-height: 34px;
-  border-radius: 8px;
-  color: var(--ink);
-  background: rgba(22, 32, 29, 0.08);
-  font-size: 0.78rem;
-  font-weight: 850;
-}
-
-.quality-filter.is-active,
-.reason-filter.is-active {
-  color: #fffaf1;
-  background: var(--green);
-}
-
-.quality-reasons,
-.current-quality-reasons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-
-.quality-chip {
-  display: inline-flex;
-  align-items: center;
-  min-height: 24px;
-  padding: 0 8px;
-  border-radius: 999px;
-  color: var(--ink);
-  background: rgba(31, 93, 74, 0.11);
-  font-size: 0.76rem;
-  font-weight: 800;
-}
-
-.quality-chip.is-exclude {
-  color: #842c25;
-  background: rgba(196, 84, 73, 0.15);
-}
-
-.quality-chip.is-review {
-  color: #735019;
-  background: rgba(200, 135, 46, 0.18);
-}
-
 .image-meta {
   display: grid;
   gap: 8px;
@@ -806,6 +715,7 @@ input:focus, select:focus, textarea:focus {
 .canvas-panel {
   position: relative;
   min-width: 0;
+  overflow-x: hidden;
 }
 
 .canvas-wrap {
@@ -878,10 +788,6 @@ input:focus, select:focus, textarea:focus {
   background: rgba(31, 93, 74, 0.13);
 }
 
-.thumb.is-excluded {
-  opacity: 0.58;
-}
-
 .thumb img {
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -900,12 +806,6 @@ input:focus, select:focus, textarea:focus {
 .thumb span {
   color: var(--muted);
   font-size: 0.72rem;
-}
-
-.thumb-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
 }
 
 @media (max-width: 1100px) {

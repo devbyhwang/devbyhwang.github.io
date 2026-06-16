@@ -22,15 +22,6 @@ const els = {
   reviewedToggle: document.querySelector("#reviewed-toggle"),
   autoReviewToggle: document.querySelector("#auto-review-toggle"),
   downloadLabels: document.querySelector("#download-labels"),
-  runQuality: document.querySelector("#run-quality"),
-  qualityTotal: document.querySelector("#quality-total"),
-  qualityIncluded: document.querySelector("#quality-included"),
-  qualityReview: document.querySelector("#quality-review"),
-  qualityExcluded: document.querySelector("#quality-excluded"),
-  qualityFilters: document.querySelectorAll(".quality-filter"),
-  qualityReasons: document.querySelector("#quality-reasons"),
-  qualityIncludeFiltered: document.querySelector("#quality-include-filtered"),
-  qualityExcludeFiltered: document.querySelector("#quality-exclude-filtered"),
   modeButtons: document.querySelectorAll(".mode-button"),
   eraserMode: document.querySelector('[data-mode="erase"]'),
   polygonFill: document.querySelector("#polygon-fill"),
@@ -44,9 +35,6 @@ const els = {
   currentSize: document.querySelector("#current-size"),
   currentBoxes: document.querySelector("#current-boxes"),
   currentStatus: document.querySelector("#current-status"),
-  currentQuality: document.querySelector("#current-quality"),
-  currentQualityReasons: document.querySelector("#current-quality-reasons"),
-  qualityIncludeCurrent: document.querySelector("#quality-include-current"),
   boxList: document.querySelector("#box-list"),
   canvas: document.querySelector("#label-canvas"),
   canvasWrap: document.querySelector(".canvas-wrap"),
@@ -64,8 +52,6 @@ const state = {
   mode: "select",
   autoReview: true,
   labelFormatManual: false,
-  qualityFilter: "all",
-  qualityReasonFilter: "",
   drag: null,
   eraserFeedback: null,
   eraserFeedbackTimer: null,
@@ -82,30 +68,6 @@ const minPolygonArea = 0.00002;
 const maxPolygonPoints = 320;
 const maxEditPolygonPoints = 900;
 const eraserFeedbackMs = 2600;
-const lowResolutionShortSide = 320;
-const extremeAspectRatio = 3;
-const tinyLabelArea = 0.0004;
-const hugeLabelArea = 0.7;
-const duplicateLabelIou = 0.95;
-const duplicateImageHashDistance = 4;
-const excessiveLabelCount = 50;
-
-const qualityReasons = {
-  missing_label: { label: "라벨 없음", severity: "exclude" },
-  empty_label: { label: "빈 라벨", severity: "exclude" },
-  parse_error: { label: "라벨 형식 오류", severity: "exclude" },
-  invalid_class: { label: "Class_ID 확인", severity: "exclude" },
-  invalid_geometry: { label: "좌표/면적 오류", severity: "exclude" },
-  low_resolution: { label: "저해상도", severity: "exclude" },
-  duplicate_image: { label: "중복 이미지", severity: "exclude" },
-  tiny_label: { label: "작은 라벨", severity: "review" },
-  huge_label: { label: "큰 라벨", severity: "review" },
-  duplicate_label: { label: "중복 라벨", severity: "review" },
-  extreme_ratio: { label: "비율 확인", severity: "review" },
-  many_labels: { label: "라벨 과다", severity: "review" },
-  edge_label: { label: "경계 라벨", severity: "review" },
-  watermark_suspect: { label: "워터마크 의심", severity: "review" },
-};
 
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
@@ -682,69 +644,6 @@ function updateClassSelect() {
   }
 }
 
-function defaultQuality() {
-  return {
-    scanned: false,
-    status: "normal",
-    reasons: [],
-    includeInExport: true,
-    manualInclude: false,
-    hash: "",
-  };
-}
-
-function reasonFor(id, detail = "", severity = "") {
-  const definition = qualityReasons[id];
-  return {
-    id,
-    label: definition?.label || id,
-    severity: severity || definition?.severity || "review",
-    detail,
-  };
-}
-
-function statusForReasons(reasons) {
-  if (reasons.some((reason) => reason.severity === "exclude")) return "exclude";
-  if (reasons.length) return "review";
-  return "normal";
-}
-
-function setQualityResult(item, reasons, hash = item.quality?.hash || "") {
-  const previous = item.quality || defaultQuality();
-  const status = statusForReasons(reasons);
-  const includeInExport = previous.manualInclude ? previous.includeInExport : status !== "exclude";
-  item.quality = {
-    scanned: true,
-    status,
-    reasons,
-    includeInExport,
-    manualInclude: previous.manualInclude,
-    hash,
-  };
-}
-
-function setIncludeInExport(item, includeInExport, manual = true) {
-  item.quality ||= defaultQuality();
-  item.quality.includeInExport = includeInExport;
-  item.quality.manualInclude = manual;
-}
-
-function invalidateQuality(item) {
-  if (!item) return;
-  const previous = item.quality || defaultQuality();
-  const next = defaultQuality();
-  if (previous.manualInclude) {
-    next.includeInExport = previous.includeInExport;
-    next.manualInclude = true;
-  }
-  item.quality = next;
-}
-
-function resetQualityFilters() {
-  state.qualityFilter = "all";
-  state.qualityReasonFilter = "";
-}
-
 function parseLabelText(text, labelFileName, forcedFormat = "") {
   const boxes = [];
   const invalidLines = [];
@@ -851,7 +750,6 @@ async function readImageFile(file) {
     reviewed: false,
     seen: false,
     dirty: false,
-    quality: defaultQuality(),
     undoStack: [],
     redoStack: [],
   };
@@ -972,7 +870,6 @@ function applyLabelsToExistingImages() {
     item.reviewed = false;
     item.seen = false;
     item.dirty = false;
-    invalidateQuality(item);
     item.undoStack = [];
     item.redoStack = [];
   });
@@ -985,186 +882,6 @@ function updateCounts() {
   els.labelCount.textContent = matchedLabels;
   els.boxCount.textContent = boxes;
   els.downloadLabelsTop.disabled = !state.images.length;
-}
-
-function boxBounds(box) {
-  return {
-    left: box.x - box.w / 2,
-    top: box.y - box.h / 2,
-    right: box.x + box.w / 2,
-    bottom: box.y + box.h / 2,
-  };
-}
-
-function boxArea(box) {
-  const points = editablePointsForBox(box);
-  if (points?.length && validPolygon(points)) return Math.abs(polygonArea(points));
-  return Math.max(0, box.w) * Math.max(0, box.h);
-}
-
-function boxIou(a, b) {
-  const ab = boxBounds(a);
-  const bb = boxBounds(b);
-  const left = Math.max(ab.left, bb.left);
-  const top = Math.max(ab.top, bb.top);
-  const right = Math.min(ab.right, bb.right);
-  const bottom = Math.min(ab.bottom, bb.bottom);
-  const intersection = Math.max(0, right - left) * Math.max(0, bottom - top);
-  const union = a.w * a.h + b.w * b.h - intersection;
-  return union > 0 ? intersection / union : 0;
-}
-
-function touchesImageEdge(box) {
-  const bounds = boxBounds(box);
-  return bounds.left <= 0.002 || bounds.top <= 0.002 || bounds.right >= 0.998 || bounds.bottom >= 0.998;
-}
-
-function imageHash(item) {
-  const canvas = document.createElement("canvas");
-  canvas.width = 8;
-  canvas.height = 8;
-  const hashCtx = canvas.getContext("2d", { willReadFrequently: true });
-  hashCtx.drawImage(item.image, 0, 0, 8, 8);
-  const data = hashCtx.getImageData(0, 0, 8, 8).data;
-  const grays = [];
-  for (let index = 0; index < data.length; index += 4) {
-    grays.push(data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114);
-  }
-  const average = grays.reduce((sum, value) => sum + value, 0) / grays.length;
-  return grays.map((value) => (value >= average ? "1" : "0")).join("");
-}
-
-function hammingDistance(a, b) {
-  if (!a || !b || a.length !== b.length) return Infinity;
-  let distance = 0;
-  for (let index = 0; index < a.length; index += 1) {
-    if (a[index] !== b[index]) distance += 1;
-  }
-  return distance;
-}
-
-function watermarkSuspect(item) {
-  const width = 96;
-  const height = Math.max(24, Math.round((item.height / item.width) * width));
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const sampleCtx = canvas.getContext("2d", { willReadFrequently: true });
-  sampleCtx.drawImage(item.image, 0, 0, width, height);
-  const data = sampleCtx.getImageData(0, 0, width, height).data;
-  const gray = (x, y) => {
-    const index = (y * width + x) * 4;
-    return data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114;
-  };
-  const density = (x1, y1, x2, y2) => {
-    let edges = 0;
-    let total = 0;
-    for (let y = Math.max(1, y1); y < Math.min(height - 1, y2); y += 1) {
-      for (let x = Math.max(1, x1); x < Math.min(width - 1, x2); x += 1) {
-        const gx = Math.abs(gray(x + 1, y) - gray(x - 1, y));
-        const gy = Math.abs(gray(x, y + 1) - gray(x, y - 1));
-        if (gx + gy > 72) edges += 1;
-        total += 1;
-      }
-    }
-    return total ? edges / total : 0;
-  };
-  const center = density(Math.round(width * 0.25), Math.round(height * 0.25), Math.round(width * 0.75), Math.round(height * 0.75));
-  const bottom = density(0, Math.round(height * 0.78), width, height);
-  const top = density(0, 0, width, Math.round(height * 0.16));
-  const leftCorner = density(0, 0, Math.round(width * 0.34), Math.round(height * 0.24));
-  const rightCorner = density(Math.round(width * 0.66), 0, width, Math.round(height * 0.24));
-  const baseline = Math.max(center, 0.015);
-  return bottom > 0.08 && bottom > baseline * 2.1
-    || top > 0.09 && top > baseline * 2.4
-    || leftCorner > 0.11 && leftCorner > baseline * 2.4
-    || rightCorner > 0.11 && rightCorner > baseline * 2.4;
-}
-
-function analyzeItemQuality(item, hash, duplicateOf = "") {
-  const reasons = [];
-  const classes = getClasses();
-  const shortSide = Math.min(item.width, item.height);
-  const aspectRatio = item.width / Math.max(1, item.height);
-  const labelSource = state.labelsByBaseName.get(item.baseName);
-  const canExportCurrentLabel = item.boxes.length > 0 || els.emptyLabels.checked;
-  if (!labelSource && !canExportCurrentLabel) reasons.push(reasonFor("missing_label", "매칭되는 txt 없음"));
-  else if (!labelSource && !item.boxes.length) reasons.push(reasonFor("missing_label", "빈 txt로 내보낼 수 있음", "review"));
-  else if (labelSource && !labelSource.text.trim() && !canExportCurrentLabel) reasons.push(reasonFor("empty_label", "txt가 비어 있음"));
-  else if (labelSource && !labelSource.text.trim() && !item.boxes.length) reasons.push(reasonFor("empty_label", "빈 txt로 내보낼 수 있음", "review"));
-  if (item.invalidLabelLines.length) reasons.push(reasonFor("parse_error", `${item.invalidLabelLines.length}개 줄 무시됨`));
-  if (shortSide < lowResolutionShortSide) reasons.push(reasonFor("low_resolution", `짧은 변 ${shortSide}px`));
-  if (aspectRatio > extremeAspectRatio || aspectRatio < 1 / extremeAspectRatio) {
-    reasons.push(reasonFor("extreme_ratio", `${item.width}:${item.height}`));
-  }
-  if (duplicateOf) reasons.push(reasonFor("duplicate_image", `${duplicateOf}와 유사`));
-  if (item.boxes.length > excessiveLabelCount) reasons.push(reasonFor("many_labels", `${item.boxes.length}개 라벨`));
-  item.boxes.forEach((box, index) => {
-    if (box.classId >= classes.length) reasons.push(reasonFor("invalid_class", `#${index + 1} class ${box.classId}`));
-    const area = boxArea(box);
-    if (!Number.isFinite(area) || area <= 0 || box.w <= 0 || box.h <= 0) {
-      reasons.push(reasonFor("invalid_geometry", `#${index + 1}`));
-    } else {
-      if (area < tinyLabelArea) reasons.push(reasonFor("tiny_label", `#${index + 1} ${(area * 100).toFixed(3)}%`));
-      if (area > hugeLabelArea) reasons.push(reasonFor("huge_label", `#${index + 1} ${(area * 100).toFixed(1)}%`));
-    }
-    const points = editablePointsForBox(box);
-    if (points?.length && !validPolygon(points)) reasons.push(reasonFor("invalid_geometry", `#${index + 1} polygon`));
-    if (touchesImageEdge(box)) reasons.push(reasonFor("edge_label", `#${index + 1}`));
-  });
-  for (let index = 0; index < item.boxes.length; index += 1) {
-    for (let next = index + 1; next < item.boxes.length; next += 1) {
-      if (item.boxes[index].classId === item.boxes[next].classId && boxIou(item.boxes[index], item.boxes[next]) >= duplicateLabelIou) {
-        reasons.push(reasonFor("duplicate_label", `#${index + 1} / #${next + 1}`));
-      }
-    }
-  }
-  if (watermarkSuspect(item)) reasons.push(reasonFor("watermark_suspect", "가장자리 고대비 패턴"));
-  const uniqueReasons = [];
-  const seen = new Set();
-  reasons.forEach((reason) => {
-    const key = `${reason.id}:${reason.detail}`;
-    if (seen.has(key)) return;
-    seen.add(key);
-    uniqueReasons.push(reason);
-  });
-  setQualityResult(item, uniqueReasons, hash);
-}
-
-async function runQualityScan() {
-  if (!state.images.length) return;
-  setUploadStatus({
-    active: true,
-    title: "품질 검사 중",
-    current: 0,
-    total: state.images.length,
-    detail: "이미지와 라벨 상태를 확인합니다.",
-  });
-  const seenHashes = [];
-  for (let index = 0; index < state.images.length; index += 1) {
-    const item = state.images[index];
-    const hash = imageHash(item);
-    const duplicate = seenHashes.find((candidate) => hammingDistance(candidate.hash, hash) <= duplicateImageHashDistance);
-    analyzeItemQuality(item, hash, duplicate?.name || "");
-    seenHashes.push({ name: item.name, hash });
-    setUploadStatus({
-      active: true,
-      title: "품질 검사 중",
-      current: index + 1,
-      total: state.images.length,
-      detail: item.name,
-    });
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-  }
-  renderReview();
-  setUploadStatus({
-    active: true,
-    title: "품질 검사 완료",
-    current: state.images.length,
-    total: state.images.length,
-    detail: "사유별 보기에서 포함 여부를 조정할 수 있습니다.",
-  });
-  window.setTimeout(() => setUploadStatus({ active: false }), 1400);
 }
 
 function currentItem() {
@@ -1212,7 +929,6 @@ function applyEraser(item, box, path) {
   }));
   box.source = "edited";
   markDirty(item);
-  invalidateQuality(item);
   return true;
 }
 
@@ -1274,7 +990,8 @@ function draw() {
   ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
   ctx.drawImage(item.image, 0, 0, item.width, item.height);
   ctx.lineWidth = Math.max(2, item.width / 360);
-  ctx.font = `${Math.max(14, item.width / 48)}px system-ui`;
+  const labelFontSize = Math.max(12, item.width / 64);
+  ctx.font = `700 ${labelFontSize}px system-ui`;
 
   item.boxes.forEach((box) => {
     const selected = box.id === state.selectedBoxId;
@@ -1308,11 +1025,15 @@ function draw() {
     }
     ctx.strokeRect(x, y, w, h);
     const label = `${box.classId}: ${labelFor(box.classId)}`;
-    const labelWidth = ctx.measureText(label).width + 12;
-    ctx.fillStyle = selected ? selectedColor : boxColor;
-    ctx.fillRect(x, Math.max(0, y - 24), labelWidth, 24);
-    ctx.fillStyle = "#fffaf1";
-    ctx.fillText(label, x + 6, Math.max(17, y - 7));
+    const labelPaddingX = Math.max(4, labelFontSize * 0.35);
+    const labelHeight = Math.max(16, labelFontSize * 1.35);
+    const labelWidth = ctx.measureText(label).width + labelPaddingX * 2;
+    const labelX = Math.min(Math.max(0, x), Math.max(0, item.width - labelWidth));
+    const labelY = y >= labelHeight ? y - labelHeight : Math.min(item.height - labelHeight, y + 1);
+    ctx.fillStyle = selected ? "rgba(200, 135, 46, 0.82)" : "rgba(31, 93, 74, 0.46)";
+    ctx.fillRect(labelX, labelY, labelWidth, labelHeight);
+    ctx.fillStyle = selected ? "#fffaf1" : "rgba(255, 250, 241, 0.88)";
+    ctx.fillText(label, labelX + labelPaddingX, labelY + labelHeight - Math.max(4, labelHeight * 0.22));
     if (selected) {
       const handleSize = Math.max(8, item.width / 90);
       const points = [
@@ -1398,140 +1119,15 @@ function renderBoxList(item) {
   });
 }
 
-function qualityStatusLabel(item) {
-  const quality = item?.quality || defaultQuality();
-  if (!quality.scanned) return "미검사";
-  if (quality.status === "exclude") return "제외 권장";
-  if (quality.status === "review") return "확인 필요";
-  return "정상";
-}
-
-function qualityReasonCounts() {
-  const counts = new Map();
-  state.images.forEach((item) => {
-    (item.quality?.reasons || []).forEach((reason) => {
-      counts.set(reason.id, (counts.get(reason.id) || 0) + 1);
-    });
-  });
-  return counts;
-}
-
-function itemMatchesQualityFilter(item) {
-  const quality = item.quality || defaultQuality();
-  if (state.qualityReasonFilter && !quality.reasons.some((reason) => reason.id === state.qualityReasonFilter)) return false;
-  if (state.qualityFilter === "included") return quality.includeInExport !== false;
-  if (state.qualityFilter === "review") return quality.status === "review";
-  if (state.qualityFilter === "exclude") return quality.status === "exclude" || quality.includeInExport === false;
-  return true;
-}
-
-function visibleImageIndexes() {
-  return state.images
-    .map((item, index) => ({ item, index }))
-    .filter(({ item }) => itemMatchesQualityFilter(item))
-    .map(({ index }) => index);
-}
-
-function filteredItems() {
-  return visibleImageIndexes().map((index) => state.images[index]);
-}
-
-function ensureCurrentVisible() {
-  const visible = visibleImageIndexes();
-  if (!visible.length) {
-    state.currentIndex = -1;
-    state.selectedBoxId = null;
-    return false;
-  }
-  if (!visible.includes(state.currentIndex)) {
-    state.currentIndex = visible[0];
-    state.selectedBoxId = null;
-  }
-  return true;
-}
-
-function renderQualityPanel() {
-  const total = state.images.length;
-  const included = state.images.filter((item) => item.quality?.includeInExport !== false).length;
-  const review = state.images.filter((item) => item.quality?.status === "review").length;
-  const excluded = state.images.filter((item) => item.quality?.status === "exclude" || item.quality?.includeInExport === false).length;
-  els.qualityTotal.textContent = total;
-  els.qualityIncluded.textContent = included;
-  els.qualityReview.textContent = review;
-  els.qualityExcluded.textContent = excluded;
-  els.qualityFilters.forEach((button) => {
-    button.classList.toggle("is-active", button.dataset.qualityFilter === state.qualityFilter);
-  });
-
-  const counts = qualityReasonCounts();
-  els.qualityReasons.innerHTML = "";
-  if (!counts.size) {
-    const empty = document.createElement("span");
-    empty.className = "status-text";
-    empty.textContent = "검사 후 사유가 표시됩니다.";
-    els.qualityReasons.append(empty);
-  } else {
-    [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .forEach(([id, count]) => {
-        const definition = qualityReasons[id];
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = `reason-filter${state.qualityReasonFilter === id ? " is-active" : ""}`;
-        button.textContent = `${definition?.label || id} ${count}`;
-        button.addEventListener("click", () => {
-          state.qualityReasonFilter = state.qualityReasonFilter === id ? "" : id;
-          ensureCurrentVisible();
-          renderReview();
-        });
-        els.qualityReasons.append(button);
-      });
-  }
-}
-
-function renderCurrentQuality(item) {
-  const quality = item?.quality || defaultQuality();
-  els.qualityIncludeCurrent.checked = quality.includeInExport !== false;
-  els.currentQuality.textContent = qualityStatusLabel(item);
-  els.currentQualityReasons.innerHTML = "";
-  if (!quality.scanned) {
-    const note = document.createElement("span");
-    note.className = "quality-chip";
-    note.textContent = "품질 검사 전";
-    els.currentQualityReasons.append(note);
-    return;
-  }
-  if (!quality.reasons.length) {
-    const note = document.createElement("span");
-    note.className = "quality-chip";
-    note.textContent = "사유 없음";
-    els.currentQualityReasons.append(note);
-    return;
-  }
-  quality.reasons.forEach((reason) => {
-    const chip = document.createElement("span");
-    chip.className = `quality-chip is-${reason.severity}`;
-    chip.textContent = reason.detail ? `${reason.label}: ${reason.detail}` : reason.label;
-    els.currentQualityReasons.append(chip);
-  });
-}
-
 function renderThumbs() {
   els.thumbStrip.innerHTML = "";
-  const visible = visibleImageIndexes();
-  if (!visible.length) {
-    els.thumbStrip.innerHTML = `<p class="status-text">현재 필터에 맞는 이미지가 없습니다.</p>`;
-    return;
-  }
-  const visiblePosition = Math.max(0, visible.indexOf(state.currentIndex));
-  const start = Math.max(0, visiblePosition - 3);
-  const end = Math.min(visible.length, visiblePosition + 4);
-  for (let position = start; position < end; position += 1) {
-    const index = visible[position];
+  const start = Math.max(0, state.currentIndex - 3);
+  const end = Math.min(state.images.length, state.currentIndex + 4);
+  for (let index = start; index < end; index += 1) {
     const item = state.images[index];
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `thumb${index === state.currentIndex ? " is-active" : ""}${item.quality?.includeInExport === false ? " is-excluded" : ""}`;
+    button.className = `thumb${index === state.currentIndex ? " is-active" : ""}`;
     const image = document.createElement("img");
     image.src = item.url;
     image.alt = "";
@@ -1539,21 +1135,7 @@ function renderThumbs() {
     name.textContent = item.name;
     const status = document.createElement("span");
     status.textContent = `${item.boxes.length} boxes · ${item.reviewed ? "검수됨" : "검수 전"}`;
-    const badges = document.createElement("div");
-    badges.className = "thumb-badges";
-    if (item.quality?.scanned) {
-      const chip = document.createElement("span");
-      chip.className = `quality-chip is-${item.quality.status === "exclude" ? "exclude" : item.quality.status === "review" ? "review" : "normal"}`;
-      chip.textContent = qualityStatusLabel(item);
-      badges.append(chip);
-    }
-    if (item.quality?.includeInExport === false) {
-      const chip = document.createElement("span");
-      chip.className = "quality-chip is-exclude";
-      chip.textContent = "다운로드 제외";
-      badges.append(chip);
-    }
-    button.replaceChildren(image, name, status, badges);
+    button.replaceChildren(image, name, status);
     button.addEventListener("click", () => {
       state.currentIndex = index;
       state.selectedBoxId = null;
@@ -1574,30 +1156,12 @@ function updateAutoReviewButton() {
 }
 
 function renderReview() {
-  const hasVisibleItem = ensureCurrentVisible();
-  const item = hasVisibleItem ? currentItem() : null;
+  const item = currentItem();
   els.reviewSection.hidden = !state.images.length;
   if (!item) {
-    state.selectedBoxId = null;
     ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
-    renderQualityPanel();
-    renderThumbs();
-    els.currentName.textContent = state.images.length ? "필터 결과 없음" : "-";
-    els.currentLabelFile.textContent = "없음";
-    els.currentSize.textContent = "-";
-    els.currentBoxes.textContent = "0";
-    els.currentStatus.textContent = "검수 전";
-    els.currentQuality.textContent = "미검사";
-    els.qualityIncludeCurrent.checked = false;
-    els.qualityIncludeCurrent.disabled = true;
-    els.reviewedToggle.checked = false;
-    els.reviewedToggle.disabled = true;
-    els.deleteBox.disabled = true;
-    els.currentQualityReasons.innerHTML = "";
     return;
   }
-  els.qualityIncludeCurrent.disabled = false;
-  els.reviewedToggle.disabled = false;
   if (state.autoReview && !item.reviewed) {
     markReviewed(item, true);
     updateCounts();
@@ -1615,8 +1179,6 @@ function renderReview() {
   }
   els.deleteBox.disabled = !state.selectedBoxId;
   updateEraserControls(item);
-  renderCurrentQuality(item);
-  renderQualityPanel();
   renderBoxList(item);
   renderThumbs();
   draw();
@@ -1624,11 +1186,7 @@ function renderReview() {
 
 function moveImage(delta) {
   if (!state.images.length) return;
-  const visible = visibleImageIndexes();
-  if (!visible.length) return;
-  const position = Math.max(0, visible.indexOf(state.currentIndex));
-  const nextPosition = clamp(position + delta, 0, visible.length - 1);
-  state.currentIndex = visible[nextPosition];
+  state.currentIndex = clamp(state.currentIndex + delta, 0, state.images.length - 1);
   state.selectedBoxId = null;
   renderReview();
 }
@@ -1639,7 +1197,6 @@ function deleteSelectedBox() {
   pushUndo(item, snapshotItem(item));
   item.boxes = item.boxes.filter((box) => box.id !== state.selectedBoxId);
   markDirty(item);
-  invalidateQuality(item);
   state.selectedBoxId = null;
   updateCounts();
   renderReview();
@@ -1730,8 +1287,7 @@ async function downloadZip() {
   const encoder = new TextEncoder();
   const classes = getClasses();
   const files = [];
-  const exportImages = state.images.filter((item) => item.quality?.includeInExport !== false);
-  exportImages.forEach((item) => {
+  state.images.forEach((item) => {
     const label = saveLabelsFor(item);
     if (label !== null) files.push({ name: `labels/${item.baseName}.txt`, bytes: encoder.encode(label) });
   });
@@ -1742,7 +1298,7 @@ async function downloadZip() {
     bytes: encoder.encode(`path: .\ntrain: images\nval: images\nnames:\n${classes.map((name, index) => `  ${index}: ${name}`).join("\n")}\n`),
   });
   if (els.includeImages.checked) {
-    for (const item of exportImages) {
+    for (const item of state.images) {
       files.push({ name: `images/${item.name}`, bytes: new Uint8Array(await item.file.arrayBuffer()) });
     }
   }
@@ -1761,7 +1317,6 @@ function clearFiles() {
   state.labelsByBaseName.clear();
   state.currentIndex = 0;
   state.selectedBoxId = null;
-  resetQualityFilters();
   els.fileInput.value = "";
   updateCounts();
   renderReview();
@@ -1774,7 +1329,6 @@ els.classes.addEventListener("input", () => {
     item.boxes.forEach((box) => {
       box.label = labelFor(box.classId);
     });
-    invalidateQuality(item);
   });
   renderReview();
 });
@@ -1788,7 +1342,6 @@ els.activeClass.addEventListener("change", () => {
   selectedBox.label = labelFor(selectedBox.classId);
   selectedBox.source = "edited";
   markDirty(item);
-  invalidateQuality(item);
   updateCounts();
   renderReview();
 });
@@ -1810,28 +1363,6 @@ els.polygonFill.addEventListener("change", draw);
 els.eraserSize.addEventListener("input", () => {
   els.eraserSizeValue.textContent = `${eraserSizePx()}px`;
   draw();
-});
-els.runQuality.addEventListener("click", runQualityScan);
-els.qualityFilters.forEach((button) => {
-  button.addEventListener("click", () => {
-    state.qualityFilter = button.dataset.qualityFilter;
-    ensureCurrentVisible();
-    renderReview();
-  });
-});
-els.qualityIncludeFiltered.addEventListener("click", () => {
-  filteredItems().forEach((item) => setIncludeInExport(item, true));
-  renderReview();
-});
-els.qualityExcludeFiltered.addEventListener("click", () => {
-  filteredItems().forEach((item) => setIncludeInExport(item, false));
-  renderReview();
-});
-els.qualityIncludeCurrent.addEventListener("change", () => {
-  const item = currentItem();
-  if (!item) return;
-  setIncludeInExport(item, els.qualityIncludeCurrent.checked);
-  renderReview();
 });
 els.clearFiles.addEventListener("click", clearFiles);
 els.prevImage.addEventListener("click", () => moveImage(-1));
@@ -2041,11 +1572,9 @@ els.canvas.addEventListener("pointerup", () => {
     }
     item.boxes.push(box);
     markDirty(item);
-    invalidateQuality(item);
     state.selectedBoxId = box.id;
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && !state.drag.pending) {
     pushUndo(item, state.drag.before);
-    invalidateQuality(item);
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && state.drag.pending && state.drag.cycleOnClick) {
     state.selectedBoxId = nextStackedBoxId(state.drag.candidateIds, state.selectedBoxId);
   }
