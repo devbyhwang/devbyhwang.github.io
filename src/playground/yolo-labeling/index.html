@@ -159,6 +159,32 @@
             <button id="delete-box" class="danger-button" type="button" disabled>선택 박스 삭제</button>
           </div>
 
+          <div class="tool-group filter-panel">
+            <h3>학습 필터</h3>
+            <button id="run-filters" class="primary-button" type="button">필터 실행</button>
+            <div class="filter-stats" aria-live="polite">
+              <div><strong id="filter-total">0</strong><span>전체</span></div>
+              <div><strong id="filter-visible">0</strong><span>현재 목록</span></div>
+              <div><strong id="filter-excluded">0</strong><span>제외</span></div>
+            </div>
+            <div class="filter-tabs" role="group" aria-label="학습 필터 보기">
+              <button class="filter-tab is-active" type="button" data-filter-view="all">전체</button>
+              <button class="filter-tab" type="button" data-filter-view="low">저해상도</button>
+              <button class="filter-tab" type="button" data-filter-view="duplicate">중복</button>
+              <button class="filter-tab" type="button" data-filter-view="overlap">라벨 겹침</button>
+              <button class="filter-tab" type="button" data-filter-view="excluded">제외</button>
+            </div>
+            <div class="filter-bulk-actions">
+              <button id="include-filtered" class="secondary-button" type="button">목록 전체 포함</button>
+              <button id="exclude-filtered" class="danger-button" type="button">목록 전체 제외</button>
+            </div>
+            <p id="filter-summary" class="tool-note">저해상도, 중복, 라벨 겹침 이미지를 다운로드에서 제외합니다.</p>
+            <label class="toggle-row compact">
+              <input id="include-current" type="checkbox" checked>
+              <span>이 이미지 다운로드 포함</span>
+            </label>
+          </div>
+
           <div class="tool-group">
             <h3>현재 이미지</h3>
             <dl class="image-meta">
@@ -167,6 +193,7 @@
               <div><dt>크기</dt><dd id="current-size">-</dd></div>
               <div><dt>박스</dt><dd id="current-boxes">0</dd></div>
               <div><dt>상태</dt><dd id="current-status">검수 전</dd></div>
+              <div><dt>필터</dt><dd id="current-filter-status">포함</dd></div>
             </dl>
           </div>
 

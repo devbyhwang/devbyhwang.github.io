@@ -22,6 +22,15 @@ const els = {
   reviewedToggle: document.querySelector("#reviewed-toggle"),
   autoReviewToggle: document.querySelector("#auto-review-toggle"),
   downloadLabels: document.querySelector("#download-labels"),
+  runFilters: document.querySelector("#run-filters"),
+  filterTotal: document.querySelector("#filter-total"),
+  filterVisible: document.querySelector("#filter-visible"),
+  filterExcluded: document.querySelector("#filter-excluded"),
+  filterTabs: document.querySelectorAll(".filter-tab"),
+  includeFiltered: document.querySelector("#include-filtered"),
+  excludeFiltered: document.querySelector("#exclude-filtered"),
+  filterSummary: document.querySelector("#filter-summary"),
+  includeCurrent: document.querySelector("#include-current"),
   modeButtons: document.querySelectorAll(".mode-button"),
   eraserMode: document.querySelector('[data-mode="erase"]'),
   polygonFill: document.querySelector("#polygon-fill"),
@@ -35,6 +44,7 @@ const els = {
   currentSize: document.querySelector("#current-size"),
   currentBoxes: document.querySelector("#current-boxes"),
   currentStatus: document.querySelector("#current-status"),
+  currentFilterStatus: document.querySelector("#current-filter-status"),
   boxList: document.querySelector("#box-list"),
   canvas: document.querySelector("#label-canvas"),
   canvasWrap: document.querySelector(".canvas-wrap"),
@@ -52,6 +62,8 @@ const state = {
   mode: "select",
   autoReview: true,
   labelFormatManual: false,
+  filterView: "all",
+  filtersApplied: false,
   drag: null,
   eraserFeedback: null,
   eraserFeedbackTimer: null,
@@ -68,6 +80,17 @@ const minPolygonArea = 0.00002;
 const maxPolygonPoints = 320;
 const maxEditPolygonPoints = 900;
 const eraserFeedbackMs = 2600;
+const minTrainingImageSide = 400;
+const duplicateImageHashDistance = 4;
+const overlapLabelIou = 0.35;
+
+const filterLabels = {
+  all: "전체",
+  low: "저해상도",
+  duplicate: "중복",
+  overlap: "라벨 겹침",
+  excluded: "제외",
+};
 
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
@@ -243,6 +266,44 @@ function markDirty(item) {
   if (item) item.dirty = true;
 }
 
+function setFilterResult(item, excluded, reasons = [], manualOverride = item.manualFilterOverride || null) {
+  item.excludeFromExport = excluded;
+  item.filterReasons = reasons;
+  item.manualFilterOverride = manualOverride;
+}
+
+function manualExcludeReason() {
+  return { id: "manual", label: "수동 제외" };
+}
+
+function includedReasons(reasons = []) {
+  return reasons.filter((reason) => reason.id !== "manual");
+}
+
+function excludedReasons(item) {
+  return item.filterReasons.length ? item.filterReasons : [manualExcludeReason()];
+}
+
+function reasonsWithManualExclude(reasons = []) {
+  return reasons.some((reason) => reason.id === "manual") ? reasons : [...reasons, manualExcludeReason()];
+}
+
+function applyAutomaticFilterResult(item, reasons) {
+  if (item.manualFilterOverride === "include") {
+    setFilterResult(item, false, includedReasons(reasons), "include");
+    return;
+  }
+  if (item.manualFilterOverride === "exclude") {
+    setFilterResult(item, true, reasonsWithManualExclude(reasons), "exclude");
+    return;
+  }
+  setFilterResult(item, reasons.length > 0, reasons, null);
+}
+
+function refreshTrainingFiltersIfApplied() {
+  if (state.filtersApplied) refreshTrainingFilters();
+}
+
 function cloneBox(box) {
   return {
     ...box,
@@ -264,6 +325,7 @@ function restoreSnapshot(item, snapshot) {
     ? snapshot.selectedBoxId
     : null;
   markDirty(item);
+  refreshTrainingFiltersIfApplied();
   updateCounts();
   renderReview();
 }
@@ -750,6 +812,9 @@ async function readImageFile(file) {
     reviewed: false,
     seen: false,
     dirty: false,
+    excludeFromExport: false,
+    filterReasons: [],
+    manualFilterOverride: null,
     undoStack: [],
     redoStack: [],
   };
@@ -873,6 +938,7 @@ function applyLabelsToExistingImages() {
     item.undoStack = [];
     item.redoStack = [];
   });
+  refreshTrainingFiltersIfApplied();
 }
 
 function updateCounts() {
@@ -882,6 +948,152 @@ function updateCounts() {
   els.labelCount.textContent = matchedLabels;
   els.boxCount.textContent = boxes;
   els.downloadLabelsTop.disabled = !state.images.length;
+}
+
+function imageHash(item) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 8;
+  canvas.height = 8;
+  const hashCtx = canvas.getContext("2d", { willReadFrequently: true });
+  hashCtx.drawImage(item.image, 0, 0, 8, 8);
+  const data = hashCtx.getImageData(0, 0, 8, 8).data;
+  const grays = [];
+  for (let index = 0; index < data.length; index += 4) {
+    grays.push(data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114);
+  }
+  const average = grays.reduce((sum, value) => sum + value, 0) / grays.length;
+  return grays.map((value) => (value >= average ? "1" : "0")).join("");
+}
+
+function hammingDistance(a, b) {
+  if (!a || !b || a.length !== b.length) return Infinity;
+  let distance = 0;
+  for (let index = 0; index < a.length; index += 1) {
+    if (a[index] !== b[index]) distance += 1;
+  }
+  return distance;
+}
+
+function boxBounds(box) {
+  return {
+    left: box.x - box.w / 2,
+    top: box.y - box.h / 2,
+    right: box.x + box.w / 2,
+    bottom: box.y + box.h / 2,
+  };
+}
+
+function boxIou(a, b) {
+  const ab = boxBounds(a);
+  const bb = boxBounds(b);
+  const left = Math.max(ab.left, bb.left);
+  const top = Math.max(ab.top, bb.top);
+  const right = Math.min(ab.right, bb.right);
+  const bottom = Math.min(ab.bottom, bb.bottom);
+  const intersection = Math.max(0, right - left) * Math.max(0, bottom - top);
+  const union = Math.max(0, a.w) * Math.max(0, a.h) + Math.max(0, b.w) * Math.max(0, b.h) - intersection;
+  return union > 0 ? intersection / union : 0;
+}
+
+function hasOverlappingLabels(item) {
+  for (let index = 0; index < item.boxes.length; index += 1) {
+    for (let next = index + 1; next < item.boxes.length; next += 1) {
+      if (boxIou(item.boxes[index], item.boxes[next]) >= overlapLabelIou) return true;
+    }
+  }
+  return false;
+}
+
+function itemMatchesFilterView(item) {
+  if (state.filterView === "all") return true;
+  if (state.filterView === "excluded") return item.excludeFromExport;
+  return item.filterReasons.some((reason) => reason.id === state.filterView);
+}
+
+function visibleImageIndexes() {
+  return state.images
+    .map((item, index) => ({ item, index }))
+    .filter(({ item }) => itemMatchesFilterView(item))
+    .map(({ index }) => index);
+}
+
+function visibleItems() {
+  return visibleImageIndexes().map((index) => state.images[index]);
+}
+
+function filterCounts() {
+  const counts = {
+    all: state.images.length,
+    low: 0,
+    duplicate: 0,
+    overlap: 0,
+    excluded: 0,
+  };
+  state.images.forEach((item) => {
+    if (item.excludeFromExport) counts.excluded += 1;
+    item.filterReasons.forEach((reason) => {
+      if (reason.id in counts) counts[reason.id] += 1;
+    });
+  });
+  return counts;
+}
+
+function renderFilterPanel() {
+  const counts = filterCounts();
+  const visible = visibleImageIndexes().length;
+  els.filterTotal.textContent = counts.all;
+  els.filterVisible.textContent = visible;
+  els.filterExcluded.textContent = counts.excluded;
+  els.filterTabs.forEach((button) => {
+    const view = button.dataset.filterView;
+    button.classList.toggle("is-active", view === state.filterView);
+    button.textContent = `${filterLabels[view] || view} ${counts[view] ?? visible}`;
+  });
+  els.includeFiltered.disabled = visible === 0;
+  els.excludeFiltered.disabled = visible === 0;
+  els.filterSummary.textContent = filterSummaryText();
+}
+
+function ensureCurrentVisible() {
+  const visible = visibleImageIndexes();
+  if (!visible.length) {
+    state.selectedBoxId = null;
+    return false;
+  }
+  if (!visible.includes(state.currentIndex)) {
+    state.currentIndex = visible[0];
+    state.selectedBoxId = null;
+  }
+  return true;
+}
+
+function refreshTrainingFilters() {
+  const seenHashes = [];
+  state.images.forEach((item) => {
+    const reasons = [];
+    const shortSide = Math.min(item.width, item.height);
+    if (shortSide < minTrainingImageSide) reasons.push({ id: "low", label: `${filterLabels.low}: ${shortSide}px` });
+    const hash = imageHash(item);
+    const duplicate = seenHashes.find((candidate) => hammingDistance(candidate.hash, hash) <= duplicateImageHashDistance);
+    if (duplicate) reasons.push({ id: "duplicate", label: `${filterLabels.duplicate}: ${duplicate.name}` });
+    if (hasOverlappingLabels(item)) reasons.push({ id: "overlap", label: filterLabels.overlap });
+    seenHashes.push({ name: item.name, hash });
+    applyAutomaticFilterResult(item, reasons);
+  });
+}
+
+function runTrainingFilters() {
+  state.filtersApplied = true;
+  refreshTrainingFilters();
+  state.filterView = "excluded";
+  renderReview();
+}
+
+function filterSummaryText() {
+  if (!state.images.length) return `저해상도, 중복, 라벨 겹침 이미지를 다운로드에서 제외합니다.`;
+  const excluded = state.images.filter((item) => item.excludeFromExport).length;
+  const visible = visibleImageIndexes().length;
+  return `${state.images.length}개 중 ${excluded}개 제외, 현재 목록 ${visible}개`;
 }
 
 function currentItem() {
@@ -940,7 +1152,8 @@ function boxesAt(item, point) {
     const y1 = box.y - box.h / 2;
     const x2 = box.x + box.w / 2;
     const y2 = box.y + box.h / 2;
-    if (point.x >= x1 && point.x <= x2 && point.y >= y1 && point.y <= y2) boxes.push(box);
+    const inside = point.x >= x1 && point.x <= x2 && point.y >= y1 && point.y <= y2;
+    if (inside || resizeHandleAt(item, point, box)) boxes.push(box);
   }
   return boxes;
 }
@@ -955,25 +1168,39 @@ function nextStackedBoxId(candidateIds, selectedId) {
 }
 
 function resizeHandleAt(item, point, box) {
-  const tolerance = Math.max(8 / Math.max(item.width, item.height), 0.006);
+  const rect = els.canvas.getBoundingClientRect();
+  const displayWidth = Math.max(1, rect.width);
+  const displayHeight = Math.max(1, rect.height);
+  const toleranceX = Math.max(14 / displayWidth, 0.008);
+  const toleranceY = Math.max(14 / displayHeight, 0.008);
   const x1 = box.x - box.w / 2;
   const y1 = box.y - box.h / 2;
   const x2 = box.x + box.w / 2;
   const y2 = box.y + box.h / 2;
+  const withinX = point.x >= x1 - toleranceX && point.x <= x2 + toleranceX;
+  const withinY = point.y >= y1 - toleranceY && point.y <= y2 + toleranceY;
   const handles = [
     ["nw", x1, y1],
     ["ne", x2, y1],
     ["sw", x1, y2],
     ["se", x2, y2],
   ];
-  const found = handles.find(([, x, y]) => Math.abs(point.x - x) <= tolerance && Math.abs(point.y - y) <= tolerance);
-  return found ? found[0] : "";
+  const found = handles.find(([, x, y]) => Math.abs(point.x - x) <= toleranceX && Math.abs(point.y - y) <= toleranceY);
+  if (found) return found[0];
+  const nearLeft = Math.abs(point.x - x1) <= toleranceX && withinY;
+  const nearRight = Math.abs(point.x - x2) <= toleranceX && withinY;
+  const nearTop = Math.abs(point.y - y1) <= toleranceY && withinX;
+  const nearBottom = Math.abs(point.y - y2) <= toleranceY && withinX;
+  if (nearLeft) return "w";
+  if (nearRight) return "e";
+  if (nearTop) return "n";
+  if (nearBottom) return "s";
+  return "";
 }
 
 function updateCanvasDisplaySize(item) {
-  const wrapRect = els.canvasWrap.getBoundingClientRect();
-  const maxWidth = Math.max(240, wrapRect.width * canvasFitRatio);
-  const maxHeight = Math.max(240, wrapRect.height * canvasFitRatio);
+  const maxWidth = Math.max(1, els.canvasWrap.clientWidth * canvasFitRatio);
+  const maxHeight = Math.max(1, els.canvasWrap.clientHeight * canvasFitRatio);
   const scale = Math.min(maxWidth / item.width, maxHeight / item.height);
   const displayWidth = Math.max(1, item.width * scale);
   const displayHeight = Math.max(1, item.height * scale);
@@ -1121,20 +1348,27 @@ function renderBoxList(item) {
 
 function renderThumbs() {
   els.thumbStrip.innerHTML = "";
-  const start = Math.max(0, state.currentIndex - 3);
-  const end = Math.min(state.images.length, state.currentIndex + 4);
-  for (let index = start; index < end; index += 1) {
+  const visible = visibleImageIndexes();
+  if (!visible.length) {
+    els.thumbStrip.innerHTML = `<p class="status-text">현재 필터에 맞는 이미지가 없습니다.</p>`;
+    return;
+  }
+  const visiblePosition = Math.max(0, visible.indexOf(state.currentIndex));
+  const start = Math.max(0, visiblePosition - 3);
+  const end = Math.min(visible.length, visiblePosition + 4);
+  for (let position = start; position < end; position += 1) {
+    const index = visible[position];
     const item = state.images[index];
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `thumb${index === state.currentIndex ? " is-active" : ""}`;
+    button.className = `thumb${index === state.currentIndex ? " is-active" : ""}${item.excludeFromExport ? " is-excluded" : ""}`;
     const image = document.createElement("img");
     image.src = item.url;
     image.alt = "";
     const name = document.createElement("strong");
     name.textContent = item.name;
     const status = document.createElement("span");
-    status.textContent = `${item.boxes.length} boxes · ${item.reviewed ? "검수됨" : "검수 전"}`;
+    status.textContent = `${item.boxes.length} boxes · ${item.excludeFromExport ? "제외" : item.reviewed ? "검수됨" : "검수 전"}`;
     button.replaceChildren(image, name, status);
     button.addEventListener("click", () => {
       state.currentIndex = index;
@@ -1156,10 +1390,25 @@ function updateAutoReviewButton() {
 }
 
 function renderReview() {
-  const item = currentItem();
+  const hasVisibleItem = ensureCurrentVisible();
+  const item = hasVisibleItem ? currentItem() : null;
   els.reviewSection.hidden = !state.images.length;
   if (!item) {
     ctx.clearRect(0, 0, els.canvas.width, els.canvas.height);
+    renderFilterPanel();
+    els.currentName.textContent = state.images.length ? "필터 결과 없음" : "-";
+    els.currentLabelFile.textContent = "없음";
+    els.currentSize.textContent = "-";
+    els.currentBoxes.textContent = "0";
+    els.currentStatus.textContent = "검수 전";
+    els.currentFilterStatus.textContent = "없음";
+    els.includeCurrent.checked = false;
+    els.reviewedToggle.checked = false;
+    els.deleteBox.disabled = true;
+    updateEraserControls(null);
+    renderBoxList(null);
+    els.filterSummary.textContent = filterSummaryText();
+    renderThumbs();
     return;
   }
   if (state.autoReview && !item.reviewed) {
@@ -1173,6 +1422,13 @@ function renderReview() {
   els.currentSize.textContent = `${item.width} x ${item.height}`;
   els.currentBoxes.textContent = item.boxes.length;
   els.currentStatus.textContent = item.reviewed ? "검수됨" : "검수 전";
+  els.currentFilterStatus.textContent = item.excludeFromExport
+    ? `제외: ${item.filterReasons.map((reason) => reason.label).join(", ")}`
+    : item.filterReasons.length
+      ? `포함: ${item.filterReasons.map((reason) => reason.label).join(", ")}`
+      : "포함";
+  els.includeCurrent.checked = !item.excludeFromExport;
+  renderFilterPanel();
   els.reviewedToggle.checked = item.reviewed;
   if (item.invalidLabelLines.length) {
     els.currentStatus.textContent = `일부 라벨 무시됨 (${item.invalidLabelLines.join(", ")})`;
@@ -1186,7 +1442,11 @@ function renderReview() {
 
 function moveImage(delta) {
   if (!state.images.length) return;
-  state.currentIndex = clamp(state.currentIndex + delta, 0, state.images.length - 1);
+  const visible = visibleImageIndexes();
+  if (!visible.length) return;
+  const position = Math.max(0, visible.indexOf(state.currentIndex));
+  const nextPosition = clamp(position + delta, 0, visible.length - 1);
+  state.currentIndex = visible[nextPosition];
   state.selectedBoxId = null;
   renderReview();
 }
@@ -1197,6 +1457,7 @@ function deleteSelectedBox() {
   pushUndo(item, snapshotItem(item));
   item.boxes = item.boxes.filter((box) => box.id !== state.selectedBoxId);
   markDirty(item);
+  refreshTrainingFiltersIfApplied();
   state.selectedBoxId = null;
   updateCounts();
   renderReview();
@@ -1284,10 +1545,12 @@ function makeZip(files) {
 
 async function downloadZip() {
   if (!state.images.length) return;
+  refreshTrainingFiltersIfApplied();
   const encoder = new TextEncoder();
   const classes = getClasses();
   const files = [];
-  state.images.forEach((item) => {
+  const exportImages = state.images.filter((item) => !item.excludeFromExport);
+  exportImages.forEach((item) => {
     const label = saveLabelsFor(item);
     if (label !== null) files.push({ name: `labels/${item.baseName}.txt`, bytes: encoder.encode(label) });
   });
@@ -1298,7 +1561,7 @@ async function downloadZip() {
     bytes: encoder.encode(`path: .\ntrain: images\nval: images\nnames:\n${classes.map((name, index) => `  ${index}: ${name}`).join("\n")}\n`),
   });
   if (els.includeImages.checked) {
-    for (const item of state.images) {
+    for (const item of exportImages) {
       files.push({ name: `images/${item.name}`, bytes: new Uint8Array(await item.file.arrayBuffer()) });
     }
   }
@@ -1317,6 +1580,8 @@ function clearFiles() {
   state.labelsByBaseName.clear();
   state.currentIndex = 0;
   state.selectedBoxId = null;
+  state.filterView = "all";
+  state.filtersApplied = false;
   els.fileInput.value = "";
   updateCounts();
   renderReview();
@@ -1363,6 +1628,37 @@ els.polygonFill.addEventListener("change", draw);
 els.eraserSize.addEventListener("input", () => {
   els.eraserSizeValue.textContent = `${eraserSizePx()}px`;
   draw();
+});
+els.runFilters.addEventListener("click", runTrainingFilters);
+els.filterTabs.forEach((button) => {
+  button.addEventListener("click", () => {
+    state.filterView = button.dataset.filterView;
+    ensureCurrentVisible();
+    renderReview();
+  });
+});
+els.includeFiltered.addEventListener("click", () => {
+  visibleItems().forEach((item) => {
+    setFilterResult(item, false, includedReasons(item.filterReasons), "include");
+  });
+  renderReview();
+});
+els.excludeFiltered.addEventListener("click", () => {
+  visibleItems().forEach((item) => {
+    setFilterResult(item, true, reasonsWithManualExclude(excludedReasons(item)), "exclude");
+  });
+  renderReview();
+});
+els.includeCurrent.addEventListener("change", () => {
+  const item = currentItem();
+  if (!item) return;
+  setFilterResult(
+    item,
+    !els.includeCurrent.checked,
+    els.includeCurrent.checked ? includedReasons(item.filterReasons) : reasonsWithManualExclude(excludedReasons(item)),
+    els.includeCurrent.checked ? "include" : "exclude"
+  );
+  renderReview();
 });
 els.clearFiles.addEventListener("click", clearFiles);
 els.prevImage.addEventListener("click", () => moveImage(-1));
@@ -1548,10 +1844,12 @@ els.canvas.addEventListener("pointermove", (event) => {
 els.canvas.addEventListener("pointerup", () => {
   const item = currentItem();
   if (!item || !state.drag) return;
+  let filtersNeedRefresh = false;
   if (state.drag.type === "erase") {
     const box = item.boxes.find((candidate) => candidate.id === state.drag.boxId);
     if (box && applyEraser(item, box, state.drag.path)) {
       pushUndo(item, state.drag.before);
+      filtersNeedRefresh = true;
     }
   } else if (state.drag.type === "draw" && state.drag.preview && state.drag.preview.w > minBoxSize && state.drag.preview.h > minBoxSize) {
     pushUndo(item, state.drag.before);
@@ -1573,12 +1871,15 @@ els.canvas.addEventListener("pointerup", () => {
     item.boxes.push(box);
     markDirty(item);
     state.selectedBoxId = box.id;
+    filtersNeedRefresh = true;
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && !state.drag.pending) {
     pushUndo(item, state.drag.before);
+    filtersNeedRefresh = true;
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && state.drag.pending && state.drag.cycleOnClick) {
     state.selectedBoxId = nextStackedBoxId(state.drag.candidateIds, state.selectedBoxId);
   }
   state.drag = null;
+  if (filtersNeedRefresh) refreshTrainingFiltersIfApplied();
   updateCounts();
   renderReview();
 });

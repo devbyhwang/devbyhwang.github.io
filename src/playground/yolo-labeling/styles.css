@@ -15,11 +15,16 @@
 
 * { box-sizing: border-box; }
 
-html { min-height: 100%; background: var(--bg); }
+html {
+  min-height: 100%;
+  overflow-x: clip;
+  background: var(--bg);
+}
 
 body {
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
   color: var(--ink);
   font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
   background:
@@ -569,17 +574,20 @@ input:focus, select:focus, textarea:focus {
 
 .review-layout {
   --review-work-height: clamp(590px, 72vh, 720px);
+  --review-preview-height: 128px;
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
+  min-width: 0;
 }
 
 .tool-panel {
   display: grid;
   align-content: start;
   gap: 12px;
-  max-height: var(--review-work-height);
+  min-width: 0;
+  max-height: calc(var(--review-work-height) + var(--review-preview-height));
   overflow-y: auto;
   overscroll-behavior: contain;
   padding-right: 4px;
@@ -606,6 +614,70 @@ input:focus, select:focus, textarea:focus {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.48);
+}
+
+.filter-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.filter-panel h3,
+.filter-panel .tool-note {
+  margin-bottom: 0;
+}
+
+.filter-panel .primary-button {
+  width: 100%;
+}
+
+.filter-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.filter-stats div {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.52);
+}
+
+.filter-stats strong {
+  font-size: 1rem;
+}
+
+.filter-stats span {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.filter-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.filter-tab {
+  min-height: 32px;
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(22, 32, 29, 0.08);
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.filter-tab.is-active {
+  color: #fffaf1;
+  background: var(--green);
+}
+
+.filter-bulk-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
 }
 
 .segmented {
@@ -721,6 +793,7 @@ input:focus, select:focus, textarea:focus {
 .canvas-wrap {
   display: grid;
   place-items: center;
+  min-width: 0;
   height: var(--review-work-height);
   border: 1px solid rgba(22, 32, 29, 0.16);
   border-radius: 8px;
@@ -737,6 +810,7 @@ input:focus, select:focus, textarea:focus {
 #label-canvas {
   width: var(--canvas-display-width, auto);
   height: var(--canvas-display-height, auto);
+  min-width: 0;
   max-width: 100%;
   max-height: 100%;
   touch-action: none;
@@ -767,14 +841,17 @@ input:focus, select:focus, textarea:focus {
 
 .thumb-strip {
   display: grid;
-  grid-template-columns: repeat(7, minmax(74px, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 88px));
   gap: 8px;
+  justify-content: center;
   margin-top: 10px;
+  min-width: 0;
 }
 
 .thumb {
   display: grid;
   gap: 5px;
+  min-width: 0;
   padding: 7px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -786,6 +863,10 @@ input:focus, select:focus, textarea:focus {
 .thumb.is-active {
   border-color: rgba(31, 93, 74, 0.72);
   background: rgba(31, 93, 74, 0.13);
+}
+
+.thumb.is-excluded {
+  opacity: 0.52;
 }
 
 .thumb img {
