@@ -38,23 +38,6 @@
     button { border: 0; cursor: pointer; }
     button:disabled { cursor: not-allowed; opacity: 0.56; }
 
-    .back-link {
-      position: fixed;
-      top: 18px;
-      left: 18px;
-      z-index: 20;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 15px;
-      border: 1px solid rgba(255, 248, 235, 0.45);
-      border-radius: 999px;
-      color: var(--paper);
-      text-decoration: none;
-      background: rgba(20, 35, 31, 0.78);
-      backdrop-filter: blur(18px);
-    }
-
     .shell {
       width: min(1040px, 100%);
       min-height: calc(100vh - var(--playground-ad-safe-space, 0px));
@@ -298,7 +281,6 @@
 
     @media (max-width: 700px) {
       .shell { padding-inline: 12px; padding-top: 18px; }
-      .back-link { position: static; margin-bottom: 16px; }
       .chat-head, .composer-actions { flex-direction: column; align-items: stretch; }
       .chat-title { justify-content: space-between; }
       .message { max-width: 100%; }
@@ -308,7 +290,6 @@
   </style>
 </head>
 <body data-playground-safe-root>
-  <a class="back-link" href="/devbyhwang/playground/">← Playground</a>
   <main class="shell">
     <section class="hero" aria-label="소개">
       <span class="eyebrow">Local AI</span>

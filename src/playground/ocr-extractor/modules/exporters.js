@@ -94,7 +94,9 @@ export async function buildSearchablePdfBytes(state, waitForGlobalFn, t) {
       if (!sourcePdf) {
         const source = state.pdfSources[part.sourceId];
         if (!source) continue;
-        sourcePdf = await PDFLib.PDFDocument.load(source.bytes);
+        const sourceBytes = source.bytes || await source.file?.arrayBuffer();
+        if (!sourceBytes) continue;
+        sourcePdf = await PDFLib.PDFDocument.load(sourceBytes);
         sourceCache.set(part.sourceId, sourcePdf);
       }
       const [copiedPage] = await outputPdf.copyPages(sourcePdf, [part.pageIndex]);

@@ -7,7 +7,7 @@ export const TESSERACT_CORE_URL = "https://cdn.jsdelivr.net/npm/tesseract.js-cor
 export const TESSERACT_CACHE_PATH = "tesseract-v6-lstm-best-int";
 
 export const LIMITS = {
-  maxTotalBytes: 200 * 1024 * 1024,
+  maxTotalBytes: 500 * 1024 * 1024,
   maxImageBytes: 30 * 1024 * 1024,
   largePdfPageThreshold: 50,
   defaultProcessPages: 100,
