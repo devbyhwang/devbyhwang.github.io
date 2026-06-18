@@ -89,6 +89,7 @@ const filterLabels = {
   low: "저해상도",
   duplicate: "중복",
   overlap: "라벨 겹침",
+  included: "포함",
   excluded: "제외",
 };
 
@@ -1006,6 +1007,7 @@ function hasOverlappingLabels(item) {
 
 function itemMatchesFilterView(item) {
   if (state.filterView === "all") return true;
+  if (state.filterView === "included") return !item.excludeFromExport;
   if (state.filterView === "excluded") return item.excludeFromExport;
   return item.filterReasons.some((reason) => reason.id === state.filterView);
 }
@@ -1027,10 +1029,12 @@ function filterCounts() {
     low: 0,
     duplicate: 0,
     overlap: 0,
+    included: 0,
     excluded: 0,
   };
   state.images.forEach((item) => {
     if (item.excludeFromExport) counts.excluded += 1;
+    else counts.included += 1;
     item.filterReasons.forEach((reason) => {
       if (reason.id in counts) counts[reason.id] += 1;
     });
