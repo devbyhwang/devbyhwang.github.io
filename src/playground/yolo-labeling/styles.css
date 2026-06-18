@@ -37,23 +37,6 @@ button, input, select, textarea { font: inherit; }
 button { border: 0; cursor: pointer; }
 button:disabled { cursor: not-allowed; opacity: 0.52; }
 
-.back-link {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 30;
-  display: inline-flex;
-  align-items: center;
-  min-height: 38px;
-  padding: 0 13px;
-  border: 1px solid rgba(255, 250, 241, 0.72);
-  border-radius: 999px;
-  color: #fffaf1;
-  background: rgba(22, 32, 29, 0.84);
-  text-decoration: none;
-  box-shadow: 0 12px 32px rgba(22, 32, 29, 0.18);
-}
-
 .app-shell {
   display: flex;
   flex-direction: column;
@@ -915,7 +898,6 @@ input:focus, select:focus, textarea:focus {
 
 @media (max-width: 680px) {
   .app-shell { padding-inline: 12px; }
-  .back-link { position: static; margin: 10px 0 0 12px; }
   .preset-grid,
   .form-grid,
   .stats-row,

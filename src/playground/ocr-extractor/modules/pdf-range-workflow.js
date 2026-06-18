@@ -194,7 +194,7 @@ export function createPdfRangeWorkflow({
         throw createProtectedPdfError(file);
       }
 
-      pdf = await getPdfDocument(data.slice());
+      pdf = await getPdfDocument(data);
       const info = { file, pageCount: pdf.numPages };
       pdfInspectionCache.set(file, info);
       return info;

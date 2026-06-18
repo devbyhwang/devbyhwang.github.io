@@ -596,8 +596,8 @@ const {
       const fileKey = getFileKey(file);
       ensurePdfEngine();
       const bytes = new Uint8Array(await awaitWithSessionCancellation(file.arrayBuffer(), ocrSession));
-      const sourceId = state.pdfSources.push({ fileKey, name: file.name, bytes }) - 1;
-      const loadingTask = pdfjsLib.getDocument({ data: bytes.slice() });
+      const sourceId = state.pdfSources.push({ fileKey, name: file.name, file }) - 1;
+      const loadingTask = pdfjsLib.getDocument({ data: bytes });
       let pdf = null;
       try {
         pdf = await awaitWithSessionCancellation(loadingTask.promise, ocrSession);

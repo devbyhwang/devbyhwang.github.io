@@ -13,7 +13,6 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
    - `src/playground/_template.html`을 복사해 시작
    - 데모는 사이트 전역 CSS/JS에 의존하지 않도록 구성
    - 데모 내부 리소스는 상대 경로 기반으로 작성
-   - `../` 백 링크를 포함해 Playground 목록으로 복귀 가능하게 유지
    - 광고 배너가 필요한 데모만 `../../../assets/playground-bottom-ad.js`를 포함 (스크립트가 `playground-bottom-ad.css`를 자동 로드)
    - 광고 배너를 포함하는 경우 UI가 가려지지 않도록 핵심 루트에 `data-playground-safe-root` 부여
 

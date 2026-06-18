@@ -51,25 +51,6 @@
         #overlay h1 { color: #d4a373; font-family: 'Cinzel', serif; font-size: 3.5rem; letter-spacing: 20px; }
         .mobile-panel-tabs { display: none; }
 
-        /* Back link styling */
-        .back-link {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            padding: 10px 20px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-family: 'Cinzel', serif;
-            font-size: 14px;
-            z-index: 1000;
-            transition: background 0.2s;
-        }
-        .back-link:hover {
-            background: rgba(0, 0, 0, 0.9);
-        }
-
         @media (max-width: 1024px) {
             .ui-layer {
                 grid-template-columns: minmax(240px, 320px) 1fr;
@@ -80,13 +61,6 @@
             .panel {
                 max-height: calc(100vh - 24px);
                 padding: 14px;
-            }
-
-            .back-link {
-                top: 10px;
-                left: 10px;
-                padding: 8px 12px;
-                font-size: 12px;
             }
 
             #ui-toggle {
@@ -182,9 +156,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js" integrity="sha384-I+vlbhtggPtDgOcGQ3rwhQl9JEO7qonTByw9baD7Vlc+1bJdn2ucktJAsbo3nmGA" crossorigin="anonymous"></script>
 </head>
 <body>
-
-<a href="../" class="back-link">← Playground</a>
-
 <div id="overlay" data-playground-safe-root>
     <h1>EMBERCRAFT v149</h1>
     <p>THE LIVING HEARTH</p>
