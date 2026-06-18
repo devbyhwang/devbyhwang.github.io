@@ -305,6 +305,13 @@ function refreshTrainingFiltersIfApplied() {
   if (state.filtersApplied) refreshTrainingFilters();
 }
 
+function refreshItemLabelFiltersIfApplied(item) {
+  if (!state.filtersApplied || !item) return;
+  const reasons = item.filterReasons.filter((reason) => !["overlap", "manual"].includes(reason.id));
+  if (hasOverlappingLabels(item)) reasons.push({ id: "overlap", label: filterLabels.overlap });
+  applyAutomaticFilterResult(item, reasons);
+}
+
 function cloneBox(box) {
   return {
     ...box,
@@ -326,7 +333,7 @@ function restoreSnapshot(item, snapshot) {
     ? snapshot.selectedBoxId
     : null;
   markDirty(item);
-  refreshTrainingFiltersIfApplied();
+  refreshItemLabelFiltersIfApplied(item);
   updateCounts();
   renderReview();
 }
@@ -1461,7 +1468,7 @@ function deleteSelectedBox() {
   pushUndo(item, snapshotItem(item));
   item.boxes = item.boxes.filter((box) => box.id !== state.selectedBoxId);
   markDirty(item);
-  refreshTrainingFiltersIfApplied();
+  refreshItemLabelFiltersIfApplied(item);
   state.selectedBoxId = null;
   updateCounts();
   renderReview();
@@ -1848,12 +1855,12 @@ els.canvas.addEventListener("pointermove", (event) => {
 els.canvas.addEventListener("pointerup", () => {
   const item = currentItem();
   if (!item || !state.drag) return;
-  let filtersNeedRefresh = false;
+  let labelFilterNeedsRefresh = false;
   if (state.drag.type === "erase") {
     const box = item.boxes.find((candidate) => candidate.id === state.drag.boxId);
     if (box && applyEraser(item, box, state.drag.path)) {
       pushUndo(item, state.drag.before);
-      filtersNeedRefresh = true;
+      labelFilterNeedsRefresh = true;
     }
   } else if (state.drag.type === "draw" && state.drag.preview && state.drag.preview.w > minBoxSize && state.drag.preview.h > minBoxSize) {
     pushUndo(item, state.drag.before);
@@ -1875,15 +1882,15 @@ els.canvas.addEventListener("pointerup", () => {
     item.boxes.push(box);
     markDirty(item);
     state.selectedBoxId = box.id;
-    filtersNeedRefresh = true;
+    labelFilterNeedsRefresh = true;
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && !state.drag.pending) {
     pushUndo(item, state.drag.before);
-    filtersNeedRefresh = true;
+    labelFilterNeedsRefresh = true;
   } else if ((state.drag.type === "move" || state.drag.type === "resize") && state.drag.pending && state.drag.cycleOnClick) {
     state.selectedBoxId = nextStackedBoxId(state.drag.candidateIds, state.selectedBoxId);
   }
   state.drag = null;
-  if (filtersNeedRefresh) refreshTrainingFiltersIfApplied();
+  if (labelFilterNeedsRefresh) refreshItemLabelFiltersIfApplied(item);
   updateCounts();
   renderReview();
 });
