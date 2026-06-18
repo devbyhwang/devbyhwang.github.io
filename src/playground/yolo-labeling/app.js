@@ -101,6 +101,17 @@ function revokeObjectUrlsLater(urls, delayMs = 1000) {
   }, delayMs);
 }
 
+function releaseImageResourcesLater(items, delayMs = 1000) {
+  const imageItems = Array.isArray(items) ? items.filter(Boolean) : [items].filter(Boolean);
+  if (!imageItems.length) return;
+  revokeObjectUrlsLater(imageItems.map((item) => item.url), delayMs);
+  window.setTimeout(() => {
+    imageItems.forEach((item) => {
+      if (typeof item.image?.close === "function") item.image.close();
+    });
+  }, delayMs);
+}
+
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
 }
@@ -800,15 +811,32 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
 }
 
 async function readImageFile(file) {
-  const url = URL.createObjectURL(file);
-  const image = new Image();
-  try {
-    image.src = url;
-    await image.decode();
-  } catch (error) {
-    revokeObjectUrlsLater(url);
-    throw error;
+  if ("createImageBitmap" in window) {
+    try {
+      const image = await createImageBitmap(file);
+      return buildImageItem(file, image, image.width, image.height, "");
+    } catch (error) {
+      if (error?.name === "NotReadableError") throw error;
+    }
   }
+
+  const dataUrl = await readFileAsDataUrl(file);
+  const image = new Image();
+  image.src = dataUrl;
+  await image.decode();
+  return buildImageItem(file, image, image.naturalWidth, image.naturalHeight, "");
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(String(reader.result || "")), { once: true });
+    reader.addEventListener("error", () => reject(reader.error || new Error("File read failed")), { once: true });
+    reader.readAsDataURL(file);
+  });
+}
+
+function buildImageItem(file, image, width, height, url) {
   const labelSource = state.labelsByBaseName.get(baseName(file.name));
   const parsed = labelSource
     ? parseLabelText(
@@ -824,8 +852,8 @@ async function readImageFile(file) {
     baseName: baseName(file.name),
     url,
     image,
-    width: image.naturalWidth,
-    height: image.naturalHeight,
+    width,
+    height,
     boxes: parsed ? parsed.boxes.map((box) => ({ ...box, id: crypto.randomUUID() })) : [],
     labelFileName: parsed?.labelFileName || "",
     labelFormat: parsed?.labelFormat || getLabelFormat(),
@@ -874,12 +902,13 @@ async function addFiles(fileList) {
   });
   await new Promise((resolve) => requestAnimationFrame(resolve));
   const detectedFormats = [];
+  const skippedFiles = [];
 
   for (const file of labelFiles) {
     try {
       detectedFormats.push(await readLabelFile(file));
     } catch (error) {
-      console.warn(error);
+      skippedFiles.push({ name: file.name, reason: error?.name || "ReadError" });
     }
     completedWork += 1;
     setUploadStatus({
@@ -898,14 +927,14 @@ async function addFiles(fileList) {
 
   const existingByName = new Map(state.images.map((item) => [item.name, item]));
   const loadedImages = [];
-  const replacedUrls = [];
+  const replacedImages = [];
   for (const file of imageFiles) {
     try {
       const image = await readImageFile(file);
       if (existingByName.has(image.name)) {
         const index = state.images.findIndex((item) => item.name === image.name);
         if (index !== -1) {
-          replacedUrls.push(state.images[index].url);
+          replacedImages.push(state.images[index]);
           state.images.splice(index, 1, image);
         } else {
           loadedImages.push(image);
@@ -914,7 +943,7 @@ async function addFiles(fileList) {
         loadedImages.push(image);
       }
     } catch (error) {
-      console.warn(error);
+      skippedFiles.push({ name: file.name, reason: error?.name || "ReadError" });
     }
     completedWork += 1;
     setUploadStatus({
@@ -935,13 +964,13 @@ async function addFiles(fileList) {
   updateClassSelect();
   updateCounts();
   renderReview();
-  revokeObjectUrlsLater(replacedUrls);
+  releaseImageResourcesLater(replacedImages);
   setUploadStatus({
     active: true,
     title: "로드 완료",
     current: totalWork,
     total: totalWork,
-    detail: `${loadedImages.length}개 이미지가 추가되었습니다.`,
+    detail: `${loadedImages.length}개 이미지가 추가되었습니다.${skippedFiles.length ? ` ${skippedFiles.length}개 파일은 읽지 못해 건너뛰었습니다.` : ""}`,
   });
   window.setTimeout(() => setUploadStatus({ active: false }), 1200);
 }
@@ -1635,7 +1664,7 @@ async function downloadZip() {
 }
 
 function clearFiles() {
-  const urlsToRevoke = state.images.map((item) => item.url);
+  const imagesToRelease = [...state.images];
   state.images = [];
   state.labelsByBaseName.clear();
   state.currentIndex = 0;
@@ -1645,7 +1674,7 @@ function clearFiles() {
   els.fileInput.value = "";
   updateCounts();
   renderReview();
-  revokeObjectUrlsLater(urlsToRevoke);
+  releaseImageResourcesLater(imagesToRelease);
 }
 
 els.fileInput.addEventListener("change", () => addFiles(els.fileInput.files));
