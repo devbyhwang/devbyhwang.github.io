@@ -93,6 +93,14 @@ const filterLabels = {
   excluded: "제외",
 };
 
+function revokeObjectUrlsLater(urls, delayMs = 1000) {
+  const objectUrls = Array.isArray(urls) ? urls.filter(Boolean) : [urls].filter(Boolean);
+  if (!objectUrls.length) return;
+  window.setTimeout(() => {
+    objectUrls.forEach((url) => URL.revokeObjectURL(url));
+  }, delayMs);
+}
+
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
 }
@@ -794,8 +802,13 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
 async function readImageFile(file) {
   const url = URL.createObjectURL(file);
   const image = new Image();
-  image.src = url;
-  await image.decode();
+  try {
+    image.src = url;
+    await image.decode();
+  } catch (error) {
+    revokeObjectUrlsLater(url);
+    throw error;
+  }
   const labelSource = state.labelsByBaseName.get(baseName(file.name));
   const parsed = labelSource
     ? parseLabelText(
@@ -885,12 +898,18 @@ async function addFiles(fileList) {
 
   const existingByName = new Map(state.images.map((item) => [item.name, item]));
   const loadedImages = [];
+  const replacedUrls = [];
   for (const file of imageFiles) {
     try {
       const image = await readImageFile(file);
       if (existingByName.has(image.name)) {
         const index = state.images.findIndex((item) => item.name === image.name);
-        state.images.splice(index, 1, image);
+        if (index !== -1) {
+          replacedUrls.push(state.images[index].url);
+          state.images.splice(index, 1, image);
+        } else {
+          loadedImages.push(image);
+        }
       } else {
         loadedImages.push(image);
       }
@@ -916,6 +935,7 @@ async function addFiles(fileList) {
   updateClassSelect();
   updateCounts();
   renderReview();
+  revokeObjectUrlsLater(replacedUrls);
   setUploadStatus({
     active: true,
     title: "로드 완료",
@@ -1581,12 +1601,15 @@ async function downloadZip() {
   const link = document.createElement("a");
   link.href = url;
   link.download = "yolo-labels-edited.zip";
+  link.style.display = "none";
+  document.body.append(link);
   link.click();
-  URL.revokeObjectURL(url);
+  link.remove();
+  revokeObjectUrlsLater(url, 30000);
 }
 
 function clearFiles() {
-  state.images.forEach((item) => URL.revokeObjectURL(item.url));
+  const urlsToRevoke = state.images.map((item) => item.url);
   state.images = [];
   state.labelsByBaseName.clear();
   state.currentIndex = 0;
@@ -1596,6 +1619,7 @@ function clearFiles() {
   els.fileInput.value = "";
   updateCounts();
   renderReview();
+  revokeObjectUrlsLater(urlsToRevoke);
 }
 
 els.fileInput.addEventListener("change", () => addFiles(els.fileInput.files));
