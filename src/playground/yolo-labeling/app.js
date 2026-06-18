@@ -1377,6 +1377,34 @@ function renderBoxList(item) {
   });
 }
 
+function createThumbPreview(item) {
+  const preview = document.createElement("canvas");
+  const previewWidth = 120;
+  const previewHeight = 90;
+  preview.className = "thumb-preview";
+  preview.width = previewWidth;
+  preview.height = previewHeight;
+  const previewContext = preview.getContext("2d");
+  const imageRatio = item.width / item.height;
+  const previewRatio = previewWidth / previewHeight;
+  const sourceWidth = imageRatio > previewRatio ? item.height * previewRatio : item.width;
+  const sourceHeight = imageRatio > previewRatio ? item.height : item.width / previewRatio;
+  const sourceX = (item.width - sourceWidth) / 2;
+  const sourceY = (item.height - sourceHeight) / 2;
+  previewContext.drawImage(
+    item.image,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    0,
+    0,
+    previewWidth,
+    previewHeight
+  );
+  return preview;
+}
+
 function renderThumbs() {
   els.thumbStrip.innerHTML = "";
   const visible = visibleImageIndexes();
@@ -1393,14 +1421,12 @@ function renderThumbs() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `thumb${index === state.currentIndex ? " is-active" : ""}${item.excludeFromExport ? " is-excluded" : ""}`;
-    const image = document.createElement("img");
-    image.src = item.url;
-    image.alt = "";
+    const preview = createThumbPreview(item);
     const name = document.createElement("strong");
     name.textContent = item.name;
     const status = document.createElement("span");
     status.textContent = `${item.boxes.length} boxes · ${item.excludeFromExport ? "제외" : item.reviewed ? "검수됨" : "검수 전"}`;
-    button.replaceChildren(image, name, status);
+    button.replaceChildren(preview, name, status);
     button.addEventListener("click", () => {
       state.currentIndex = index;
       state.selectedBoxId = null;
