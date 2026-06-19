@@ -1665,6 +1665,27 @@ function makeZip(files) {
   return new Blob([...localParts, ...centralParts, end], { type: "application/zip" });
 }
 
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) resolve(blob);
+      else reject(new Error("이미지를 내보내기 형식으로 변환하지 못했습니다."));
+    }, type, quality);
+  });
+}
+
+async function exportImageAsJpeg(item) {
+  const canvas = document.createElement("canvas");
+  canvas.width = item.width;
+  canvas.height = item.height;
+  const exportCtx = canvas.getContext("2d");
+  exportCtx.fillStyle = "#ffffff";
+  exportCtx.fillRect(0, 0, canvas.width, canvas.height);
+  exportCtx.drawImage(item.image, 0, 0, item.width, item.height);
+  const blob = await canvasToBlob(canvas, "image/jpeg", 0.92);
+  return new Uint8Array(await blob.arrayBuffer());
+}
+
 async function downloadZip() {
   if (!state.images.length) return;
   refreshTrainingFiltersIfApplied();
@@ -1684,7 +1705,7 @@ async function downloadZip() {
   });
   if (els.includeImages.checked) {
     for (const item of exportImages) {
-      files.push({ name: `images/${item.name}`, bytes: new Uint8Array(await item.file.arrayBuffer()) });
+      files.push({ name: `images/${item.baseName}.jpg`, bytes: await exportImageAsJpeg(item) });
     }
   }
   const blob = makeZip(files);
