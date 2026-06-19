@@ -139,6 +139,31 @@ function isSupportedImageFile(file) {
   return supportedImageTypes.has(type) || supportedImageExtensions.has(fileExtension(file.name));
 }
 
+async function hasSupportedImageSignature(file) {
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  const isPng =
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47 &&
+    bytes[4] === 0x0d &&
+    bytes[5] === 0x0a &&
+    bytes[6] === 0x1a &&
+    bytes[7] === 0x0a;
+  const isWebp =
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x45 &&
+    bytes[10] === 0x42 &&
+    bytes[11] === 0x50;
+  const isBmp = bytes[0] === 0x42 && bytes[1] === 0x4d;
+  return isJpeg || isPng || isWebp || isBmp;
+}
+
 function normalizeBoxToBounds(box) {
   const w = clamp(Number.isFinite(box.w) ? box.w : 0);
   const h = clamp(Number.isFinite(box.h) ? box.h : 0);
@@ -830,6 +855,9 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
 }
 
 async function readImageFile(file) {
+  if (!(await hasSupportedImageSignature(file))) {
+    throw new Error(`${file.name} 파일 내용이 지원 이미지 형식이 아닙니다.`);
+  }
   const url = URL.createObjectURL(file);
   const image = new Image();
   try {
