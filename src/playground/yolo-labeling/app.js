@@ -853,12 +853,12 @@ async function readImageFile(file) {
     await loadImageElement(image, url);
   } catch (error) {
     revokeObjectUrlsLater(url);
-    const dataUrl = await readFileAsDataUrl(file);
-    image = new Image();
-    url = "";
     try {
+      const dataUrl = await readFileAsDataUrl(file);
+      image = new Image();
+      url = "";
       await loadImageElement(image, dataUrl);
-    } catch (dataUrlError) {
+    } catch (fallbackError) {
       throw new Error("브라우저가 이미지를 디코딩하지 못했습니다. 파일이 손상되었거나 지원하지 않는 JPG 인코딩일 수 있습니다.");
     }
   }
