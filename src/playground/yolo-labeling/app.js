@@ -83,6 +83,8 @@ const eraserFeedbackMs = 2600;
 const minTrainingImageSide = 400;
 const duplicateImageHashDistance = 4;
 const overlapLabelIou = 0.35;
+const supportedImageTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/bmp"]);
+const supportedImageExtensions = new Set(["png", "jpg", "jpeg", "webp", "bmp"]);
 
 const filterLabels = {
   all: "전체",
@@ -125,6 +127,16 @@ function clamp(value, min = 0, max = 1) {
 
 function baseName(name) {
   return name.replace(/\.[^.]+$/, "").trim();
+}
+
+function fileExtension(name) {
+  const match = /\.([^.]+)$/.exec(name);
+  return match ? match[1].toLowerCase() : "";
+}
+
+function isSupportedImageFile(file) {
+  const type = file.type.toLowerCase();
+  return supportedImageTypes.has(type) || supportedImageExtensions.has(fileExtension(file.name));
 }
 
 function normalizeBoxToBounds(box) {
@@ -821,8 +833,14 @@ async function readImageFile(file) {
   const url = URL.createObjectURL(file);
   const image = new Image();
   try {
-    image.src = url;
-    await image.decode();
+    await new Promise((resolve, reject) => {
+      image.onload = resolve;
+      image.onerror = () => reject(new Error(`${file.name} 이미지를 브라우저에서 열 수 없습니다.`));
+      image.src = url;
+    });
+    if (!image.naturalWidth || !image.naturalHeight) {
+      throw new Error(`${file.name} 이미지 크기를 읽을 수 없습니다.`);
+    }
   } catch (error) {
     revokeObjectUrlsLater(url);
     throw error;
@@ -869,7 +887,8 @@ async function readLabelFile(file) {
 async function addFiles(fileList) {
   const files = Array.from(fileList);
   const labelFiles = files.filter((file) => file.name.toLowerCase().endsWith(".txt"));
-  const imageFiles = files.filter((file) => file.type.startsWith("image/"));
+  const imageFiles = files.filter(isSupportedImageFile);
+  const unsupportedFiles = files.filter((file) => !labelFiles.includes(file) && !imageFiles.includes(file));
   const totalWork = labelFiles.length + imageFiles.length;
   if (totalWork === 0) {
     setUploadStatus({
@@ -877,9 +896,11 @@ async function addFiles(fileList) {
       title: "읽을 파일 없음",
       current: 0,
       total: 0,
-      detail: "이미지 파일이나 YOLO 라벨 좌표 txt 파일을 선택하세요.",
+      detail: unsupportedFiles.length
+        ? "PNG, JPG, WEBP, BMP 이미지나 YOLO 라벨 좌표 txt 파일만 지원합니다."
+        : "이미지 파일이나 YOLO 라벨 좌표 txt 파일을 선택하세요.",
     });
-    window.setTimeout(() => setUploadStatus({ active: false }), 1400);
+    window.setTimeout(() => setUploadStatus({ active: false }), 2200);
     return;
   }
   let completedWork = 0;
@@ -892,12 +913,13 @@ async function addFiles(fileList) {
   });
   await new Promise((resolve) => requestAnimationFrame(resolve));
   const detectedFormats = [];
+  const failedLabels = [];
 
   for (const file of labelFiles) {
     try {
       detectedFormats.push(await readLabelFile(file));
     } catch (error) {
-      console.warn(error);
+      failedLabels.push(file.name);
     }
     completedWork += 1;
     setUploadStatus({
@@ -917,6 +939,7 @@ async function addFiles(fileList) {
   const existingByName = new Map(state.images.map((item) => [item.name, item]));
   const loadedImages = [];
   const replacedUrls = [];
+  const failedImages = [];
   for (const file of imageFiles) {
     try {
       const image = await readImageFile(file);
@@ -932,7 +955,7 @@ async function addFiles(fileList) {
         loadedImages.push(image);
       }
     } catch (error) {
-      console.warn(error);
+      failedImages.push(file.name);
     }
     completedWork += 1;
     setUploadStatus({
@@ -954,14 +977,18 @@ async function addFiles(fileList) {
   updateCounts();
   renderReview();
   revokeObjectUrlsLater(replacedUrls);
+  const issueCount = unsupportedFiles.length + failedImages.length + failedLabels.length;
+  const uploadDetail = issueCount
+    ? `${loadedImages.length}개 이미지가 추가되었습니다. ${issueCount}개 파일은 지원하지 않거나 읽을 수 없어 건너뛰었습니다.`
+    : `${loadedImages.length}개 이미지가 추가되었습니다.`;
   setUploadStatus({
     active: true,
-    title: "로드 완료",
+    title: issueCount ? "일부 파일 건너뜀" : "로드 완료",
     current: totalWork,
     total: totalWork,
-    detail: `${loadedImages.length}개 이미지가 추가되었습니다.`,
+    detail: uploadDetail,
   });
-  window.setTimeout(() => setUploadStatus({ active: false }), 1200);
+  window.setTimeout(() => setUploadStatus({ active: false }), issueCount ? 3600 : 1200);
 }
 
 function applyLabelsToExistingImages() {
