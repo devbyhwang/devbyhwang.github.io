@@ -1686,6 +1686,19 @@ async function exportImageAsJpeg(item) {
   return new Uint8Array(await blob.arrayBuffer());
 }
 
+function uniqueExportBaseName(item, usedNames) {
+  const fallback = `image-${usedNames.size + 1}`;
+  const rawBaseName = baseName(item.name) || item.baseName || fallback;
+  let candidate = rawBaseName;
+  let suffix = 2;
+  while (usedNames.has(candidate)) {
+    candidate = `${rawBaseName}-${suffix}`;
+    suffix += 1;
+  }
+  usedNames.add(candidate);
+  return candidate;
+}
+
 async function downloadZip() {
   if (!state.images.length) return;
   refreshTrainingFiltersIfApplied();
@@ -1693,9 +1706,14 @@ async function downloadZip() {
   const classes = getClasses();
   const files = [];
   const exportImages = state.images.filter((item) => !item.excludeFromExport);
-  exportImages.forEach((item) => {
+  const usedExportBaseNames = new Set();
+  const exportItems = exportImages.map((item) => ({
+    item,
+    exportBaseName: uniqueExportBaseName(item, usedExportBaseNames),
+  }));
+  exportItems.forEach(({ item, exportBaseName }) => {
     const label = saveLabelsFor(item);
-    if (label !== null) files.push({ name: `labels/${item.baseName}.txt`, bytes: encoder.encode(label) });
+    if (label !== null) files.push({ name: `labels/${exportBaseName}.txt`, bytes: encoder.encode(label) });
   });
   files.push({ name: "classes.txt", bytes: encoder.encode(`${classes.join("\n")}\n`) });
   files.push({ name: "label-format.txt", bytes: encoder.encode(`${els.labelFormat.value}\n${els.labelFormat.value === "custom" ? els.customFormat.value : ""}\n`) });
@@ -1704,8 +1722,8 @@ async function downloadZip() {
     bytes: encoder.encode(`path: .\ntrain: images\nval: images\nnames:\n${classes.map((name, index) => `  ${index}: ${name}`).join("\n")}\n`),
   });
   if (els.includeImages.checked) {
-    for (const item of exportImages) {
-      files.push({ name: `images/${item.baseName}.jpg`, bytes: await exportImageAsJpeg(item) });
+    for (const { item, exportBaseName } of exportItems) {
+      files.push({ name: `images/${exportBaseName}.jpg`, bytes: await exportImageAsJpeg(item) });
     }
   }
   const blob = makeZip(files);
