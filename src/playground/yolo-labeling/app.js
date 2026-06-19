@@ -101,6 +101,24 @@ function revokeObjectUrlsLater(urls, delayMs = 1000) {
   }, delayMs);
 }
 
+function revokeObjectUrlsNow(urls) {
+  const objectUrls = Array.isArray(urls) ? urls.filter(Boolean) : [urls].filter(Boolean);
+  objectUrls.forEach((url) => URL.revokeObjectURL(url));
+}
+
+function releaseLoadedImagesNow() {
+  const urlsToRevoke = state.images.map((item) => item.url);
+  state.images.forEach((item) => {
+    if (item.image) item.image.src = "";
+  });
+  revokeObjectUrlsNow(urlsToRevoke);
+}
+
+function handlePageHide(event) {
+  if (event.persisted) return;
+  releaseLoadedImagesNow();
+}
+
 function clamp(value, min = 0, max = 1) {
   return Math.max(min, Math.min(max, value));
 }
@@ -1649,6 +1667,7 @@ function clearFiles() {
 }
 
 els.fileInput.addEventListener("change", () => addFiles(els.fileInput.files));
+window.addEventListener("pagehide", handlePageHide);
 els.classes.addEventListener("input", () => {
   updateClassSelect();
   state.images.forEach((item) => {
