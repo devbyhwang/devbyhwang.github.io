@@ -139,8 +139,11 @@ function isSupportedImageFile(file) {
   return supportedImageTypes.has(type) || supportedImageExtensions.has(fileExtension(file.name));
 }
 
-async function hasSupportedImageSignature(file) {
-  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+function byteText(bytes, start, end) {
+  return String.fromCharCode(...bytes.slice(start, end));
+}
+
+function detectImageSignature(bytes, fileSize) {
   const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
   const isPng =
     bytes[0] === 0x89 &&
@@ -151,17 +154,44 @@ async function hasSupportedImageSignature(file) {
     bytes[5] === 0x0a &&
     bytes[6] === 0x1a &&
     bytes[7] === 0x0a;
-  const isWebp =
-    bytes[0] === 0x52 &&
-    bytes[1] === 0x49 &&
-    bytes[2] === 0x46 &&
-    bytes[3] === 0x46 &&
-    bytes[8] === 0x57 &&
-    bytes[9] === 0x45 &&
-    bytes[10] === 0x42 &&
-    bytes[11] === 0x50;
+  const isWebp = byteText(bytes, 0, 4) === "RIFF" && byteText(bytes, 8, 12) === "WEBP";
   const isBmp = bytes[0] === 0x42 && bytes[1] === 0x4d;
-  return isJpeg || isPng || isWebp || isBmp;
+  if (isJpeg) return { supported: true, label: "JPEG" };
+  if (isPng) return { supported: true, label: "PNG" };
+  if (isWebp) return { supported: true, label: "WEBP" };
+  if (isBmp) return { supported: true, label: "BMP" };
+
+  const boxBrand = byteText(bytes, 4, 8) === "ftyp" ? byteText(bytes, 8, 12) : "";
+  if (["heic", "heix", "hevc", "hevx", "mif1", "msf1"].includes(boxBrand)) {
+    return { supported: false, label: "HEIC/HEIF" };
+  }
+  if (["avif", "avis"].includes(boxBrand)) return { supported: false, label: "AVIF" };
+  if (byteText(bytes, 0, 3) === "GIF") return { supported: false, label: "GIF" };
+  if (byteText(bytes, 0, 4) === "%PDF") return { supported: false, label: "PDF" };
+  if (fileSize === 0) return { supported: false, label: "빈 파일" };
+  return { supported: false, label: "알 수 없는 형식" };
+}
+
+async function readImageSignature(file) {
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  return detectImageSignature(bytes, file.size);
+}
+
+function skipReasonText(skip) {
+  return `${skip.name}: ${skip.reason}`;
+}
+
+function summarizeSkippedFiles(skippedFiles) {
+  if (!skippedFiles.length) return "";
+  const shown = skippedFiles.slice(0, 3).map(skipReasonText).join(" / ");
+  const remaining = skippedFiles.length > 3 ? ` 외 ${skippedFiles.length - 3}개` : "";
+  return `${shown}${remaining}`;
+}
+
+function unsupportedFileReason(file) {
+  const extension = fileExtension(file.name) || "확장자 없음";
+  const type = file.type || "MIME 없음";
+  return `지원 대상 아님 (${extension}, ${type})`;
 }
 
 function normalizeBoxToBounds(box) {
@@ -855,8 +885,9 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
 }
 
 async function readImageFile(file) {
-  if (!(await hasSupportedImageSignature(file))) {
-    throw new Error(`${file.name} 파일 내용이 지원 이미지 형식이 아닙니다.`);
+  const signature = await readImageSignature(file);
+  if (!signature.supported) {
+    throw new Error(`파일 내용이 ${signature.label}입니다.`);
   }
   const url = URL.createObjectURL(file);
   const image = new Image();
@@ -916,7 +947,9 @@ async function addFiles(fileList) {
   const files = Array.from(fileList);
   const labelFiles = files.filter((file) => file.name.toLowerCase().endsWith(".txt"));
   const imageFiles = files.filter(isSupportedImageFile);
-  const unsupportedFiles = files.filter((file) => !labelFiles.includes(file) && !imageFiles.includes(file));
+  const unsupportedFiles = files
+    .filter((file) => !labelFiles.includes(file) && !imageFiles.includes(file))
+    .map((file) => ({ name: file.name, reason: unsupportedFileReason(file) }));
   const totalWork = labelFiles.length + imageFiles.length;
   if (totalWork === 0) {
     setUploadStatus({
@@ -925,7 +958,7 @@ async function addFiles(fileList) {
       current: 0,
       total: 0,
       detail: unsupportedFiles.length
-        ? "PNG, JPG, WEBP, BMP 이미지나 YOLO 라벨 좌표 txt 파일만 지원합니다."
+        ? summarizeSkippedFiles(unsupportedFiles)
         : "이미지 파일이나 YOLO 라벨 좌표 txt 파일을 선택하세요.",
     });
     window.setTimeout(() => setUploadStatus({ active: false }), 2200);
@@ -947,7 +980,7 @@ async function addFiles(fileList) {
     try {
       detectedFormats.push(await readLabelFile(file));
     } catch (error) {
-      failedLabels.push(file.name);
+      failedLabels.push({ name: file.name, reason: "라벨 txt를 읽을 수 없음" });
     }
     completedWork += 1;
     setUploadStatus({
@@ -983,7 +1016,7 @@ async function addFiles(fileList) {
         loadedImages.push(image);
       }
     } catch (error) {
-      failedImages.push(file.name);
+      failedImages.push({ name: file.name, reason: error.message || "이미지를 읽을 수 없음" });
     }
     completedWork += 1;
     setUploadStatus({
@@ -1006,8 +1039,9 @@ async function addFiles(fileList) {
   renderReview();
   revokeObjectUrlsLater(replacedUrls);
   const issueCount = unsupportedFiles.length + failedImages.length + failedLabels.length;
+  const skippedFiles = [...unsupportedFiles, ...failedImages, ...failedLabels];
   const uploadDetail = issueCount
-    ? `${loadedImages.length}개 이미지가 추가되었습니다. ${issueCount}개 파일은 지원하지 않거나 읽을 수 없어 건너뛰었습니다.`
+    ? `${loadedImages.length}개 이미지가 추가되었습니다. 건너뜀: ${summarizeSkippedFiles(skippedFiles)}`
     : `${loadedImages.length}개 이미지가 추가되었습니다.`;
   setUploadStatus({
     active: true,
