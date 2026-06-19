@@ -173,12 +173,8 @@ function detectImageSignature(bytes, fileSize) {
 }
 
 async function readImageSignature(file) {
-  try {
-    const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
-    return detectImageSignature(bytes, file.size);
-  } catch (error) {
-    throw new Error("파일 바이트를 읽을 수 없습니다. iCloud/외장 드라이브 파일이면 로컬에 다운로드한 뒤 다시 선택하세요.");
-  }
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  return detectImageSignature(bytes, file.size);
 }
 
 function skipReasonText(skip) {
