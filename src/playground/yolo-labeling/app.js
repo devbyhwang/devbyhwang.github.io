@@ -139,44 +139,6 @@ function isSupportedImageFile(file) {
   return supportedImageTypes.has(type) || supportedImageExtensions.has(fileExtension(file.name));
 }
 
-function byteText(bytes, start, end) {
-  return String.fromCharCode(...bytes.slice(start, end));
-}
-
-function detectImageSignature(bytes, fileSize) {
-  const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-  const isPng =
-    bytes[0] === 0x89 &&
-    bytes[1] === 0x50 &&
-    bytes[2] === 0x4e &&
-    bytes[3] === 0x47 &&
-    bytes[4] === 0x0d &&
-    bytes[5] === 0x0a &&
-    bytes[6] === 0x1a &&
-    bytes[7] === 0x0a;
-  const isWebp = byteText(bytes, 0, 4) === "RIFF" && byteText(bytes, 8, 12) === "WEBP";
-  const isBmp = bytes[0] === 0x42 && bytes[1] === 0x4d;
-  if (isJpeg) return { supported: true, label: "JPEG" };
-  if (isPng) return { supported: true, label: "PNG" };
-  if (isWebp) return { supported: true, label: "WEBP" };
-  if (isBmp) return { supported: true, label: "BMP" };
-
-  const boxBrand = byteText(bytes, 4, 8) === "ftyp" ? byteText(bytes, 8, 12) : "";
-  if (["heic", "heix", "hevc", "hevx", "mif1", "msf1"].includes(boxBrand)) {
-    return { supported: false, label: "HEIC/HEIF" };
-  }
-  if (["avif", "avis"].includes(boxBrand)) return { supported: false, label: "AVIF" };
-  if (byteText(bytes, 0, 3) === "GIF") return { supported: false, label: "GIF" };
-  if (byteText(bytes, 0, 4) === "%PDF") return { supported: false, label: "PDF" };
-  if (fileSize === 0) return { supported: false, label: "빈 파일" };
-  return { supported: false, label: "알 수 없는 형식" };
-}
-
-async function readImageSignature(file) {
-  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
-  return detectImageSignature(bytes, file.size);
-}
-
 function skipReasonText(skip) {
   return `${skip.name}: ${skip.reason}`;
 }
@@ -191,7 +153,7 @@ function summarizeSkippedFiles(skippedFiles) {
 function unsupportedFileReason(file) {
   const extension = fileExtension(file.name) || "확장자 없음";
   const type = file.type || "MIME 없음";
-  return `지원 대상 아님 (${extension}, ${type})`;
+  return `지원 확장자/MIME 아님 (${extension}, ${type})`;
 }
 
 function normalizeBoxToBounds(box) {
@@ -885,20 +847,16 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
 }
 
 async function readImageFile(file) {
-  const signature = await readImageSignature(file);
-  if (!signature.supported) {
-    throw new Error(`파일 내용이 ${signature.label}입니다.`);
-  }
   const url = URL.createObjectURL(file);
   const image = new Image();
   try {
     await new Promise((resolve, reject) => {
       image.onload = resolve;
-      image.onerror = () => reject(new Error(`${file.name} 이미지를 브라우저에서 열 수 없습니다.`));
+      image.onerror = () => reject(new Error("브라우저가 이미지를 디코딩하지 못했습니다."));
       image.src = url;
     });
     if (!image.naturalWidth || !image.naturalHeight) {
-      throw new Error(`${file.name} 이미지 크기를 읽을 수 없습니다.`);
+      throw new Error("이미지 크기를 읽을 수 없습니다.");
     }
   } catch (error) {
     revokeObjectUrlsLater(url);
