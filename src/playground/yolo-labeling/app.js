@@ -1711,10 +1711,13 @@ async function downloadZip() {
     item,
     exportBaseName: uniqueExportBaseName(item, usedExportBaseNames),
   }));
-  exportItems.forEach(({ item, exportBaseName }) => {
-    const label = saveLabelsFor(item);
-    if (label !== null) files.push({ name: `labels/${exportBaseName}.txt`, bytes: encoder.encode(label) });
-  });
+  const skippedExports = [];
+  if (!els.includeImages.checked) {
+    exportItems.forEach(({ item, exportBaseName }) => {
+      const label = saveLabelsFor(item);
+      if (label !== null) files.push({ name: `labels/${exportBaseName}.txt`, bytes: encoder.encode(label) });
+    });
+  }
   files.push({ name: "classes.txt", bytes: encoder.encode(`${classes.join("\n")}\n`) });
   files.push({ name: "label-format.txt", bytes: encoder.encode(`${els.labelFormat.value}\n${els.labelFormat.value === "custom" ? els.customFormat.value : ""}\n`) });
   files.push({
@@ -1723,7 +1726,19 @@ async function downloadZip() {
   });
   if (els.includeImages.checked) {
     for (const { item, exportBaseName } of exportItems) {
-      files.push({ name: `images/${exportBaseName}.jpg`, bytes: await exportImageAsJpeg(item) });
+      try {
+        files.push({ name: `images/${exportBaseName}.jpg`, bytes: await exportImageAsJpeg(item) });
+        const label = saveLabelsFor(item);
+        if (label !== null) files.push({ name: `labels/${exportBaseName}.txt`, bytes: encoder.encode(label) });
+      } catch (error) {
+        skippedExports.push(`${item.name}: ${error.message || "이미지 JPEG 변환 실패"}`);
+      }
+    }
+    if (skippedExports.length) {
+      files.push({
+        name: "image-export-errors.txt",
+        bytes: encoder.encode(`${skippedExports.join("\n")}\n`),
+      });
     }
   }
   const blob = makeZip(files);
