@@ -847,16 +847,23 @@ function parseLabelText(text, labelFileName, forcedFormat = "") {
 }
 
 async function readImageFile(file) {
-  const url = URL.createObjectURL(file);
-  const image = new Image();
+  let url = URL.createObjectURL(file);
+  let image = new Image();
   try {
     await loadImageElement(image, url);
   } catch (error) {
     revokeObjectUrlsLater(url);
-    throw new Error("브라우저가 이미지를 디코딩하지 못했습니다. 파일이 손상되었거나 지원하지 않는 JPG 인코딩일 수 있습니다.");
+    const dataUrl = await readFileAsDataUrl(file);
+    image = new Image();
+    url = "";
+    try {
+      await loadImageElement(image, dataUrl);
+    } catch (dataUrlError) {
+      throw new Error("브라우저가 이미지를 디코딩하지 못했습니다. 파일이 손상되었거나 지원하지 않는 JPG 인코딩일 수 있습니다.");
+    }
   }
   if (!image.naturalWidth || !image.naturalHeight) {
-    revokeObjectUrlsLater(url);
+    if (url) revokeObjectUrlsLater(url);
     throw new Error("이미지 크기를 읽을 수 없습니다.");
   }
   const labelSource = state.labelsByBaseName.get(baseName(file.name));
@@ -896,6 +903,15 @@ function loadImageElement(image, src) {
     image.onload = resolve;
     image.onerror = () => reject(new Error("브라우저가 이미지를 디코딩하지 못했습니다."));
     image.src = src;
+  });
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(String(reader.result || "")), { once: true });
+    reader.addEventListener("error", () => reject(reader.error || new Error("이미지 파일을 읽을 수 없습니다.")), { once: true });
+    reader.readAsDataURL(file);
   });
 }
 
