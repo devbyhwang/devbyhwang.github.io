@@ -23,7 +23,7 @@ const els = {
   autoReviewToggle: document.querySelector("#auto-review-toggle"),
   downloadLabels: document.querySelector("#download-labels"),
   runFilters: document.querySelector("#run-filters"),
-  lowResolutionList: document.querySelector("#low-resolution-list"),
+  lowResolutionThreshold: document.querySelector("#low-resolution-threshold"),
   lowResolutionStatus: document.querySelector("#low-resolution-status"),
   filterTotal: document.querySelector("#filter-total"),
   filterVisible: document.querySelector("#filter-visible"),
@@ -66,7 +66,7 @@ const state = {
   labelFormatManual: false,
   filterView: "all",
   filtersApplied: false,
-  lowResolutionKeys: new Set(),
+  lowResolutionThreshold: 640,
   drag: null,
   eraserFeedback: null,
   eraserFeedbackTimer: null,
@@ -87,6 +87,7 @@ const duplicateImageHashDistance = 4;
 const overlapLabelIou = 0.35;
 const supportedImageTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/bmp"]);
 const supportedImageExtensions = new Set(["png", "jpg", "jpeg", "webp", "bmp"]);
+const defaultLowResolutionThresholds = [320, 416, 640];
 
 const filterLabels = {
   all: "전체",
@@ -324,35 +325,65 @@ function markDirty(item) {
   if (item) item.dirty = true;
 }
 
-function resolutionKey(width, height) {
-  const normalizedWidth = Math.round(width);
-  const normalizedHeight = Math.round(height);
-  const shortSide = Math.min(normalizedWidth, normalizedHeight);
-  const longSide = Math.max(normalizedWidth, normalizedHeight);
-  return `${shortSide}x${longSide}`;
+function lowResolutionThresholdForItem(item) {
+  return Math.min(Math.round(item.width), Math.round(item.height));
 }
 
-function parseLowResolutionKeys(raw) {
-  const keys = new Set();
-  const matches = String(raw || "").matchAll(/(\d{2,5})\s*[x×]\s*(\d{2,5})/gi);
-  for (const match of matches) {
-    keys.add(resolutionKey(Number(match[1]), Number(match[2])));
-  }
-  return keys;
+function imageThresholdCounts() {
+  const counts = new Map();
+  state.images.forEach((item) => {
+    const threshold = lowResolutionThresholdForItem(item);
+    counts.set(threshold, (counts.get(threshold) || 0) + 1);
+  });
+  return counts;
+}
+
+function lowResolutionOptionEntries() {
+  const counts = imageThresholdCounts();
+  const thresholds = new Set(defaultLowResolutionThresholds);
+  counts.forEach((count, threshold) => thresholds.add(threshold));
+  if (state.lowResolutionThreshold) thresholds.add(state.lowResolutionThreshold);
+  return [...thresholds]
+    .filter((threshold) => Number.isFinite(threshold) && threshold > 0)
+    .map((threshold) => ({
+      threshold,
+      count: counts.get(threshold) || 0,
+    }))
+    .sort((a, b) => a.threshold - b.threshold);
 }
 
 function syncLowResolutionList() {
-  state.lowResolutionKeys = parseLowResolutionKeys(els.lowResolutionList.value);
-  const count = state.lowResolutionKeys.size;
-  els.lowResolutionStatus.textContent = count
-    ? `${count}개 해상도를 저해상도 목록으로 사용합니다. 세로/가로 방향은 같은 해상도로 처리합니다.`
-    : "해상도 목록이 비어 있어 저해상도 필터는 적용되지 않습니다.";
+  const selectedThreshold = Number(els.lowResolutionThreshold.value || state.lowResolutionThreshold);
+  const entries = lowResolutionOptionEntries();
+  els.lowResolutionThreshold.replaceChildren(...entries.map((entry) => {
+    const option = document.createElement("option");
+    option.value = String(entry.threshold);
+    option.textContent = entry.count
+      ? `${entry.threshold}x${entry.threshold} (${entry.count}개)`
+      : `${entry.threshold}x${entry.threshold}`;
+    return option;
+  }));
+  const nextSelectedThreshold = entries.some((entry) => entry.threshold === selectedThreshold)
+    ? selectedThreshold
+    : entries.at(-1)?.threshold || 0;
+  els.lowResolutionThreshold.value = String(nextSelectedThreshold);
+  state.lowResolutionThreshold = nextSelectedThreshold;
+
+  const imageThresholdCount = imageThresholdCounts().size;
+  els.lowResolutionStatus.textContent = nextSelectedThreshold
+    ? `${nextSelectedThreshold}x${nextSelectedThreshold}보다 가로 또는 세로가 작은 이미지를 저해상도로 제외합니다. 업로드된 이미지 기준 ${imageThresholdCount}개를 목록에 반영합니다.`
+    : "선택할 해상도가 없어 저해상도 필터는 적용되지 않습니다.";
 }
 
 function lowResolutionReason(item) {
-  const key = resolutionKey(item.width, item.height);
-  if (!state.lowResolutionKeys.has(key)) return null;
-  return { id: "low", label: `${filterLabels.low}: ${Math.round(item.width)}x${Math.round(item.height)}` };
+  const threshold = state.lowResolutionThreshold;
+  if (!threshold) return null;
+  const isLowerResolution = item.width < threshold || item.height < threshold;
+  if (!isLowerResolution) return null;
+  return {
+    id: "low",
+    label: `${filterLabels.low}: ${Math.round(item.width)}x${Math.round(item.height)} < ${threshold}x${threshold}`,
+  };
 }
 
 function setFilterResult(item, excluded, reasons = [], manualOverride = item.manualFilterOverride || null) {
@@ -1047,6 +1078,8 @@ async function addFiles(fileList) {
   if (state.images.length && loadedImages.length) state.currentIndex = state.images.length - loadedImages.length;
   state.selectedBoxId = null;
   updateClassSelect();
+  if (state.filtersApplied) refreshTrainingFilters();
+  else syncLowResolutionList();
   updateCounts();
   renderReview();
   revokeObjectUrlsLater(replacedUrls);
@@ -1817,6 +1850,7 @@ function clearFiles() {
   state.filterView = "all";
   state.filtersApplied = false;
   els.fileInput.value = "";
+  syncLowResolutionList();
   updateCounts();
   renderReview();
   revokeObjectUrlsLater(urlsToRevoke);
@@ -1866,7 +1900,7 @@ els.eraserSize.addEventListener("input", () => {
   draw();
 });
 els.runFilters.addEventListener("click", runTrainingFilters);
-els.lowResolutionList.addEventListener("input", () => {
+els.lowResolutionThreshold.addEventListener("change", () => {
   syncLowResolutionList();
   refreshTrainingFiltersIfApplied();
   renderReview();
