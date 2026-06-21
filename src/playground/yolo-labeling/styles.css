@@ -613,6 +613,27 @@ input:focus, select:focus, textarea:focus {
   width: 100%;
 }
 
+.resolution-list-field {
+  display: grid;
+  gap: 7px;
+}
+
+.resolution-list-field span {
+  margin-bottom: 0;
+}
+
+.resolution-list-field textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.resolution-list-field em {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-style: normal;
+  line-height: 1.35;
+}
+
 .filter-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

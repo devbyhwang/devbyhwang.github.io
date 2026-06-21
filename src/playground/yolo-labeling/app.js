@@ -23,6 +23,8 @@ const els = {
   autoReviewToggle: document.querySelector("#auto-review-toggle"),
   downloadLabels: document.querySelector("#download-labels"),
   runFilters: document.querySelector("#run-filters"),
+  lowResolutionList: document.querySelector("#low-resolution-list"),
+  lowResolutionStatus: document.querySelector("#low-resolution-status"),
   filterTotal: document.querySelector("#filter-total"),
   filterVisible: document.querySelector("#filter-visible"),
   filterExcluded: document.querySelector("#filter-excluded"),
@@ -64,6 +66,7 @@ const state = {
   labelFormatManual: false,
   filterView: "all",
   filtersApplied: false,
+  lowResolutionKeys: new Set(),
   drag: null,
   eraserFeedback: null,
   eraserFeedbackTimer: null,
@@ -80,7 +83,6 @@ const minPolygonArea = 0.00002;
 const maxPolygonPoints = 320;
 const maxEditPolygonPoints = 900;
 const eraserFeedbackMs = 2600;
-const minTrainingImageSide = 400;
 const duplicateImageHashDistance = 4;
 const overlapLabelIou = 0.35;
 const supportedImageTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/bmp"]);
@@ -320,6 +322,37 @@ function editablePointsForBox(box) {
 
 function markDirty(item) {
   if (item) item.dirty = true;
+}
+
+function resolutionKey(width, height) {
+  const normalizedWidth = Math.round(width);
+  const normalizedHeight = Math.round(height);
+  const shortSide = Math.min(normalizedWidth, normalizedHeight);
+  const longSide = Math.max(normalizedWidth, normalizedHeight);
+  return `${shortSide}x${longSide}`;
+}
+
+function parseLowResolutionKeys(raw) {
+  const keys = new Set();
+  const matches = String(raw || "").matchAll(/(\d{2,5})\s*[x×]\s*(\d{2,5})/gi);
+  for (const match of matches) {
+    keys.add(resolutionKey(Number(match[1]), Number(match[2])));
+  }
+  return keys;
+}
+
+function syncLowResolutionList() {
+  state.lowResolutionKeys = parseLowResolutionKeys(els.lowResolutionList.value);
+  const count = state.lowResolutionKeys.size;
+  els.lowResolutionStatus.textContent = count
+    ? `${count}개 해상도를 저해상도 목록으로 사용합니다. 세로/가로 방향은 같은 해상도로 처리합니다.`
+    : "해상도 목록이 비어 있어 저해상도 필터는 적용되지 않습니다.";
+}
+
+function lowResolutionReason(item) {
+  const key = resolutionKey(item.width, item.height);
+  if (!state.lowResolutionKeys.has(key)) return null;
+  return { id: "low", label: `${filterLabels.low}: ${Math.round(item.width)}x${Math.round(item.height)}` };
 }
 
 function setFilterResult(item, excluded, reasons = [], manualOverride = item.manualFilterOverride || null) {
@@ -1185,11 +1218,12 @@ function ensureCurrentVisible() {
 }
 
 function refreshTrainingFilters() {
+  syncLowResolutionList();
   const seenHashes = [];
   state.images.forEach((item) => {
     const reasons = [];
-    const shortSide = Math.min(item.width, item.height);
-    if (shortSide < minTrainingImageSide) reasons.push({ id: "low", label: `${filterLabels.low}: ${shortSide}px` });
+    const lowReason = lowResolutionReason(item);
+    if (lowReason) reasons.push(lowReason);
     const hash = imageHash(item);
     const duplicate = seenHashes.find((candidate) => hammingDistance(candidate.hash, hash) <= duplicateImageHashDistance);
     if (duplicate) reasons.push({ id: "duplicate", label: `${filterLabels.duplicate}: ${duplicate.name}` });
@@ -1832,6 +1866,11 @@ els.eraserSize.addEventListener("input", () => {
   draw();
 });
 els.runFilters.addEventListener("click", runTrainingFilters);
+els.lowResolutionList.addEventListener("input", () => {
+  syncLowResolutionList();
+  refreshTrainingFiltersIfApplied();
+  renderReview();
+});
 els.filterTabs.forEach((button) => {
   button.addEventListener("click", () => {
     state.filterView = button.dataset.filterView;
@@ -2114,5 +2153,6 @@ window.addEventListener("resize", () => {
 
 updateClassSelect();
 updateFormatHelp();
+syncLowResolutionList();
 updateAutoReviewButton();
 updateCounts();
