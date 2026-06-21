@@ -159,6 +159,13 @@
 
           <div class="tool-group filter-panel">
             <h3>학습 필터</h3>
+            <label class="resolution-list-field">
+              <span>저해상도 해상도 목록</span>
+              <textarea id="low-resolution-list" rows="3" spellcheck="false">320x240
+384x216
+640x360</textarea>
+              <em id="low-resolution-status">목록의 해상도와 일치하는 이미지를 저해상도로 제외합니다.</em>
+            </label>
             <button id="run-filters" class="primary-button" type="button">필터 실행</button>
             <div class="filter-stats" aria-live="polite">
               <div><strong id="filter-total">0</strong><span>전체</span></div>
