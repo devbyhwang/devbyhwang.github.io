@@ -42,7 +42,7 @@ button:disabled { cursor: not-allowed; opacity: 0.52; }
   flex-direction: column;
   width: min(1440px, 100%);
   margin: 0 auto;
-  padding: 76px 18px max(30px, calc(var(--playground-ad-safe-space, 0px) + 24px));
+  padding: 30px 18px max(30px, calc(var(--playground-ad-safe-space, 0px) + 24px));
 }
 
 .app-header {
@@ -70,6 +70,10 @@ h1 {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(2.6rem, 6vw, 5.9rem);
   line-height: 0.92;
+}
+
+h1 span {
+  display: inline;
 }
 
 h2 {
@@ -917,7 +921,22 @@ input:focus, select:focus, textarea:focus {
 }
 
 @media (max-width: 680px) {
-  .app-shell { padding-inline: 12px; }
+  .app-shell {
+    padding-top: 16px;
+    padding-inline: 12px;
+  }
+  .app-header > * {
+    min-width: 0;
+  }
+  h1 {
+    max-width: 100%;
+    font-size: clamp(2.15rem, 9vw, 4rem);
+    overflow-wrap: break-word;
+    text-wrap: balance;
+  }
+  h1 span {
+    display: block;
+  }
   .preset-grid,
   .form-grid,
   .stats-row,

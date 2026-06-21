@@ -40,7 +40,7 @@
     .shell {
       width: min(1180px, calc(100% - 28px));
       margin: 0 auto;
-      padding: 86px 0 calc(90px + var(--playground-ad-safe-space, 0px));
+      padding: 34px 0 calc(90px + var(--playground-ad-safe-space, 0px));
       position: relative;
     }
     .tool-header,
@@ -609,7 +609,7 @@
     @media (max-width: 640px) {
       .shell {
         width: min(100% - 18px, 1180px);
-        padding-top: 68px;
+        padding-top: 18px;
         padding-bottom: calc(76px + var(--playground-ad-safe-space, 0px));
       }
       .tool-header,
