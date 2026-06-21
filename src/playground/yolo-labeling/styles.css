@@ -622,9 +622,8 @@ input:focus, select:focus, textarea:focus {
   margin-bottom: 0;
 }
 
-.resolution-list-field textarea {
-  min-height: 84px;
-  resize: vertical;
+.resolution-list-field select {
+  min-height: 42px;
 }
 
 .resolution-list-field em {
