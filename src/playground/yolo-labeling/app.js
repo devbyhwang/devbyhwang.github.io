@@ -88,6 +88,7 @@ const state = {
     restoredCount: 0,
     restoreAccepted: false,
     restoreSession: null,
+    emergencyItems: new Map(),
   },
 };
 
@@ -107,6 +108,7 @@ const overlapLabelIou = 0.35;
 const autosaveDbName = "devbyhwang-yolo-label-editor";
 const autosaveDbVersion = 2;
 const autosaveSessionKey = "current";
+const autosaveEmergencyKey = "devbyhwang-yolo-label-editor-emergency";
 const autosaveDelayMs = 300;
 const imageSignatureChunkSize = 8192;
 const supportedImageTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/bmp"]);
@@ -287,6 +289,62 @@ function serializeSessionForAutosave() {
   };
 }
 
+function autosaveItemsForKeys(itemKeys) {
+  const itemByAutosaveKey = new Map(state.images.map((item) => [item.autosaveKey, item]));
+  return itemKeys
+    .map((autosaveKey) => itemByAutosaveKey.get(autosaveKey))
+    .filter(Boolean)
+    .map(serializeItemForAutosave);
+}
+
+function readEmergencyAutosave() {
+  try {
+    const raw = localStorage.getItem(autosaveEmergencyKey);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed?.session || !Array.isArray(parsed.items)) return null;
+    return parsed;
+  } catch (error) {
+    return null;
+  }
+}
+
+function writeEmergencyAutosave(session, items) {
+  if (!session && !items.length) return;
+  try {
+    localStorage.setItem(autosaveEmergencyKey, JSON.stringify({
+      version: 1,
+      updatedAt: Date.now(),
+      session,
+      items,
+    }));
+  } catch (error) {
+    setAutosaveStatus("긴급 자동 저장 실패", "브라우저 임시 저장소 용량이 부족할 수 있습니다.");
+  }
+}
+
+function clearEmergencyAutosave() {
+  try {
+    localStorage.removeItem(autosaveEmergencyKey);
+  } catch (error) {
+    // Ignore storage cleanup failures; IndexedDB remains the primary autosave store.
+  }
+}
+
+function emergencyItemForKey(autosaveKey) {
+  return state.autosave.emergencyItems.get(autosaveKey) || null;
+}
+
+function updateEmergencyAutosaveSnapshot() {
+  if (!state.autosave.available) return;
+  const itemKeys = [...state.autosave.pendingItems];
+  if (!state.autosave.pendingSession && !itemKeys.length) return;
+  writeEmergencyAutosave(
+    state.autosave.pendingSession ? serializeSessionForAutosave() : state.autosave.restoreSession,
+    autosaveItemsForKeys(itemKeys)
+  );
+}
+
 function rehydrateAutosavedBox(box) {
   return normalizeBoxToBounds({
     id: box.id || crypto.randomUUID(),
@@ -362,6 +420,7 @@ async function writeAutosaveRecords({ session = null, items = [] } = {}) {
 function scheduleAutosaveSession() {
   if (!state.autosave.available) return;
   state.autosave.pendingSession = true;
+  updateEmergencyAutosaveSnapshot();
   scheduleAutosaveFlush();
 }
 
@@ -369,6 +428,7 @@ function scheduleAutosaveItem(item) {
   if (!state.autosave.available || !item?.autosaveKey) return;
   state.autosave.pendingItems.add(item.autosaveKey);
   state.autosave.pendingSession = true;
+  updateEmergencyAutosaveSnapshot();
   scheduleAutosaveFlush();
 }
 
@@ -378,6 +438,7 @@ function scheduleAutosaveAllItems() {
     if (item.autosaveKey) state.autosave.pendingItems.add(item.autosaveKey);
   });
   state.autosave.pendingSession = true;
+  updateEmergencyAutosaveSnapshot();
   scheduleAutosaveFlush();
 }
 
@@ -408,12 +469,9 @@ async function flushAutosaveNow() {
   state.autosave.pendingItems.clear();
   if (!shouldSaveSession && !itemKeys.length) return;
 
-  const itemByAutosaveKey = new Map(state.images.map((item) => [item.autosaveKey, item]));
-  const items = itemKeys
-    .map((autosaveKey) => itemByAutosaveKey.get(autosaveKey))
-    .filter(Boolean)
-    .map(serializeItemForAutosave);
+  const items = autosaveItemsForKeys(itemKeys);
   const session = shouldSaveSession ? serializeSessionForAutosave() : null;
+  writeEmergencyAutosave(session, items);
 
   state.autosave.inFlight += 1;
   let saveFailed = false;
@@ -435,6 +493,7 @@ async function flushAutosaveNow() {
   } finally {
     state.autosave.inFlight = Math.max(0, state.autosave.inFlight - 1);
     if (!saveFailed && state.autosave.available && hasAutosaveWork() && !state.autosave.timer) scheduleAutosaveFlush();
+    if (!saveFailed && !hasAutosaveWork()) clearEmergencyAutosave();
   }
 }
 
@@ -461,6 +520,7 @@ async function clearAutosaveData() {
   state.autosave.pendingSession = false;
   state.autosave.restoreAccepted = false;
   state.autosave.restoreSession = null;
+  clearEmergencyAutosave();
   setAutosaveStatus("자동 저장 비어 있음", "현재 브라우저에 남은 라벨 자동 저장이 없습니다.");
 }
 
@@ -502,7 +562,13 @@ async function initAutosave() {
   try {
     await openAutosaveDb();
     state.autosave.available = true;
-    const session = await readAutosaveSession();
+    const emergency = readEmergencyAutosave();
+    const savedSession = await readAutosaveSession();
+    const useEmergency = Boolean(emergency?.updatedAt && (!savedSession?.updatedAt || emergency.updatedAt >= savedSession.updatedAt));
+    const session = useEmergency ? emergency.session : savedSession;
+    state.autosave.emergencyItems = useEmergency && emergency?.items?.length
+      ? new Map(emergency.items.map((item) => [item.autosaveKey, item]))
+      : new Map();
     state.autosave.loaded = true;
     if (session?.updatedAt) {
       state.autosave.restoreSession = session;
@@ -1375,7 +1441,7 @@ async function readImageFile(file) {
   };
   try {
     if (!state.autosave.restoreAccepted || !state.autosave.restoreSession) return item;
-    const savedItem = await readAutosavedItem(item.autosaveKey);
+    const savedItem = emergencyItemForKey(item.autosaveKey) || await readAutosavedItem(item.autosaveKey);
     if (applyAutosavedItem(item, savedItem)) state.autosave.restoredCount += 1;
   } catch (error) {
     state.autosave.available = false;
