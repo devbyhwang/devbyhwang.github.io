@@ -228,6 +228,69 @@ input:focus, select:focus, textarea:focus {
   background: rgba(31, 93, 74, 0.08);
 }
 
+.autosave-status {
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  margin-top: 12px;
+  padding: 11px;
+  border: 1px solid rgba(45, 95, 139, 0.24);
+  border-radius: 8px;
+  background: rgba(45, 95, 139, 0.08);
+}
+
+.autosave-status[hidden] {
+  display: none;
+}
+
+.autosave-status strong {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.autosave-status p {
+  margin: 4px 0 0;
+  font-size: 0.84rem;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(22, 32, 29, 0.46);
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.modal-panel {
+  width: min(460px, 100%);
+  padding: 20px;
+  border: 1px solid rgba(22, 32, 29, 0.16);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 24px 80px rgba(22, 32, 29, 0.24);
+}
+
+.modal-panel h2 {
+  margin-bottom: 8px;
+  font-size: 1.35rem;
+}
+
+.modal-panel p {
+  margin-bottom: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .upload-status[hidden] {
   display: none;
 }

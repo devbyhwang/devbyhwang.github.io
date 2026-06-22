@@ -9,6 +9,13 @@ const els = {
   uploadStatusCount: document.querySelector("#upload-status-count"),
   uploadStatusDetail: document.querySelector("#upload-status-detail"),
   uploadProgressBar: document.querySelector("#upload-progress-bar"),
+  autosaveStatus: document.querySelector("#autosave-status"),
+  autosaveStatusTitle: document.querySelector("#autosave-status-title"),
+  autosaveStatusDetail: document.querySelector("#autosave-status-detail"),
+  autosaveDialog: document.querySelector("#autosave-dialog"),
+  autosaveDialogDetail: document.querySelector("#autosave-dialog-detail"),
+  autosaveAccept: document.querySelector("#autosave-accept"),
+  autosaveReject: document.querySelector("#autosave-reject"),
   classes: document.querySelector("#classes"),
   labelFormat: document.querySelector("#label-format"),
   customFormatRow: document.querySelector("#custom-format-row"),
@@ -70,6 +77,18 @@ const state = {
   drag: null,
   eraserFeedback: null,
   eraserFeedbackTimer: null,
+  autosave: {
+    available: false,
+    loaded: false,
+    pendingSession: false,
+    pendingItems: new Set(),
+    timer: null,
+    inFlight: 0,
+    lastSavedAt: 0,
+    restoredCount: 0,
+    restoreAccepted: false,
+    restoreSession: null,
+  },
 };
 
 const boxColor = "#1f5d4a";
@@ -85,6 +104,11 @@ const maxEditPolygonPoints = 900;
 const eraserFeedbackMs = 2600;
 const duplicateImageHashDistance = 4;
 const overlapLabelIou = 0.35;
+const autosaveDbName = "devbyhwang-yolo-label-editor";
+const autosaveDbVersion = 2;
+const autosaveSessionKey = "current";
+const autosaveDelayMs = 300;
+const imageSignatureChunkSize = 8192;
 const supportedImageTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/bmp"]);
 const supportedImageExtensions = new Set(["png", "jpg", "jpeg", "webp", "bmp"]);
 const defaultLowResolutionThresholds = [320, 416, 640];
@@ -121,7 +145,383 @@ function releaseLoadedImagesNow() {
 
 function handlePageHide(event) {
   if (event.persisted) return;
+  flushAutosaveNow();
   releaseLoadedImagesNow();
+}
+
+let autosaveDbPromise = null;
+
+function openAutosaveDb() {
+  if (!("indexedDB" in window)) return Promise.reject(new Error("IndexedDB unavailable"));
+  if (autosaveDbPromise) return autosaveDbPromise;
+  autosaveDbPromise = new Promise((resolve, reject) => {
+    const request = indexedDB.open(autosaveDbName, autosaveDbVersion);
+    request.addEventListener("upgradeneeded", () => {
+      const db = request.result;
+      if (!db.objectStoreNames.contains("session")) db.createObjectStore("session", { keyPath: "id" });
+      if (db.objectStoreNames.contains("items")) db.deleteObjectStore("items");
+      db.createObjectStore("items", { keyPath: "autosaveKey" });
+    });
+    request.addEventListener("success", () => resolve(request.result));
+    request.addEventListener("error", () => reject(request.error || new Error("IndexedDB open failed")));
+    request.addEventListener("blocked", () => reject(new Error("IndexedDB upgrade blocked")));
+  }).catch((error) => {
+    autosaveDbPromise = null;
+    throw error;
+  });
+  return autosaveDbPromise;
+}
+
+function idbRequest(request) {
+  return new Promise((resolve, reject) => {
+    request.addEventListener("success", () => resolve(request.result));
+    request.addEventListener("error", () => reject(request.error || new Error("IndexedDB request failed")));
+  });
+}
+
+function idbTransactionDone(transaction) {
+  return new Promise((resolve, reject) => {
+    transaction.addEventListener("complete", resolve);
+    transaction.addEventListener("abort", () => reject(transaction.error || new Error("IndexedDB transaction aborted")));
+    transaction.addEventListener("error", () => reject(transaction.error || new Error("IndexedDB transaction failed")));
+  });
+}
+
+function autosaveTimestampText(timestamp) {
+  if (!timestamp) return "";
+  return new Intl.DateTimeFormat("ko-KR", {
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(timestamp));
+}
+
+async function fileSignature(file) {
+  if (!window.crypto?.subtle || !file?.slice) return `size:${file?.size || 0}`;
+  const chunkSize = Math.min(imageSignatureChunkSize, file.size);
+  const head = new Uint8Array(await file.slice(0, chunkSize).arrayBuffer());
+  const tailStart = Math.max(chunkSize, file.size - chunkSize);
+  const tail = tailStart < file.size
+    ? new Uint8Array(await file.slice(tailStart, file.size).arrayBuffer())
+    : new Uint8Array();
+  const meta = new TextEncoder().encode(`${file.size}:`);
+  const bytes = new Uint8Array(meta.length + head.length + tail.length);
+  bytes.set(meta, 0);
+  bytes.set(head, meta.length);
+  bytes.set(tail, meta.length + head.length);
+  const digest = new Uint8Array(await crypto.subtle.digest("SHA-256", bytes));
+  return [...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function setAutosaveStatus(title, detail = "") {
+  if (!els.autosaveStatus) return;
+  els.autosaveStatus.hidden = false;
+  els.autosaveStatusTitle.textContent = title;
+  els.autosaveStatusDetail.textContent = detail;
+}
+
+function setAutosaveDialog(open, session = state.autosave.restoreSession) {
+  if (!els.autosaveDialog) return;
+  els.autosaveDialog.hidden = !open;
+  if (open && session?.updatedAt) {
+    els.autosaveDialogDetail.textContent = `${autosaveTimestampText(session.updatedAt)}에 저장된 ${session.itemCount || session.imageCount || 0}개 이미지 라벨 상태가 있습니다. 이전 자동 저장 때 사용한 동일 이미지를 업로드하면 저장된 라벨과 검수 상태를 복원합니다.`;
+  }
+}
+
+function serializeBoxForAutosave(box) {
+  return {
+    id: box.id,
+    classId: box.classId,
+    x: box.x,
+    y: box.y,
+    w: box.w,
+    h: box.h,
+    points: clonePoints(box.points),
+    editPoints: clonePoints(box.editPoints),
+    confidence: box.confidence ?? null,
+    source: box.source || "txt",
+  };
+}
+
+function serializeItemForAutosave(item) {
+  return {
+    autosaveKey: item.autosaveKey,
+    baseName: item.baseName,
+    name: item.name,
+    width: item.width,
+    height: item.height,
+    fileSize: item.fileSize || item.file?.size || 0,
+    imageSignature: item.imageSignature || "",
+    labelFileName: item.labelFileName || "",
+    labelFormat: item.labelFormat || getLabelFormat(),
+    invalidLabelLines: item.invalidLabelLines || [],
+    boxes: item.boxes.map(serializeBoxForAutosave),
+    reviewed: Boolean(item.reviewed),
+    seen: Boolean(item.seen),
+    dirty: Boolean(item.dirty || item.autosaveRestored),
+    excludeFromExport: Boolean(item.excludeFromExport),
+    filterReasons: item.filterReasons || [],
+    manualFilterOverride: item.manualFilterOverride || null,
+    updatedAt: Date.now(),
+  };
+}
+
+function serializeSessionForAutosave() {
+  return {
+    id: autosaveSessionKey,
+    classesText: els.classes.value,
+    labelFormatValue: els.labelFormat.value,
+    customFormatValue: els.customFormat.value,
+    labelFormatManual: state.labelFormatManual,
+    emptyLabels: els.emptyLabels.checked,
+    includeImages: els.includeImages.checked,
+    autoReview: state.autoReview,
+    filtersApplied: state.filtersApplied,
+    filterView: state.filterView,
+    lowResolutionThreshold: state.lowResolutionThreshold,
+    imageCount: state.images.length,
+    itemCount: state.images.length,
+    itemKeys: state.images.map((item) => item.autosaveKey).filter(Boolean),
+    updatedAt: Date.now(),
+  };
+}
+
+function rehydrateAutosavedBox(box) {
+  return normalizeBoxToBounds({
+    id: box.id || crypto.randomUUID(),
+    classId: Number.isInteger(box.classId) ? box.classId : 0,
+    label: labelFor(Number.isInteger(box.classId) ? box.classId : 0),
+    x: Number.isFinite(box.x) ? box.x : 0.5,
+    y: Number.isFinite(box.y) ? box.y : 0.5,
+    w: Number.isFinite(box.w) ? box.w : minBoxSize,
+    h: Number.isFinite(box.h) ? box.h : minBoxSize,
+    points: clonePoints(box.points),
+    editPoints: clonePoints(box.editPoints),
+    confidence: box.confidence ?? null,
+    source: box.source || "autosave",
+  });
+}
+
+function applyAutosavedItem(item, savedItem) {
+  if (!savedItem?.boxes || !Array.isArray(savedItem.boxes)) return false;
+  if (!autosavedItemMatchesUpload(item, savedItem)) return false;
+  item.boxes = savedItem.boxes.map(rehydrateAutosavedBox);
+  item.labelFileName = savedItem.labelFileName || item.labelFileName || "";
+  item.labelFormat = savedItem.labelFormat || item.labelFormat || getLabelFormat();
+  item.invalidLabelLines = savedItem.invalidLabelLines || [];
+  item.reviewed = Boolean(savedItem.reviewed);
+  item.seen = Boolean(savedItem.seen);
+  item.dirty = Boolean(savedItem.dirty);
+  item.excludeFromExport = Boolean(savedItem.excludeFromExport);
+  item.filterReasons = savedItem.filterReasons || [];
+  item.manualFilterOverride = savedItem.manualFilterOverride || null;
+  item.autosaveRestored = true;
+  item.undoStack = [];
+  item.redoStack = [];
+  return true;
+}
+
+function autosavedItemMatchesUpload(item, savedItem) {
+  const sessionKeys = state.autosave.restoreSession?.itemKeys;
+  if (!Array.isArray(sessionKeys) || !sessionKeys.includes(item.autosaveKey)) return false;
+  if (savedItem.autosaveKey !== item.autosaveKey) return false;
+  if (Math.round(savedItem.width) !== Math.round(item.width)) return false;
+  if (Math.round(savedItem.height) !== Math.round(item.height)) return false;
+  const savedSize = Number(savedItem.fileSize || 0);
+  const currentSize = Number(item.fileSize || item.file?.size || 0);
+  if (!savedSize || !currentSize || savedSize !== currentSize) return false;
+  if (!savedItem.imageSignature || savedItem.imageSignature !== item.imageSignature) return false;
+  return true;
+}
+
+async function readAutosaveSession() {
+  const db = await openAutosaveDb();
+  const transaction = db.transaction("session", "readonly");
+  return idbRequest(transaction.objectStore("session").get(autosaveSessionKey));
+}
+
+async function readAutosavedItem(autosaveKey) {
+  if (!autosaveKey) return null;
+  const db = await openAutosaveDb();
+  const transaction = db.transaction("items", "readonly");
+  return idbRequest(transaction.objectStore("items").get(autosaveKey));
+}
+
+async function writeAutosaveRecords({ session = null, items = [] } = {}) {
+  if (!session && !items.length) return;
+  const db = await openAutosaveDb();
+  const stores = session ? ["session", "items"] : ["items"];
+  const transaction = db.transaction(stores, "readwrite");
+  if (session) transaction.objectStore("session").put(session);
+  const itemStore = transaction.objectStore("items");
+  items.forEach((item) => itemStore.put(item));
+  await idbTransactionDone(transaction);
+}
+
+function scheduleAutosaveSession() {
+  if (!state.autosave.available) return;
+  state.autosave.pendingSession = true;
+  scheduleAutosaveFlush();
+}
+
+function scheduleAutosaveItem(item) {
+  if (!state.autosave.available || !item?.autosaveKey) return;
+  state.autosave.pendingItems.add(item.autosaveKey);
+  state.autosave.pendingSession = true;
+  scheduleAutosaveFlush();
+}
+
+function scheduleAutosaveAllItems() {
+  if (!state.autosave.available) return;
+  state.images.forEach((item) => {
+    if (item.autosaveKey) state.autosave.pendingItems.add(item.autosaveKey);
+  });
+  state.autosave.pendingSession = true;
+  scheduleAutosaveFlush();
+}
+
+function scheduleAutosaveFlush() {
+  if (state.autosave.timer) return;
+  state.autosave.timer = window.setTimeout(flushAutosaveNow, autosaveDelayMs);
+}
+
+function hasAutosaveWork() {
+  return Boolean(
+    state.autosave.pendingSession ||
+    state.autosave.pendingItems.size ||
+    state.autosave.timer ||
+    state.autosave.inFlight
+  );
+}
+
+async function flushAutosaveNow() {
+  if (!state.autosave.available) return;
+  if (typeof state.autosave.timer === "number") {
+    window.clearTimeout(state.autosave.timer);
+  }
+  state.autosave.timer = null;
+  if (state.autosave.inFlight) return;
+  const shouldSaveSession = state.autosave.pendingSession;
+  const itemKeys = [...state.autosave.pendingItems];
+  state.autosave.pendingSession = false;
+  state.autosave.pendingItems.clear();
+  if (!shouldSaveSession && !itemKeys.length) return;
+
+  const itemByAutosaveKey = new Map(state.images.map((item) => [item.autosaveKey, item]));
+  const items = itemKeys
+    .map((autosaveKey) => itemByAutosaveKey.get(autosaveKey))
+    .filter(Boolean)
+    .map(serializeItemForAutosave);
+  const session = shouldSaveSession ? serializeSessionForAutosave() : null;
+
+  state.autosave.inFlight += 1;
+  let saveFailed = false;
+  try {
+    await writeAutosaveRecords({ session, items });
+    state.autosave.lastSavedAt = Date.now();
+    setAutosaveStatus(
+      "자동 저장됨",
+      `${state.images.length}개 이미지의 라벨 상태를 저장했습니다. ${autosaveTimestampText(state.autosave.lastSavedAt)}`
+    );
+  } catch (error) {
+    setAutosaveStatus(
+      "자동 저장 실패",
+      error?.message || "브라우저 저장소에 접근하지 못했습니다."
+    );
+    saveFailed = true;
+    if (shouldSaveSession) state.autosave.pendingSession = true;
+    itemKeys.forEach((autosaveKey) => state.autosave.pendingItems.add(autosaveKey));
+  } finally {
+    state.autosave.inFlight = Math.max(0, state.autosave.inFlight - 1);
+    if (!saveFailed && state.autosave.available && hasAutosaveWork() && !state.autosave.timer) scheduleAutosaveFlush();
+  }
+}
+
+function handleBeforeUnload(event) {
+  if (!state.autosave.available || !hasAutosaveWork()) return;
+  flushAutosaveNow();
+  event.preventDefault();
+  event.returnValue = "";
+  return "";
+}
+
+async function clearAutosaveData() {
+  if (!state.autosave.available) return;
+  if (typeof state.autosave.timer === "number") {
+    window.clearTimeout(state.autosave.timer);
+  }
+  state.autosave.timer = null;
+  const db = await openAutosaveDb();
+  const transaction = db.transaction(["session", "items"], "readwrite");
+  transaction.objectStore("session").clear();
+  transaction.objectStore("items").clear();
+  await idbTransactionDone(transaction);
+  state.autosave.pendingItems.clear();
+  state.autosave.pendingSession = false;
+  state.autosave.restoreAccepted = false;
+  state.autosave.restoreSession = null;
+  setAutosaveStatus("자동 저장 비어 있음", "현재 브라우저에 남은 라벨 자동 저장이 없습니다.");
+}
+
+function applyAutosaveSessionSettings(session) {
+  if (!session) return;
+  els.classes.value = session.classesText || els.classes.value;
+  els.labelFormat.value = session.labelFormatValue || els.labelFormat.value;
+  els.customFormat.value = session.customFormatValue || els.customFormat.value;
+  state.labelFormatManual = Boolean(session.labelFormatManual);
+  els.emptyLabels.checked = session.emptyLabels !== false;
+  els.includeImages.checked = Boolean(session.includeImages);
+  state.autoReview = session.autoReview !== false;
+  state.filtersApplied = Boolean(session.filtersApplied);
+  state.filterView = session.filterView || "all";
+  const restoredLowResolutionThreshold = Number(session.lowResolutionThreshold || state.lowResolutionThreshold);
+  state.lowResolutionThreshold = restoredLowResolutionThreshold;
+  updateFormatHelp();
+  updateClassSelect();
+  updateAutoReviewButton();
+  syncLowResolutionList(restoredLowResolutionThreshold);
+}
+
+function acceptAutosaveRestore() {
+  state.autosave.restoreAccepted = true;
+  applyAutosaveSessionSettings(state.autosave.restoreSession);
+  setAutosaveDialog(false);
+  setAutosaveStatus(
+    "자동 저장 복원 대기 중",
+    "이전 자동 저장 때 사용한 동일 이미지를 업로드하면 저장된 라벨과 검수 상태를 복원합니다."
+  );
+}
+
+async function rejectAutosaveRestore() {
+  setAutosaveDialog(false);
+  await clearAutosaveData();
+}
+
+async function initAutosave() {
+  try {
+    await openAutosaveDb();
+    state.autosave.available = true;
+    const session = await readAutosaveSession();
+    state.autosave.loaded = true;
+    if (session?.updatedAt) {
+      state.autosave.restoreSession = session;
+      setAutosaveStatus(
+        "자동 저장 있음",
+        `${session.itemCount || session.imageCount || 0}개 이미지 라벨 상태가 있습니다. 복원 여부를 선택하세요. ${autosaveTimestampText(session.updatedAt)}`
+      );
+      setAutosaveDialog(true, session);
+      return;
+    }
+    state.autosave.restoreAccepted = true;
+    setAutosaveStatus("자동 저장 준비됨", "라벨 편집 상태만 저장하고 원본 이미지는 저장하지 않습니다.");
+  } catch (error) {
+    state.autosave.available = false;
+    setAutosaveStatus(
+      "자동 저장 사용 불가",
+      error?.message || "브라우저 저장소에 접근하지 못했습니다."
+    );
+  }
 }
 
 function clamp(value, min = 0, max = 1) {
@@ -135,6 +535,10 @@ function baseName(name) {
 function fileExtension(name) {
   const match = /\.([^.]+)$/.exec(name);
   return match ? match[1].toLowerCase() : "";
+}
+
+function autosaveKeyForImage(name, signature) {
+  return `${name || ""}\n${signature || ""}`;
 }
 
 function isSupportedImageFile(file) {
@@ -321,8 +725,10 @@ function editablePointsForBox(box) {
   return box?.editPoints?.length ? box.editPoints : box?.points || null;
 }
 
-function markDirty(item) {
-  if (item) item.dirty = true;
+function markDirty(item, { autosave = true } = {}) {
+  if (!item) return;
+  item.dirty = true;
+  if (autosave) scheduleAutosaveItem(item);
 }
 
 function lowResolutionThresholdForItem(item) {
@@ -352,8 +758,10 @@ function lowResolutionOptionEntries() {
     .sort((a, b) => a.threshold - b.threshold);
 }
 
-function syncLowResolutionList() {
-  const selectedThreshold = Number(els.lowResolutionThreshold.value || state.lowResolutionThreshold);
+function syncLowResolutionList(preferredThreshold = null) {
+  const selectedThreshold = Number.isFinite(preferredThreshold)
+    ? preferredThreshold
+    : Number(els.lowResolutionThreshold.value || state.lowResolutionThreshold);
   const entries = lowResolutionOptionEntries();
   els.lowResolutionThreshold.replaceChildren(...entries.map((entry) => {
     const option = document.createElement("option");
@@ -390,6 +798,7 @@ function setFilterResult(item, excluded, reasons = [], manualOverride = item.man
   item.excludeFromExport = excluded;
   item.filterReasons = reasons;
   item.manualFilterOverride = manualOverride;
+  scheduleAutosaveItem(item);
 }
 
 function manualExcludeReason() {
@@ -938,11 +1347,15 @@ async function readImageFile(file) {
       state.labelFormatManual ? getLabelFormat() : labelSource.format
     )
     : null;
-  return {
+  const imageSignature = await fileSignature(file);
+  const item = {
     id: crypto.randomUUID(),
     file,
     name: file.name,
     baseName: baseName(file.name),
+    autosaveKey: autosaveKeyForImage(file.name, imageSignature),
+    fileSize: file.size,
+    imageSignature,
     url,
     image,
     width: image.naturalWidth,
@@ -960,6 +1373,18 @@ async function readImageFile(file) {
     undoStack: [],
     redoStack: [],
   };
+  try {
+    if (!state.autosave.restoreAccepted || !state.autosave.restoreSession) return item;
+    const savedItem = await readAutosavedItem(item.autosaveKey);
+    if (applyAutosavedItem(item, savedItem)) state.autosave.restoredCount += 1;
+  } catch (error) {
+    state.autosave.available = false;
+    setAutosaveStatus(
+      "자동 저장 복원 실패",
+      error?.message || "브라우저 저장소에서 라벨 상태를 읽지 못했습니다."
+    );
+  }
+  return item;
 }
 
 function loadImageElement(image, src) {
@@ -1018,6 +1443,7 @@ async function addFiles(fileList) {
   await new Promise((resolve) => requestAnimationFrame(resolve));
   const detectedFormats = [];
   const failedLabels = [];
+  state.autosave.restoredCount = 0;
 
   for (const file of labelFiles) {
     try {
@@ -1082,12 +1508,16 @@ async function addFiles(fileList) {
   else syncLowResolutionList();
   updateCounts();
   renderReview();
+  scheduleAutosaveAllItems();
   revokeObjectUrlsLater(replacedUrls);
   const issueCount = unsupportedFiles.length + failedImages.length + failedLabels.length;
   const skippedFiles = [...unsupportedFiles, ...failedImages, ...failedLabels];
+  const restoredDetail = state.autosave.restoredCount
+    ? ` 자동 저장 ${state.autosave.restoredCount}개를 복원했습니다.`
+    : "";
   const uploadDetail = issueCount
-    ? `${loadedImages.length}개 이미지가 추가되었습니다. 건너뜀: ${summarizeSkippedFiles(skippedFiles)}`
-    : `${loadedImages.length}개 이미지가 추가되었습니다.`;
+    ? `${loadedImages.length}개 이미지가 추가되었습니다.${restoredDetail} 건너뜀: ${summarizeSkippedFiles(skippedFiles)}`
+    : `${loadedImages.length}개 이미지가 추가되었습니다.${restoredDetail}`;
   setUploadStatus({
     active: true,
     title: issueCount ? "일부 파일 건너뜀" : "로드 완료",
@@ -1100,7 +1530,7 @@ async function addFiles(fileList) {
 
 function applyLabelsToExistingImages() {
   state.images.forEach((item) => {
-    if (item.dirty) return;
+    if (item.dirty || item.autosaveRestored) return;
     const labelSource = state.labelsByBaseName.get(item.baseName);
     if (!labelSource) return;
     const parsed = parseLabelText(
@@ -1117,6 +1547,7 @@ function applyLabelsToExistingImages() {
     item.dirty = false;
     item.undoStack = [];
     item.redoStack = [];
+    scheduleAutosaveItem(item);
   });
   refreshTrainingFiltersIfApplied();
 }
@@ -1270,6 +1701,7 @@ function runTrainingFilters() {
   state.filtersApplied = true;
   refreshTrainingFilters();
   state.filterView = "excluded";
+  scheduleAutosaveSession();
   renderReview();
 }
 
@@ -1593,6 +2025,7 @@ function markReviewed(item, reviewed = true) {
   if (!item) return;
   item.reviewed = reviewed;
   item.seen = true;
+  scheduleAutosaveItem(item);
 }
 
 function updateAutoReviewButton() {
@@ -1854,10 +2287,17 @@ function clearFiles() {
   updateCounts();
   renderReview();
   revokeObjectUrlsLater(urlsToRevoke);
+  clearAutosaveData().catch((error) => {
+    setAutosaveStatus(
+      "자동 저장 삭제 실패",
+      error?.message || "브라우저 저장소를 지우지 못했습니다."
+    );
+  });
 }
 
 els.fileInput.addEventListener("change", () => addFiles(els.fileInput.files));
 window.addEventListener("pagehide", handlePageHide);
+window.addEventListener("beforeunload", handleBeforeUnload);
 els.classes.addEventListener("input", () => {
   updateClassSelect();
   state.images.forEach((item) => {
@@ -1865,6 +2305,7 @@ els.classes.addEventListener("input", () => {
       box.label = labelFor(box.classId);
     });
   });
+  scheduleAutosaveSession();
   renderReview();
 });
 els.activeClass.addEventListener("change", () => {
@@ -1885,6 +2326,7 @@ els.labelFormat.addEventListener("change", () => {
   updateFormatHelp();
   applyLabelsToExistingImages();
   updateCounts();
+  scheduleAutosaveSession();
   renderReview();
 });
 els.customFormat.addEventListener("input", () => {
@@ -1892,8 +2334,11 @@ els.customFormat.addEventListener("input", () => {
   updateFormatHelp();
   applyLabelsToExistingImages();
   updateCounts();
+  scheduleAutosaveSession();
   renderReview();
 });
+els.emptyLabels.addEventListener("change", scheduleAutosaveSession);
+els.includeImages.addEventListener("change", scheduleAutosaveSession);
 els.polygonFill.addEventListener("change", draw);
 els.eraserSize.addEventListener("input", () => {
   els.eraserSizeValue.textContent = `${eraserSizePx()}px`;
@@ -1903,12 +2348,14 @@ els.runFilters.addEventListener("click", runTrainingFilters);
 els.lowResolutionThreshold.addEventListener("change", () => {
   syncLowResolutionList();
   refreshTrainingFiltersIfApplied();
+  scheduleAutosaveSession();
   renderReview();
 });
 els.filterTabs.forEach((button) => {
   button.addEventListener("click", () => {
     state.filterView = button.dataset.filterView;
     ensureCurrentVisible();
+    scheduleAutosaveSession();
     renderReview();
   });
 });
@@ -1936,6 +2383,15 @@ els.includeCurrent.addEventListener("change", () => {
   renderReview();
 });
 els.clearFiles.addEventListener("click", clearFiles);
+els.autosaveAccept.addEventListener("click", acceptAutosaveRestore);
+els.autosaveReject.addEventListener("click", () => {
+  rejectAutosaveRestore().catch((error) => {
+    setAutosaveStatus(
+      "자동 저장 삭제 실패",
+      error?.message || "브라우저 저장소를 지우지 못했습니다."
+    );
+  });
+});
 els.prevImage.addEventListener("click", () => moveImage(-1));
 els.nextImage.addEventListener("click", () => moveImage(1));
 els.deleteBox.addEventListener("click", deleteSelectedBox);
@@ -1956,6 +2412,7 @@ els.autoReviewToggle.addEventListener("change", () => {
   }
   updateAutoReviewButton();
   updateCounts();
+  scheduleAutosaveSession();
   renderReview();
 });
 
@@ -2095,7 +2552,7 @@ els.canvas.addEventListener("pointermove", (event) => {
       box.editPoints = scalePointsToBox(state.drag.original.editPoints, state.drag.original, resized);
     }
     box.source = "edited";
-    markDirty(item);
+    markDirty(item, { autosave: false });
     draw();
     return;
   }
@@ -2112,7 +2569,7 @@ els.canvas.addEventListener("pointermove", (event) => {
     box.editPoints = translatePoints(state.drag.original.editPoints, dx, dy);
   }
   box.source = "edited";
-  markDirty(item);
+  markDirty(item, { autosave: false });
   draw();
 });
 
@@ -2155,6 +2612,7 @@ els.canvas.addEventListener("pointerup", () => {
   }
   state.drag = null;
   if (labelFilterNeedsRefresh) refreshItemLabelFiltersIfApplied(item);
+  if (labelFilterNeedsRefresh || item.dirty) scheduleAutosaveItem(item);
   updateCounts();
   renderReview();
 });
@@ -2190,3 +2648,4 @@ updateFormatHelp();
 syncLowResolutionList();
 updateAutoReviewButton();
 updateCounts();
+initAutosave();
