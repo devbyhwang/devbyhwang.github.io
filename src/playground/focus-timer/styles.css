@@ -60,10 +60,10 @@
 
     .shell {
       width: min(680px, 100%);
-      min-height: 100vh;
-      min-height: 100dvh;
-      height: 100vh;
-      height: 100dvh;
+      min-height: calc(100vh - var(--playground-ad-safe-space, 0px));
+      min-height: calc(100dvh - var(--playground-ad-safe-space, 0px));
+      height: calc(100vh - var(--playground-ad-safe-space, 0px));
+      height: calc(100dvh - var(--playground-ad-safe-space, 0px));
       margin: 0 auto;
       padding: 72px 16px;
       display: grid;
@@ -406,7 +406,7 @@
 
     .overlay {
       position: fixed;
-      inset: 0;
+      inset: 0 0 var(--playground-ad-safe-space, 0px);
       display: none;
       z-index: 40;
     }
@@ -965,7 +965,7 @@
     @media (max-width: 560px) {
       .shell {
         padding-top: 66px;
-        padding-bottom: 66px;
+        padding-bottom: 42px;
       }
       .app {
         transform: translateY(-44px);
