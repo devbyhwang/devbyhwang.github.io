@@ -45,6 +45,12 @@
           <div><strong id="label-count">0</strong><span>매칭 txt</span></div>
           <div><strong id="box-count">0</strong><span>박스</span></div>
         </div>
+        <div id="autosave-status" class="autosave-status" aria-live="polite" hidden>
+          <div>
+            <strong id="autosave-status-title">자동 저장 확인 중</strong>
+            <p id="autosave-status-detail">이미지는 저장하지 않고 라벨 편집 상태만 보관합니다.</p>
+          </div>
+        </div>
         <div id="upload-status" class="upload-status" aria-live="polite" hidden>
           <div class="upload-status-row">
             <strong id="upload-status-title">파일 읽는 중</strong>
@@ -222,6 +228,17 @@
       </div>
     </section>
   </main>
+
+  <div id="autosave-dialog" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="autosave-dialog-title" hidden>
+    <div class="modal-panel">
+      <h2 id="autosave-dialog-title">이전 자동저장 내역을 불러오시겠습니까?</h2>
+      <p id="autosave-dialog-detail">이전 자동 저장 때 사용한 동일 이미지를 업로드하면 저장된 라벨과 검수 상태를 복원합니다.</p>
+      <div class="modal-actions">
+        <button id="autosave-reject" class="secondary-button" type="button">아니요</button>
+        <button id="autosave-accept" class="primary-button" type="button">예</button>
+      </div>
+    </div>
+  </div>
 
   <script src="./app.js" defer></script>
   <script src="../../../assets/playground-bottom-ad.js" defer></script>
