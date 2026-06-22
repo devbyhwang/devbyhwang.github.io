@@ -84,6 +84,7 @@ const state = {
     pendingItems: new Set(),
     timer: null,
     inFlight: 0,
+    generation: 0,
     lastSavedAt: 0,
     restoredCount: 0,
     restoreAccepted: false,
@@ -406,15 +407,17 @@ async function readAutosavedItem(autosaveKey) {
   return idbRequest(transaction.objectStore("items").get(autosaveKey));
 }
 
-async function writeAutosaveRecords({ session = null, items = [] } = {}) {
-  if (!session && !items.length) return;
+async function writeAutosaveRecords({ session = null, items = [], generation = state.autosave.generation } = {}) {
+  if (!session && !items.length) return false;
   const db = await openAutosaveDb();
+  if (generation !== state.autosave.generation) return false;
   const stores = session ? ["session", "items"] : ["items"];
   const transaction = db.transaction(stores, "readwrite");
   if (session) transaction.objectStore("session").put(session);
   const itemStore = transaction.objectStore("items");
   items.forEach((item) => itemStore.put(item));
   await idbTransactionDone(transaction);
+  return generation === state.autosave.generation;
 }
 
 function scheduleAutosaveSession() {
@@ -458,6 +461,7 @@ function hasAutosaveWork() {
 
 async function flushAutosaveNow() {
   if (!state.autosave.available) return;
+  const generation = state.autosave.generation;
   if (typeof state.autosave.timer === "number") {
     window.clearTimeout(state.autosave.timer);
   }
@@ -471,12 +475,15 @@ async function flushAutosaveNow() {
 
   const items = autosaveItemsForKeys(itemKeys);
   const session = shouldSaveSession ? serializeSessionForAutosave() : null;
+  if (generation !== state.autosave.generation) return;
   writeEmergencyAutosave(session, items);
 
   state.autosave.inFlight += 1;
   let saveFailed = false;
+  let saveApplied = false;
   try {
-    await writeAutosaveRecords({ session, items });
+    saveApplied = await writeAutosaveRecords({ session, items, generation });
+    if (!saveApplied) return;
     state.autosave.lastSavedAt = Date.now();
     setAutosaveStatus(
       "자동 저장됨",
@@ -488,12 +495,15 @@ async function flushAutosaveNow() {
       error?.message || "브라우저 저장소에 접근하지 못했습니다."
     );
     saveFailed = true;
-    if (shouldSaveSession) state.autosave.pendingSession = true;
-    itemKeys.forEach((autosaveKey) => state.autosave.pendingItems.add(autosaveKey));
+    if (generation === state.autosave.generation) {
+      if (shouldSaveSession) state.autosave.pendingSession = true;
+      itemKeys.forEach((autosaveKey) => state.autosave.pendingItems.add(autosaveKey));
+    }
   } finally {
     state.autosave.inFlight = Math.max(0, state.autosave.inFlight - 1);
-    if (!saveFailed && state.autosave.available && hasAutosaveWork() && !state.autosave.timer) scheduleAutosaveFlush();
-    if (!saveFailed && !hasAutosaveWork()) clearEmergencyAutosave();
+    if (generation !== state.autosave.generation) return;
+    if (!saveFailed && saveApplied && state.autosave.available && hasAutosaveWork() && !state.autosave.timer) scheduleAutosaveFlush();
+    if (!saveFailed && saveApplied && !hasAutosaveWork()) clearEmergencyAutosave();
   }
 }
 
@@ -507,6 +517,7 @@ function handleBeforeUnload(event) {
 
 async function clearAutosaveData() {
   if (!state.autosave.available) return;
+  state.autosave.generation += 1;
   if (typeof state.autosave.timer === "number") {
     window.clearTimeout(state.autosave.timer);
   }
