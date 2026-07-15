@@ -8,6 +8,6 @@ const fileNameSlug = (data) => {
 
 module.exports = {
   eleventyComputed: {
-    permalink: (data) => `/devbyhwang/posts/${fileNameSlug(data)}/`,
+    permalink: (data) => `/posts/${fileNameSlug(data)}/`,
   },
 };

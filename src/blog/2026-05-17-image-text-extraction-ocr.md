@@ -1,5 +1,5 @@
 ---
-layout: layouts/devbyhwang-post.njk
+layout: layouts/post.njk
 title: "이미지 글자 추출하는 법: OCR 사이트 쓰기 전 개인정보 확인하기"
 date: 2026-05-17
 category: info
@@ -128,8 +128,8 @@ Tesseract.js는 JavaScript와 WebAssembly 기반으로 브라우저 또는 Node.
 이 블로그에는 직접 만든 OCR Playground가 있습니다.
 설치 없이 브라우저에서 PDF와 이미지를 넣어 텍스트를 추출해볼 수 있습니다.
 
-- [PDF OCR Extractor 바로가기](/devbyhwang/playground/ocr-extractor/)
-- [DevByHwang Playground 전체 보기](/devbyhwang/playground/)
+- [PDF OCR Extractor 바로가기](/playground/ocr-extractor/)
+- [DevByHwang Playground 전체 보기](/playground/)
 
 사용 흐름은 간단합니다.
 
@@ -229,8 +229,8 @@ Tesseract.js FAQ도 손글씨 인식은 모델의 가정과 맞지 않아 결과
 
 ## 관련 글
 
-- [PDF OCR Extractor 바로 사용하기](/devbyhwang/playground/ocr-extractor/)
-- [DevByHwang Playground 전체 보기](/devbyhwang/playground/)
+- [PDF OCR Extractor 바로 사용하기](/playground/ocr-extractor/)
+- [DevByHwang Playground 전체 보기](/playground/)
 
 ## 참고 자료
 

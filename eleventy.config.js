@@ -2,8 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const { DateTime } = require("luxon");
 
-const DEV_BRAND = "devbyhwang";
-
 const DEV_CATEGORY_LABELS = {
   devlog: "개발 일지",
   info: "정보 글",
@@ -316,7 +314,7 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/styles": "styles" });
   getPlaygroundDemoDirectories().forEach((demoDirectory) => {
     eleventyConfig.addPassthroughCopy({
-      [`src/playground/${demoDirectory}`]: `devbyhwang/playground/${demoDirectory}`,
+      [`src/playground/${demoDirectory}`]: `playground/${demoDirectory}`,
     });
   });
   eleventyConfig.addPassthroughCopy({ "src/ads.txt": "ads.txt" });
@@ -352,8 +350,7 @@ module.exports = function (eleventyConfig) {
 
   const getDevPosts = (collectionApi) =>
     collectionApi
-      .getFilteredByGlob("src/devbyhwang/blog/**/*.{md,njk}")
-      .filter((item) => (item.data.brand || DEV_BRAND) === DEV_BRAND)
+      .getFilteredByGlob("src/blog/**/*.{md,njk}")
       .sort((a, b) => b.date - a.date);
 
   const buildCategoryList = (items, order, labels, defaultKey) => {
@@ -381,13 +378,13 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addCollection("devPosts", (collectionApi) => getDevPosts(collectionApi));
   eleventyConfig.addCollection("posts", (collectionApi) => getDevPosts(collectionApi));
   eleventyConfig.addCollection("devPostPages", (collectionApi) =>
-    buildPaginatedArchive(getDevPosts(collectionApi), "/devbyhwang/posts/", ARCHIVE_PAGE_SIZE)
+    buildPaginatedArchive(getDevPosts(collectionApi), "/posts/", ARCHIVE_PAGE_SIZE)
   );
   eleventyConfig.addCollection("playgroundPages", () => {
     const studio = require("./src/_data/studio");
     return buildPaginatedArchive(
       studio.games,
-      "/devbyhwang/playground/",
+      "/playground/",
       PLAYGROUND_ARCHIVE_PAGE_SIZE
     );
   });
@@ -407,7 +404,7 @@ module.exports = function (eleventyConfig) {
       .flatMap((category) =>
         buildPaginatedArchive(
           filterPostsByCategory(posts, category),
-          `/devbyhwang/categories/${category.key}/`,
+          `/categories/${category.key}/`,
           ARCHIVE_PAGE_SIZE,
           { category }
         )

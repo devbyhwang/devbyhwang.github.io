@@ -1,5 +1,5 @@
 ---
-layout: layouts/devbyhwang-post.njk
+layout: layouts/post.njk
 title: "카카오톡 선물하기 같이쓰기 사용법: 가족 기프티콘 공유와 중복 사용 방지"
 date: 2026-05-17
 category: info
@@ -190,8 +190,8 @@ excerpt: "카카오톡 선물하기 같이쓰기로 기프티콘을 가족·지�
 
 ## 관련 글
 
-- [카카오톡 AI 국민비서 음성 사용법](/devbyhwang/posts/2026-05-17-kakaotalk-ai-secretary-voice/)
-- [구글 AI 개요 끄기: AI 답변 없이 검색 결과만 보는 법](/devbyhwang/posts/2026-05-17-google-ai-overviews-off/)
+- [카카오톡 AI 국민비서 음성 사용법](/posts/2026-05-17-kakaotalk-ai-secretary-voice/)
+- [구글 AI 개요 끄기: AI 답변 없이 검색 결과만 보는 법](/posts/2026-05-17-google-ai-overviews-off/)
 
 ## 참고 자료
 

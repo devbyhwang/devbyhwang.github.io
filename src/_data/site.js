@@ -16,9 +16,9 @@ const normalizeAdSlot = (value) => {
 const env = process.env;
 
 module.exports = {
-  title: "",
-  tagline: "",
-  description: "개발자 브랜드 DevByHwang를 위한 블로그.",
+  title: "DevByHwang",
+  tagline: "playground · devlog",
+  description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.",
   author: "Hwang",
   url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
   email: "devbyhwang@gmail.com",

@@ -1,31 +1,31 @@
 ---
 layout: layouts/base.njk
-brand: devbyhwang
-title: 글
-description: "DevByHwang 개발 글 아카이브"
 pagination:
-  data: collections.devPostPages
+  data: collections.devCategoryPages
   size: 1
   alias: archivePage
 permalink: "{{ archivePage.href }}"
+eleventyComputed:
+  title: "{{ archivePage.category.name }}"
+  description: "{{ archivePage.category.name }} 카테고리 글 모음"
 ---
+{% set category = archivePage.category %}
 {% set devPosts = collections.devPosts %}
 {% set devHumanPosts = devPosts | withoutAiGenerated %}
+
 <section class="page-hero">
-  <h1>글</h1>
+  <h1>{{ category.name }}</h1>
 </section>
 
 <section class="layout-two archive">
   <div class="feed">
     {% set posts = archivePage.items %}
     {% set defaultCategory = "devlog" %}
-    {% set emptyMessage = "아직 글이 없습니다." %}
+    {% set emptyMessage = "아직 이 카테고리에 작성된 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
     {% set showExcerpt = true %}
     {% set enableAiFilter = true %}
-    {% set showInFeedAd = true %}
-    {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
     {% set paginationPage = archivePage %}
     {% include "partials/pagination.njk" %}
@@ -41,25 +41,19 @@ permalink: "{{ archivePage.href }}"
         </label>
       </div>
       <ul class="category-tree">
-        <li>
-          <a href="{{ '/devbyhwang/posts/' | url }}">전체 글</a>
+        <li{% if not category.key %} class="active"{% endif %}>
+          <a href="{{ '/posts/' | url }}">전체 글</a>
           <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
         </li>
         {% for cat in collections.devCategoryList %}
           {% set catPosts = devPosts | postsByCategory(cat) %}
           {% set catHumanPosts = catPosts | withoutAiGenerated %}
-          <li class="sub">
-            <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+          <li class="sub{% if cat.key == category.key %} active{% endif %}">
+            <a href="{{ ('/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
             <span class="count" data-ai-count data-total-count="{{ catPosts | length }}" data-human-count="{{ catHumanPosts | length }}">({{ catPosts | length }})</span>
           </li>
         {% endfor %}
       </ul>
     </div>
-    {% set adDisplaySlot = site.googleAds.sidebarDisplaySlot or site.googleAds.defaultSlot %}
-    {% set adDisplayFormat = "auto" %}
-    {% set adDisplayKind = "sidebar-display" %}
-    {% set adDisplayClass = "ad-shell-sidebar" %}
-    {% set adDisplayPlaceholder = true %}
-    {% include "ads/display.njk" %}
   </aside>
 </section>

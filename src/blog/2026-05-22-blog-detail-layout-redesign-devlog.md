@@ -1,5 +1,5 @@
 ---
-layout: layouts/devbyhwang-post.njk
+layout: layouts/post.njk
 title: "블로그 상세 페이지 레이아웃을 다시 설계한 기록"
 date: 2026-05-22
 category: devlog

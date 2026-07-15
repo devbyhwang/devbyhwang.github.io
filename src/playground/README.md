@@ -1,6 +1,6 @@
 # Playground
 
-Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모 모음입니다.
+Eleventy 사이트의 `/playground/`에 노출되는 독립형 데모 모음입니다.
 
 ## 새 데모 추가하기
 
@@ -21,7 +21,7 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
    {
      title: "Your Demo Name",
      blurb: "한 줄 설명",
-     links: [{ label: "Launch", href: "/devbyhwang/playground/your-demo-name/" }],
+     links: [{ label: "Launch", href: "/playground/your-demo-name/" }],
      preview: "/assets/your-demo-preview.png",
    }
    ```
@@ -29,10 +29,10 @@ Eleventy 사이트의 `/devbyhwang/playground/`에 노출되는 독립형 데모
 4. **로컬 확인**
    ```bash
    npm run dev
-   # http://localhost:8080/devbyhwang/playground/your-demo-name/
+   # http://localhost:8080/playground/your-demo-name/
    ```
 
-빌드는 `src/playground/<slug>/` 형태의 디렉터리를 자동으로 `/devbyhwang/playground/<slug>/`에 복사합니다. `_`로 시작하는 디렉터리와 `README.md`, `_template.html` 같은 소스용 파일은 배포 산출물에 포함하지 않습니다.
+빌드는 `src/playground/<slug>/` 형태의 디렉터리를 자동으로 `/playground/<slug>/`에 복사합니다. `_`로 시작하는 디렉터리와 `README.md`, `_template.html` 같은 소스용 파일은 배포 산출물에 포함하지 않습니다.
 
 ## 요구사항
 - **반응형**: 모바일/데스크톱 모두 동작

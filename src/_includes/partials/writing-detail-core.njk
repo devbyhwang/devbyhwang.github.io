@@ -1,4 +1,3 @@
-{% set detailBrand = brands[brandKey] %}
 {% set detailDefaultCategory = defaultCategory or 'notes' %}
 {% set detailRelated = relatedCollection or [] %}
 {% set detailRailMode = postRailMode or 'both' %}
@@ -45,7 +44,7 @@
         {% else %}
         <span class="writing-date">{{ date | readableDate }}</span>
         {% endif %}
-        <span class="writing-author">{% if showAuthorByPrefix !== false %}by {% endif %}{{ detailAuthorLabel or detailBrand.displayName }}</span>
+        <span class="writing-author">{% if showAuthorByPrefix !== false %}by {% endif %}{{ detailAuthorLabel or site.title }}</span>
       </div>
     </header>
 

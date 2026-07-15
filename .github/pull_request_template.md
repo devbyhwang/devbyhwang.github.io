@@ -11,8 +11,8 @@
 
 ## 영향 범위
 
-- [ ] DevByHwang (`src/devbyhwang/*`)
-- [ ] Playground (`src/demos/*`)
+- [ ] 글/블로그 (`src/blog/*`)
+- [ ] Playground (`src/playground/*`)
 - [ ] Deploy/Workflow (`.github/workflows/*`)
 - [ ] Runtime 영향 없음
 

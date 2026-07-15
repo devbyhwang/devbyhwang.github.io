@@ -1,39 +1,23 @@
 ---
 layout: layouts/base.njk
-brand: devbyhwang
-title: 홈
-description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그."
+title: 글
+description: "DevByHwang 개발 글 아카이브"
+pagination:
+  data: collections.devPostPages
+  size: 1
+  alias: archivePage
+permalink: "{{ archivePage.href }}"
 ---
-{% set homePlaygroundLimit = 6 %}
-{% set homePostLimit = 6 %}
-{% set playgroundItems = studio.games | head(homePlaygroundLimit) %}
 {% set devPosts = collections.devPosts %}
 {% set devHumanPosts = devPosts | withoutAiGenerated %}
-
 <section class="page-hero">
-  <h1>Playground</h1>
+  <h1>글</h1>
 </section>
 
-<section class="layout-two" id="latest">
+<section class="layout-two archive">
   <div class="feed">
-    {% if playgroundItems.length > 0 %}
-    <div class="playground-section playground-section-home">
-      {% set playgroundGridClass = "playground-grid home-playground-grid" %}
-      {% include "partials/playground-grid.njk" %}
-      {% if studio.games.length > homePlaygroundLimit %}
-      <div class="section-more-row">
-        <a class="section-more-link" href="{{ '/devbyhwang/playground/' | url }}" aria-label="Playground 더보기">더보기</a>
-      </div>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    <div class="section-header">
-      <h2>최신 글</h2>
-    </div>
-    {% set posts = devPosts %}
+    {% set posts = archivePage.items %}
     {% set defaultCategory = "devlog" %}
-    {% set limit = homePostLimit %}
     {% set emptyMessage = "아직 글이 없습니다." %}
     {% set listClass = "post-list archive-list writing-feed-list" %}
     {% set itemClass = "writing-feed-item" %}
@@ -42,13 +26,9 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
     {% set showInFeedAd = true %}
     {% set inFeedAfter = 3 %}
     {% include "partials/writing-feed-cards.njk" %}
-    {% if devPosts.length > homePostLimit %}
-    <div class="section-more-row">
-      <a class="section-more-link" href="{{ '/devbyhwang/posts/' | url }}" aria-label="글 더보기">더보기</a>
-    </div>
-    {% endif %}
+    {% set paginationPage = archivePage %}
+    {% include "partials/pagination.njk" %}
   </div>
-
   <aside class="sidebar">
     <div class="sidebar-categories">
       <div class="sidebar-title sidebar-title-row">
@@ -61,20 +41,19 @@ description: "게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
       </div>
       <ul class="category-tree">
         <li>
-          <a href="{{ '/devbyhwang/posts/' | url }}">전체 글</a>
+          <a href="{{ '/posts/' | url }}">전체 글</a>
           <span class="count" data-ai-count data-total-count="{{ devPosts | length }}" data-human-count="{{ devHumanPosts | length }}">({{ devPosts | length }})</span>
         </li>
         {% for cat in collections.devCategoryList %}
           {% set catPosts = devPosts | postsByCategory(cat) %}
           {% set catHumanPosts = catPosts | withoutAiGenerated %}
           <li class="sub">
-            <a href="{{ ('/devbyhwang/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
+            <a href="{{ ('/categories/' + cat.key + '/') | url }}">{{ cat.name }}</a>
             <span class="count" data-ai-count data-total-count="{{ catPosts | length }}" data-human-count="{{ catHumanPosts | length }}">({{ catPosts | length }})</span>
           </li>
         {% endfor %}
       </ul>
     </div>
-
     {% set adDisplaySlot = site.googleAds.sidebarDisplaySlot or site.googleAds.defaultSlot %}
     {% set adDisplayFormat = "auto" %}
     {% set adDisplayKind = "sidebar-display" %}
