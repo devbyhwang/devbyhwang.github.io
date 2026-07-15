@@ -5,7 +5,7 @@ eleventyExcludeFromCollections: true
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {% set baseUrl = site.url %}
-{% set sitemapPaths = ["/root-sitemap.xml", "/devbyhwang/sitemap.xml", "/dodoes/sitemap.xml"] %}
+{% set sitemapPaths = ["/root-sitemap.xml", "/devbyhwang/sitemap.xml"] %}
 {% for sitemapPath in sitemapPaths %}
   <sitemap>
     <loc>{{ (baseUrl + (sitemapPath | url)) | sitemapUrl }}</loc>

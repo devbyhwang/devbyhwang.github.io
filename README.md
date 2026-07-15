@@ -1,9 +1,8 @@
 # DevByHwang Blog
 
-Eleventy 3와 GitHub Pages로 운영하는 멀티 브랜드 정적 사이트입니다. 하나의 코드베이스에서 DevByHwang 블로그, Underground Novel 글쓰기 공간, DevByHwang Playground 데모를 함께 빌드합니다.
+Eleventy 3와 GitHub Pages로 운영하는 정적 사이트입니다. 하나의 코드베이스에서 DevByHwang 블로그와 DevByHwang Playground 데모를 함께 빌드합니다.
 
 - DevByHwang: 게임 데모, 개발 기록을 쌓아가는 DevByHwang 블로그.
-- Underground Novel: 소설과 메모를 쌓아가는 글쓰기 공간.
 - Playground: DevByHwang 전용 독립 실행형 데모 모음.
 
 주요 언어는 한국어입니다. 코드는 MIT License, 콘텐츠는 CC BY-NC-SA 4.0 License를 따릅니다.
@@ -32,15 +31,12 @@ npm run clean    # _site/ 삭제
 
 ## 프로젝트 구조
 
-- `src/index.njk`: 브랜드 선택 허브 홈.
+- `src/index.njk`: 브랜드 허브 홈.
 - `src/devbyhwang/`: DevByHwang 홈, 소개, 글 목록, 카테고리, Playground 목록.
 - `src/devbyhwang/blog/`: DevByHwang 글 파일. 빌드 URL은 `/devbyhwang/posts/`.
-- `src/dodoes/`: Underground Novel 홈, 소개, 글 목록, 카테고리.
-- `src/dodoes/writing/`: Underground Novel 글 파일. 빌드 URL은 `/dodoes/posts/`.
 - `src/playground/`: `/devbyhwang/playground/`로 복사되는 독립형 Playground 데모.
 - `src/_includes/layouts/base.njk`: 공통 레이아웃, canonical, description, Open Graph, Twitter card, CSP.
 - `src/_includes/layouts/devbyhwang-post.njk`: DevByHwang 글 상세 레이아웃.
-- `src/_includes/layouts/dodoes-writing.njk`: Underground Novel 글 상세 레이아웃.
 - `src/_includes/partials/`: 글 목록과 글 상세 공통 파셜.
 - `src/_includes/ads/`: display, in-feed, multiplex 광고 파셜.
 - `src/_data/brands.js`: 브랜드 네비게이션, 테마, 설명, 광고 사용 여부.
@@ -52,7 +48,6 @@ npm run clean    # _site/ 삭제
 - `src/sitemap.xml.njk`: sitemap index(`/sitemap.xml`) 생성.
 - `src/root-sitemap.xml.njk`: 허브 홈 sitemap(`/root-sitemap.xml`) 생성.
 - `src/devbyhwang/sitemap.xml.njk`: DevByHwang sitemap 생성.
-- `src/dodoes/sitemap.xml.njk`: Underground Novel sitemap 생성.
 - `eleventy.config.js`: 컬렉션, 필터, passthrough copy, 출력 설정.
 
 ## 콘텐츠 작성
@@ -94,40 +89,6 @@ AI 생성 글은 front matter에 `ai_generated: true`를 추가합니다. 생략
 - `freelance`: 외주
 - `games`: 게임
 
-### Underground Novel 글
-
-경로:
-
-```text
-src/dodoes/writing/YYYY-MM-DD-title.md
-```
-
-빌드 URL:
-
-```text
-/dodoes/posts/YYYY-MM-DD-title/
-```
-
-권장 front matter:
-
-```md
----
-layout: layouts/dodoes-writing.njk
-title: "첫 번째 노트"
-date: 2026-04-04
-category: notes
-description: "짧은 메모 요약"
-excerpt: "본문 일부 요약"
----
-
-본문을 마크다운으로 작성합니다.
-```
-
-카테고리:
-
-- `novel`: 소설
-- `notes`: 노트
-
 작성 메모:
 
 - 필수 필드: `layout`, `title`, `date`, `category`
@@ -157,7 +118,6 @@ excerpt: "본문 일부 요약"
 - `src/sitemap.xml.njk` -> `/sitemap.xml` sitemap index
 - `src/root-sitemap.xml.njk` -> `/root-sitemap.xml`
 - `src/devbyhwang/sitemap.xml.njk` -> `/devbyhwang/sitemap.xml`
-- `src/dodoes/sitemap.xml.njk` -> `/dodoes/sitemap.xml`
 - `robots.txt`에는 `Sitemap: {SITE_URL}/sitemap.xml`이 포함됩니다.
 - RSS/Atom feed는 현재 생성하지 않습니다.
 
@@ -240,10 +200,9 @@ GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세
 콘텐츠 라이선스 적용 범위:
 
 - `src/devbyhwang/blog/**`
-- `src/dodoes/writing/**`
 - `src/playground/**`
 - Playground 전용 자산: `src/assets/embercraft.js`, `src/assets/embercraft-preview.png`, `src/assets/nemo-game-preview.png`
-- 프로필 이미지: `src/assets/profile.png`, `src/assets/dodoes-profile.png`
+- 프로필 이미지: `src/assets/profile.png`
 
 그 외 레이아웃, 템플릿, 스타일, 빌드 코드는 MIT License를 따릅니다. 제3자 라이브러리, 폰트, SDK는 각 원저작권과 라이선스가 우선합니다.
 
