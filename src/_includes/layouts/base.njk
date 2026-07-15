@@ -1,41 +1,20 @@
-{% if brand and brands[brand] %}
-  {% set activeBrand = brands[brand] %}
-{% else %}
-  {% set activeBrand = null %}
-{% endif %}
-{% if activeBrand %}
-  {% set themeClass = activeBrand.themeClass %}
-{% else %}
-  {% set themeClass = 'theme-hub' %}
-{% endif %}
 {% set devNewest = collections.devPosts | first %}
-{% set overallNewest = devNewest %}
-{% if brand == 'devbyhwang' %}
-  {% set brandNewest = devNewest %}
-{% else %}
-  {% set brandNewest = null %}
-{% endif %}
-{% set shouldLoadAdSense = activeBrand and activeBrand.features.ads and site.googleAds.enable and site.googleAds.client and env.isProd %}
+{% set shouldLoadAdSense = site.googleAds.enable and site.googleAds.client and env.isProd %}
 {% set shouldInitializeAdSlots = shouldLoadAdSense %}
 <!doctype html>
 <html lang="ko">
   <head>
-    {% set siteName = activeBrand.displayName if activeBrand else site.title %}
     {% set pageTitle = title or '' %}
     {% set docTitle = '블로그' %}
-    {% if pageTitle and siteName %}
-      {% set docTitle = pageTitle + ' · ' + siteName %}
-    {% elif pageTitle %}
-      {% set docTitle = pageTitle %}
-    {% elif siteName %}
-      {% set docTitle = siteName %}
+    {% if pageTitle %}
+      {% set docTitle = pageTitle + ' · ' + site.title %}
+    {% else %}
+      {% set docTitle = site.title %}
     {% endif %}
     {% set contentSummary = content | firstParagraphText(160) %}
-    {% set metaDescription = excerpt or description or contentSummary or (activeBrand and activeBrand.description) or site.description %}
+    {% set metaDescription = excerpt or description or contentSummary or site.description %}
     {% set canonicalHref = canonicalUrl or (site.url + (page.url | url)) %}
-    {% set ogType = 'article' if layout and layout == 'layouts/devbyhwang-post.njk' else 'website' %}
-    {% set ogSiteName = siteName or 'DevByHwang Blog' %}
-    {% set iconSet = activeBrand.icon if activeBrand and activeBrand.icon else brands.devbyhwang.icon %}
+    {% set ogType = 'article' if layout and layout == 'layouts/post.njk' else 'website' %}
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="google-site-verification" content="rVaruXdp2AVKgk3fj5q2DvvVZu4Ia3wJ5bQOXDGTcWU" />
@@ -51,16 +30,16 @@
     <meta property="og:description" content="{{ metaDescription }}" />
     <meta property="og:url" content="{{ canonicalHref }}" />
     <meta property="og:type" content="{{ ogType }}" />
-    <meta property="og:site_name" content="{{ ogSiteName }}" />
+    <meta property="og:site_name" content="{{ site.title }}" />
     <meta property="og:locale" content="ko_KR" />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content="{{ docTitle }}" />
     <meta name="twitter:description" content="{{ metaDescription }}" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ iconSet.favicon32 | url }}" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ iconSet.favicon16 | url }}" />
-    <link rel="shortcut icon" href="{{ iconSet.favicon512 | url }}" />
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ iconSet.appleTouch | url }}" />
-    <meta name="msapplication-TileImage" content="{{ iconSet.tile | url }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ '/assets/icons/devbyhwang-32x32.png' | url }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/icons/devbyhwang-16x16.png' | url }}" />
+    <link rel="shortcut icon" href="{{ '/assets/icons/devbyhwang-512x512.png' | url }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/icons/devbyhwang-180x180.png' | url }}" />
+    <meta name="msapplication-TileImage" content="{{ '/assets/icons/devbyhwang-192x192.png' | url }}" />
 
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" rel="stylesheet" />
@@ -88,8 +67,7 @@
     ></script>
     {% endif %}
   </head>
-  <body class="{{ themeClass }}">
-    {% if activeBrand %}
+  <body class="theme-devbyhwang">
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
     <aside class="sidebar-drawer" id="sidebar-drawer">
       <button class="drawer-close" id="drawer-close" aria-label="Close menu">
@@ -99,43 +77,32 @@
         </svg>
       </button>
       <nav class="drawer-nav">
-        {% for item in activeBrand.nav %}
-        <a href="{{ item.href | url }}">{{ item.label }}</a>
-        {% endfor %}
+        <a href="{{ '/' | url }}">홈</a>
+        <a href="{{ '/about/' | url }}">소개</a>
+        <a href="{{ '/playground/' | url }}">Playground</a>
+        <a href="{{ '/posts/' | url }}">글</a>
       </nav>
     </aside>
-    {% endif %}
 
-    <header class="site-header{% if not activeBrand %} hub-header{% endif %}" id="site-header">
+    <header class="site-header" id="site-header">
       <div class="header-inner">
-        {% set brandTitleText = activeBrand.displayName if activeBrand else site.title %}
-        {% set brandTaglineText = activeBrand.tagline if activeBrand else site.tagline %}
-        <div class="brand{% if not brandTitleText and not brandTaglineText %} is-empty{% endif %}">
-          <a class="brand-home" href="{{ (activeBrand and activeBrand.homeHref or '/') | url }}">
-            {% if activeBrand and activeBrand.icon %}
-            <img class="brand-mark" src="{{ activeBrand.icon.title | url }}" alt="" width="36" height="36" decoding="async" />
-            {% endif %}
-            {% if brandTitleText or brandTaglineText %}
+        <div class="brand">
+          <a class="brand-home" href="{{ '/' | url }}">
+            <img class="brand-mark" src="{{ '/assets/icons/devbyhwang-icon.png' | url }}" alt="" width="36" height="36" decoding="async" />
             <span class="brand-copy">
-              {% if brandTitleText %}
-              <span class="brand-title">{{ brandTitleText }}</span>
-              {% endif %}
-              {% if brandTaglineText %}
-              <span class="brand-tagline">{{ brandTaglineText }}</span>
+              <span class="brand-title">{{ site.title }}</span>
+              {% if site.tagline %}
+              <span class="brand-tagline">{{ site.tagline }}</span>
               {% endif %}
             </span>
-            {% endif %}
           </a>
         </div>
 
-        {% if activeBrand %}
         <nav class="nav">
-          {% for item in activeBrand.nav %}
-          <a
-            href="{{ item.href | url }}"
-            {% if page.url == item.href or (item.matchPrefix and page.url.startsWith(item.matchPrefix)) %}class="active"{% endif %}
-          >{{ item.label }}</a>
-          {% endfor %}
+          <a href="{{ '/' | url }}" {% if page.url == '/' %}class="active"{% endif %}>홈</a>
+          <a href="{{ '/about/' | url }}" {% if page.url.startsWith('/about/') %}class="active"{% endif %}>소개</a>
+          <a href="{{ '/playground/' | url }}" {% if page.url.startsWith('/playground/') %}class="active"{% endif %}>Playground</a>
+          <a href="{{ '/posts/' | url }}" {% if page.url.startsWith('/posts/') %}class="active"{% endif %}>글</a>
         </nav>
 
         <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar-drawer">
@@ -145,11 +112,6 @@
             <line x1="3" y1="18" x2="21" y2="18"></line>
           </svg>
         </button>
-        {% else %}
-        <nav class="nav hub-nav">
-          <a href="{{ '/devbyhwang/' | url }}">DevByHwang</a>
-        </nav>
-        {% endif %}
       </div>
     </header>
 
@@ -157,15 +119,13 @@
       <main class="site-main">{{ content | safe }}</main>
 
       <footer class="footer footer-minimal">
-        {% set footerLabel = activeBrand.displayName if activeBrand else site.author %}
-        {% set footerYearSource = brandNewest or overallNewest %}
-        {% if footerYearSource %}
-          {% set footerYear = footerYearSource.date | readableDate('yyyy') %}
+        {% if devNewest %}
+          {% set footerYear = devNewest.date | readableDate('yyyy') %}
         {% else %}
           {% set footerYear = '' %}
         {% endif %}
         <div class="footer-meta">
-          <span>© {{ footerLabel }}{% if footerYear %} {{ footerYear }}{% endif %}</span>
+          <span>© {{ site.author }}{% if footerYear %} {{ footerYear }}{% endif %}</span>
           <span>Licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a></span>
         </div>
       </footer>

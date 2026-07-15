@@ -3,12 +3,35 @@ permalink: /sitemap.xml
 eleventyExcludeFromCollections: true
 ---
 <?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 {% set baseUrl = site.url %}
-{% set sitemapPaths = ["/root-sitemap.xml", "/devbyhwang/sitemap.xml"] %}
-{% for sitemapPath in sitemapPaths %}
-  <sitemap>
-    <loc>{{ (baseUrl + (sitemapPath | url)) | sitemapUrl }}</loc>
-  </sitemap>
+{% for page in collections.all | sitemapFilter("") %}
+  <url>
+    <loc>{{ (baseUrl + (page.url | url)) | sitemapUrl }}</loc>
+    {% if page.date %}
+    <lastmod>{{ page.date | isoDate }}</lastmod>
+    {% endif %}
+  </url>
 {% endfor %}
-</sitemapindex>
+{% for archivePage in collections.devPostPages %}
+  {% if archivePage.pageIndex > 0 %}
+  <url>
+    <loc>{{ (baseUrl + (archivePage.href | url)) | sitemapUrl }}</loc>
+  </url>
+  {% endif %}
+{% endfor %}
+{% for archivePage in collections.devCategoryPages %}
+  {% if not loop.first or archivePage.pageIndex > 0 %}
+  <url>
+    <loc>{{ (baseUrl + (archivePage.href | url)) | sitemapUrl }}</loc>
+  </url>
+  {% endif %}
+{% endfor %}
+{% for archivePage in collections.playgroundPages %}
+  {% if archivePage.pageIndex > 0 %}
+  <url>
+    <loc>{{ (baseUrl + (archivePage.href | url)) | sitemapUrl }}</loc>
+  </url>
+  {% endif %}
+{% endfor %}
+</urlset>

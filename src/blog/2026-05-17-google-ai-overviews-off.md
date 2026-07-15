@@ -1,5 +1,5 @@
 ---
-layout: layouts/devbyhwang-post.njk
+layout: layouts/post.njk
 title: "구글 AI 개요 끄기: AI 답변 없이 검색 결과만 보는 법"
 date: 2026-05-17
 category: info
