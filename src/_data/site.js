@@ -18,7 +18,7 @@ const env = process.env;
 module.exports = {
   title: "",
   tagline: "",
-  description: "개발자 브랜드 DevByHwang와 작가 브랜드 Underground Novel를 위한 블로그.",
+  description: "개발자 브랜드 DevByHwang를 위한 블로그.",
   author: "Hwang",
   url: normalizeUrl(env.SITE_URL || "http://localhost:8080"),
   email: "devbyhwang@gmail.com",

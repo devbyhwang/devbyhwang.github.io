@@ -9,20 +9,9 @@
   {% set themeClass = 'theme-hub' %}
 {% endif %}
 {% set devNewest = collections.devPosts | first %}
-{% set dodoesNewest = collections.dodoesWriting | first %}
-{% if devNewest and dodoesNewest %}
-  {% if devNewest.date > dodoesNewest.date %}
-    {% set overallNewest = devNewest %}
-  {% else %}
-    {% set overallNewest = dodoesNewest %}
-  {% endif %}
-{% else %}
-  {% set overallNewest = devNewest or dodoesNewest %}
-{% endif %}
+{% set overallNewest = devNewest %}
 {% if brand == 'devbyhwang' %}
   {% set brandNewest = devNewest %}
-{% elif brand == 'dodoes' %}
-  {% set brandNewest = dodoesNewest %}
 {% else %}
   {% set brandNewest = null %}
 {% endif %}
@@ -44,7 +33,7 @@
     {% set contentSummary = content | firstParagraphText(160) %}
     {% set metaDescription = excerpt or description or contentSummary or (activeBrand and activeBrand.description) or site.description %}
     {% set canonicalHref = canonicalUrl or (site.url + (page.url | url)) %}
-    {% set ogType = 'article' if layout and (layout == 'layouts/devbyhwang-post.njk' or layout == 'layouts/dodoes-writing.njk') else 'website' %}
+    {% set ogType = 'article' if layout and layout == 'layouts/devbyhwang-post.njk' else 'website' %}
     {% set ogSiteName = siteName or 'DevByHwang Blog' %}
     {% set iconSet = activeBrand.icon if activeBrand and activeBrand.icon else brands.devbyhwang.icon %}
     <meta charset="utf-8" />
@@ -137,13 +126,6 @@
             </span>
             {% endif %}
           </a>
-          {% if activeBrand and activeBrand.crossLink %}
-          <a
-            class="brand-cross-link"
-            href="{{ activeBrand.crossLink.href | url }}"
-            aria-label="{{ activeBrand.crossLink.label }}로 이동"
-          >{{ activeBrand.crossLink.label }}</a>
-          {% endif %}
         </div>
 
         {% if activeBrand %}
@@ -166,7 +148,6 @@
         {% else %}
         <nav class="nav hub-nav">
           <a href="{{ '/devbyhwang/' | url }}">DevByHwang</a>
-          <a href="{{ '/dodoes/' | url }}">Underground Novel</a>
         </nav>
         {% endif %}
       </div>
