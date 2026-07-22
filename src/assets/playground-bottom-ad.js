@@ -16,7 +16,7 @@
 
   const hasPlaygroundMarker = Boolean(document.querySelector("[data-playground-page]"));
   const pathname = window.location.pathname || "";
-  const isPlaygroundDemoPath = /\/devbyhwang\/playground\/[^/]+(\/|$)/.test(pathname);
+  const isPlaygroundDemoPath = /\/playground\/[^/]+(\/|$)/.test(pathname);
   if (!hasPlaygroundMarker && !isPlaygroundDemoPath) return;
 
   const getScriptUrl = function () {
