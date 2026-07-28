@@ -1,0 +1,45 @@
+name: Refresh game recommendation catalog
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-recommendation-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Refresh and persist catalog data
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          TWITCH_TOP_GAME_LIMIT: ${{ vars.TWITCH_TOP_GAME_LIMIT || '100' }}
+          TWITCH_STREAM_PAGE_LIMIT: ${{ vars.TWITCH_STREAM_PAGE_LIMIT || '5' }}
+          IGDB_RECENT_DAYS: ${{ vars.IGDB_RECENT_DAYS || '60' }}
+        run: |
+          set +e
+          npm run pipeline
+          pipeline_status=$?
+          set -e
+
+          git add data/history.json data/raw src/playground/game-recommendation/catalog.json
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: refresh game recommendation catalog"
+            git push
+          fi
+          exit "$pipeline_status"

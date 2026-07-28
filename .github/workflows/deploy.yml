@@ -27,6 +27,8 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
       - name: Set PATH_PREFIX
         run: |
           REPO_NAME="${{ github.event.repository.name }}"
@@ -74,6 +76,8 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+      - name: Verify game recommendation artifact
+        run: test -f _site/playground/game-recommendation/catalog.json
 
   deploy:
     needs: build

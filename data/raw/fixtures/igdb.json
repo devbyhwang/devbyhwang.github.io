@@ -1,0 +1,18 @@
+{
+  "oauth": { "access_token": "fixture-igdb-token", "expires_in": 3600, "token_type": "bearer" },
+  "recentGames": [
+    { "id": 7, "name": "Recent Fixture", "first_release_date": 1784505600, "rating_count": 12 },
+    { "id": 77, "name": "Recent-only Fixture", "first_release_date": 1784505600, "rating": 81, "rating_count": 18 }
+  ],
+  "topGames": [
+    { "id": 42, "name": "Twitch Fixture", "first_release_date": 1784505600, "rating_count": 20 }
+  ],
+  "steamMappedGames": [
+    { "id": 88, "name": "Steam-only Fixture", "first_release_date": 1784505600, "rating_count": 30 }
+  ],
+  "externalGames": [
+    { "game": 7, "uid": "570", "external_game_source": 1 },
+    { "game": 88, "uid": "730", "external_game_source": 1 },
+    { "game": 99, "uid": "570", "external_game_source": 2 }
+  ]
+}

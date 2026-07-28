@@ -1,0 +1,10 @@
+{
+  "Cozy": { "healing": 1, "chatting": 0.2 },
+  "Horror": { "horror": 1, "healing": -0.5 },
+  "Psychological Horror": { "horror": 0.8, "healing": -1 },
+  "Competitive": { "hardcore": 1, "spectacle": 0.3 },
+  "Party Game": { "variety": 1, "chatting": 1 },
+  "Roguelike": { "hardcore": 0.7, "variety": 0.3 },
+  "Story Rich": { "spectacle": 0.7, "healing": 0.2 },
+  "Funny": { "variety": 0.7, "chatting": 0.6 }
+}

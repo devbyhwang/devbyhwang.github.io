@@ -1,0 +1,27 @@
+{
+  "featured": {
+    "top_sellers": { "items": [{ "id": 570 }, { "id": 730 }] }
+  },
+  "apps": {
+    "570": {
+      "appid": 570,
+      "name": "Dota 2",
+      "tags": { "MOBA": 100, "Free to Play": 80 },
+      "positive": 1000,
+      "negative": 50,
+      "owners": "50,000,000 .. 100,000,000",
+      "price": "0",
+      "discount": "0"
+    },
+    "730": {
+      "appid": 730,
+      "name": "Counter-Strike 2",
+      "tags": { "Competitive": 100 },
+      "positive": 2000,
+      "negative": 100,
+      "owners": "100,000,000 .. 200,000,000",
+      "price": "0",
+      "discount": "0"
+    }
+  }
+}

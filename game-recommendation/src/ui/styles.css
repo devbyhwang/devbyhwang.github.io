@@ -1,0 +1,290 @@
+:root {
+  color-scheme: dark light;
+
+  /* 표면 */
+  --bg: #0f1014;
+  --fg: #e8e9ed;
+  --fg-strong: rgba(232, 233, 237, 0.93);
+  --fg-why: rgba(232, 233, 237, 0.78);
+  --fg-meta: rgba(232, 233, 237, 0.35);
+  --fg-meta-strong: rgba(232, 233, 237, 0.9);
+  --fg-label: rgba(232, 233, 237, 0.3);
+  --fg-faint: rgba(232, 233, 237, 0.4);
+
+  /* 선택지 */
+  --opt: rgba(232, 233, 237, 0.42);
+  --opt-hover: rgba(232, 233, 237, 0.72);
+  --opt-hover-line: rgba(232, 233, 237, 0.22);
+  --opt-on: #e8e9ed;
+  --focus: #6ea8fe;
+
+  /* 슬롯 배지 */
+  --badge-bg: rgba(10, 11, 14, 0.82);
+  --badge-fg: #e8e9ed;
+  --badge-rising-bg: rgba(245, 158, 11, 0.92);
+  --badge-rising-fg: #0f1014;
+  --badge-new-bg: rgba(16, 185, 129, 0.92);
+  --badge-new-fg: #0f1014;
+
+  /* 포스터 */
+  --poster-shadow: none;
+  --fallback-bg: linear-gradient(160deg, #1c1e26, #14161c);
+  --fallback-fg: rgba(232, 233, 237, 0.62);
+  --fallback-border: 1px solid rgba(255, 255, 255, 0.06);
+
+  /* 치수 */
+  --gap-group: 44px;
+  --gap-card: 14px;
+  --radius-poster: 10px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: #f2f0ed;
+    --fg: #1a1917;
+    --fg-strong: #1a1917;
+    --fg-why: #44413c;
+    --fg-meta: #8c8880;
+    --fg-meta-strong: #44413c;
+    --fg-label: #9c9890;
+    --fg-faint: #8c8880;
+
+    --opt: #8c8880;
+    --opt-hover: #44413c;
+    --opt-hover-line: rgba(26, 25, 23, 0.2);
+    --opt-on: #1a1917;
+
+    --badge-bg: #16171b;
+    --badge-fg: #ffffff;
+    --badge-rising-bg: #b45309;
+    --badge-rising-fg: #ffffff;
+    --badge-new-bg: #047857;
+    --badge-new-fg: #ffffff;
+
+    --poster-shadow: 0 2px 8px rgba(60, 50, 40, 0.14), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    --fallback-bg: linear-gradient(160deg, #f0f1f4, #e7e8ec);
+    --fallback-fg: rgba(23, 24, 28, 0.5);
+    --fallback-border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Pretendard", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 34px 20px 72px;
+}
+
+/* ── 헤더 ── */
+.head {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.head-kicker {
+  font-size: 12px;
+  color: var(--fg-faint);
+  margin: 0 0 5px;
+}
+.head-summary {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--fg-strong);
+  margin: 0;
+}
+
+/* ── 입력부 ── */
+.query {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px var(--gap-group);
+  margin-bottom: 26px;
+}
+.qgroup-label {
+  display: block;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--fg-label);
+  margin-bottom: 4px;
+}
+.opt {
+  font: inherit;
+  font-size: 14px;
+  padding: 4px 0;
+  margin-right: 13px;
+  background: none;
+  border: 0;
+  border-bottom: 1.5px solid transparent;
+  color: var(--opt);
+  cursor: pointer;
+}
+.opt:last-child { margin-right: 0; }
+.opt:hover {
+  color: var(--opt-hover);
+  border-bottom-color: var(--opt-hover-line);
+}
+.opt[aria-pressed="true"] {
+  color: var(--opt-on);
+  font-weight: 600;
+  border-bottom-color: var(--opt-on);
+}
+.opt:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ── 결과 그리드 ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap-card);
+}
+@media (min-width: 600px) {
+  .cards { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 960px) {
+  .cards { grid-template-columns: repeat(5, 1fr); }
+}
+
+/* ── 카드 ── */
+.card { min-width: 0; }
+.poster {
+  position: relative;
+  margin-bottom: 9px;
+}
+.poster img,
+.poster-fallback {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-poster);
+  display: block;
+  box-shadow: var(--poster-shadow);
+}
+.poster img { object-fit: cover; }
+.poster-fallback {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  background: var(--fallback-bg);
+  color: var(--fallback-fg);
+  border: var(--fallback-border);
+}
+.badge-slot {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--badge-bg);
+  color: var(--badge-fg);
+}
+.badge-slot.rising { background: var(--badge-rising-bg); color: var(--badge-rising-fg); }
+.badge-slot.new { background: var(--badge-new-bg); color: var(--badge-new-fg); }
+
+.card-title {
+  font-size: 14px;
+  font-weight: 660;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+  margin: 0 0 5px;
+  color: var(--fg);
+}
+.card-title a,
+.card-title a:visited {
+  color: var(--fg);
+}
+.card-why {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--fg-why);
+  margin: 0;
+}
+.card-meta {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--fg-meta);
+}
+.card-meta b {
+  font-weight: 600;
+  color: var(--fg-meta-strong);
+}
+.card-meta .players-unknown { opacity: 0.75; }
+@media (max-width: 599px) {
+  :root { --gap-group: 26px; }
+  .card-meta .players-known,
+  .card-meta .players-unknown { display: none; }
+}
+
+/* ── 상태 ── */
+.notice {
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--fg-meta);
+  margin: 0 0 16px;
+}
+.empty {
+  text-align: center;
+  padding: 46px 20px 40px;
+}
+.empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--fg-strong);
+  margin: 0 0 9px;
+}
+.empty-body {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--fg-meta);
+  margin: 0;
+}
+.empty-body b {
+  font-weight: 600;
+  color: var(--fg-why);
+}
+.foot {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--fg-label);
+}
+
+/* ── 디버그 ── */
+.debug {
+  width: 100%;
+  margin-top: 8px;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 10.5px;
+  line-height: 1.7;
+  color: var(--fg-meta);
+  border-collapse: collapse;
+}
+.debug td { padding: 0 2px; }
+.debug td:last-child { text-align: right; }
+.debug-total td {
+  border-top: 1px solid var(--opt-hover-line);
+  font-weight: 700;
+  color: var(--fg-why);
+}
