@@ -205,6 +205,12 @@ curl -sL <cdn-url> | openssl dgst -sha384 -binary | openssl base64 -A
 
 GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세요.
 
+게임 추천 catalog 갱신 workflow도 이 저장소에서 매일 00:00 UTC에 실행됩니다.
+처음 운영하기 전에 repository secrets에 `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`을 등록하고,
+`Refresh game recommendation catalog` workflow를 수동으로 한 번 실행하세요. 수집 범위는
+repository variables의 `TWITCH_TOP_GAME_LIMIT`, `TWITCH_STREAM_PAGE_LIMIT`, `IGDB_RECENT_DAYS`로
+조정할 수 있으며 기본값은 각각 `100`, `5`, `60`입니다.
+
 ## 라이선스
 
 - 코드: MIT License (`LICENSE`)
