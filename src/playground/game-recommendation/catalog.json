@@ -1,76 +1,6 @@
 {
-  "generatedAt": "2026-07-28T15:03:57.711Z",
+  "generatedAt": "2026-07-28T18:13:05.689Z",
   "games": [
-    {
-      "id": "84313",
-      "steamAppId": 16900,
-      "storeUrl": "https://store.steampowered.com/app/16900/",
-      "name": "Ground Branch",
-      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co27pk.jpg",
-      "releaseDate": "2026-07-16T00:00:00.000Z",
-      "players": {
-        "max": 16,
-        "source": "igdb_multiplayer",
-        "online": true,
-        "localCoop": true
-      },
-      "sessionShape": "openended",
-      "viewerPlayable": {
-        "ok": true,
-        "reason": "온라인 협동 참여 가능"
-      },
-      "vibes": {
-        "healing": 0.9023458701219168,
-        "variety": 0,
-        "horror": 0,
-        "hardcore": 0,
-        "chatting": 0,
-        "spectacle": 0
-      },
-      "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
-        "viewerGrowth7d": null,
-        "isNewRelease": true
-      },
-      "topTags": [
-        {
-          "tag": "Tactical",
-          "share": 1
-        },
-        {
-          "tag": "Realistic",
-          "share": 0.9125475285171103
-        },
-        {
-          "tag": "Military",
-          "share": 0.8041825095057035
-        },
-        {
-          "tag": "FPS",
-          "share": 0.714828897338403
-        },
-        {
-          "tag": "Shooter",
-          "share": 0.5551330798479087
-        },
-        {
-          "tag": "Multiplayer",
-          "share": 0.5513307984790875
-        },
-        {
-          "tag": "Singleplayer",
-          "share": 0.45817490494296575
-        },
-        {
-          "tag": "Simulation",
-          "share": 0.4448669201520912
-        }
-      ],
-      "rating": 89.27385126407086,
-      "reviewCount": 21676,
-      "discountPercent": 0
-    },
     {
       "id": "148227",
       "steamAppId": 1297900,
@@ -89,7 +19,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -125,7 +55,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -133,8 +63,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
+        "twitchViewers": 4608,
+        "twitchChannels": 54,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -159,7 +89,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -175,42 +105,6 @@
       "topTags": [],
       "rating": 83.05148551376791,
       "reviewCount": 12
-    },
-    {
-      "id": "405028",
-      "steamAppId": 4704690,
-      "storeUrl": "https://store.steampowered.com/app/4704690/",
-      "name": "Meccha Chameleon",
-      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc7cr.jpg",
-      "releaseDate": "2026-06-09T00:00:00.000Z",
-      "players": {
-        "max": 32,
-        "source": "igdb_multiplayer",
-        "online": true,
-        "localCoop": true
-      },
-      "sessionShape": "openended",
-      "viewerPlayable": {
-        "ok": false
-      },
-      "vibes": {
-        "healing": 0.9023458701219168,
-        "variety": 0,
-        "horror": 0,
-        "hardcore": 0,
-        "chatting": 0,
-        "spectacle": 0
-      },
-      "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
-        "viewerGrowth7d": null,
-        "isNewRelease": false
-      },
-      "topTags": [],
-      "rating": 70.38079267105476,
-      "reviewCount": 55,
-      "discountPercent": 15
     },
     {
       "id": "220348",
@@ -233,7 +127,7 @@
       "vibes": {
         "healing": 0,
         "variety": 0,
-        "horror": 1,
+        "horror": 0.9772603485838779,
         "hardcore": 0,
         "chatting": 0,
         "spectacle": 0
@@ -300,7 +194,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 1,
         "horror": 0,
         "hardcore": 0,
@@ -352,6 +246,76 @@
       "discountPercent": 0
     },
     {
+      "id": "151665",
+      "steamAppId": 1623730,
+      "storeUrl": "https://store.steampowered.com/app/1623730/",
+      "name": "Palworld",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7n02.jpg",
+      "releaseDate": "2026-07-10T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 22807,
+        "twitchChannels": 468,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [
+        {
+          "tag": "Open World",
+          "share": 1
+        },
+        {
+          "tag": "Survival",
+          "share": 0.916445623342175
+        },
+        {
+          "tag": "Creature Collector",
+          "share": 0.9045092838196287
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.8992042440318302
+        },
+        {
+          "tag": "Open World Survival Craft",
+          "share": 0.8275862068965517
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.639920424403183
+        },
+        {
+          "tag": "Crafting",
+          "share": 0.6352785145888594
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.6067639257294429
+        }
+      ],
+      "rating": 94.10494629756586,
+      "reviewCount": 380709,
+      "discountPercent": 0
+    },
+    {
       "id": "322086",
       "steamAppId": 3314340,
       "storeUrl": "https://store.steampowered.com/app/3314340/",
@@ -369,7 +333,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -436,7 +400,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -469,7 +433,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -485,39 +449,6 @@
       "topTags": [],
       "rating": 98.4751431178254,
       "reviewCount": 22
-    },
-    {
-      "id": "337031",
-      "name": "Rhythm Heaven Groove",
-      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobwkn.jpg",
-      "releaseDate": "2026-07-02T00:00:00.000Z",
-      "players": {
-        "max": "unknown",
-        "source": "unknown",
-        "online": false,
-        "localCoop": false
-      },
-      "sessionShape": "openended",
-      "viewerPlayable": {
-        "ok": false
-      },
-      "vibes": {
-        "healing": 0.9023458701219168,
-        "variety": 0,
-        "horror": 0,
-        "hardcore": 0,
-        "chatting": 0,
-        "spectacle": 0
-      },
-      "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
-        "viewerGrowth7d": null,
-        "isNewRelease": true
-      },
-      "topTags": [],
-      "rating": 75.21384789133145,
-      "reviewCount": 5
     },
     {
       "id": "337738",
@@ -537,7 +468,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -545,15 +476,51 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
+        "twitchViewers": 5492,
+        "twitchChannels": 490,
         "viewerGrowth7d": null,
         "isNewRelease": true
       },
       "topTags": [],
-      "rating": 84.84859379282021,
-      "reviewCount": 18,
+      "rating": 84.85815490047204,
+      "reviewCount": 19,
       "discountPercent": 0
+    },
+    {
+      "id": "405028",
+      "steamAppId": 4704690,
+      "storeUrl": "https://store.steampowered.com/app/4704690/",
+      "name": "Meccha Chameleon",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc7cr.jpg",
+      "releaseDate": "2026-06-09T00:00:00.000Z",
+      "players": {
+        "max": 32,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3136,
+        "twitchChannels": 223,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 70.37955076264689,
+      "reviewCount": 56,
+      "discountPercent": 15
     },
     {
       "id": "348971",
@@ -573,7 +540,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -609,7 +576,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -678,7 +645,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -694,6 +661,76 @@
       "topTags": [],
       "rating": 70.22802500728763,
       "reviewCount": 6,
+      "discountPercent": 0
+    },
+    {
+      "id": "84313",
+      "steamAppId": 16900,
+      "storeUrl": "https://store.steampowered.com/app/16900/",
+      "name": "Ground Branch",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co27pk.jpg",
+      "releaseDate": "2026-07-16T00:00:00.000Z",
+      "players": {
+        "max": 16,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 0,
+        "twitchChannels": 0,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [
+        {
+          "tag": "Tactical",
+          "share": 1
+        },
+        {
+          "tag": "Realistic",
+          "share": 0.9125475285171103
+        },
+        {
+          "tag": "Military",
+          "share": 0.8041825095057035
+        },
+        {
+          "tag": "FPS",
+          "share": 0.714828897338403
+        },
+        {
+          "tag": "Shooter",
+          "share": 0.5551330798479087
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.5513307984790875
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.45817490494296575
+        },
+        {
+          "tag": "Simulation",
+          "share": 0.4448669201520912
+        }
+      ],
+      "rating": 89.27385126407086,
+      "reviewCount": 21676,
       "discountPercent": 0
     },
     {
@@ -715,7 +752,7 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0.7487890478942181,
         "horror": 0,
         "hardcore": 0,
@@ -723,8 +760,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
+        "twitchViewers": 3076,
+        "twitchChannels": 122,
         "viewerGrowth7d": null,
         "isNewRelease": true
       },
@@ -784,7 +821,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -801,6 +838,39 @@
       "rating": 92.98245614035088,
       "reviewCount": 7,
       "discountPercent": 0
+    },
+    {
+      "id": "337031",
+      "name": "Rhythm Heaven Groove",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobwkn.jpg",
+      "releaseDate": "2026-07-02T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 0,
+        "twitchChannels": 0,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "rating": 75.21384789133145,
+      "reviewCount": 5
     },
     {
       "id": "361826",
@@ -820,7 +890,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -837,76 +907,6 @@
       "rating": 79.8953893839597,
       "reviewCount": 6,
       "discountPercent": 10
-    },
-    {
-      "id": "151665",
-      "steamAppId": 1623730,
-      "storeUrl": "https://store.steampowered.com/app/1623730/",
-      "name": "Palworld",
-      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7n02.jpg",
-      "releaseDate": "2026-07-10T00:00:00.000Z",
-      "players": {
-        "max": 2,
-        "source": "igdb_gamemodes",
-        "online": true,
-        "localCoop": false
-      },
-      "sessionShape": "openended",
-      "viewerPlayable": {
-        "ok": true,
-        "reason": "온라인 협동 참여 가능"
-      },
-      "vibes": {
-        "healing": 0.9023458701219168,
-        "variety": 0,
-        "horror": 0,
-        "hardcore": 0,
-        "chatting": 0,
-        "spectacle": 0
-      },
-      "buzz": {
-        "twitchViewers": 34477,
-        "twitchChannels": 187,
-        "viewerGrowth7d": null,
-        "isNewRelease": true
-      },
-      "topTags": [
-        {
-          "tag": "Open World",
-          "share": 1
-        },
-        {
-          "tag": "Survival",
-          "share": 0.916445623342175
-        },
-        {
-          "tag": "Creature Collector",
-          "share": 0.9045092838196287
-        },
-        {
-          "tag": "Multiplayer",
-          "share": 0.8992042440318302
-        },
-        {
-          "tag": "Open World Survival Craft",
-          "share": 0.8275862068965517
-        },
-        {
-          "tag": "Online Co-Op",
-          "share": 0.639920424403183
-        },
-        {
-          "tag": "Crafting",
-          "share": 0.6352785145888594
-        },
-        {
-          "tag": "Co-op",
-          "share": 0.6067639257294429
-        }
-      ],
-      "rating": 94.10494629756586,
-      "reviewCount": 380709,
-      "discountPercent": 0
     },
     {
       "id": "278600",
@@ -927,7 +927,7 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -996,7 +996,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1030,7 +1030,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1038,8 +1038,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 92480,
-        "twitchChannels": 195,
+        "twitchViewers": 122369,
+        "twitchChannels": 473,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1064,7 +1064,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1072,14 +1072,47 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 22711,
-        "twitchChannels": 197,
+        "twitchViewers": 36123,
+        "twitchChannels": 465,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
       "topTags": [],
       "rating": 83.82645585633917,
       "reviewCount": 885
+    },
+    {
+      "id": "364",
+      "name": "Heroes of Might and Magic III: The Restoration of Erathia",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2a47.jpg",
+      "releaseDate": "1999-02-28T00:00:00.000Z",
+      "players": {
+        "max": 8,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3757,
+        "twitchChannels": 40,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 90.1139970784415,
+      "reviewCount": 717
     },
     {
       "id": "386",
@@ -1100,16 +1133,16 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9662653683952274,
+        "healing": 0.9510834693210362,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
         "chatting": 0,
-        "spectacle": 0.654549872628133
+        "spectacle": 0.5625880891521942
       },
       "buzz": {
-        "twitchViewers": 17889,
-        "twitchChannels": 192,
+        "twitchViewers": 25250,
+        "twitchChannels": 442,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1152,6 +1185,42 @@
       "discountPercent": 0
     },
     {
+      "id": "732",
+      "steamAppId": 12250,
+      "storeUrl": "https://store.steampowered.com/app/12250/",
+      "name": "Grand Theft Auto: San Andreas",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2lb9.jpg",
+      "releaseDate": "2004-10-26T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_multiplayer",
+        "online": false,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 6528,
+        "twitchChannels": 67,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 90.13073991788943,
+      "reviewCount": 3991,
+      "discountPercent": 0
+    },
+    {
       "id": "1020",
       "steamAppId": 271590,
       "storeUrl": "https://store.steampowered.com/app/271590/",
@@ -1169,7 +1238,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0.44447627404728957,
         "horror": 0,
         "hardcore": 0,
@@ -1177,8 +1246,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 31485,
-        "twitchChannels": 191,
+        "twitchViewers": 59951,
+        "twitchChannels": 475,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1221,6 +1290,145 @@
       "discountPercent": 0
     },
     {
+      "id": "1122",
+      "steamAppId": 202990,
+      "storeUrl": "https://store.steampowered.com/app/202990/",
+      "name": "Call of Duty: Black Ops II",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1wkv.jpg",
+      "releaseDate": "2012-11-12T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.846157358177663,
+        "variety": 0,
+        "horror": 0.07532418001525552,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 13008,
+        "twitchChannels": 455,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Action",
+          "share": 1
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.9458428680396643
+        },
+        {
+          "tag": "FPS",
+          "share": 0.8802440884820748
+        },
+        {
+          "tag": "Shooter",
+          "share": 0.6300533943554538
+        },
+        {
+          "tag": "First-Person",
+          "share": 0.4591914569031274
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.4057971014492754
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.3905415713196034
+        },
+        {
+          "tag": "War",
+          "share": 0.35545385202135776
+        }
+      ],
+      "rating": 84.97961743493259,
+      "reviewCount": 31890,
+      "discountPercent": 0
+    },
+    {
+      "id": "1184",
+      "steamAppId": 1407200,
+      "storeUrl": "https://store.steampowered.com/app/1407200/",
+      "name": "World of Tanks",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob91n.jpg",
+      "releaseDate": "2011-04-12T00:00:00.000Z",
+      "players": {
+        "max": 30,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 11733,
+        "twitchChannels": 219,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Tanks",
+          "share": 1
+        },
+        {
+          "tag": "Free to Play",
+          "share": 0.8325640329441578
+        },
+        {
+          "tag": "Action",
+          "share": 0.605303647388904
+        },
+        {
+          "tag": "Military",
+          "share": 0.5946239478685854
+        },
+        {
+          "tag": "PvP",
+          "share": 0.5850303194859263
+        },
+        {
+          "tag": "Vehicular Combat",
+          "share": 0.5845777898452349
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.5833107068512987
+        },
+        {
+          "tag": "Team-Based",
+          "share": 0.52439134763327
+        }
+      ],
+      "rating": 82.61988250831094,
+      "reviewCount": 87836,
+      "discountPercent": 0
+    },
+    {
       "id": "1279",
       "name": "Hearthstone",
       "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1sh2.jpg",
@@ -1237,7 +1445,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1245,14 +1453,47 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 20815,
-        "twitchChannels": 116,
+        "twitchViewers": 18310,
+        "twitchChannels": 145,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
       "topTags": [],
       "rating": 78.2750380851226,
       "reviewCount": 713
+    },
+    {
+      "id": "1595",
+      "name": "Star Citizen",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocimn.jpg",
+      "releaseDate": "2013-08-30T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3154,
+        "twitchChannels": 112,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 92.36849058920298,
+      "reviewCount": 88
     },
     {
       "id": "1905",
@@ -1270,7 +1511,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1278,14 +1519,83 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 29108,
-        "twitchChannels": 189,
+        "twitchViewers": 137474,
+        "twitchChannels": 483,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
       "topTags": [],
       "rating": 70.98431285951877,
       "reviewCount": 999
+    },
+    {
+      "id": "1907",
+      "steamAppId": 219990,
+      "storeUrl": "https://store.steampowered.com/app/219990/",
+      "name": "Grim Dawn",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co41h4.jpg",
+      "releaseDate": "2016-02-25T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3072,
+        "twitchChannels": 72,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Action RPG",
+          "share": 1
+        },
+        {
+          "tag": "Hack and Slash",
+          "share": 0.21555022557249728
+        },
+        {
+          "tag": "Loot",
+          "share": 0.2131802866769459
+        },
+        {
+          "tag": "Isometric",
+          "share": 0.2118953800468277
+        },
+        {
+          "tag": "Dark Fantasy",
+          "share": 0.21169550568214265
+        },
+        {
+          "tag": "RPG",
+          "share": 0.1700359773856433
+        },
+        {
+          "tag": "Dungeon Crawler",
+          "share": 0.10139340985666152
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.08671692079264462
+        }
+      ],
+      "rating": 93.74210367993582,
+      "reviewCount": 99730,
+      "discountPercent": 0
     },
     {
       "id": "1911",
@@ -1306,16 +1616,16 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.8414960924468328,
+        "healing": 0.8282745601796963,
         "variety": 0,
-        "horror": 0.10988622163898558,
+        "horror": 0.10738744726348032,
         "hardcore": 0,
         "chatting": 0,
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 41456,
-        "twitchChannels": 195,
+        "twitchViewers": 57054,
+        "twitchChannels": 456,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1358,6 +1668,248 @@
       "discountPercent": 0
     },
     {
+      "id": "2117",
+      "steamAppId": 221100,
+      "storeUrl": "https://store.steampowered.com/app/221100/",
+      "name": "DayZ",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaaqs.jpg",
+      "releaseDate": "2018-12-13T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.6649554654162826,
+        "variety": 0,
+        "horror": 0.400213199851687,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 8592,
+        "twitchChannels": 341,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Survival",
+          "share": 1
+        },
+        {
+          "tag": "Open World",
+          "share": 0.664503769620566
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.6586948461253245
+        },
+        {
+          "tag": "Zombies",
+          "share": 0.6577678902484242
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.6531949079223829
+        },
+        {
+          "tag": "Post-apocalyptic",
+          "share": 0.6505376344086021
+        },
+        {
+          "tag": "Shooter",
+          "share": 0.6471387961933012
+        },
+        {
+          "tag": "PvP",
+          "share": 0.6456556667902608
+        }
+      ],
+      "rating": 76.78035197977,
+      "reviewCount": 430252,
+      "discountPercent": 0
+    },
+    {
+      "id": "2538",
+      "name": "Enslaved: Odyssey to the West",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2gko.jpg",
+      "releaseDate": "2010-10-05T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 6863,
+        "twitchChannels": 2,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 80.19264221405253,
+      "reviewCount": 216
+    },
+    {
+      "id": "2903",
+      "steamAppId": 230410,
+      "storeUrl": "https://store.steampowered.com/app/230410/",
+      "name": "Warframe",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocase.jpg",
+      "releaseDate": "2013-03-25T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 12093,
+        "twitchChannels": 310,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Free to Play",
+          "share": 1
+        },
+        {
+          "tag": "Action RPG",
+          "share": 0.9552917403384693
+        },
+        {
+          "tag": "Looter Shooter",
+          "share": 0.9550391513008335
+        },
+        {
+          "tag": "Third-Person Shooter",
+          "share": 0.9493558979540287
+        },
+        {
+          "tag": "Action",
+          "share": 0.9461353877241727
+        },
+        {
+          "tag": "RPG",
+          "share": 0.9428517302349078
+        },
+        {
+          "tag": "Third Person",
+          "share": 0.9410204597120485
+        },
+        {
+          "tag": "Character Customization",
+          "share": 0.5068830512755746
+        }
+      ],
+      "rating": 87.05353366224902,
+      "reviewCount": 626503,
+      "discountPercent": 0
+    },
+    {
+      "id": "3189",
+      "steamAppId": 108600,
+      "storeUrl": "https://store.steampowered.com/app/108600/",
+      "name": "Project Zomboid",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7kod.jpg",
+      "releaseDate": "2013-11-08T00:00:00.000Z",
+      "players": {
+        "max": 32,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 8479,
+        "twitchChannels": 114,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Survival",
+          "share": 1
+        },
+        {
+          "tag": "Zombies",
+          "share": 0.8177671589921807
+        },
+        {
+          "tag": "Open World",
+          "share": 0.6815812337098176
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.6151172893136403
+        },
+        {
+          "tag": "Open World Survival Craft",
+          "share": 0.6040399652476107
+        },
+        {
+          "tag": "Sandbox",
+          "share": 0.5154213727193745
+        },
+        {
+          "tag": "Post-apocalyptic",
+          "share": 0.4326672458731538
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.4076889661164205
+        }
+      ],
+      "rating": 94.19407366938681,
+      "reviewCount": 377063,
+      "discountPercent": 0
+    },
+    {
       "id": "3277",
       "steamAppId": 252490,
       "storeUrl": "https://store.steampowered.com/app/252490/",
@@ -1376,7 +1928,7 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1384,8 +1936,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 104530,
-        "twitchChannels": 200,
+        "twitchViewers": 64308,
+        "twitchChannels": 391,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1428,6 +1980,767 @@
       "discountPercent": 0
     },
     {
+      "id": "5574",
+      "steamAppId": 251570,
+      "storeUrl": "https://store.steampowered.com/app/251570/",
+      "name": "7 Days to Die",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaaqz.jpg",
+      "releaseDate": "2024-07-25T00:00:00.000Z",
+      "players": {
+        "max": 100,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.7050956426675924,
+        "variety": 0,
+        "horror": 0.32824318538604247,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3368,
+        "twitchChannels": 210,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Survival",
+          "share": 1
+        },
+        {
+          "tag": "Zombies",
+          "share": 0.7552447552447552
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.7055801341515627
+        },
+        {
+          "tag": "Open World",
+          "share": 0.6985871271585558
+        },
+        {
+          "tag": "Open World Survival Craft",
+          "share": 0.6928785500214072
+        },
+        {
+          "tag": "Base-Building",
+          "share": 0.6333666333666333
+        },
+        {
+          "tag": "Post-apocalyptic",
+          "share": 0.6093906093906094
+        },
+        {
+          "tag": "Voxel",
+          "share": 0.608534322820037
+        }
+      ],
+      "rating": 88.60763256460008,
+      "reviewCount": 370046,
+      "discountPercent": 0
+    },
+    {
+      "id": "6292",
+      "steamAppId": 706220,
+      "storeUrl": "https://store.steampowered.com/app/706220/",
+      "name": "Black Desert",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coay9v.jpg",
+      "releaseDate": "2014-12-17T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 7512,
+        "twitchChannels": 190,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "MMORPG",
+          "share": 1
+        },
+        {
+          "tag": "Massively Multiplayer",
+          "share": 0.15667976424361493
+        },
+        {
+          "tag": "Open World",
+          "share": 0.150049115913556
+        },
+        {
+          "tag": "RPG",
+          "share": 0.13064833005893908
+        },
+        {
+          "tag": "Character Customization",
+          "share": 0.11493123772102161
+        },
+        {
+          "tag": "Fantasy",
+          "share": 0.112475442043222
+        },
+        {
+          "tag": "Adventure",
+          "share": 0.0825147347740668
+        },
+        {
+          "tag": "PvP",
+          "share": 0.07244597249508841
+        }
+      ],
+      "rating": 66.5120742043819,
+      "reviewCount": 18759,
+      "discountPercent": 0
+    },
+    {
+      "id": "7291",
+      "steamAppId": 594650,
+      "storeUrl": "https://store.steampowered.com/app/594650/",
+      "name": "Hunt: Showdown 1896",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc7wz.jpg",
+      "releaseDate": "2019-08-27T00:00:00.000Z",
+      "players": {
+        "max": 12,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.6005958681377542,
+        "variety": 0,
+        "horror": 0.5156078359575247,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 13673,
+        "twitchChannels": 430,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Open World",
+          "share": 1
+        },
+        {
+          "tag": "Extraction Shooter",
+          "share": 0.9520322226290736
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.9205419260344196
+        },
+        {
+          "tag": "Atmospheric",
+          "share": 0.9124862687660198
+        },
+        {
+          "tag": "Tactical",
+          "share": 0.9077261076528744
+        },
+        {
+          "tag": "FPS",
+          "share": 0.8864884657634566
+        },
+        {
+          "tag": "Perma Death",
+          "share": 0.8447455144635665
+        },
+        {
+          "tag": "Western",
+          "share": 0.8425485170267302
+        }
+      ],
+      "rating": 72.96350012086053,
+      "reviewCount": 248220,
+      "discountPercent": 60
+    },
+    {
+      "id": "7360",
+      "steamAppId": 359550,
+      "storeUrl": "https://store.steampowered.com/app/359550/",
+      "name": "Rainbow Six Siege",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9yqs.jpg",
+      "releaseDate": "2015-12-01T00:00:00.000Z",
+      "players": {
+        "max": 10,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 1,
+        "chatting": 0,
+        "spectacle": 0.4865437872156268
+      },
+      "buzz": {
+        "twitchViewers": 7980,
+        "twitchChannels": 447,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "FPS",
+          "share": 1
+        },
+        {
+          "tag": "PvP",
+          "share": 0.9294379296401132
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.9202385766275778
+        },
+        {
+          "tag": "Tactical",
+          "share": 0.9202385766275778
+        },
+        {
+          "tag": "e-sports",
+          "share": 0.9201374848362313
+        },
+        {
+          "tag": "Shooter",
+          "share": 0.9190254751314193
+        },
+        {
+          "tag": "Competitive",
+          "share": 0.9105337646583097
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.9066922765871411
+        }
+      ],
+      "rating": 83.8601042196965,
+      "reviewCount": 1398584,
+      "discountPercent": 0
+    },
+    {
+      "id": "8204",
+      "steamAppId": 266410,
+      "storeUrl": "https://store.steampowered.com/app/266410/",
+      "name": "iRacing",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2sjw.jpg",
+      "releaseDate": "2008-08-26T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 2763,
+        "twitchChannels": 150,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Racing",
+          "share": 1
+        },
+        {
+          "tag": "Automobile Sim",
+          "share": 0.7190635451505016
+        },
+        {
+          "tag": "Simulation",
+          "share": 0.6822742474916388
+        },
+        {
+          "tag": "VR",
+          "share": 0.5016722408026756
+        },
+        {
+          "tag": "Sports",
+          "share": 0.46488294314381273
+        },
+        {
+          "tag": "Driving",
+          "share": 0.44481605351170567
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.411371237458194
+        },
+        {
+          "tag": "Massively Multiplayer",
+          "share": 0.38127090301003347
+        }
+      ],
+      "rating": 86.06410511646426,
+      "reviewCount": 5023,
+      "discountPercent": 0
+    },
+    {
+      "id": "8222",
+      "steamAppId": 335300,
+      "storeUrl": "https://store.steampowered.com/app/335300/",
+      "name": "Dark Souls II: Scholar of the First Sin",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobb02.jpg",
+      "releaseDate": "2015-04-02T00:00:00.000Z",
+      "players": {
+        "max": 6,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.9091546765808874,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0.18766057288217747
+      },
+      "buzz": {
+        "twitchViewers": 6511,
+        "twitchChannels": 56,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Souls-like",
+          "share": 1
+        },
+        {
+          "tag": "Dark Fantasy",
+          "share": 0.7134256472004816
+        },
+        {
+          "tag": "RPG",
+          "share": 0.6917519566526189
+        },
+        {
+          "tag": "Difficult",
+          "share": 0.6520168573148706
+        },
+        {
+          "tag": "Action",
+          "share": 0.4503311258278146
+        },
+        {
+          "tag": "Third Person",
+          "share": 0.4419024683925346
+        },
+        {
+          "tag": "Atmospheric",
+          "share": 0.42203491872366045
+        },
+        {
+          "tag": "Action RPG",
+          "share": 0.3690547862733293
+        }
+      ],
+      "rating": 84.01336646388484,
+      "reviewCount": 116710,
+      "discountPercent": 0
+    },
+    {
+      "id": "9596",
+      "name": "Tibia",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co255g.jpg",
+      "releaseDate": "1997-01-09T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 8334,
+        "twitchChannels": 432,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 79.46957776451593,
+      "reviewCount": 81
+    },
+    {
+      "id": "9789",
+      "steamAppId": 294100,
+      "storeUrl": "https://store.steampowered.com/app/294100/",
+      "name": "RimWorld",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaaqj.jpg",
+      "releaseDate": "2018-10-17T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3376,
+        "twitchChannels": 80,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Colony Sim",
+          "share": 1
+        },
+        {
+          "tag": "Base-Building",
+          "share": 0.9668938656280428
+        },
+        {
+          "tag": "Survival",
+          "share": 0.8624634858812074
+        },
+        {
+          "tag": "Strategy",
+          "share": 0.6828140214216164
+        },
+        {
+          "tag": "Sandbox",
+          "share": 0.6742940603700097
+        },
+        {
+          "tag": "Management",
+          "share": 0.6448393378773125
+        },
+        {
+          "tag": "Building",
+          "share": 0.512414800389484
+        },
+        {
+          "tag": "Simulation",
+          "share": 0.45399221032132425
+        }
+      ],
+      "rating": 97.9569345943558,
+      "reviewCount": 210517,
+      "discountPercent": 0
+    },
+    {
+      "id": "11137",
+      "steamAppId": 1172620,
+      "storeUrl": "https://store.steampowered.com/app/1172620/",
+      "name": "Sea of Thieves",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2558.jpg",
+      "releaseDate": "2018-03-20T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0.5029298032475998,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0.5029298032476,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4824,
+        "twitchChannels": 173,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Multiplayer",
+          "share": 1
+        },
+        {
+          "tag": "Open World",
+          "share": 0.926040061633282
+        },
+        {
+          "tag": "Adventure",
+          "share": 0.9152542372881356
+        },
+        {
+          "tag": "Pirates",
+          "share": 0.8089368258859785
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.74884437596302
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.6926040061633282
+        },
+        {
+          "tag": "PvP",
+          "share": 0.6140215716486903
+        },
+        {
+          "tag": "Action",
+          "share": 0.6124807395993837
+        }
+      ],
+      "rating": 89.2567799616032,
+      "reviewCount": 355238,
+      "discountPercent": 0
+    },
+    {
+      "id": "11198",
+      "steamAppId": 252950,
+      "storeUrl": "https://store.steampowered.com/app/252950/",
+      "name": "Rocket League",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocdio.jpg",
+      "releaseDate": "2015-07-06T00:00:00.000Z",
+      "players": {
+        "max": 8,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0.4440693005935063,
+        "horror": 0,
+        "hardcore": 0.7604722969712413,
+        "chatting": 0.44406930059350636,
+        "spectacle": 0.37000307144095457
+      },
+      "buzz": {
+        "twitchViewers": 6555,
+        "twitchChannels": 440,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Multiplayer",
+          "share": 1
+        },
+        {
+          "tag": "Football (Soccer)",
+          "share": 0.7928895612708018
+        },
+        {
+          "tag": "Competitive",
+          "share": 0.6924357034795764
+        },
+        {
+          "tag": "Sports",
+          "share": 0.6078668683812406
+        },
+        {
+          "tag": "Racing",
+          "share": 0.5883509833585476
+        },
+        {
+          "tag": "Team-Based",
+          "share": 0.5181543116490166
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.4350983358547655
+        },
+        {
+          "tag": "Football (American)",
+          "share": 0.3649016641452345
+        }
+      ],
+      "rating": 87.35039950618977,
+      "reviewCount": 583220,
+      "discountPercent": 0
+    },
+    {
+      "id": "15536",
+      "steamAppId": 3932890,
+      "storeUrl": "https://store.steampowered.com/app/3932890/",
+      "name": "Escape from Tarkov",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaukr.jpg",
+      "releaseDate": "2025-11-15T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 16450,
+        "twitchChannels": 443,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 71.75738896259594,
+      "reviewCount": 294,
+      "discountPercent": 0
+    },
+    {
+      "id": "15707",
+      "name": "Clash Royale",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobb48.jpg",
+      "releaseDate": "2016-01-04T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4758,
+        "twitchChannels": 51,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 74.51017495614676,
+      "reviewCount": 201
+    },
+    {
+      "id": "17269",
+      "name": "Roblox",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cociyw.jpg",
+      "releaseDate": "2006-09-01T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 29375,
+        "twitchChannels": 429,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 70.89441341984018,
+      "reviewCount": 436
+    },
+    {
       "id": "18866",
       "steamAppId": 381210,
       "storeUrl": "https://store.steampowered.com/app/381210/",
@@ -1446,16 +2759,16 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.43245811326807354,
+        "healing": 0.4256633593172463,
         "variety": 0,
-        "horror": 0.7231465226796105,
+        "horror": 0.7067024228310954,
         "hardcore": 0,
         "chatting": 0,
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 22286,
-        "twitchChannels": 191,
+        "twitchViewers": 39529,
+        "twitchChannels": 448,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1498,6 +2811,822 @@
       "discountPercent": 0
     },
     {
+      "id": "19457",
+      "steamAppId": 489830,
+      "storeUrl": "https://store.steampowered.com/app/489830/",
+      "name": "The Elder Scrolls V: Skyrim - Special Edition",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1vco.jpg",
+      "releaseDate": "2016-10-27T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "chapter",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.9430481251228414,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0.4907359931170259
+      },
+      "buzz": {
+        "twitchViewers": 3349,
+        "twitchChannels": 117,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Open World",
+          "share": 1
+        },
+        {
+          "tag": "RPG",
+          "share": 0.8624172762103797
+        },
+        {
+          "tag": "Adventure",
+          "share": 0.6233019853709509
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.6189481017067224
+        },
+        {
+          "tag": "Fantasy",
+          "share": 0.6185997910135841
+        },
+        {
+          "tag": "Character Customization",
+          "share": 0.5496342737722049
+        },
+        {
+          "tag": "Moddable",
+          "share": 0.4407871821664925
+        },
+        {
+          "tag": "Dragons",
+          "share": 0.4292929292929293
+        }
+      ],
+      "rating": 92.02036444766183,
+      "reviewCount": 337058,
+      "discountPercent": 0
+    },
+    {
+      "id": "19698",
+      "steamAppId": 761890,
+      "storeUrl": "https://store.steampowered.com/app/761890/",
+      "name": "Albion Online",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobx5a.jpg",
+      "releaseDate": "2017-07-17T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 5143,
+        "twitchChannels": 126,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Free to Play",
+          "share": 1
+        },
+        {
+          "tag": "MMORPG",
+          "share": 0.9957228400342173
+        },
+        {
+          "tag": "Open World",
+          "share": 0.9401197604790419
+        },
+        {
+          "tag": "Massively Multiplayer",
+          "share": 0.7792985457656116
+        },
+        {
+          "tag": "Sandbox",
+          "share": 0.5988023952095808
+        },
+        {
+          "tag": "RPG",
+          "share": 0.5799828913601369
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.5226689478186484
+        },
+        {
+          "tag": "Crafting",
+          "share": 0.5055603079555175
+        }
+      ],
+      "rating": 78.94527770421553,
+      "reviewCount": 83074,
+      "discountPercent": 0
+    },
+    {
+      "id": "25076",
+      "steamAppId": 1174180,
+      "storeUrl": "https://store.steampowered.com/app/1174180/",
+      "name": "Red Dead Redemption 2",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpg",
+      "releaseDate": "2018-10-26T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "chapter",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 1,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 1
+      },
+      "buzz": {
+        "twitchViewers": 7848,
+        "twitchChannels": 364,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Open World",
+          "share": 1
+        },
+        {
+          "tag": "Story Rich",
+          "share": 0.8020424194815396
+        },
+        {
+          "tag": "Western",
+          "share": 0.7143231212359257
+        },
+        {
+          "tag": "Adventure",
+          "share": 0.686829012830584
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.6800209478921183
+        },
+        {
+          "tag": "Action",
+          "share": 0.6224142445666405
+        },
+        {
+          "tag": "Realistic",
+          "share": 0.5954438334642577
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.5189840272322598
+        }
+      ],
+      "rating": 92.24652439805764,
+      "reviewCount": 733542,
+      "discountPercent": 0
+    },
+    {
+      "id": "25657",
+      "steamAppId": 1085660,
+      "storeUrl": "https://store.steampowered.com/app/1085660/",
+      "name": "Destiny 2",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc89g.jpg",
+      "releaseDate": "2017-09-06T00:00:00.000Z",
+      "players": {
+        "max": 16,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0.6835994631571424,
+        "chatting": 0,
+        "spectacle": 0.33260107174304543
+      },
+      "buzz": {
+        "twitchViewers": 7012,
+        "twitchChannels": 235,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Free to Play",
+          "share": 1
+        },
+        {
+          "tag": "Open World",
+          "share": 0.8712482468443198
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.8600280504908836
+        },
+        {
+          "tag": "Looter Shooter",
+          "share": 0.858625525946704
+        },
+        {
+          "tag": "MMORPG",
+          "share": 0.8485273492286115
+        },
+        {
+          "tag": "FPS",
+          "share": 0.8429172510518934
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.8328190743338009
+        },
+        {
+          "tag": "PvE",
+          "share": 0.802805049088359
+        }
+      ],
+      "rating": 79.58412188946575,
+      "reviewCount": 625616,
+      "discountPercent": 0
+    },
+    {
+      "id": "27789",
+      "steamAppId": 578080,
+      "storeUrl": "https://store.steampowered.com/app/578080/",
+      "name": "PUBG: Battlegrounds",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaam4.jpg",
+      "releaseDate": "2017-12-20T00:00:00.000Z",
+      "players": {
+        "max": 100,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0.181481921620069,
+        "chatting": 0,
+        "spectacle": 0.08829890145619791
+      },
+      "buzz": {
+        "twitchViewers": 13389,
+        "twitchChannels": 457,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Survival",
+          "share": 1
+        },
+        {
+          "tag": "Shooter",
+          "share": 0.8586584301349627
+        },
+        {
+          "tag": "Battle Royale",
+          "share": 0.7343047069092863
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.730813133686967
+        },
+        {
+          "tag": "FPS",
+          "share": 0.5695964547102665
+        },
+        {
+          "tag": "PvP",
+          "share": 0.5193043711810917
+        },
+        {
+          "tag": "Third-Person Shooter",
+          "share": 0.4929161350970254
+        },
+        {
+          "tag": "Action",
+          "share": 0.40582824145571744
+        }
+      ],
+      "rating": 59.44058978617201,
+      "reviewCount": 2557944,
+      "discountPercent": 0
+    },
+    {
+      "id": "33615",
+      "steamAppId": 438100,
+      "storeUrl": "https://store.steampowered.com/app/438100/",
+      "name": "VRChat",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobuhu.jpg",
+      "releaseDate": "2017-02-01T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0.9205465587044535,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0.9205465587044535,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3559,
+        "twitchChannels": 101,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "VR",
+          "share": 1
+        },
+        {
+          "tag": "Free to Play",
+          "share": 0.9568922305764411
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.6892230576441103
+        },
+        {
+          "tag": "Anime",
+          "share": 0.6466165413533834
+        },
+        {
+          "tag": "Memes",
+          "share": 0.6441102756892231
+        },
+        {
+          "tag": "Funny",
+          "share": 0.5964912280701754
+        },
+        {
+          "tag": "Massively Multiplayer",
+          "share": 0.5614035087719298
+        },
+        {
+          "tag": "First-Person",
+          "share": 0.4205513784461153
+        }
+      ],
+      "rating": 75.56447754363337,
+      "reviewCount": 240355,
+      "discountPercent": 0
+    },
+    {
+      "id": "45517",
+      "name": "Virtual Casino",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4aou.jpg",
+      "releaseDate": "1996-12-31T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 11626,
+        "twitchChannels": 37,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": []
+    },
+    {
+      "id": "55945",
+      "name": "Brawl Stars",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1mb9.jpg",
+      "releaseDate": "2018-12-12T00:00:00.000Z",
+      "players": {
+        "max": 12,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3060,
+        "twitchChannels": 126,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 75.15990042522178,
+      "reviewCount": 106
+    },
+    {
+      "id": "63350",
+      "name": "GeoGuessr",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7ebv.jpg",
+      "releaseDate": "2013-05-09T00:00:00.000Z",
+      "players": {
+        "max": 100,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 5582,
+        "twitchChannels": 41,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 78.33572640069096,
+      "reviewCount": 47
+    },
+    {
+      "id": "71001",
+      "name": "I'm Only Sleeping",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4978.jpg",
+      "releaseDate": "2005-12-19T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3145,
+        "twitchChannels": 119,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": []
+    },
+    {
+      "id": "75239",
+      "steamAppId": 418530,
+      "storeUrl": "https://store.steampowered.com/app/418530/",
+      "name": "Spelunky 2",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2f66.jpg",
+      "releaseDate": "2020-09-15T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0.8018690210981523,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0.8018690210981523,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 11863,
+        "twitchChannels": 7,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Platformer",
+          "share": 1
+        },
+        {
+          "tag": "2D Platformer",
+          "share": 0.9284497444633731
+        },
+        {
+          "tag": "Difficult",
+          "share": 0.8466780238500852
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.8364565587734242
+        },
+        {
+          "tag": "Perma Death",
+          "share": 0.8330494037478705
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.7921635434412265
+        },
+        {
+          "tag": "Replay Value",
+          "share": 0.7632027257240205
+        },
+        {
+          "tag": "Indie",
+          "share": 0.7563884156729132
+        }
+      ],
+      "rating": 93.05345374664388,
+      "reviewCount": 20485,
+      "discountPercent": 0
+    },
+    {
+      "id": "76760",
+      "name": "Crypto",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3ppe.jpg",
+      "releaseDate": "2016-02-01T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4629,
+        "twitchChannels": 99,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": []
+    },
+    {
+      "id": "79392",
+      "name": "Mobile Legends: Bang Bang",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7lqm.jpg",
+      "releaseDate": "2016-07-14T00:00:00.000Z",
+      "players": {
+        "max": 10,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4425,
+        "twitchChannels": 153,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 62.67311390996188,
+      "reviewCount": 73
+    },
+    {
+      "id": "79824",
+      "steamAppId": 1343370,
+      "storeUrl": "https://store.steampowered.com/app/1343370/",
+      "name": "Old School RuneScape",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1mo1.jpg",
+      "releaseDate": "2013-02-22T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.9933930694840302,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0.9409207876822747
+      },
+      "buzz": {
+        "twitchViewers": 9922,
+        "twitchChannels": 213,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "MMORPG",
+          "share": 1
+        },
+        {
+          "tag": "Free to Play",
+          "share": 0.968944099378882
+        },
+        {
+          "tag": "Nostalgia",
+          "share": 0.8540372670807453
+        },
+        {
+          "tag": "Adventure",
+          "share": 0.8478260869565217
+        },
+        {
+          "tag": "Fantasy",
+          "share": 0.7608695652173914
+        },
+        {
+          "tag": "Story Rich",
+          "share": 0.7546583850931677
+        },
+        {
+          "tag": "Massively Multiplayer",
+          "share": 0.7111801242236024
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.6894409937888198
+        }
+      ],
+      "rating": 83.14153258794656,
+      "reviewCount": 18335,
+      "discountPercent": 0
+    },
+    {
+      "id": "90099",
+      "steamAppId": 2221490,
+      "storeUrl": "https://store.steampowered.com/app/2221490/",
+      "name": "Tom Clancy's The Division 2",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1xrm.jpg",
+      "releaseDate": "2019-03-15T00:00:00.000Z",
+      "players": {
+        "max": 8,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "match",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.90934807030158,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0.18938990069304107
+      },
+      "buzz": {
+        "twitchViewers": 3036,
+        "twitchChannels": 177,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Looter Shooter",
+          "share": 1
+        },
+        {
+          "tag": "Open World",
+          "share": 0.9662447257383966
+        },
+        {
+          "tag": "Third-Person Shooter",
+          "share": 0.8354430379746836
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.8312236286919831
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.7848101265822784
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.7721518987341772
+        },
+        {
+          "tag": "Action",
+          "share": 0.6666666666666666
+        },
+        {
+          "tag": "Shooter",
+          "share": 0.6329113924050633
+        }
+      ],
+      "rating": 76.13108011444922,
+      "reviewCount": 22368,
+      "discountPercent": 0
+    },
+    {
       "id": "114795",
       "steamAppId": 1172470,
       "storeUrl": "https://store.steampowered.com/app/1172470/",
@@ -1515,7 +3644,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0.31805727874276263,
         "horror": 0,
         "hardcore": 0,
@@ -1523,8 +3652,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 18360,
-        "twitchChannels": 191,
+        "twitchViewers": 23595,
+        "twitchChannels": 446,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1567,6 +3696,103 @@
       "discountPercent": 0
     },
     {
+      "id": "115289",
+      "steamAppId": 1030300,
+      "storeUrl": "https://store.steampowered.com/app/1030300/",
+      "name": "Hollow Knight: Silksong",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobebu.jpg",
+      "releaseDate": "2025-09-04T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4779,
+        "twitchChannels": 123,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 92.50295504405324,
+      "reviewCount": 477,
+      "discountPercent": 0
+    },
+    {
+      "id": "116975",
+      "steamAppId": 1170970,
+      "storeUrl": "https://store.steampowered.com/app/1170970/",
+      "name": "Marbles on Stream",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa97e.jpg",
+      "releaseDate": "2018-03-28T00:00:00.000Z",
+      "players": {
+        "max": 1000,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3564,
+        "twitchChannels": 96,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Free to Play",
+          "share": 1
+        },
+        {
+          "tag": "Racing",
+          "share": 0.8645833333333334
+        },
+        {
+          "tag": "Massively Multiplayer",
+          "share": 0.8229166666666666
+        },
+        {
+          "tag": "Casual",
+          "share": 0.78125
+        },
+        {
+          "tag": "Simulation",
+          "share": 0.75
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.19791666666666666
+        }
+      ],
+      "rating": 86.43744030563515,
+      "reviewCount": 2094,
+      "discountPercent": 0
+    },
+    {
       "id": "119133",
       "steamAppId": 1245620,
       "storeUrl": "https://store.steampowered.com/app/1245620/",
@@ -1585,7 +3811,7 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1593,8 +3819,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 15869,
-        "twitchChannels": 193,
+        "twitchViewers": 19455,
+        "twitchChannels": 468,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1637,6 +3863,142 @@
       "discountPercent": 0
     },
     {
+      "id": "119277",
+      "name": "Genshin Impact",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa9dy.jpg",
+      "releaseDate": "2020-09-28T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4574,
+        "twitchChannels": 270,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 78.91033541538656,
+      "reviewCount": 659
+    },
+    {
+      "id": "120176",
+      "name": "Teamfight Tactics",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8jux.jpg",
+      "releaseDate": "2019-06-26T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 7989,
+        "twitchChannels": 101,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 82.3220760309033,
+      "reviewCount": 129
+    },
+    {
+      "id": "125165",
+      "steamAppId": 2344520,
+      "storeUrl": "https://store.steampowered.com/app/2344520/",
+      "name": "Diablo IV",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co69sm.jpg",
+      "releaseDate": "2023-06-06T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "chapter",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.9222912815498349,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0.30512817333878844
+      },
+      "buzz": {
+        "twitchViewers": 2898,
+        "twitchChannels": 128,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Action RPG",
+          "share": 1
+        },
+        {
+          "tag": "Hack and Slash",
+          "share": 0.7763713080168776
+        },
+        {
+          "tag": "Loot",
+          "share": 0.7215189873417721
+        },
+        {
+          "tag": "Isometric",
+          "share": 0.5879043600562588
+        },
+        {
+          "tag": "RPG",
+          "share": 0.5766526019690577
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.4978902953586498
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.45147679324894513
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.4289732770745429
+        }
+      ],
+      "rating": 65.54212556160789,
+      "reviewCount": 50302,
+      "discountPercent": 0
+    },
+    {
       "id": "125174",
       "steamAppId": 2357570,
       "storeUrl": "https://store.steampowered.com/app/2357570/",
@@ -1654,7 +4016,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1662,8 +4024,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 14715,
-        "twitchChannels": 189,
+        "twitchViewers": 17853,
+        "twitchChannels": 443,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1688,7 +4050,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1696,8 +4058,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 54654,
-        "twitchChannels": 194,
+        "twitchViewers": 54229,
+        "twitchChannels": 455,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1721,7 +4083,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1729,14 +4091,120 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 17904,
-        "twitchChannels": 192,
+        "twitchViewers": 21427,
+        "twitchChannels": 454,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
       "topTags": [],
       "rating": 72.15977477083504,
       "reviewCount": 187
+    },
+    {
+      "id": "132516",
+      "steamAppId": 739630,
+      "storeUrl": "https://store.steampowered.com/app/739630/",
+      "name": "Phasmophobia",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coamcz.jpg",
+      "releaseDate": "2020-09-18T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": true,
+        "reason": "온라인 협동 참여 가능"
+      },
+      "vibes": {
+        "healing": 0.20259320858073232,
+        "variety": 0,
+        "horror": 0.866685393258427,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 5756,
+        "twitchChannels": 315,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Horror",
+          "share": 1
+        },
+        {
+          "tag": "Online Co-Op",
+          "share": 0.6680898876404494
+        },
+        {
+          "tag": "Multiplayer",
+          "share": 0.6071910112359551
+        },
+        {
+          "tag": "Psychological Horror",
+          "share": 0.48337078651685395
+        },
+        {
+          "tag": "Co-op",
+          "share": 0.4193258426966292
+        },
+        {
+          "tag": "Supernatural",
+          "share": 0.3564044943820225
+        },
+        {
+          "tag": "VR",
+          "share": 0.3561797752808989
+        },
+        {
+          "tag": "First-Person",
+          "share": 0.32471910112359553
+        }
+      ],
+      "rating": 95.81570256211474,
+      "reviewCount": 768779,
+      "discountPercent": 30
+    },
+    {
+      "id": "133748",
+      "steamAppId": 1818450,
+      "storeUrl": "https://store.steampowered.com/app/1818450/",
+      "name": "Stalzone",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc9uj.jpg",
+      "releaseDate": "2022-12-09T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 8236,
+        "twitchChannels": 107,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 81.85803123031242,
+      "reviewCount": 113,
+      "discountPercent": 0
     },
     {
       "id": "135400",
@@ -1754,7 +4222,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1762,14 +4230,260 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 21198,
-        "twitchChannels": 189,
+        "twitchViewers": 49914,
+        "twitchChannels": 463,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
       "topTags": [],
       "rating": 82.05711517959591,
       "reviewCount": 549
+    },
+    {
+      "id": "151467",
+      "steamAppId": 2707930,
+      "storeUrl": "https://store.steampowered.com/app/2707930/",
+      "name": "Palia",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc1y2.jpg",
+      "releaseDate": "2023-12-14T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4613,
+        "twitchChannels": 182,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 60.72302986844324,
+      "reviewCount": 66,
+      "discountPercent": 0
+    },
+    {
+      "id": "182241",
+      "name": "Pokémon Community Game",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4hej.jpg",
+      "releaseDate": "2020-05-24T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 7747,
+        "twitchChannels": 82,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 84.90196078431373,
+      "reviewCount": 38
+    },
+    {
+      "id": "185258",
+      "steamAppId": 1808500,
+      "storeUrl": "https://store.steampowered.com/app/1808500/",
+      "name": "ARC Raiders",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9rk1.jpg",
+      "releaseDate": "2025-10-30T00:00:00.000Z",
+      "players": {
+        "max": 3,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 7473,
+        "twitchChannels": 450,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 84.08701508066014,
+      "reviewCount": 260,
+      "discountPercent": 0
+    },
+    {
+      "id": "191692",
+      "steamAppId": 1952120,
+      "storeUrl": "https://store.steampowered.com/app/1952120/",
+      "name": "Street Fighter 6",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9wxo.jpg",
+      "releaseDate": "2023-06-02T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 13140,
+        "twitchChannels": 135,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 80.11368798048204,
+      "reviewCount": 113,
+      "discountPercent": 0
+    },
+    {
+      "id": "202956",
+      "steamAppId": 3513350,
+      "storeUrl": "https://store.steampowered.com/app/3513350/",
+      "name": "Wuthering Waves",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocdvn.jpg",
+      "releaseDate": "2024-05-22T00:00:00.000Z",
+      "players": {
+        "max": 3,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3757,
+        "twitchChannels": 161,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 70.21399688853447,
+      "reviewCount": 280,
+      "discountPercent": 0
+    },
+    {
+      "id": "204048",
+      "steamAppId": 1763030,
+      "storeUrl": "https://store.steampowered.com/app/1763030/",
+      "name": "Master Key",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5kpe.jpg",
+      "releaseDate": "2024-05-17T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3170,
+        "twitchChannels": 1,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Singleplayer",
+          "share": 1
+        },
+        {
+          "tag": "2D",
+          "share": 0.952
+        },
+        {
+          "tag": "Pixel Graphics",
+          "share": 0.928
+        },
+        {
+          "tag": "Retro",
+          "share": 0.904
+        },
+        {
+          "tag": "Minimalist",
+          "share": 0.88
+        },
+        {
+          "tag": "Metroidvania",
+          "share": 0.824
+        },
+        {
+          "tag": "Exploration",
+          "share": 0.8
+        },
+        {
+          "tag": "Adventure",
+          "share": 0.768
+        }
+      ],
+      "rating": 91.70731707317074,
+      "reviewCount": 205,
+      "discountPercent": 0
     },
     {
       "id": "207266",
@@ -1789,7 +4503,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1797,8 +4511,8 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 17309,
-        "twitchChannels": 105,
+        "twitchViewers": 21532,
+        "twitchChannels": 122,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1806,6 +4520,280 @@
       "rating": 70.41735649905279,
       "reviewCount": 76,
       "discountPercent": 0
+    },
+    {
+      "id": "221740",
+      "steamAppId": 4572790,
+      "storeUrl": "https://store.steampowered.com/app/4572790/",
+      "name": "Suika Game",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coasl5.jpg",
+      "releaseDate": "2021-12-09T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 21072,
+        "twitchChannels": 4,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 78.49782244975985,
+      "reviewCount": 20,
+      "discountPercent": 0
+    },
+    {
+      "id": "240585",
+      "steamAppId": 2314720,
+      "storeUrl": "https://store.steampowered.com/app/2314720/",
+      "name": "Parasocial",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6zmp.jpg",
+      "releaseDate": "2023-08-26T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.016707740010002203,
+        "variety": 0,
+        "horror": 1,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 2943,
+        "twitchChannels": 1,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Horror",
+          "share": 1
+        },
+        {
+          "tag": "Psychological Horror",
+          "share": 0.75
+        },
+        {
+          "tag": "Choices Matter",
+          "share": 0.6547619047619048
+        },
+        {
+          "tag": "Atmospheric",
+          "share": 0.5357142857142857
+        },
+        {
+          "tag": "Indie",
+          "share": 0.5357142857142857
+        },
+        {
+          "tag": "Immersive Sim",
+          "share": 0.5
+        },
+        {
+          "tag": "Anime",
+          "share": 0.4880952380952381
+        },
+        {
+          "tag": "Thriller",
+          "share": 0.4166666666666667
+        }
+      ],
+      "rating": 94.19263456090651,
+      "reviewCount": 1412,
+      "discountPercent": 0
+    },
+    {
+      "id": "251833",
+      "steamAppId": 2379780,
+      "storeUrl": "https://store.steampowered.com/app/2379780/",
+      "name": "Balatro",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9f4g.jpg",
+      "releaseDate": "2024-02-20T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3342,
+        "twitchChannels": 31,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Card Game",
+          "share": 1
+        },
+        {
+          "tag": "Rogue-like",
+          "share": 0.9700176366843033
+        },
+        {
+          "tag": "Roguelike Deckbuilder",
+          "share": 0.9700176366843033
+        },
+        {
+          "tag": "Deckbuilding",
+          "share": 0.8412698412698413
+        },
+        {
+          "tag": "Singleplayer",
+          "share": 0.8165784832451499
+        },
+        {
+          "tag": "Strategy",
+          "share": 0.7530864197530864
+        },
+        {
+          "tag": "Pixel Graphics",
+          "share": 0.7442680776014109
+        },
+        {
+          "tag": "Replay Value",
+          "share": 0.7037037037037037
+        }
+      ],
+      "rating": 98.0190927679304,
+      "reviewCount": 153566,
+      "discountPercent": 0
+    },
+    {
+      "id": "252168",
+      "name": "Mir Tankov",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9rot.jpg",
+      "releaseDate": "2022-04-01T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3968,
+        "twitchChannels": 113,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 71.23275054885369,
+      "reviewCount": 40
+    },
+    {
+      "id": "262186",
+      "steamAppId": 2507950,
+      "storeUrl": "https://store.steampowered.com/app/2507950/",
+      "name": "Delta Force",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa98y.jpg",
+      "releaseDate": "2024-12-05T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 6613,
+        "twitchChannels": 264,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 74.15144358529086,
+      "reviewCount": 108,
+      "discountPercent": 0
+    },
+    {
+      "id": "266836",
+      "name": "Pokémon",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co734j.jpg",
+      "releaseDate": "2023-08-24T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 2823,
+        "twitchChannels": 46,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": []
     },
     {
       "id": "294041",
@@ -1826,16 +4814,16 @@
         "reason": "온라인 협동 참여 가능"
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
-        "hardcore": 1,
+        "hardcore": 0.529655815374488,
         "chatting": 0,
-        "spectacle": 0.2998250299658646
+        "spectacle": 0.25770074633308426
       },
       "buzz": {
-        "twitchViewers": 14866,
-        "twitchChannels": 195,
+        "twitchViewers": 23233,
+        "twitchChannels": 450,
         "viewerGrowth7d": null,
         "isNewRelease": false
       },
@@ -1878,12 +4866,48 @@
       "discountPercent": 0
     },
     {
-      "id": "305011",
-      "steamAppId": 1913120,
-      "storeUrl": "https://store.steampowered.com/app/1913120/",
-      "name": "Tears of Metal",
-      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8bic.jpg",
-      "releaseDate": "2026-07-22T00:00:00.000Z",
+      "id": "296831",
+      "steamAppId": 2868840,
+      "storeUrl": "https://store.steampowered.com/app/2868840/",
+      "name": "Slay the Spire II",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co82c5.jpg",
+      "releaseDate": "2026-03-05T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 2916,
+        "twitchChannels": 63,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 85.37629262700214,
+      "reviewCount": 30,
+      "discountPercent": 0
+    },
+    {
+      "id": "298915",
+      "steamAppId": 2073620,
+      "storeUrl": "https://store.steampowered.com/app/2073620/",
+      "name": "Arena Breakout: Infinite",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocc1p.jpg",
+      "releaseDate": "2025-09-15T00:00:00.000Z",
       "players": {
         "max": 2,
         "source": "igdb_gamemodes",
@@ -1895,7 +4919,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1903,13 +4927,223 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 13484,
-        "twitchChannels": 21,
+        "twitchViewers": 11736,
+        "twitchChannels": 382,
         "viewerGrowth7d": null,
-        "isNewRelease": true
+        "isNewRelease": false
       },
       "topTags": [],
-      "discountPercent": 10
+      "rating": 82.23334628033383,
+      "reviewCount": 146,
+      "discountPercent": 0
+    },
+    {
+      "id": "314543",
+      "steamAppId": 3105440,
+      "storeUrl": "https://store.steampowered.com/app/3105440/",
+      "name": "Heroes of Might & Magic: Olden Era",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaqh4.jpg",
+      "releaseDate": "2026-04-30T00:00:00.000Z",
+      "players": {
+        "max": 8,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 2657,
+        "twitchChannels": 32,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 79.93517265094137,
+      "reviewCount": 7,
+      "discountPercent": 25
+    },
+    {
+      "id": "317407",
+      "steamAppId": 2807960,
+      "storeUrl": "https://store.steampowered.com/app/2807960/",
+      "name": "Battlefield 6",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa5zt.jpg",
+      "releaseDate": "2025-10-10T00:00:00.000Z",
+      "players": {
+        "max": 64,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 8786,
+        "twitchChannels": 474,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 73.18419516621047,
+      "reviewCount": 168,
+      "discountPercent": 50
+    },
+    {
+      "id": "325996",
+      "name": "Jinro Metropolis",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co969h.jpg",
+      "releaseDate": "2019-08-08T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3371,
+        "twitchChannels": 7,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": []
+    },
+    {
+      "id": "326746",
+      "steamAppId": 3374720,
+      "storeUrl": "https://store.steampowered.com/app/3374720/",
+      "name": "Tales Beyond the Tomb: The Farm's Secret",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob2j0.jpg",
+      "releaseDate": "2024-12-22T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "chapter",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.6253712234508083,
+        "variety": 0,
+        "horror": 0.2186440677966102,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0.37615830276067
+      },
+      "buzz": {
+        "twitchViewers": 7717,
+        "twitchChannels": 1,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [
+        {
+          "tag": "Adventure",
+          "share": 1
+        },
+        {
+          "tag": "Action",
+          "share": 0.976271186440678
+        },
+        {
+          "tag": "Casual",
+          "share": 0.9627118644067797
+        },
+        {
+          "tag": "Action-Adventure",
+          "share": 0.8779661016949153
+        },
+        {
+          "tag": "Walking Simulator",
+          "share": 0.8610169491525423
+        },
+        {
+          "tag": "Exploration",
+          "share": 0.8271186440677966
+        },
+        {
+          "tag": "Immersive Sim",
+          "share": 0.8033898305084746
+        },
+        {
+          "tag": "3D",
+          "share": 0.7728813559322034
+        }
+      ],
+      "rating": 77.77777777777779,
+      "reviewCount": 108,
+      "discountPercent": 0
+    },
+    {
+      "id": "348220",
+      "steamAppId": 3606480,
+      "storeUrl": "https://store.steampowered.com/app/3606480/",
+      "name": "Call of Duty: Black Ops 7",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9xwv.jpg",
+      "releaseDate": "2025-11-14T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4732,
+        "twitchChannels": 448,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 40.9749116209659,
+      "reviewCount": 69,
+      "discountPercent": 0
     },
     {
       "id": "352789",
@@ -1929,7 +5163,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -1937,13 +5171,391 @@
         "spectacle": 0
       },
       "buzz": {
-        "twitchViewers": 16062,
-        "twitchChannels": 165,
+        "twitchViewers": 19510,
+        "twitchChannels": 275,
         "viewerGrowth7d": null,
         "isNewRelease": true
       },
       "topTags": [],
       "discountPercent": 10
+    },
+    {
+      "id": "353848",
+      "steamAppId": 3405690,
+      "storeUrl": "https://store.steampowered.com/app/3405690/",
+      "name": "EA Sports FC 26",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa5wx.jpg",
+      "releaseDate": "2025-09-26T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 15982,
+        "twitchChannels": 449,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 56.15706654749481,
+      "reviewCount": 36,
+      "discountPercent": 0
+    },
+    {
+      "id": "353901",
+      "steamAppId": 3472040,
+      "storeUrl": "https://store.steampowered.com/app/3472040/",
+      "name": "NBA 2K26",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa3pk.jpg",
+      "releaseDate": "2025-09-05T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3773,
+        "twitchChannels": 464,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "rating": 73.19884991448875,
+      "reviewCount": 13,
+      "discountPercent": 80
+    },
+    {
+      "id": "375232",
+      "steamAppId": 2806050,
+      "storeUrl": "https://store.steampowered.com/app/2806050/",
+      "name": "Halo: Campaign Evolved",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaqxe.jpg",
+      "releaseDate": "2026-07-28T00:00:00.000Z",
+      "players": {
+        "max": 4,
+        "source": "igdb_multiplayer",
+        "online": true,
+        "localCoop": true
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 23189,
+        "twitchChannels": 474,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 0
+    },
+    {
+      "id": "375315",
+      "steamAppId": 3869850,
+      "storeUrl": "https://store.steampowered.com/app/3869850/",
+      "name": "Welcome to the Game III",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coas91.jpg",
+      "releaseDate": "2026-07-16T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 10005,
+        "twitchChannels": 23,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 0
+    },
+    {
+      "id": "381896",
+      "steamAppId": 3561220,
+      "storeUrl": "https://store.steampowered.com/app/3561220/",
+      "name": "Pass the Fear",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob24x.jpg",
+      "releaseDate": "2026-07-22T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 3754,
+        "twitchChannels": 4,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 10
+    },
+    {
+      "id": "385364",
+      "steamAppId": 4297840,
+      "storeUrl": "https://store.steampowered.com/app/4297840/",
+      "name": "Rock Bottom",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocdn2.jpg",
+      "releaseDate": "2026-07-14T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 6,
+        "twitchChannels": 1,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 10
+    },
+    {
+      "id": "386035",
+      "steamAppId": 4286120,
+      "storeUrl": "https://store.steampowered.com/app/4286120/",
+      "name": "Photomaly",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobph8.jpg",
+      "releaseDate": "2026-07-21T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 5963,
+        "twitchChannels": 29,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 0
+    },
+    {
+      "id": "390034",
+      "steamAppId": 4249850,
+      "storeUrl": "https://store.steampowered.com/app/4249850/",
+      "name": "E-Shop Tycoon",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobjc5.jpg",
+      "releaseDate": "2026-07-28T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4650,
+        "twitchChannels": 4,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 0
+    },
+    {
+      "id": "400601",
+      "steamAppId": 4032350,
+      "storeUrl": "https://store.steampowered.com/app/4032350/",
+      "name": "EA Sports College Football 27",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc6ks.jpg",
+      "releaseDate": "2026-07-09T00:00:00.000Z",
+      "players": {
+        "max": 2,
+        "source": "igdb_gamemodes",
+        "online": true,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 4093,
+        "twitchChannels": 452,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 0
+    },
+    {
+      "id": "405165",
+      "steamAppId": 4519130,
+      "storeUrl": "https://store.steampowered.com/app/4519130/",
+      "name": "Moldrise",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coca0z.jpg",
+      "releaseDate": "2026-07-20T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 6159,
+        "twitchChannels": 5,
+        "viewerGrowth7d": null,
+        "isNewRelease": true
+      },
+      "topTags": [],
+      "discountPercent": 0
+    },
+    {
+      "id": "410290",
+      "steamAppId": 3669200,
+      "storeUrl": "https://store.steampowered.com/app/3669200/",
+      "name": "Guildrun",
+      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocizp.jpg",
+      "releaseDate": "2026-12-31T00:00:00.000Z",
+      "players": {
+        "max": "unknown",
+        "source": "unknown",
+        "online": false,
+        "localCoop": false
+      },
+      "sessionShape": "openended",
+      "viewerPlayable": {
+        "ok": false
+      },
+      "vibes": {
+        "healing": 0.888168270077163,
+        "variety": 0,
+        "horror": 0,
+        "hardcore": 0,
+        "chatting": 0,
+        "spectacle": 0
+      },
+      "buzz": {
+        "twitchViewers": 7780,
+        "twitchChannels": 50,
+        "viewerGrowth7d": null,
+        "isNewRelease": false
+      },
+      "topTags": [],
+      "discountPercent": 0
     },
     {
       "id": "1877",
@@ -1963,12 +5575,12 @@
         "ok": false
       },
       "vibes": {
-        "healing": 1,
+        "healing": 0.9842880645723594,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
         "chatting": 0,
-        "spectacle": 1
+        "spectacle": 0.8595037791288599
       },
       "buzz": {
         "twitchViewers": 0,
@@ -2032,7 +5644,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -2101,7 +5713,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -2118,75 +5730,6 @@
       "rating": 90.9722989619555,
       "reviewCount": 239,
       "discountPercent": 0
-    },
-    {
-      "id": "334647",
-      "steamAppId": 3240220,
-      "storeUrl": "https://store.steampowered.com/app/3240220/",
-      "name": "Grand Theft Auto V Enhanced",
-      "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9ib0.jpg",
-      "releaseDate": "2025-03-04T00:00:00.000Z",
-      "players": {
-        "max": 2,
-        "source": "igdb_gamemodes",
-        "online": true,
-        "localCoop": false
-      },
-      "sessionShape": "match",
-      "viewerPlayable": {
-        "ok": false
-      },
-      "vibes": {
-        "healing": 0.9023458701219168,
-        "variety": 0.6124084249084248,
-        "horror": 0,
-        "hardcore": 0,
-        "chatting": 0.612408424908425,
-        "spectacle": 0
-      },
-      "buzz": {
-        "twitchViewers": 0,
-        "twitchChannels": 0,
-        "viewerGrowth7d": null,
-        "isNewRelease": false
-      },
-      "topTags": [
-        {
-          "tag": "Open World",
-          "share": 1
-        },
-        {
-          "tag": "Action",
-          "share": 0.9312169312169312
-        },
-        {
-          "tag": "Multiplayer",
-          "share": 0.8253968253968254
-        },
-        {
-          "tag": "Crime",
-          "share": 0.8015873015873016
-        },
-        {
-          "tag": "Mature",
-          "share": 0.7645502645502645
-        },
-        {
-          "tag": "Third Person",
-          "share": 0.7354497354497355
-        },
-        {
-          "tag": "First-Person",
-          "share": 0.6798941798941799
-        },
-        {
-          "tag": "Shooter",
-          "share": 0.6798941798941799
-        }
-      ],
-      "rating": 69.06640897621732,
-      "reviewCount": 55881,
-      "discountPercent": 50
     },
     {
       "id": "361027",
@@ -2206,7 +5749,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -2240,7 +5783,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
@@ -2274,7 +5817,7 @@
         "ok": false
       },
       "vibes": {
-        "healing": 0.9023458701219168,
+        "healing": 0.888168270077163,
         "variety": 0,
         "horror": 0,
         "hardcore": 0,
