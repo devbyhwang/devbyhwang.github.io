@@ -27,6 +27,9 @@ npm run dev
 npm run dev      # Eleventy 개발 서버
 npm run build    # 프로덕션 빌드, 출력: _site/
 npm run clean    # _site/ 삭제
+npm test         # 게임 추천 앱 테스트
+npm run pipeline:fixture   # 네트워크 없는 fixture catalog 생성
+npm run pipeline:validate  # 실데이터 catalog와 history 검증
 ```
 
 ## 프로젝트 구조
@@ -38,6 +41,9 @@ npm run clean    # _site/ 삭제
 - `src/playground.njk`: Playground 목록 (`/playground/`).
 - `src/blog/`: 글 파일. 빌드 URL은 `/posts/`.
 - `src/playground/`: `/playground/`로 복사되는 독립형 Playground 데모.
+- `game-recommendation/`: 게임 추천 Playground의 React/Vite 소스.
+- `scripts/pipeline/`: Twitch·IGDB·Steam 기반 게임 추천 catalog 수집 파이프라인.
+- `data/`: 게임 추천 knowledge, raw cache, history.
 - `src/_includes/layouts/base.njk`: 공통 레이아웃, canonical, description, Open Graph, Twitter card, CSP.
 - `src/_includes/layouts/post.njk`: 글 상세 레이아웃.
 - `src/_includes/partials/`: 글 목록과 글 상세 공통 파셜.
@@ -149,6 +155,16 @@ Playground는 독립형 데모 영역입니다.
 | `GOOGLE_ADS_SLOT_MULTIPLEX` | 글 상세 관련 글 아래 Multiplex 광고 슬롯 | 빈 값 |
 | `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT` | Playground 하단 display 광고 슬롯 | 빈 값 |
 | `GOOGLE_ANALYTICS_ID` | Google Analytics 4 Measurement ID | `G-F1FV4MKDPN` |
+
+게임 추천 pipeline 환경변수:
+
+| 변수 | 용도 | 기본값 |
+| --- | --- | --- |
+| `TWITCH_CLIENT_ID` | Twitch/IGDB API client ID | 필수 |
+| `TWITCH_CLIENT_SECRET` | Twitch app access token 발급용 secret | 필수 |
+| `TWITCH_TOP_GAME_LIMIT` | Twitch 인기 게임 수집 개수 | `1000` |
+| `TWITCH_STREAM_PAGE_LIMIT` | Twitch stream 페이지 제한 | `20` |
+| `IGDB_RECENT_DAYS` | IGDB 최근 출시 게임 검색 기간 | `60` |
 
 광고 동작:
 
