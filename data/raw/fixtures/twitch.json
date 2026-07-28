@@ -1,0 +1,41 @@
+{
+  "oauth": { "access_token": "fixture-twitch-token", "expires_in": 3600, "token_type": "bearer" },
+  "topPages": [
+    {
+      "data": [{ "id": "10", "name": "Fixture Game", "igdb_id": "42" }],
+      "pagination": { "cursor": "next-top" }
+    },
+    {
+      "data": [
+        { "id": "12", "name": "Second Fixture Game", "igdb_id": "43" },
+        { "id": "11", "name": "No IGDB", "igdb_id": "" }
+      ],
+      "pagination": {}
+    }
+  ],
+  "gamesByIgdb": {
+    "data": [
+      { "id": "10", "name": "Fixture Game", "igdb_id": "42", "box_art_url": "https://static-cdn.jtvnw.net/ttv-boxart/Fixture-{width}x{height}.jpg" },
+      { "id": "12", "name": "Second Fixture Game", "igdb_id": "43" }
+    ]
+  },
+  "streamPages": [
+    {
+      "data": [
+        { "id": "s1", "user_id": "u1", "viewer_count": 100 },
+        { "id": "s2", "user_id": "u2", "viewer_count": 50 }
+      ],
+      "pagination": { "cursor": "next-stream" }
+    },
+    {
+      "data": [
+        { "id": "s3", "user_id": "u1", "viewer_count": 25 }
+      ],
+      "pagination": {}
+    },
+    {
+      "data": [],
+      "pagination": {}
+    }
+  ]
+}

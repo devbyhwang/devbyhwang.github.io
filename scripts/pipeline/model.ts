@@ -1,0 +1,214 @@
+import type { fetchIgdb } from "./sources/igdb";
+import type { fetchSteam } from "./sources/steam";
+import type { fetchTwitch } from "./sources/twitch";
+
+export type VibeKey = "healing" | "variety" | "horror" | "hardcore" | "chatting" | "spectacle";
+export type SessionShape = "match" | "run" | "chapter" | "openended";
+export type ViewerPlayable = { ok: boolean; reason?: string };
+export type SteamTag = { name: string; share: number };
+export type TagVibeMap = Record<string, Partial<Record<VibeKey, number>>>;
+export type SessionRule = {
+  shape: SessionShape;
+  genresAny?: string[];
+  tagsAny?: string[];
+  tagsAll?: string[];
+};
+export type SessionRules = { rules: SessionRule[]; default: SessionShape };
+export type ViewerPlayableRules = {
+  games: Record<string, ViewerPlayable>;
+  tags: Record<string, ViewerPlayable>;
+};
+export type KnowledgeAssets = {
+  tagVibes: TagVibeMap;
+  sessionRules: SessionRules;
+  viewerPlayable: ViewerPlayableRules;
+};
+
+export type ClassificationInput = { genres: string[]; tags: string[] };
+
+export type GameRecord = {
+  id: string;
+  steamAppId?: number;
+  name: string;
+  nameKo?: string;
+  franchise?: string;
+  coverUrl?: string;
+  storeUrl?: string;
+  releaseDate: string;
+  players: { max: number | "unknown"; source: "igdb_multiplayer" | "igdb_gamemodes" | "steam_categories" | "unknown"; online: boolean; localCoop: boolean };
+  sessionShape: SessionShape;
+  viewerPlayable: ViewerPlayable;
+  vibes: Record<VibeKey, number>;
+  buzz: { twitchViewers: number; twitchChannels: number; viewerGrowth7d: number | null; isNewRelease: boolean };
+  topTags: { tag: string; share: number }[];
+  discountPercent?: number;
+  rating?: number;
+  reviewCount?: number;
+};
+
+export type CatalogRecord = { generatedAt: string; games: GameRecord[] };
+
+export type DailySnapshot = {
+  date: string;
+  twitchViewers: number;
+  twitchChannels: number;
+};
+
+export type History = Record<string, DailySnapshot[]>;
+export type DailySnapshots = Record<string, DailySnapshot>;
+
+export type RawSources = {
+  igdb: IgdbRawSnapshot;
+  twitch: TwitchRawSnapshot;
+  steam: SteamRawSnapshot;
+};
+
+/** A numeric-IGDB join before knowledge-based catalog enrichment. */
+export type JoinedGame = {
+  igdb: IgdbGame;
+  steamAppId?: number;
+  steam?: SteamApp;
+  twitch: { viewers: number; channels: number; boxArtUrl?: string };
+  tags: SteamTag[];
+};
+
+export type HttpClient = {
+  getJson<T>(url: string, headers?: Record<string, string>): Promise<T>;
+  postJson<T>(url: string, body: string, headers?: Record<string, string>): Promise<T>;
+};
+
+export type RawResponseRecorder = (response: unknown) => Promise<void>;
+
+export type IgdbFetchInput = {
+  clientId: string;
+  clientSecret: string;
+  asOf: string;
+  recentDays: number;
+  topIgdbIds: string[];
+  steamAppIds: number[];
+  recordResponse?: RawResponseRecorder;
+};
+
+export type TwitchFetchInput = {
+  clientId: string;
+  clientSecret: string;
+  topGameLimit: number;
+  streamPageLimit: number;
+  recordResponse?: RawResponseRecorder;
+};
+
+export type SteamFetchInput = {
+  steamAppIds: number[];
+  /** Allows tests and callers with an alternate data root to keep cache writes isolated. */
+  cachePath?: string;
+  recordResponse?: RawResponseRecorder;
+  featured?: { topSellerAppIds: number[]; response?: unknown };
+  includeTopSellers?: boolean;
+};
+
+export type RawEnvelope = {
+  fetchedAt: string;
+  source: "igdb" | "twitch" | "steam";
+  request: Record<string, unknown>;
+  responses: unknown[];
+  warnings: string[];
+};
+
+export type IgdbGame = {
+  id: number;
+  name: string;
+  first_release_date?: number;
+  cover?: { image_id?: string };
+  external_games?: Array<{ uid: string; external_game_source: number }>;
+  collection?: { name?: string };
+  franchise?: { name?: string };
+  genres?: Array<{ name?: string }>;
+  themes?: Array<{ name?: string }>;
+  game_modes?: Array<{ name?: string }>;
+  multiplayer_modes?: Array<{
+    onlinecoop?: boolean;
+    offlinecoop?: boolean;
+    onlinecoopmax?: number;
+    onlinemax?: number;
+    offlinecoopmax?: number;
+    offlinemax?: number;
+  }>;
+  rating?: number;
+  rating_count?: number;
+};
+
+export type IgdbExternalGame = { id?: number; game: number; uid: string; external_game_source: number };
+
+export type TwitchTopGame = { categoryId: string; name: string; igdbId: string; boxArtUrl?: string };
+export type TwitchStreamStat = { categoryId: string; igdbId: string; viewers: number; channels: number };
+
+export type SteamApp = {
+  appId: number;
+  name?: string;
+  tags: Record<string, number>;
+  positive: number;
+  negative: number;
+  owners: string;
+  price: string;
+  discount: string;
+  categories?: string[];
+};
+
+export type IgdbRawSnapshot = RawEnvelope & {
+  source: "igdb";
+  games: IgdbGame[];
+  externalGames: IgdbExternalGame[];
+  unresolvedSteamAppIds: number[];
+};
+
+export type TwitchRawSnapshot = RawEnvelope & {
+  source: "twitch";
+  topGames: TwitchTopGame[];
+  streams: TwitchStreamStat[];
+  truncated: boolean;
+};
+
+export type SteamRawSnapshot = RawEnvelope & {
+  source: "steam";
+  topSellerAppIds: number[];
+  apps: SteamApp[];
+  staleSources: string[];
+};
+
+export type PipelineLogger = Pick<Console, "info" | "warn" | "error">;
+
+export type PipelineOptions = {
+  rootDir: string;
+  asOf?: string;
+  fetcher?: typeof fetch;
+  allowNetwork: boolean;
+  logger: PipelineLogger;
+  /** Fixture runs pass already-read raw snapshots and never contact a source. */
+  raw?: RawSources;
+  knowledge?: KnowledgeAssets;
+  config?: SourceConfig;
+  adapters?: SourceAdapters;
+};
+
+export type SourceConfig = {
+  twitchClientId: string;
+  twitchClientSecret: string;
+  twitchTopGameLimit: number;
+  twitchStreamPageLimit: number;
+  igdbRecentDays: number;
+};
+
+export type SourceAdapters = {
+  igdb: typeof fetchIgdb;
+  twitch: typeof fetchTwitch;
+  steam: typeof fetchSteam;
+};
+
+export type PipelineResult = {
+  generatedAt: string;
+  fetchedSources: string[];
+  staleSources: string[];
+  gameCount: number;
+  catalogUpdated: boolean;
+  historyUpdated: boolean;
+};
