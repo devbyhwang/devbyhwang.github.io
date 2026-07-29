@@ -120,6 +120,7 @@ describe("catalog refresh deployment handoff", () => {
     expect(deploy).toContain('invalid("manifest generatedAt does not match catalog")');
     expect(deploy).toContain('invalid("manifest gameCount does not match catalog")');
     expect(deploy).toContain("const cardShardCount = 896;");
+    expect(deploy).toContain('const compactQueryDirectory = (query) => query.replace(/\\|/g, "_");');
     expect(deploy).toContain("rank descriptor is inconsistent");
     expect(deploy).toContain("rank vector has an invalid byte length");
     expect(deploy).toContain("rank vector references an invalid ordinal");

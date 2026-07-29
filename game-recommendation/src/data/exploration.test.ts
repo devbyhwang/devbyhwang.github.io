@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   COMPACT_EXPLORATION_FORMAT,
   compactExplorationCardPathForOrdinal,
+  compactExplorationMembershipPath,
+  compactExplorationRankPath,
   encodeMembershipBitset,
   encodeOrdinalRankVector,
   membershipBitsetByteLength,
@@ -18,9 +20,9 @@ const response = (value: unknown) => new Response(JSON.stringify(value), { statu
 function manifest(gameCount: number, rankCount = gameCount, views = { new: 0, rising: 0, discovery: 0, classic: 0 }) {
   return {
     format: COMPACT_EXPLORATION_FORMAT, generatedAt, gameCount, pageSize: 24,
-    rank: { path: `exploration/queries/${encodeURIComponent(key)}/rank.u32le`, ordinalCount: rankCount, byteLength: rankCount * 4 },
+    rank: { path: compactExplorationRankPath(key), ordinalCount: rankCount, byteLength: rankCount * 4 },
     views: Object.fromEntries(Object.entries(views).map(([view, count]) => [view, {
-      path: `exploration/queries/${encodeURIComponent(key)}/${view}.bits`, count, byteLength: membershipBitsetByteLength(gameCount),
+      path: compactExplorationMembershipPath(key, view as "new" | "rising" | "discovery" | "classic"), count, byteLength: membershipBitsetByteLength(gameCount),
     }])),
   };
 }
@@ -45,7 +47,7 @@ describe("compact exploration data", () => {
     expect(result.cards).toHaveLength(24);
     expect(result.hasMore).toBe(true);
     const urls = fetcher.mock.calls.map(([url]) => url as string);
-    expect(urls).toContain(`./exploration/queries/${encodeURIComponent(key)}/rank.u32le`);
+    expect(urls).toContain(`./${compactExplorationRankPath(key)}`);
     expect(urls).toContain(`./${compactExplorationCardPathForOrdinal(0)}`);
     expect(urls).not.toContain(expect.stringContaining("catalog/chunks"));
   });
