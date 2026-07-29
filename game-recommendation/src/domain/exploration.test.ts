@@ -51,21 +51,25 @@ describe("exploration contracts", () => {
     expect(DIVERSE_PREFIX_SIZE).toBe(96);
   });
 
-  it("uses explicit compact artifact paths and 896 ordinal card shards", () => {
+  it("uses percent-free compact paths for real pipe-delimited query keys", () => {
     expect(COMPACT_EXPLORATION_FORMAT).toBe(1);
     expect(ORDINAL_CARD_SHARD_COUNT).toBe(896);
     const key = recommendationKey(ALL_QUERIES[0]!);
 
     expect(key).toContain("|");
     expect(compactExplorationManifestPath(key)).toBe(
-      "exploration/queries/short%7C1%7C0%7Chealing/manifest.json",
+      "exploration/queries/short_1_0_healing/manifest.json",
     );
     expect(compactExplorationRankPath(key)).toBe(
-      "exploration/queries/short%7C1%7C0%7Chealing/rank.u32le",
+      "exploration/queries/short_1_0_healing/rank.u32le",
     );
     expect(compactExplorationMembershipPath(key, "new")).toBe(
-      "exploration/queries/short%7C1%7C0%7Chealing/new.bits",
+      "exploration/queries/short_1_0_healing/new.bits",
     );
+    const queryDirectories = ALL_QUERIES.map((query) => compactExplorationManifestPath(recommendationKey(query)).split("/")[2]!);
+    expect(queryDirectories).toHaveLength(180);
+    expect(new Set(queryDirectories)).toHaveLength(180);
+    expect(queryDirectories.some((directory) => directory.includes("%"))).toBe(false);
     expect(compactExplorationCardShardPath(7)).toBe("exploration/cards/0007.json");
     expect(ordinalCardShard(0)).toBe(0);
     expect(ordinalCardShard(896)).toBe(0);

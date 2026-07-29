@@ -158,7 +158,7 @@ export function membershipBitsetHas(bits: Uint8Array, ordinal: number, gameCount
 
 function compactExplorationQueryPath(queryKey: string): string {
   if (!queryKey) throw new Error("invalid exploration query key: empty");
-  return `exploration/queries/${encodeURIComponent(queryKey)}`;
+  return `exploration/queries/${queryKey.replace(/\|/g, "_")}`;
 }
 
 function assertGameCount(gameCount: number): void {

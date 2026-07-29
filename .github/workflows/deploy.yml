@@ -169,7 +169,8 @@ jobs:
           const explorationPath = `${explorationRoot}/manifest.json`;
           const exploration = JSON.parse(readFileSync(explorationPath, "utf8"));
           const expectedQueries = [...expectedKeys];
-          const expectedQueryDirectories = expectedQueries.map(encodeURIComponent).sort();
+          const compactQueryDirectory = (query) => query.replace(/\|/g, "_");
+          const expectedQueryDirectories = expectedQueries.map(compactQueryDirectory).sort();
           const filteredViews = ["new", "rising", "discovery", "classic"];
           const pageSize = 24;
           const cardShardCount = 896;
@@ -220,10 +221,11 @@ jobs:
           const queryDirectories = readdirSync(queryRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
           if (queryDirectories.length !== expectedQueryDirectories.length || queryDirectories.some((query, index) => query !== expectedQueryDirectories[index])) invalid("query roots are incomplete");
           for (const query of expectedQueries) {
-            const queryPath = `${queryRoot}/${encodeURIComponent(query)}`;
+            const queryDirectory = compactQueryDirectory(query);
+            const queryPath = `${queryRoot}/${queryDirectory}`;
             const manifest = readJson(`${queryPath}/manifest.json`);
             if (manifest === null || typeof manifest !== "object" || Array.isArray(manifest) || manifest.format !== 1 || manifest.generatedAt !== catalog.generatedAt || manifest.gameCount !== catalogGameCount || manifest.pageSize !== pageSize) invalid(`query manifest metadata is invalid: ${query}`);
-            const rankPath = `exploration/queries/${encodeURIComponent(query)}/rank.u32le`;
+            const rankPath = `exploration/queries/${queryDirectory}/rank.u32le`;
             if (manifest.rank === null || typeof manifest.rank !== "object" || manifest.rank.path !== rankPath || !Number.isInteger(manifest.rank.ordinalCount) || manifest.rank.ordinalCount < 0 || manifest.rank.byteLength !== manifest.rank.ordinalCount * 4) invalid(`rank descriptor is inconsistent: ${query}`);
             if (manifest.views === null || typeof manifest.views !== "object" || Array.isArray(manifest.views) || Object.keys(manifest.views).length !== filteredViews.length || filteredViews.some((view) => !(view in manifest.views))) invalid(`membership bitset descriptors are incomplete: ${query}`);
             const rank = readBytes(`${artifactRoot}/${manifest.rank.path}`);
@@ -236,7 +238,7 @@ jobs:
             }
             for (const view of filteredViews) {
               const descriptor = manifest.views[view];
-              const path = `exploration/queries/${encodeURIComponent(query)}/${view}.bits`;
+              const path = `exploration/queries/${queryDirectory}/${view}.bits`;
               if (descriptor === null || typeof descriptor !== "object" || descriptor.path !== path || !Number.isInteger(descriptor.count) || descriptor.count < 0 || descriptor.byteLength !== expectedBitsetBytes) invalid(`membership bitset descriptor is inconsistent: ${query}/${view}`);
               const bits = readBytes(`${artifactRoot}/${descriptor.path}`);
               if (bits.byteLength !== descriptor.byteLength) invalid(`membership bitset has an invalid byte length: ${query}/${view}`);

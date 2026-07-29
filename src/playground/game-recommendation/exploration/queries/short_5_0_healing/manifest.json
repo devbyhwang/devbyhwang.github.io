@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "generatedAt": "2026-07-29T12:32:05.831Z",
+  "gameCount": 278332,
+  "pageSize": 24,
+  "rank": {
+    "path": "exploration/queries/short_5_0_healing/rank.u32le",
+    "ordinalCount": 228336,
+    "byteLength": 913344
+  },
+  "views": {
+    "new": {
+      "path": "exploration/queries/short_5_0_healing/new.bits",
+      "count": 1550,
+      "byteLength": 34792
+    },
+    "rising": {
+      "path": "exploration/queries/short_5_0_healing/rising.bits",
+      "count": 4,
+      "byteLength": 34792
+    },
+    "discovery": {
+      "path": "exploration/queries/short_5_0_healing/discovery.bits",
+      "count": 226748,
+      "byteLength": 34792
+    },
+    "classic": {
+      "path": "exploration/queries/short_5_0_healing/classic.bits",
+      "count": 141452,
+      "byteLength": 34792
+    }
+  }
+}
