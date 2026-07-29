@@ -40,6 +40,23 @@ the full dataset.
    the matching precomputed result. Changing a control only selects a different
    in-memory record; it makes no catalog chunk request.
 
+## Generation Performance
+
+The index generator must preserve the current recommendation results while
+being practical for the complete catalog. In particular, it must not calculate
+each game's percentile by scanning every candidate repeatedly.
+
+For every filter population used by a recommendation attempt, the generator
+builds sorted numeric distributions for demand, accessibility, and growth once.
+Each game's percentile is then calculated with lower- and upper-bound binary
+searches, preserving the current formula: `(strictlyLower + equal / 2) / N`.
+The resulting score terms, score ordering, tie-breaking, and selected cards
+must match the existing algorithm for the same input catalog.
+
+This replaces repeated quadratic population scans with one sort per metric and
+logarithmic lookups per game. It does not parallelize full-catalog calculations
+or copy the catalog to workers, avoiding additional large-memory pressure.
+
 ## Index Contract
 
 The file contains:

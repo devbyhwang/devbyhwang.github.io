@@ -145,6 +145,50 @@ git add scripts/pipeline/recommendations.ts scripts/pipeline/recommendations.tes
 git commit -m "feat: emit full-catalog recommendation index"
 ```
 
+### Task 2a: Make full-catalog percentile scoring practical
+
+**Files:**
+- Modify: `game-recommendation/src/domain/score.ts`, `game-recommendation/src/domain/rank.ts`, `game-recommendation/src/domain/slots.ts`
+- Test: `game-recommendation/src/domain/score.test.ts`, `game-recommendation/src/domain/recommend.test.ts`
+
+**Interfaces:**
+- Consumes: a fixed candidate population and its demand, accessibility, and growth values.
+- Produces: the same `Scored` terms and recommendation picks as the existing implementation, without re-scanning the candidate population for every scored game.
+
+- [ ] **Step 1: Write failing equivalence and complexity-guard tests**
+
+Construct a fixture with tied metric values and assert that precomputed CDF
+percentiles equal the legacy `(less + equal / 2) / N` calculation. Add a
+recommendation fixture asserting identical pick IDs, scores, terms, and
+relaxations before and after the optimized path.
+
+- [ ] **Step 2: Run the focused tests to verify they fail**
+
+Run: `npx vitest run --config game-recommendation/vite.config.ts game-recommendation/src/domain/score.test.ts game-recommendation/src/domain/recommend.test.ts`
+
+Expected: FAIL because the CDF context does not exist.
+
+- [ ] **Step 3: Implement reusable sorted distributions and bounds**
+
+Build each required metric array once per population, sort it numerically, and
+use lower/upper bound binary searches to calculate the exact existing
+percentile. Pass the context through ranking and slot construction so no
+`scoreGame` call rematerializes or linearly scans a population. Keep existing
+game-ID tie breaks and all public recommendation types unchanged.
+
+- [ ] **Step 4: Verify exactness and full-catalog emission timing**
+
+Run the focused tests, then generate `recommendations.json` from the committed
+557 chunks with a 10-minute timeout. Record elapsed time and verify its 180
+keys; it must finish within that limit without altering catalog chunks.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add game-recommendation/src/domain/score.ts game-recommendation/src/domain/rank.ts game-recommendation/src/domain/slots.ts game-recommendation/src/domain/score.test.ts game-recommendation/src/domain/recommend.test.ts
+git commit -m "perf: precompute recommendation percentile distributions"
+```
+
 ### Task 3: Load the static index and render stored recommendations
 
 **Files:**
@@ -275,4 +319,3 @@ Expected: exits 0.
 Run: `git diff origin/main... --check && git status --short`
 
 Expected: no whitespace errors; if verification needs a correction, commit only that correction with a precise `fix:` message.
-
