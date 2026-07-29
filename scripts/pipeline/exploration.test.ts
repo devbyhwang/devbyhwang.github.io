@@ -17,6 +17,17 @@ function catalogWith(count: number): CatalogRecord { return { generatedAt, games
 })) }; }
 function memoryFileStore() { const files = new Map<string, string>(); const bytes = new Map<string, Uint8Array>(); const fs: FileStore = { read: (path) => files.get(path) ?? null, writeAtomic: (path, contents) => { files.set(path, contents); }, readBytes: (path) => bytes.get(path) ?? null, writeAtomicBytes: (path, value) => { bytes.set(path, new Uint8Array(value)); }, delete: (path) => { files.delete(path); bytes.delete(path); } }; return { fs, files, bytes }; }
 
+function equalScoreCatalog(): CatalogRecord {
+  const catalog = catalogWith(98);
+  catalog.games.forEach((game, index) => {
+    game.id = index < 96 ? `game-${String(index).padStart(3, "0")}` : index === 96 ? "game-a" : "game-A";
+    game.releaseDate = "2026-07-20T00:00:00.000Z";
+    game.buzz = { twitchViewers: 1_000, twitchChannels: 10, viewerGrowth7d: 1, isNewRelease: true };
+    game.streaming.growth7d = 1;
+  });
+  return catalog;
+}
+
 describe("compact exploration emission", () => {
   it("writes one rank vector and four membership bitsets per pipe-key query", () => {
     const { fs, files, bytes } = memoryFileStore(); const catalog = catalogWith(30); const query = ALL_QUERIES[0]!;
@@ -54,7 +65,30 @@ describe("compact exploration emission", () => {
     bytes.set(explorationMembershipPath(query, "new"), new Uint8Array());
     expect(() => readExploration(fs)).toThrow("membership bitset byte length");
     emitExploration(catalogWith(2), fs);
-    files.set(explorationCardPath(0), JSON.stringify([{ id: "game-0", name: "Game 0", releaseDate: "2026-01-01T00:00:00.000Z", ordinal: 1 }]));
+    files.set(explorationCardPath(0), JSON.stringify([{
+      id: "game-0", name: "Game 0", releaseDate: "2026-01-01T00:00:00.000Z", ordinal: 1,
+      players: { max: "unknown", online: false, localCoop: false }, sessionShape: "run", twitchViewers: 10,
+    }]));
     expect(() => readExploration(fs)).toThrow("wrong-shard");
+  });
+
+  it("rejects corrupt required card display fields and malformed optional fields", () => {
+    const { fs, files } = memoryFileStore();
+    emitExploration(catalogWith(2), fs);
+    files.set(explorationCardPath(0), JSON.stringify([{
+      id: "game-0", name: "Game 0", releaseDate: "2026-01-01T00:00:00.000Z", ordinal: 0,
+      players: { max: "unknown", online: "false", localCoop: false }, sessionShape: "run", twitchViewers: 10,
+      discountPercent: "50",
+    }]));
+    expect(() => readExploration(fs)).toThrow("invalid card");
+  });
+
+  it("keeps the legacy locale tie-break after the diverse prefix", () => {
+    const { fs, bytes } = memoryFileStore();
+    const catalog = equalScoreCatalog();
+    const query = ALL_QUERIES[0]!;
+    emitExploration(catalog, fs);
+    const ordinals = decodeOrdinalRankVector(bytes.get(explorationRankPath(query))!, 98, 98);
+    expect(ordinals.slice(96).map((ordinal) => catalog.games[ordinal]!.id)).toEqual(["game-a", "game-A"]);
   });
 });

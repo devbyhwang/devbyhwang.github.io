@@ -107,7 +107,7 @@ function rankedIds(games: GameRecord[], query: Query): string[] {
   const context = createScoreContext(filtered.passed.map(({ game }) => game));
   const scored = filtered.passed
     .map(({ game, marginalSession }) => addPenalties(scoreGame(game, context), marginalSession))
-    .sort((a, b) => b.score - a.score || compareIds(a.game.id, b.game.id));
+    .sort((a, b) => b.score - a.score || a.game.id.localeCompare(b.game.id));
   return rerankExploration(games, scored);
 }
 
@@ -202,8 +202,33 @@ function validateManifest(manifest: CompactExplorationManifest, index: Explorati
 function isCompactCard(value: unknown, gameCount: number): value is CompactExplorationCard {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const card = value as CompactExplorationCard;
-  if (typeof card.id !== "string" || !card.id || typeof card.name !== "string" || typeof card.releaseDate !== "string") return false;
+  if (typeof card.id !== "string" || !card.id
+    || typeof card.name !== "string" || !card.name
+    || typeof card.releaseDate !== "string"
+    || !isCardPlayers(card.players)
+    || !isSessionShape(card.sessionShape)
+    || !isFiniteNonNegativeNumber(card.twitchViewers)
+    || (card.nameKo !== undefined && typeof card.nameKo !== "string")
+    || (card.coverUrl !== undefined && typeof card.coverUrl !== "string")
+    || (card.storeUrl !== undefined && typeof card.storeUrl !== "string")
+    || (card.discountPercent !== undefined && !isFiniteNonNegativeNumber(card.discountPercent))) return false;
   try { assertCompactExplorationCardOrdinal(card, gameCount); return true; } catch { return false; }
+}
+
+function isCardPlayers(value: unknown): value is CompactExplorationCard["players"] {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const players = value as CompactExplorationCard["players"];
+  return (players.max === "unknown" || isFiniteNonNegativeNumber(players.max))
+    && typeof players.online === "boolean"
+    && typeof players.localCoop === "boolean";
+}
+
+function isSessionShape(value: unknown): value is CompactExplorationCard["sessionShape"] {
+  return value === "match" || value === "run" || value === "chapter" || value === "openended";
+}
+
+function isFiniteNonNegativeNumber(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
 function writeBytes(fs: FileStore, path: string, value: Uint8Array): void {
@@ -219,7 +244,6 @@ function parse<T>(contents: string, path: string): T { try { return JSON.parse(c
 function stringify(value: unknown): string { return `${JSON.stringify(value, null, 2)}\n`; }
 function assetPath(path: string): string { return `${ASSET_ROOT}${path}`; }
 function requiredOrdinal(ordinals: ReadonlyMap<string, number>, id: string): number { const ordinal = ordinals.get(id); if (ordinal === undefined) throw new Error(`missing catalog ordinal: ${id}`); return ordinal; }
-function compareIds(a: string, b: string): number { return a < b ? -1 : a > b ? 1 : 0; }
 function bitsetOrdinals(bits: Uint8Array, gameCount: number): Set<number> {
   const ordinals = new Set<number>();
   for (let ordinal = 0; ordinal < gameCount; ordinal += 1) if (membershipBitsetHas(bits, ordinal, gameCount)) ordinals.add(ordinal);
