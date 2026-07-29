@@ -1,27 +1,122 @@
-import { readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { runCommand } from "./index";
 
-const refresh = readFileSync(".github/workflows/catalog-refresh.yml", "utf8");
-const deploy = readFileSync(".github/workflows/deploy.yml", "utf8");
-const indexHtml = readFileSync("index.html", "utf8");
+const indexHtml = readFileSync("game-recommendation/index.html", "utf8");
+
+function workflow(path: string): string {
+  return readFileSync(path, "utf8");
+}
 
 describe("catalog refresh deployment handoff", () => {
-  it("deploys after the named refresh workflow completes successfully", () => {
-    expect(deploy).toContain("workflow_run:");
-    expect(deploy).toContain('workflows: ["Refresh game catalog"]');
-    expect(deploy).toContain("github.event.workflow_run.conclusion == 'success'");
+  it("deploys through the blog's existing main push workflow", () => {
+    const deploy = workflow(".github/workflows/deploy.yml");
+    expect(deploy).toContain("push:");
+    expect(deploy).toContain("branches: [main]");
+    expect(deploy).not.toContain("workflow_run:");
   });
 
-  it("checks out main after refresh while retaining human push and dispatch triggers", () => {
+  it("keeps the existing human push and dispatch triggers", () => {
+    const deploy = workflow(".github/workflows/deploy.yml");
     expect(deploy).toContain("push:");
     expect(deploy).toContain("workflow_dispatch:");
-    expect(deploy).toContain("github.event_name == 'workflow_run' && 'main' || github.sha");
+    expect(deploy).toContain("actions/checkout@v4");
   });
 
   it("keeps source and deployment permissions narrowly scoped", () => {
+    const refresh = workflow(".github/workflows/catalog-refresh.yml");
+    const deploy = workflow(".github/workflows/deploy.yml");
     expect(refresh).toMatch(/permissions:\n  contents: write/);
     expect(refresh).not.toMatch(/pages:|id-token:/);
     expect(deploy).toMatch(/permissions:\n  contents: read\n  pages: write\n  id-token: write/);
+  });
+
+  it("requires manual backfill boundaries, serializes partitions, and uses secrets-only Twitch credentials", () => {
+    const backfill = workflow(".github/workflows/catalog-backfill.yml");
+
+    expect(backfill).toMatch(/workflow_dispatch:\n\s+inputs:\n\s+start:\n(?:\s+.+\n)+?\s+required:\s+true/);
+    expect(backfill).toMatch(/workflow_dispatch:\n[\s\S]*\n\s+end:\n(?:\s+.+\n)+?\s+required:\s+true/);
+    expect(backfill).toMatch(/concurrency:\n\s+group:\s+game-catalog-backfill\n\s+cancel-in-progress:\s+false/);
+    expect(backfill).toContain('node-version: "20"');
+    expect(backfill).toContain("npm ci");
+    expect(backfill).toContain('npm run pipeline:backfill -- --start "${{ inputs.start }}" --end "${{ inputs.end }}"');
+    expect(backfill).toContain("npm run pipeline");
+    expect(backfill).toContain("npm run pipeline:validate");
+    expect(backfill).toContain("TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}");
+    expect(backfill).toContain("TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}");
+    expect(backfill).not.toContain("TWITCH_CLIENT_ID: ${{ vars.");
+    expect(backfill).not.toContain("TWITCH_CLIENT_SECRET: ${{ vars.");
+  });
+
+  it("keeps the daily refresh schedule, avoids runtime model services, and stages checkpointed catalog outputs", () => {
+    const refresh = workflow(".github/workflows/catalog-refresh.yml");
+
+    expect(refresh).toContain('cron: "0 0 * * *"');
+    expect(refresh).toContain("npm run pipeline");
+    expect(refresh).toContain("npm run pipeline:validate");
+    expect(refresh).not.toMatch(/pipeline:model|OPENAI_|ANTHROPIC_|COHERE_|MISTRAL_/);
+    expect(refresh).toContain("git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks");
+  });
+
+  it("validates manifest chunks before uploading the Pages artifact", () => {
+    const deploy = workflow(".github/workflows/deploy.yml");
+
+    expect(deploy).toContain("test -f _site/playground/game-recommendation/catalog.json");
+    expect(deploy).toContain("const artifactRoot = \"_site/playground/game-recommendation\";");
+    expect(deploy).toContain("for (const chunkPath of catalog.chunks)");
+    expect(deploy).toContain("accessSync(resolve(artifactRoot, chunkPath.slice(2)))");
+  });
+});
+
+describe("pipeline CLI contracts", () => {
+  it("rejects an invalid backfill start date before any network work begins", async () => {
+    await expect(runCommand("backfill", {
+      rootDir: process.cwd(),
+      env: { TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+      logger: console,
+      fetcher: (() => {
+        throw new Error("network should not run");
+      }) as typeof fetch,
+    }, ["--start", "1990-02-30", "--end", "1991-01-01"])).rejects.toThrow("invalid --start date: 1990-02-30");
+  });
+
+  it("rejects an invalid backfill end date before any network work begins", async () => {
+    await expect(runCommand("backfill", {
+      rootDir: process.cwd(),
+      env: { TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+      logger: console,
+      fetcher: (() => {
+        throw new Error("network should not run");
+      }) as typeof fetch,
+    }, ["--start", "1990-01-01", "--end", "1991-02-30"])).rejects.toThrow("invalid --end date: 1991-02-30");
+  });
+
+  it("captures partition raw responses without persisting credentials", async () => {
+    const rootDir = mkdtempSync(join(tmpdir(), "workflow-cli-"));
+    const fetcher = async (url: string) => {
+      if (url === "https://id.twitch.tv/oauth2/token") return new Response(JSON.stringify({ access_token: "fixture-token" }), { status: 200 });
+      if (url === "https://api.igdb.com/v4/games") return new Response(JSON.stringify([{ id: 1, name: "Historical Fixture", first_release_date: 631152000 }]), { status: 200 });
+      throw new Error(`unexpected URL ${url}`);
+    };
+
+    try {
+      await runCommand("backfill", {
+        rootDir,
+        env: { PIPELINE_AS_OF: "2026-07-29T00:00:00.000Z", TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+        logger: console,
+        fetcher: fetcher as typeof fetch,
+      }, ["--start", "1990-01-01", "--end", "1991-01-01"]);
+
+      const rawPath = join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01.json");
+      expect(existsSync(rawPath)).toBe(true);
+      const raw = JSON.parse(readFileSync(rawPath, "utf8"));
+      expect(raw.games).toEqual([{ id: 1, name: "Historical Fixture", first_release_date: 631152000 }]);
+      expect(readFileSync(rawPath, "utf8")).not.toContain("top-secret");
+    } finally {
+      rmSync(rootDir, { recursive: true, force: true });
+    }
   });
 });
 

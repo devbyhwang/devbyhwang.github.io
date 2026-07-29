@@ -2,6 +2,21 @@
 
 Eleventy 사이트의 `/playground/`에 노출되는 독립형 데모 모음입니다.
 
+## 게임 추천기 catalog 운영
+
+게임 추천기는 `game-recommendation/`의 React/Vite 소스와
+`src/playground/game-recommendation/catalog.json`을 함께 사용합니다. 외부 API secret은
+저장소에 두지 않고 GitHub Actions secrets에서만 읽습니다.
+
+```bash
+npm run pipeline:validate
+npm run pipeline:backfill -- --start 1980-01-01 --end 2026-01-01
+```
+
+실제 역사 데이터 백필은 `Backfill game recommendation catalog` workflow에서 실행합니다.
+백필 범위는 연도 단위로 나뉘며 `data/checkpoints/igdb.json`에 진행 상태가 저장됩니다.
+정기 최신 데이터 갱신은 `Refresh game recommendation catalog` workflow가 매일 00:00 UTC에 실행합니다.
+
 ## 새 데모 추가하기
 
 1. **디렉터리 생성**

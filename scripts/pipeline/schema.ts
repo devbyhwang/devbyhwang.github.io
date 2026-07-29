@@ -1,7 +1,17 @@
 import { deriveIsNewRelease } from "./enrich";
-import type { CatalogRecord, GameRecord, SessionShape, VibeKey } from "./model";
+import type {
+  CatalogChunk,
+  CatalogManifest,
+  CatalogRecord,
+  GameRecord,
+  QualityStats,
+  SessionShape,
+  StreamingStats,
+  VibeKey,
+} from "./model";
 
 const ISO_TIMESTAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+const CATALOG_CHUNK_PATH = /^\.\/catalog\/chunks\/\d{4}\.json$/;
 const VIBES: VibeKey[] = ["healing", "variety", "horror", "hardcore", "chatting", "spectacle"];
 const PLAYER_SOURCES = new Set(["igdb_multiplayer", "igdb_gamemodes", "steam_categories", "unknown"]);
 const SESSION_SHAPES = new Set<SessionShape>(["match", "run", "chapter", "openended"]);
@@ -20,6 +30,12 @@ function string(value: unknown, path: string, nonEmpty = false): string {
   return value;
 }
 
+function catalogChunkPath(value: unknown, path: string): string {
+  const chunkPath = string(value, path, true);
+  if (!CATALOG_CHUNK_PATH.test(chunkPath)) fail(path, "must be a relative catalog chunk path like ./catalog/chunks/0000.json");
+  return chunkPath;
+}
+
 function iso(value: unknown, path: string): string {
   const timestamp = string(value, path);
   const date = new Date(timestamp);
@@ -32,9 +48,63 @@ function finite(value: unknown, path: string, min: number, max = Infinity): numb
   return value;
 }
 
+function integer(value: unknown, path: string, min: number, max = Infinity): number {
+  if (typeof value !== "number" || !Number.isInteger(value) || value < min || value > max) fail(path, `must be an integer from ${min} to ${max}`);
+  return value;
+}
+
 function bool(value: unknown, path: string): boolean {
   if (typeof value !== "boolean") fail(path, "must be a boolean");
   return value;
+}
+
+function nullableFinite(value: unknown, path: string, min: number, max = Infinity): number | null {
+  if (value === null) return null;
+  return finite(value, path, min, max);
+}
+
+function nullableAnyFinite(value: unknown, path: string): number | null {
+  if (value === null) return null;
+  return finite(value, path, -Infinity);
+}
+
+function optionalFinite(value: unknown, path: string, min: number, max = Infinity): number | undefined {
+  if (value === undefined) return undefined;
+  return finite(value, path, min, max);
+}
+
+function optionalInteger(value: unknown, path: string, min: number, max = Infinity): number | undefined {
+  if (value === undefined) return undefined;
+  return integer(value, path, min, max);
+}
+
+function validateStreaming(value: unknown, path: string): asserts value is StreamingStats {
+  const streaming = object(value, path);
+  integer(streaming.totalViewers, `${path}.totalViewers`, 0);
+  integer(streaming.channelCount, `${path}.channelCount`, 0);
+  nullableFinite(streaming.medianViewersPerChannel, `${path}.medianViewersPerChannel`, 0);
+  nullableFinite(streaming.p75ViewersPerChannel, `${path}.p75ViewersPerChannel`, 0);
+  nullableFinite(streaming.top10ViewerShare, `${path}.top10ViewerShare`, 0, 1);
+  nullableFinite(streaming.viewerConcentration, `${path}.viewerConcentration`, 0, 1);
+  nullableAnyFinite(streaming.growth7d, `${path}.growth7d`);
+  nullableAnyFinite(streaming.growth30d, `${path}.growth30d`);
+  nullableAnyFinite(streaming.growth90d, `${path}.growth90d`);
+  nullableFinite(streaming.volatility30d, `${path}.volatility30d`, 0);
+  integer(streaming.observedSnapshots, `${path}.observedSnapshots`, 0);
+  finite(streaming.coverage, `${path}.coverage`, 0, 1);
+  iso(streaming.asOf, `${path}.asOf`);
+}
+
+function validateQuality(value: unknown, path: string): asserts value is QualityStats {
+  const quality = object(value, path);
+  optionalFinite(quality.igdbRating, `${path}.igdbRating`, 0, 100);
+  optionalInteger(quality.igdbRatingCount, `${path}.igdbRatingCount`, 0);
+  optionalFinite(quality.criticRating, `${path}.criticRating`, 0, 100);
+  optionalInteger(quality.criticRatingCount, `${path}.criticRatingCount`, 0);
+  optionalFinite(quality.totalRating, `${path}.totalRating`, 0, 100);
+  optionalInteger(quality.totalRatingCount, `${path}.totalRatingCount`, 0);
+  optionalInteger(quality.steamPositive, `${path}.steamPositive`, 0);
+  optionalInteger(quality.steamNegative, `${path}.steamNegative`, 0);
 }
 
 function validateGame(value: unknown, index: number, generatedAt: string, ids: Set<string>): asserts value is GameRecord {
@@ -64,9 +134,11 @@ function validateGame(value: unknown, index: number, generatedAt: string, ids: S
   const buzz = object(game.buzz, `${path}.buzz`);
   finite(buzz.twitchViewers, `${path}.buzz.twitchViewers`, 0);
   finite(buzz.twitchChannels, `${path}.buzz.twitchChannels`, 0);
-  if (buzz.viewerGrowth7d !== null) finite(buzz.viewerGrowth7d, `${path}.buzz.viewerGrowth7d`, Number.MIN_VALUE);
+  if (buzz.viewerGrowth7d !== null) finite(buzz.viewerGrowth7d, `${path}.buzz.viewerGrowth7d`, -Infinity);
   const isNewRelease = bool(buzz.isNewRelease, `${path}.buzz.isNewRelease`);
   if (isNewRelease !== deriveIsNewRelease(releaseDate, generatedAt)) fail(`${path}.buzz.isNewRelease`, "must match generatedAt and releaseDate");
+  validateStreaming(game.streaming, `${path}.streaming`);
+  validateQuality(game.quality, `${path}.quality`);
 
   if (!Array.isArray(game.topTags) || game.topTags.length > 8) fail(`${path}.topTags`, "must contain at most eight tags");
   game.topTags.forEach((tag, tagIndex) => {
@@ -80,10 +152,28 @@ function validateGame(value: unknown, index: number, generatedAt: string, ids: S
   if (game.reviewCount !== undefined && (typeof game.reviewCount !== "number" || !Number.isInteger(game.reviewCount) || game.reviewCount < 0)) fail(`${path}.reviewCount`, "must be a non-negative integer");
 }
 
-export function validateCatalog(value: unknown): asserts value is CatalogRecord {
-  const catalog = object(value, "catalog");
-  const generatedAt = iso(catalog.generatedAt, "generatedAt");
-  if (!Array.isArray(catalog.games)) fail("games", "must be an array");
+export function validateCatalogChunk(value: unknown, manifestGeneratedAt?: string): asserts value is CatalogChunk {
+  const chunk = object(value, "chunk");
+  const generatedAt = iso(chunk.generatedAt, "generatedAt");
+  if (manifestGeneratedAt !== undefined && generatedAt !== manifestGeneratedAt) fail("generatedAt", "must match manifest generatedAt");
+  if (!Array.isArray(chunk.games)) fail("games", "must be an array");
   const ids = new Set<string>();
-  catalog.games.forEach((game, index) => validateGame(game, index, generatedAt, ids));
+  chunk.games.forEach((game, index) => validateGame(game, index, generatedAt, ids));
+}
+
+export function validateCatalogManifest(value: unknown): asserts value is CatalogManifest {
+  const manifest = object(value, "manifest");
+  iso(manifest.generatedAt, "generatedAt");
+  integer(manifest.gameCount, "gameCount", 0);
+  if (!Array.isArray(manifest.chunks)) fail("chunks", "must be an array");
+  const seen = new Set<string>();
+  manifest.chunks.forEach((chunk, index) => {
+    const path = catalogChunkPath(chunk, `chunks[${index}]`);
+    if (seen.has(path)) fail(`chunks[${index}]`, "must be unique");
+    seen.add(path);
+  });
+}
+
+export function validateCatalog(value: unknown): asserts value is CatalogRecord {
+  validateCatalogChunk(value);
 }

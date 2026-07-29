@@ -10,10 +10,23 @@ type GameOptions = {
   channels?: number;
   viewers?: number;
   growth?: number | null;
+  growth30d?: number | null;
+  growth90d?: number | null;
+  coverage?: number;
+  observedSnapshots?: number;
+  volatility30d?: number | null;
   isNewRelease?: boolean;
 };
 
 function syntheticGame(id: string, options: GameOptions = {}): Game {
+  const viewers = options.viewers ?? 1_000;
+  const channels = options.channels ?? 10;
+  const growth = options.growth ?? null;
+  const growth30d = options.growth30d ?? growth;
+  const growth90d = options.growth90d ?? growth;
+  const coverage = options.coverage ?? (growth === null ? 0 : 0.95);
+  const observedSnapshots = options.observedSnapshots ?? (growth === null ? 0 : 60);
+
   return {
     id,
     name: `Synthetic ${id}`,
@@ -35,10 +48,31 @@ function syntheticGame(id: string, options: GameOptions = {}): Game {
       spectacle: 0,
     },
     buzz: {
-      twitchViewers: options.viewers ?? 1_000,
-      twitchChannels: options.channels ?? 10,
-      viewerGrowth7d: options.growth ?? null,
+      twitchViewers: viewers,
+      twitchChannels: channels,
+      viewerGrowth7d: growth,
       isNewRelease: options.isNewRelease ?? false,
+    },
+    streaming: {
+      totalViewers: viewers,
+      channelCount: channels,
+      medianViewersPerChannel: viewers / channels,
+      p75ViewersPerChannel: viewers / Math.min(channels, 4),
+      top10ViewerShare: Math.min(1, 10 / channels),
+      viewerConcentration: Math.min(1, 1 / Math.sqrt(channels)),
+      growth7d: growth,
+      growth30d,
+      growth90d,
+      volatility30d: options.volatility30d ?? null,
+      observedSnapshots,
+      coverage,
+      asOf: "2026-07-28T00:00:00.000Z",
+    },
+    quality: {
+      totalRating: 90,
+      totalRatingCount: 100,
+      steamPositive: 90,
+      steamNegative: 10,
     },
     topTags: [],
     rating: 90,
@@ -85,7 +119,7 @@ describe("App", () => {
       syntheticGame("safe-1", { viewers: 5_000 }),
       syntheticGame("safe-2", { viewers: 4_000 }),
       syntheticGame("safe-3", { viewers: 3_000 }),
-      syntheticGame("rising", { viewers: 500, channels: 100, growth: 2 }),
+      syntheticGame("rising", { viewers: 500, channels: 100, growth: 2, growth30d: 1.8, growth90d: 1.6, coverage: 0.95, observedSnapshots: 60, volatility30d: 1 }),
       syntheticGame("new", { channels: 2, isNewRelease: true }),
     ];
 

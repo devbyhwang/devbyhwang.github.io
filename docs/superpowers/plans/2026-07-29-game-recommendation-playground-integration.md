@@ -46,8 +46,9 @@
   "clean:game-recommendation": "rm -rf src/playground/game-recommendation/index.html src/playground/game-recommendation/assets",
   "build:game-recommendation": "npm run clean:game-recommendation && vite build --config game-recommendation/vite.config.ts",
   "test:game-recommendation": "vitest run --config game-recommendation/vite.config.ts",
+  "test:pipeline": "vitest run scripts/pipeline --root . --environment node",
   "typecheck:game-recommendation": "tsc --noEmit -p game-recommendation/tsconfig.json",
-  "test": "npm run test:game-recommendation",
+  "test": "npm run test:game-recommendation && npm run test:pipeline",
   "typecheck": "npm run typecheck:game-recommendation && tsc --noEmit -p tsconfig.game-recommendation-pipeline.json"
   ```
 
@@ -80,6 +81,7 @@
 
 **Interfaces:**
 - `npm run pipeline:fixture` emits `src/playground/game-recommendation/catalog.json`.
+- `npm run pipeline:backfill -- --start YYYY-MM-DD --end YYYY-MM-DD` resumes yearly IGDB partitions from checkpoints.
 - `npm run pipeline:validate` validates that catalog, history, and knowledge assets.
 - `npm run pipeline` uses `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`, `TWITCH_TOP_GAME_LIMIT`, `TWITCH_STREAM_PAGE_LIMIT`, and `IGDB_RECENT_DAYS` from the environment.
 
@@ -89,6 +91,7 @@
 
   ```json
   "pipeline": "tsx scripts/pipeline/index.ts run",
+  "pipeline:backfill": "tsx scripts/pipeline/index.ts backfill",
   "pipeline:fixture": "tsx scripts/pipeline/index.ts fixture",
   "pipeline:validate": "tsx scripts/pipeline/index.ts validate"
   ```
@@ -140,17 +143,22 @@
 
 **Files:**
 - Create: `.github/workflows/catalog-refresh.yml`
+- Create: `.github/workflows/catalog-backfill.yml`
 - Modify: `.github/workflows/deploy.yml`
 - Modify: `README.md`
 
 **Interfaces:**
-- The refresh job writes only the three catalog data locations and pushes to `main`.
+- The refresh job writes only `data/history.json`, `data/raw`, `data/checkpoints`,
+  `src/playground/game-recommendation/catalog.json`, and its chunk directory, then pushes to `main`.
+- The backfill job accepts an explicit date range, persists yearly IGDB checkpoints, and serializes runs.
 - The existing Pages deployment remains the only deploy workflow; no `workflow_run` trigger is added.
 
 - [x] **Step 1: Add a workflow with `workflow_dispatch` and `schedule: cron: "0 0 * * *"`.** Use Node 22, `npm ci`, repository secrets for Twitch credentials, and repository variables with defaults `TWITCH_TOP_GAME_LIMIT=100`, `TWITCH_STREAM_PAGE_LIMIT=5`, `IGDB_RECENT_DAYS=60`.
-- [x] **Step 2: Run `npm run pipeline`, preserve its exit code, stage `data/history.json data/raw src/playground/game-recommendation/catalog.json`, commit only when changed, and push.** Add concurrency `game-recommendation-refresh` with `cancel-in-progress: false` to prevent overlapping daily refreshes.
+- [x] **Step 2: Run `npm run pipeline`, validate successful output, preserve both exit codes, stage `data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks`, commit only when changed, and push.** Add concurrency `game-recommendation-refresh` with `cancel-in-progress: false` to prevent overlapping daily refreshes.
 - [x] **Step 3: Extend the existing deploy build job with `npm test`, `npm run typecheck`, `npm run build`, and a check for `_site/playground/game-recommendation/catalog.json`.
 - [x] **Step 4: Validate workflow YAML text, run the local checks, and commit.**
+
+- [x] **Step 5: Add the manual historical backfill workflow.** Require inclusive `start` and exclusive `end` dates, use Twitch secrets only, run `npm run pipeline:backfill` followed by validation, and commit the catalog plus checkpoint/raw outputs.
 
   ```bash
   npm test && npm run typecheck && npm run build && npm run pipeline:validate
@@ -187,7 +195,7 @@
   ```
 
   Expected: no credential-like values in actual data and only planned files changed.
-- [ ] **Step 3: Mark this plan complete, commit docs, and push the integration branch.**
+- [x] **Step 3: Mark this plan complete, commit docs, and push the integration branch.**
 
   ```bash
   git add docs/superpowers/specs/2026-07-29-game-recommendation-playground-integration-design.md docs/superpowers/plans/2026-07-29-game-recommendation-playground-integration.md
@@ -199,5 +207,5 @@
 
 ## Execution status
 
-Implementation and local verification are complete on `agent/game-recommendation-playground`.
+Implementation and local verification are complete on `agent/game-recommendation-historical-catalog`.
 The remaining steps require the target repository's Actions secrets and a merge to `main`.

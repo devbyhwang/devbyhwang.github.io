@@ -40,6 +40,33 @@ export type LengthBucket = "short" | "medium" | "long";
 export type PlayerSource =
   | "igdb_multiplayer" | "igdb_gamemodes" | "steam_categories" | "unknown";
 
+export type StreamingStats = {
+  totalViewers: number;
+  channelCount: number;
+  medianViewersPerChannel: number | null;
+  p75ViewersPerChannel: number | null;
+  top10ViewerShare: number | null;
+  viewerConcentration: number | null;
+  growth7d: number | null;
+  growth30d: number | null;
+  growth90d: number | null;
+  volatility30d: number | null;
+  observedSnapshots: number;
+  coverage: number;
+  asOf: string;
+};
+
+export type QualityStats = {
+  igdbRating?: number;
+  igdbRatingCount?: number;
+  criticRating?: number;
+  criticRatingCount?: number;
+  totalRating?: number;
+  totalRatingCount?: number;
+  steamPositive?: number;
+  steamNegative?: number;
+};
+
 export type Game = {
   id: string;
   steamAppId?: number;
@@ -64,7 +91,11 @@ export type Game = {
     viewerGrowth7d: number | null;
     isNewRelease: boolean;
   };
+  streaming: StreamingStats;
+  quality: QualityStats;
   topTags: { tag: string; share: number }[];
+  /** Lower-case, trimmed genre names from the catalog source. */
+  genres?: string[];
   discountPercent?: number;
   rating?: number;
   reviewCount?: number;
@@ -93,11 +124,16 @@ export type Relaxation = "vibeThreshold" | "sessionShape" | "viewerPlayable";
 export type BlockedBy = "players" | "vibe" | "other";
 
 export type WhyKind =
-  | "opportunity" | "topOnTwitch" | "growth"
-  | "newRelease" | "playerFit" | "sessionFit";
+  | "demand" | "accessibility" | "quality" | "growth"
+  | "stability" | "competition" | "confidence"
+  | "unknownPlayerPenalty" | "marginalSessionPenalty"
+  | "discovery" | "newRelease" | "playerFit" | "sessionFit";
+// Legacy debug values remain readable for persisted UI fixtures.
+export type LegacyWhyKind = "opportunity" | "topOnTwitch";
+export type WhyKindWithLegacy = WhyKind | LegacyWhyKind;
 
 /** 점수 한 항의 기여도. contribution은 최종 score에 더해진 실제 값(음수 가능). */
-export type ScoreTerm = { kind: WhyKind; raw: number; contribution: number };
+export type ScoreTerm = { kind: WhyKindWithLegacy; raw: number; contribution: number };
 
 export type Scored = {
   game: Game;
@@ -106,9 +142,9 @@ export type Scored = {
   marginalSession: boolean;
 };
 
-export type SlotKind = "safe" | "rising" | "new";
+export type SlotKind = "safe" | "rising" | "discovery" | "new";
 
-export type WhyPart = { kind: WhyKind; text: string };
+export type WhyPart = { kind: WhyKindWithLegacy; text: string };
 
 export type Pick = {
   slot: SlotKind;
@@ -118,10 +154,18 @@ export type Pick = {
   terms: ScoreTerm[];        // 디버그 뷰용 전체 항
 };
 
-export type Catalog = {
+export type CatalogManifest = {
+  generatedAt: string;
+  gameCount: number;
+  chunks: string[];
+};
+
+export type CatalogChunk = {
   generatedAt: string;
   games: Game[];
 };
+
+export type Catalog = CatalogChunk;
 
 export type Recommendation = {
   picks: Pick[];

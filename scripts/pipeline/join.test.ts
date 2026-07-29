@@ -248,6 +248,38 @@ describe("GameRecord enrichment", () => {
     expect(records[0]).toMatchObject({ rating: 81, reviewCount: 18 });
   });
 
+  it("keeps legacy top-level IGDB-only rating fields on the raw user score while shrinking quality.totalRating", () => {
+    const records = enrichGames(joinSources(raw({
+      igdb: {
+        ...raw().igdb,
+        games: [{
+          id: 77,
+          name: "IGDB quality split",
+          first_release_date: 1784505600,
+          rating: 81,
+          rating_count: 18,
+          aggregated_rating: 87,
+          aggregated_rating_count: 12,
+          total_rating: 83,
+          total_rating_count: 30,
+        }],
+      },
+    })), knowledge, generatedAt);
+
+    expect(records[0]).toMatchObject({
+      rating: 81,
+      reviewCount: 18,
+      quality: {
+        igdbRating: 81,
+        igdbRatingCount: 18,
+        criticRating: 87,
+        criticRatingCount: 12,
+        totalRating: 77.0909090909091,
+        totalRatingCount: 30,
+      },
+    });
+  });
+
   it("keeps only the eight highest SteamSpy tag shares", () => {
     const tags = Object.fromEntries(Array.from({ length: 9 }, (_, index) => [`Tag ${index + 1}`, 9 - index]));
     const records = enrichGames(joinSources(raw({

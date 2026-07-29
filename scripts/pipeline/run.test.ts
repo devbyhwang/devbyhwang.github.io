@@ -8,6 +8,7 @@ import type { CatalogRecord, RawSources, SteamFetchInput } from "./model";
 import { fixtureSources, runCommand } from "./index";
 import { runPipeline } from "./run";
 import { fetchTwitch } from "./sources/twitch";
+import { readEmittedCatalog } from "./test-helpers";
 
 const execute = promisify(execFile);
 const roots: string[] = [];
@@ -90,6 +91,22 @@ function catalog(count: number): CatalogRecord {
       viewerPlayable: { ok: false },
       vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
       buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true },
+      streaming: {
+        totalViewers: 0,
+        channelCount: 0,
+        medianViewersPerChannel: null,
+        p75ViewersPerChannel: null,
+        top10ViewerShare: null,
+        viewerConcentration: null,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: null,
+        observedSnapshots: 0,
+        coverage: 0,
+        asOf,
+      },
+      quality: {},
       topTags: [],
     })),
   };
@@ -141,13 +158,34 @@ describe("live pipeline orchestration", () => {
       expect.objectContaining({ steamAppIds: [] }),
       expect.objectContaining({ steamAppIds: [730], includeTopSellers: false }),
     ]);
-    const emitted = JSON.parse(readFileSync(join(destination, "src/playground/game-recommendation/catalog.json"), "utf8")) as CatalogRecord;
+    const emitted = readEmittedCatalog(destination);
     expect(emitted.games[0]).toMatchObject({
       steamAppId: 730,
       rating: 90,
       reviewCount: 100,
+      streaming: {
+        totalViewers: 130,
+        channelCount: 6,
+        medianViewersPerChannel: null,
+        p75ViewersPerChannel: null,
+        top10ViewerShare: null,
+        viewerConcentration: null,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: null,
+        observedSnapshots: 1,
+        coverage: 0,
+        asOf,
+      },
+      quality: {
+        steamPositive: 90,
+        steamNegative: 10,
+      },
       topTags: [{ tag: "Strategy", share: 1 }],
     });
+    expect(emitted.games[0].quality).not.toHaveProperty("totalRating");
+    expect(emitted.games[0].quality).not.toHaveProperty("totalRatingCount");
   });
 
   it("emits a catalog when one SteamSpy app uses its existing stale cache", async () => {
@@ -238,6 +276,34 @@ describe("live pipeline orchestration", () => {
     expect(messages.join("\n")).not.toContain("top-secret");
   });
 
+  it("keeps completed historical IGDB backfill games in the daily catalog", async () => {
+    const destination = root();
+    const historical = {
+      fetchedAt: asOf,
+      source: "igdb",
+      request: { partitionStart: "1990-01-01", partitionEnd: "1991-01-01" },
+      responses: [],
+      warnings: [],
+      games: [{ id: 99, name: "Historical Fixture Game", first_release_date: 631152000 }],
+      externalGames: [],
+      unresolvedSteamAppIds: [],
+    };
+    mkdirSync(join(destination, "data/raw/igdb/backfill"), { recursive: true });
+    writeFileSync(join(destination, "data/raw/igdb/backfill/1990-01-01_1991-01-01.json"), `${JSON.stringify(historical)}\n`);
+
+    const result = await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: adapters(sources()),
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+    });
+
+    expect(result).toMatchObject({ gameCount: 2, catalogUpdated: true });
+    expect(readEmittedCatalog(destination).games.map((game) => game.id)).toEqual(["42", "99"]);
+  });
+
   it("retains successful early pages as partial raw without replacing latest or manufacturing stale Twitch growth", async () => {
     const destination = root();
     const complete = sources().twitch;
@@ -304,8 +370,15 @@ describe("live pipeline orchestration", () => {
       historyUpdated: false,
     });
     expect(JSON.parse(readFileSync(join(destination, "data/history.json"), "utf8"))).toEqual(existingHistory);
-    const emitted = JSON.parse(readFileSync(join(destination, "src/playground/game-recommendation/catalog.json"), "utf8")) as CatalogRecord;
-    expect(emitted.games[0].buzz.viewerGrowth7d).toBeNull();
+    const emitted = readEmittedCatalog(destination);
+    expect(emitted.games[0].buzz.viewerGrowth7d).toBe(4);
+    expect(emitted.games[0].streaming).toMatchObject({
+      growth7d: 4,
+      growth30d: 4,
+      growth90d: 4,
+      volatility30d: null,
+      observedSnapshots: 2,
+    });
     expect(JSON.parse(readFileSync(join(destination, "data/raw/twitch/latest.json"), "utf8"))).toEqual(complete);
 
     const partialDirectory = join(destination, "data/raw/twitch/partial");
@@ -358,6 +431,89 @@ describe("pipeline CLI commands", () => {
 
     expect(fetcher).not.toHaveBeenCalled();
     expect(existsSync(join(destination, "src/playground/game-recommendation/catalog.json"))).toBe(true);
+    const catalogText = readFileSync(join(destination, "src/playground/game-recommendation/catalog.json"), "utf8");
+    const emitted = readEmittedCatalog(destination);
+    const rated = emitted.games.find((game) => game.id === "77");
+    const unrated = emitted.games.find((game) => game.id === "88");
+
+    expect(rated).toMatchObject({
+      quality: {
+        igdbRating: 81,
+        igdbRatingCount: 18,
+        criticRating: 87,
+        criticRatingCount: 12,
+        totalRating: 77.0909090909091,
+        totalRatingCount: 30,
+      },
+      rating: 81,
+      reviewCount: 18,
+    });
+    expect(unrated).toMatchObject({
+      quality: {
+        steamPositive: 2000,
+        steamNegative: 100,
+      },
+      rating: 95.23809523809523,
+      reviewCount: 2100,
+    });
+    expect(catalogText).not.toContain("\"responses\"");
+    expect(catalogText).not.toContain("\"request\"");
+  });
+
+  it("runs backfill mode in-process with explicit start and end boundaries", async () => {
+    const destination = root();
+    const messages: string[] = [];
+    const fetcher = vi.fn(async (url: string) => {
+      if (url === "https://id.twitch.tv/oauth2/token") return new Response(JSON.stringify({ access_token: "fixture-token" }), { status: 200 });
+      if (url === "https://api.igdb.com/v4/games") return new Response(JSON.stringify([]), { status: 200 });
+      throw new Error(`unexpected URL ${url}`);
+    });
+
+    await runCommand("backfill", {
+      rootDir: destination,
+      env: { PIPELINE_AS_OF: asOf, TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+      logger: { info: (message: unknown) => messages.push(String(message)), warn: () => undefined, error: () => undefined },
+      fetcher: fetcher as typeof fetch,
+    }, ["--start", "1990-01-01", "--end", "1991-01-01"]);
+
+    const calls = fetcher.mock.calls as Array<[unknown, RequestInit?]>;
+
+    expect(calls.map(([url, init]) => ({
+      url: String(url),
+      body: String(init?.body ?? ""),
+    }))).toEqual(expect.arrayContaining([
+      expect.objectContaining({ url: "https://id.twitch.tv/oauth2/token" }),
+      expect.objectContaining({
+        url: "https://api.igdb.com/v4/games",
+        body: expect.stringContaining("where first_release_date >= 631152000 & first_release_date < 662688000"),
+      }),
+    ]));
+    expect(messages).toContain('IGDB backfill result: {"completedPartitions":["1990-01-01/1991-01-01"],"fetchedGameCount":0,"remainingPartitions":[]}');
+    expect(readFileSync(join(destination, "data/checkpoints/igdb.json"), "utf8")).not.toContain("top-secret");
+  });
+
+  it("rejects backfill mode when a required boundary is missing", async () => {
+    await expect(runCommand("backfill", {
+      rootDir: root(),
+      env: { PIPELINE_AS_OF: asOf, TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+      logger,
+      fetcher: vi.fn() as typeof fetch,
+    }, ["--start", "1990-01-01"])).rejects.toThrow("backfill requires --start YYYY-MM-DD and --end YYYY-MM-DD");
+  });
+
+  it("rejects backfill mode when start is not before end", async () => {
+    await expect(runCommand("backfill", {
+      rootDir: root(),
+      env: { PIPELINE_AS_OF: asOf, TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+      logger,
+      fetcher: vi.fn() as typeof fetch,
+    }, ["--start", "1991-01-01", "--end", "1990-01-01"])).rejects.toThrow("--start must be before --end: 1991-01-01 >= 1990-01-01");
+  });
+
+  it("exposes the backfill package script", () => {
+    const pkg = JSON.parse(readFileSync(resolve("package.json"), "utf8")) as { scripts?: Record<string, string> };
+
+    expect(pkg.scripts?.["pipeline:backfill"]).toBe("tsx scripts/pipeline/index.ts backfill");
   });
 
   it("keeps run, fixture, and validate distinct", async () => {

@@ -77,16 +77,42 @@ describe("Twitch source", () => {
     expect(snapshot.topGames).toEqual([
       {
         categoryId: "10",
-        igdbId: "42",
+        igdbId: 42,
         name: "Fixture Game",
         boxArtUrl: "https://static-cdn.jtvnw.net/ttv-boxart/Fixture-{width}x{height}.jpg",
       },
-      { categoryId: "12", igdbId: "43", name: "Second Fixture Game" },
+      { categoryId: "12", igdbId: 43, name: "Second Fixture Game" },
     ]);
     expect(snapshot.streams).toEqual([
-      { categoryId: "10", igdbId: "42", viewers: 175, channels: 2 },
-      { categoryId: "12", igdbId: "43", viewers: 0, channels: 0 },
+      {
+        categoryId: "10",
+        igdbId: 42,
+        viewers: 175,
+        channels: 2,
+        medianViewersPerChannel: 50,
+        p75ViewersPerChannel: 75,
+        top10ViewerShare: 1,
+        viewerConcentration: (100 / 175) ** 2 + (50 / 175) ** 2 + (25 / 175) ** 2,
+        coverage: 1,
+      },
+      {
+        categoryId: "12",
+        igdbId: 43,
+        viewers: 0,
+        channels: 0,
+        medianViewersPerChannel: 0,
+        p75ViewersPerChannel: 0,
+        top10ViewerShare: 0,
+        viewerConcentration: 0,
+        coverage: 1,
+      },
     ]);
+    expect(snapshot.streamObservations).toEqual([
+      { categoryId: "10", gameId: "10", igdbId: 42, language: "en", userId: "u1", viewerCount: 100 },
+      { categoryId: "10", gameId: "10", igdbId: 42, language: "en", userId: "u2", viewerCount: 50 },
+      { categoryId: "10", gameId: "10", igdbId: 42, language: "en", userId: "u1", viewerCount: 25 },
+    ]);
+    expect(snapshot.warnings).toContain("Twitch category 11 (No IGDB) is missing an IGDB id");
     expect(snapshot.responses).toContainEqual(data.topPages[0]);
     expect(snapshot.responses).toContainEqual(data.streamPages[1]);
     expect(JSON.stringify(snapshot)).not.toContain("fixture-twitch-token");
@@ -94,6 +120,51 @@ describe("Twitch source", () => {
     expect(fetcher.mock.calls.map(([url]) => url)).toContain("https://api.twitch.tv/helix/games/top?first=100&after=next-top");
     expect(fetcher.mock.calls.map(([url]) => url)).toContain("https://api.twitch.tv/helix/games?igdb_id=42&igdb_id=43");
     expect(fetcher.mock.calls.map(([url]) => url)).toContain("https://api.twitch.tv/helix/streams?game_id=10&first=100&after=next-stream");
+  });
+
+  it("records reduced coverage instead of inventing zero-viewer tails when stream pagination truncates", async () => {
+    const fetcher = vi.fn(async (url: string) => {
+      if (url === "https://id.twitch.tv/oauth2/token") return json({ access_token: "fixture-token" });
+      if (url.startsWith("https://api.twitch.tv/helix/games/top")) {
+        return json({ data: [{ id: "10", name: "Fixture Game", igdb_id: "42" }], pagination: {} });
+      }
+      if (url.startsWith("https://api.twitch.tv/helix/games?")) {
+        return json({ data: [{ id: "10", name: "Fixture Game", igdb_id: "42" }] });
+      }
+      if (url.startsWith("https://api.twitch.tv/helix/streams?")) {
+        return json({
+          data: [
+            { user_id: "u1", viewer_count: 100, language: "ko", game_id: "10" },
+            { user_id: "u2", viewer_count: 50, language: "en", game_id: "10" },
+          ],
+          pagination: { cursor: "more" },
+        });
+      }
+      throw new Error(`unexpected URL ${url}`);
+    });
+
+    const snapshot = await fetchTwitch(
+      { clientId: "client", clientSecret: "secret", topGameLimit: 1, streamPageLimit: 1 },
+      createHttpClient(fetcher as typeof fetch),
+    );
+
+    expect(snapshot.truncated).toBe(true);
+    expect(snapshot.streams).toEqual([{
+      categoryId: "10",
+      igdbId: 42,
+      viewers: 150,
+      channels: 2,
+      medianViewersPerChannel: 75,
+      p75ViewersPerChannel: 75,
+      top10ViewerShare: 1,
+      viewerConcentration: (100 / 150) ** 2 + (50 / 150) ** 2,
+      coverage: 0.5,
+    }]);
+    expect(snapshot.streamObservations).toEqual([
+      { categoryId: "10", gameId: "10", igdbId: 42, language: "ko", userId: "u1", viewerCount: 100 },
+      { categoryId: "10", gameId: "10", igdbId: 42, language: "en", userId: "u2", viewerCount: 50 },
+    ]);
+    expect(snapshot.warnings).toContain("Twitch stream pages truncated for category 10");
   });
 
   it("splits more than 100 IGDB category IDs into repeated-parameter batches", async () => {
@@ -168,6 +239,51 @@ describe("IGDB source", () => {
     expect(snapshot.responses).toContainEqual(data.externalGames);
     expect(snapshot.responses).toContainEqual(data.steamMappedGames);
     expect(JSON.stringify(snapshot)).not.toContain("fixture-igdb-token");
+    expect(JSON.stringify(snapshot)).not.toContain("secret");
+  });
+
+  it("supports a full release-date window query without the recent-only rating filter", async () => {
+    const page = [{ id: 42, name: "Historical Fixture", first_release_date: 631_152_000, game_type: 0, parent_game: 7 }];
+    const recordResponse = vi.fn();
+    const posts: Array<{ url: string; body: string }> = [];
+    const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
+      const body = String(init?.body ?? "");
+      posts.push({ url, body });
+      if (url === "https://id.twitch.tv/oauth2/token") return json({ access_token: "fixture-token" });
+      if (url.endsWith("/games")) return json(page);
+      throw new Error(`unexpected URL ${url}`);
+    });
+
+    const snapshot = await fetchIgdb(
+      {
+        clientId: "client",
+        clientSecret: "secret",
+        asOf: "2026-07-28T00:00:00.000Z",
+        recentDays: 60,
+        topIgdbIds: [],
+        steamAppIds: [],
+        partitionStart: "1990-01-01",
+        partitionEnd: "1991-01-01",
+        offset: 500,
+        recordResponse,
+      },
+      createHttpClient(fetcher as typeof fetch),
+    );
+
+    const body = posts.find((request) => request.url.endsWith("/games"))?.body ?? "";
+    expect(body).toContain("where first_release_date >= 631152000 & first_release_date < 662688000");
+    expect(body).toContain("sort first_release_date asc, id asc;");
+    expect(body).toContain("limit 500; offset 500;");
+    expect(body).not.toContain("rating_count >= 5");
+    expect(body).toContain("game_type");
+    expect(body).toContain("parent_game");
+    expect(body).toContain("platforms.name");
+    expect(snapshot.games).toEqual(page);
+    expect(snapshot.externalGames).toEqual([]);
+    expect(snapshot.unresolvedSteamAppIds).toEqual([]);
+    expect(snapshot.responses).toEqual([page]);
+    expect(recordResponse).toHaveBeenCalledWith(page);
+    expect(JSON.stringify(snapshot)).not.toContain("fixture-token");
     expect(JSON.stringify(snapshot)).not.toContain("secret");
   });
 

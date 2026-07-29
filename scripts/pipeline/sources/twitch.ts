@@ -1,4 +1,5 @@
-import type { HttpClient, TwitchFetchInput, TwitchRawSnapshot, TwitchStreamStat, TwitchTopGame } from "../model";
+import { summarizeStreams } from "../metrics/streaming";
+import type { HttpClient, StreamObservation, TwitchFetchInput, TwitchRawSnapshot, TwitchStreamStat, TwitchTopGame } from "../model";
 
 const OAUTH_URL = "https://id.twitch.tv/oauth2/token";
 const HELIX_URL = "https://api.twitch.tv/helix";
@@ -9,7 +10,10 @@ type TwitchGameResponse = {
   data?: Array<{ id?: string; name?: string; igdb_id?: string; box_art_url?: string }>;
   pagination?: { cursor?: string };
 };
-type TwitchStreamResponse = { data?: Array<{ user_id?: string; viewer_count?: number }>; pagination?: { cursor?: string } };
+type TwitchStreamResponse = {
+  data?: Array<{ user_id?: string; viewer_count?: number; language?: string; game_id?: string }>;
+  pagination?: { cursor?: string };
+};
 
 async function token(input: TwitchFetchInput, http: HttpClient): Promise<string> {
   const body = new URLSearchParams({
@@ -37,12 +41,18 @@ function gamesByIgdbQuery(ids: string[]): string {
   return `${HELIX_URL}/games?${params.toString()}`;
 }
 
+function numericIgdbId(value: string | undefined): number | undefined {
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
 export async function fetchTwitch(input: TwitchFetchInput, http: HttpClient): Promise<TwitchRawSnapshot> {
   const accessToken = await token(input, http);
   const authHeaders = headers(input.clientId, accessToken);
   const responses: unknown[] = [];
   const warnings: string[] = [];
-  const topByIgdbId = new Map<string, TwitchTopGame>();
+  const topByIgdbId = new Map<number, TwitchTopGame>();
   let cursor: string | undefined;
 
   while (topByIgdbId.size < input.topGameLimit || input.topGameLimit <= 0) {
@@ -50,13 +60,16 @@ export async function fetchTwitch(input: TwitchFetchInput, http: HttpClient): Pr
     await input.recordResponse?.(page);
     responses.push(page);
     for (const game of page.data ?? []) {
-      if (game.id && game.name && game.igdb_id) {
-        topByIgdbId.set(game.igdb_id, {
+      const igdbId = numericIgdbId(game.igdb_id);
+      if (game.id && game.name && igdbId !== undefined) {
+        topByIgdbId.set(igdbId, {
           categoryId: game.id,
           name: game.name,
-          igdbId: game.igdb_id,
+          igdbId,
           ...(game.box_art_url?.trim() ? { boxArtUrl: game.box_art_url } : {}),
         });
+      } else if (game.id && game.name) {
+        warnings.push(`Twitch category ${game.id} (${game.name}) is missing an IGDB id`);
       }
     }
     cursor = page.pagination?.cursor;
@@ -65,15 +78,18 @@ export async function fetchTwitch(input: TwitchFetchInput, http: HttpClient): Pr
 
   const topGames = [...topByIgdbId.values()].slice(0, Math.max(0, input.topGameLimit));
   for (let index = 0; index < topGames.length; index += 100) {
-    const ids = topGames.slice(index, index + 100).map((game) => game.igdbId);
+    const ids = topGames.slice(index, index + 100).map((game) => String(game.igdbId));
     const response = await http.getJson<TwitchGameResponse>(gamesByIgdbQuery(ids), authHeaders);
     await input.recordResponse?.(response);
     responses.push(response);
-    const details = new Map((response.data ?? []).flatMap((game) => game.igdb_id && game.id
-      ? [[game.igdb_id, { categoryId: game.id, boxArtUrl: game.box_art_url }] as const]
-      : []));
+    const details = new Map((response.data ?? []).flatMap((game) => {
+      const igdbId = numericIgdbId(game.igdb_id);
+      return igdbId !== undefined && game.id
+        ? [[igdbId, { categoryId: game.id, boxArtUrl: game.box_art_url }] as const]
+        : [];
+    }));
     for (const game of topGames) {
-      const detail = details.get(game.igdbId);
+      const detail = details.get(Number(game.igdbId));
       if (!detail) continue;
       game.categoryId = detail.categoryId;
       if (detail.boxArtUrl?.trim()) game.boxArtUrl = detail.boxArtUrl;
@@ -82,20 +98,24 @@ export async function fetchTwitch(input: TwitchFetchInput, http: HttpClient): Pr
 
   const streamPageLimit = input.streamPageLimit > 0 ? input.streamPageLimit : DEFAULT_STREAM_PAGE_LIMIT;
   const streams: TwitchStreamStat[] = [];
+  const streamObservations: StreamObservation[] = [];
   let truncated = false;
   for (const game of topGames) {
-    const users = new Set<string>();
-    let viewers = 0;
+    const observations: StreamObservation[] = [];
     let streamCursor: string | undefined;
     let pages = 0;
     do {
       const response = await http.getJson<TwitchStreamResponse>(query("/streams", { game_id: game.categoryId, first: "100", after: streamCursor }), authHeaders);
       await input.recordResponse?.(response);
       responses.push(response);
-      for (const stream of response.data ?? []) {
-        viewers += stream.viewer_count ?? 0;
-        if (stream.user_id) users.add(stream.user_id);
-      }
+      observations.push(...(response.data ?? []).map((stream) => ({
+        categoryId: game.categoryId,
+        gameId: stream.game_id ?? game.categoryId,
+        igdbId: game.igdbId,
+        viewerCount: stream.viewer_count ?? 0,
+        ...(stream.user_id ? { userId: stream.user_id } : {}),
+        language: stream.language ?? "en",
+      })));
       pages += 1;
       streamCursor = response.pagination?.cursor;
     } while (streamCursor && pages < streamPageLimit);
@@ -103,7 +123,19 @@ export async function fetchTwitch(input: TwitchFetchInput, http: HttpClient): Pr
       truncated = true;
       warnings.push(`Twitch stream pages truncated for category ${game.categoryId}`);
     }
-    streams.push({ categoryId: game.categoryId, igdbId: game.igdbId, viewers, channels: users.size });
+    const summary = summarizeStreams(observations, streamCursor ? pages / (pages + 1) : 1);
+    streamObservations.push(...observations);
+    streams.push({
+      categoryId: game.categoryId,
+      igdbId: game.igdbId,
+      viewers: summary.totalViewers,
+      channels: summary.channelCount,
+      medianViewersPerChannel: summary.medianViewersPerChannel,
+      p75ViewersPerChannel: summary.p75ViewersPerChannel,
+      top10ViewerShare: summary.top10ViewerShare,
+      viewerConcentration: summary.viewerConcentration,
+      coverage: summary.coverage,
+    });
   }
 
   return {
@@ -114,6 +146,7 @@ export async function fetchTwitch(input: TwitchFetchInput, http: HttpClient): Pr
     warnings,
     topGames,
     streams,
+    streamObservations,
     truncated,
   };
 }

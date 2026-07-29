@@ -1,112 +1,213 @@
 import { describe, expect, it } from "vitest";
-import { opportunity, percentile, rankGames } from "./rank";
+import { rankGames } from "./rank";
 import { SAMPLE_CATALOG } from "./fixtures";
 import type { FilteredGame } from "./filter";
-import { VIBE_KEYS } from "./types";
 import type { Game } from "./types";
 
-const byId = (id: string): Game => SAMPLE_CATALOG.find((g) => g.id === id)!;
-const wrap = (games: Game[], marginal = false): FilteredGame[] =>
-  games.map((game) => ({ game, marginalSession: marginal }));
+const baseGame = SAMPLE_CATALOG[0]!;
 
-describe("opportunity", () => {
-  it("viewers / (channels + 10)", () => {
-    const g = { buzz: { twitchViewers: 1000, twitchChannels: 90 } } as Game;
-    expect(opportunity(g)).toBeCloseTo(10);
-  });
-
-  it("채널 1개 이벤트 방송이 다수 채널 게임을 압도하지 못한다", () => {
-    const solo = { buzz: { twitchViewers: 30000, twitchChannels: 1 } } as Game;
-    const spread = { buzz: { twitchViewers: 30000, twitchChannels: 200 } } as Game;
-    // 수축이 없으면 30000 대 150. 수축 후에도 solo가 크지만 비율이 크게 줄어든다.
-    expect(opportunity(solo) / opportunity(spread)).toBeLessThan(25);
-  });
+const makeGame = (id: string, overrides: Partial<Game> = {}): Game => ({
+  ...baseGame,
+  id,
+  name: overrides.name ?? id,
+  franchise: overrides.franchise,
+  releaseDate: overrides.releaseDate ?? "2020-01-01T00:00:00.000Z",
+  players: { ...baseGame.players, ...overrides.players },
+  sessionShape: overrides.sessionShape ?? "run",
+  viewerPlayable: overrides.viewerPlayable ?? { ok: false },
+  vibes: { ...baseGame.vibes, ...overrides.vibes },
+  buzz: { ...baseGame.buzz, ...overrides.buzz },
+  streaming: { ...baseGame.streaming, ...overrides.streaming },
+  quality: { ...baseGame.quality, ...overrides.quality },
+  topTags: overrides.topTags ?? baseGame.topTags,
+  rating: overrides.rating ?? baseGame.rating,
+  reviewCount: overrides.reviewCount ?? baseGame.reviewCount,
+  steamAppId: overrides.steamAppId ?? baseGame.steamAppId,
+  coverUrl: overrides.coverUrl ?? baseGame.coverUrl,
+  storeUrl: overrides.storeUrl ?? baseGame.storeUrl,
 });
 
-describe("percentile", () => {
-  it("최댓값은 1에 가깝고 최솟값은 0에 가깝다", () => {
-    const vs = [1, 2, 3, 4, 5];
-    expect(percentile(vs, 5)).toBeGreaterThan(percentile(vs, 1));
-    expect(percentile(vs, 5)).toBeLessThanOrEqual(1);
-    expect(percentile(vs, 1)).toBeGreaterThanOrEqual(0);
-  });
-
-  it("원소가 하나면 0.5", () => {
-    expect(percentile([7], 7)).toBe(0.5);
-  });
-
-  it("동점은 같은 값을 받는다", () => {
-    const vs = [1, 2, 2, 3];
-    // n=4, less(<2)=1, equal(=2)=2 → (1 + 2/2) / 4 = 0.5
-    expect(percentile(vs, 2)).toBeCloseTo(0.5);
-  });
-});
+const wrap = (games: Game[], marginalSession = false): FilteredGame[] =>
+  games.map((game) => ({ game, marginalSession }));
 
 describe("rankGames", () => {
-  it("점수 내림차순으로 정렬한다", () => {
-    const scored = rankGames(wrap(SAMPLE_CATALOG));
-    for (let i = 1; i < scored.length; i++) {
-      expect(scored[i - 1].score).toBeGreaterThanOrEqual(scored[i].score);
-    }
+  it("prefers a stable evenly distributed category over a one-stream event spike", () => {
+    const eventSpike = makeGame("event-spike", {
+      buzz: {
+        twitchViewers: 32_000,
+        twitchChannels: 1,
+        viewerGrowth7d: 2.4,
+        isNewRelease: false,
+      },
+      streaming: {
+        totalViewers: 32_000,
+        channelCount: 1,
+        medianViewersPerChannel: 32_000,
+        p75ViewersPerChannel: 32_000,
+        top10ViewerShare: 1,
+        viewerConcentration: 1,
+        growth7d: 2.4,
+        growth30d: 0.7,
+        growth90d: 0.5,
+        volatility30d: 0.9,
+        observedSnapshots: 7,
+        coverage: 0.2,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: {
+        totalRating: 81,
+        totalRatingCount: 40,
+      },
+      rating: 81,
+      reviewCount: 40,
+      topTags: [{ tag: "event", share: 1 }],
+    });
+
+    const steady = makeGame("steady", {
+      buzz: {
+        twitchViewers: 12_000,
+        twitchChannels: 140,
+        viewerGrowth7d: 1.3,
+        isNewRelease: false,
+      },
+      streaming: {
+        totalViewers: 12_000,
+        channelCount: 140,
+        medianViewersPerChannel: 74,
+        p75ViewersPerChannel: 120,
+        top10ViewerShare: 0.18,
+        viewerConcentration: 0.15,
+        growth7d: 1.3,
+        growth30d: 1.25,
+        growth90d: 1.2,
+        volatility30d: 0.12,
+        observedSnapshots: 90,
+        coverage: 0.96,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: {
+        totalRating: 88,
+        totalRatingCount: 900,
+      },
+      rating: 88,
+      reviewCount: 900,
+      topTags: [{ tag: "co-op", share: 0.5 }, { tag: "party", share: 0.3 }],
+    });
+
+    const baseline = makeGame("baseline", {
+      buzz: {
+        twitchViewers: 7_000,
+        twitchChannels: 80,
+        viewerGrowth7d: 1.05,
+        isNewRelease: false,
+      },
+      streaming: {
+        totalViewers: 7_000,
+        channelCount: 80,
+        medianViewersPerChannel: 55,
+        p75ViewersPerChannel: 88,
+        top10ViewerShare: 0.3,
+        viewerConcentration: 0.28,
+        growth7d: 1.05,
+        growth30d: 1.02,
+        growth90d: 1,
+        volatility30d: 0.2,
+        observedSnapshots: 60,
+        coverage: 0.8,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: {
+        totalRating: 84,
+        totalRatingCount: 250,
+      },
+      rating: 84,
+      reviewCount: 250,
+      topTags: [{ tag: "roguelite", share: 0.6 }],
+    });
+
+    const ranked = rankGames(wrap([eventSpike, steady, baseline]));
+
+    expect(ranked[0]?.game.id).toBe("steady");
+    expect(ranked[ranked.length - 1]?.game.id).toBe("event-spike");
   });
 
-  it("채널 수가 부족한 게임을 랭킹에서 제외한다", () => {
-    const scored = rankGames(wrap(SAMPLE_CATALOG));
-    expect(scored.some((s) => s.game.id === "g27")).toBe(false);
+  it("keeps unknown-player and marginal-session penalties separate from the weighted terms", () => {
+    const game = makeGame("penalized", {
+      players: { ...baseGame.players, max: "unknown", source: "unknown" },
+      buzz: { twitchViewers: 2_000, twitchChannels: 20, viewerGrowth7d: 1.1, isNewRelease: false },
+      streaming: {
+        totalViewers: 2_000,
+        channelCount: 20,
+        medianViewersPerChannel: 60,
+        p75ViewersPerChannel: 90,
+        top10ViewerShare: 0.35,
+        viewerConcentration: 0.3,
+        growth7d: 1.1,
+        growth30d: 1.1,
+        growth90d: 1.05,
+        volatility30d: 0.2,
+        observedSnapshots: 30,
+        coverage: 0.8,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 83, totalRatingCount: 120 },
+      rating: 83,
+      reviewCount: 120,
+    });
+
+    const ranked = rankGames([{ game, marginalSession: true }]);
+    const terms = ranked[0]!.terms.map((term) => term.kind);
+
+    expect(terms).toEqual(expect.arrayContaining([
+      "demand",
+      "accessibility",
+      "quality",
+      "growth",
+      "stability",
+      "competition",
+      "confidence",
+      "unknownPlayerPenalty",
+      "marginalSessionPenalty",
+    ]));
   });
 
-  it("players unknown에 감점을 준다", () => {
-    const a = byId("g26");                       // unknown
-    const b = { ...byId("g26"), id: "clone", players: { ...a.players, max: 4, source: "igdb_multiplayer" as const } };
-    const scored = rankGames(wrap([a, b]));
-    const sa = scored.find((s) => s.game.id === "g26")!;
-    const sb = scored.find((s) => s.game.id === "clone")!;
-    expect(sa.score).toBeLessThan(sb.score);
+  it("filters out games under the safe-ranking channel floor", () => {
+    const ranked = rankGames(wrap(SAMPLE_CATALOG));
+    expect(ranked.some((scored) => scored.game.id === "g27")).toBe(false);
   });
 
-  it("marginal 세션에 감점을 준다", () => {
-    const g = byId("g20");
-    const scored = rankGames([
-      { game: g, marginalSession: false },
-      { game: { ...g, id: "m" }, marginalSession: true },
-    ]);
-    const normal = scored.find((s) => s.game.id === g.id)!;
-    const marginal = scored.find((s) => s.game.id === "m")!;
-    expect(marginal.score).toBeLessThan(normal.score);
-  });
+  it("breaks tied scores deterministically by id when signals are otherwise identical", () => {
+    const a = makeGame("a-tie", {
+      buzz: {
+        twitchViewers: 1_500,
+        twitchChannels: 10,
+        viewerGrowth7d: null,
+        isNewRelease: false,
+      },
+      streaming: {
+        totalViewers: 1_500,
+        channelCount: 10,
+        medianViewersPerChannel: null,
+        p75ViewersPerChannel: null,
+        top10ViewerShare: null,
+        viewerConcentration: null,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: null,
+        observedSnapshots: 0,
+        coverage: 0,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: {},
+      rating: undefined,
+      reviewCount: undefined,
+      topTags: [],
+    });
+    const b = { ...a, id: "b-tie", name: "b-tie" };
 
-  it("각 결과에 opportunity와 topOnTwitch 항을 담는다", () => {
-    const scored = rankGames(wrap(SAMPLE_CATALOG));
-    const kinds = scored[0].terms.map((t) => t.kind);
-    expect(kinds).toContain("opportunity");
-    expect(kinds).toContain("topOnTwitch");
-  });
+    const ranked = rankGames(wrap([b, a]));
 
-  it("항 기여도의 합이 score와 일치한다", () => {
-    const scored = rankGames(wrap(SAMPLE_CATALOG));
-    for (const s of scored) {
-      const sum = s.terms.reduce((acc, t) => acc + t.contribution, 0);
-      expect(sum).toBeCloseTo(s.score, 6);
-    }
-  });
-
-  it("vibe는 score에 전혀 기여하지 않는다 — 분위기는 필터링에만 쓰이고 랭킹은 인기로만 결정된다", () => {
-    const g = byId("g5");
-    const allZero = Object.fromEntries(VIBE_KEYS.map((k) => [k, 0])) as Game["vibes"];
-    const allOne = Object.fromEntries(VIBE_KEYS.map((k) => [k, 1])) as Game["vibes"];
-    const low = { ...g, id: "low-vibe", vibes: allZero };
-    const high = { ...g, id: "high-vibe", vibes: allOne };
-    const scored = rankGames(wrap([low, high]));
-    const sLow = scored.find((s) => s.game.id === "low-vibe")!;
-    const sHigh = scored.find((s) => s.game.id === "high-vibe")!;
-    expect(sLow.score).toBeCloseTo(sHigh.score, 10);
-  });
-
-  it("시청자 수만으로 정렬한 1위와 결과 1위가 갈릴 수 있다", () => {
-    // 채널이 많아 묻히는 게임(A)보다, 시청자는 적지만 채널이 적은 게임(B)이 이겨야 한다
-    const a = { ...byId("g22"), id: "wide", buzz: { twitchViewers: 40000, twitchChannels: 1600, viewerGrowth7d: null, isNewRelease: false } };
-    const b = { ...byId("g22"), id: "narrow", franchise: undefined, buzz: { twitchViewers: 9000, twitchChannels: 60, viewerGrowth7d: null, isNewRelease: false } };
-    const scored = rankGames(wrap([a, b]));
-    expect(scored[0].game.id).toBe("narrow");
+    expect(ranked.map((scored) => scored.game.id)).toEqual(["a-tie", "b-tie"]);
   });
 });

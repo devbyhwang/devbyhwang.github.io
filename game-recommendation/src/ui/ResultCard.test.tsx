@@ -61,6 +61,13 @@ describe("ResultCard", () => {
     expect(screen.getByText("신작")).toBeDefined();
   });
 
+  it("discovery 픽은 발견 배지와 설명을 렌더한다", () => {
+    render(<ResultCard pick={{ ...base, slot: "discovery", why: [{ kind: "discovery", text: "잘 알려지지 않았지만 평이 좋은 게임 발견" }] }} rank={null} />);
+
+    expect(screen.getByText("발견")).toBeDefined();
+    expect(screen.getByText(/잘 알려지지 않았지만/)).toBeDefined();
+  });
+
   it("커버가 있으면 이미지를 렌더한다", () => {
     // alt=""인 장식 이미지는 img role로 노출되지 않으므로 DOM에서 직접 찾는다
     const { container } = render(<ResultCard pick={base} rank={1} />);

@@ -17,7 +17,7 @@
 | 블로그 빌드 | 기존 Eleventy 빌드 앞에 게임 추천 Vite 빌드를 실행 |
 | 카탈로그 경로 | `src/playground/game-recommendation/catalog.json` |
 | 파이프라인 | 기존 `scripts/pipeline`을 블로그 저장소로 이동하고 데이터·지식 자산은 저장소 루트 `data/`에 둔다 |
-| 데이터 갱신 | 블로그 저장소의 GitHub Actions가 매일 00:00 UTC에 실행하고 갱신 데이터를 커밋 |
+| 데이터 갱신 | 블로그 저장소의 GitHub Actions가 매일 00:00 UTC에 최신 데이터를 갱신하고, 별도 수동 workflow가 역사 데이터를 백필 |
 | 배포 | 데이터 커밋이 기존 블로그 `deploy.yml`의 `push: main`을 통해 Pages 배포를 트리거 |
 | Playground 카드 | `src/_data/studio.js`에 `/playground/game-recommendation/` 링크 추가 |
 | 기존 서비스 저장소 | 통합 후 별도 Pages 배포 대상으로 사용하지 않는다. 현재 standalone PR은 통합 PR과 분리한다 |
@@ -50,6 +50,7 @@ GitHub Pages
 - `eleventy.config.js`: 생성된 정적 산출물을 기존 playground passthrough 규칙으로 복사
 - `src/_data/studio.js`: Playground 목록 카드
 - `.github/workflows/catalog-refresh.yml`: 수집과 데이터 커밋
+- `.github/workflows/catalog-backfill.yml`: 지정한 기간의 IGDB 역사 데이터 백필과 checkpoint 커밋
 - `.github/workflows/deploy.yml`: 기존 블로그 빌드와 Pages 배포를 유지
 
 ## 운영 및 실패 처리
@@ -57,7 +58,9 @@ GitHub Pages
 - Twitch/IGDB secret은 블로그 저장소 Actions secrets에만 둔다.
 - pipeline 실패 시 기존 raw cache fallback 정책을 유지한다.
 - catalog가 이전 데이터보다 30% 이상 감소하면 emit을 거부한다.
-- Actions는 `data/history.json`, `data/raw`, `src/playground/game-recommendation/catalog.json`만 갱신 커밋한다.
+- Actions는 `data/history.json`, `data/raw`, `data/checkpoints`, `src/playground/game-recommendation/catalog.json`,
+  `src/playground/game-recommendation/catalog/chunks`만 갱신 커밋한다.
+- 기존 legacy `catalog.json`도 첫 live refresh 전까지 읽을 수 있으며, 새 refresh/backfill은 manifest + chunks 형식으로 전환한다.
 - 새 데이터 커밋은 `main` push로 기존 Pages 배포를 한 번 트리거한다.
 - 별도 `workflow_run` 배포 트리거는 추가하지 않아 중복 배포를 만들지 않는다.
 
@@ -67,4 +70,4 @@ GitHub Pages
 - Playground 목록에 게임 추천 카드가 표시되고 링크가 작동한다.
 - `npm run build`가 게임 추천 Vite와 Eleventy를 모두 성공시킨다.
 - `npm test`, game recommendation typecheck, pipeline fixture/validate가 통과한다.
-- Actions 수동 실행으로 실제 catalog 갱신과 기존 Pages 배포를 확인할 수 있다.
+- Actions 수동 실행으로 역사 백필과 최신 catalog 갱신, 기존 Pages 배포를 확인할 수 있다.

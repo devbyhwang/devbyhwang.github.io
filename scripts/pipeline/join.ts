@@ -1,3 +1,4 @@
+import { GLOBAL_QUALITY_PRIOR, qualityStats } from "./metrics/quality";
 import {
   classifySessionShape,
   deriveIsNewRelease,
@@ -43,8 +44,16 @@ function selectedSteam(game: IgdbGame, raw: RawSources): { steamAppId?: number; 
 
 /** Joins only on numeric IGDB id; source names never participate in identity. */
 export function joinSources(raw: RawSources): JoinedGame[] {
-  const twitchArt = new Map(raw.twitch.topGames.map((game) => [game.igdbId, game.boxArtUrl] as const));
-  const twitchStats = new Map(raw.twitch.streams.map((stream) => [stream.igdbId, { viewers: stream.viewers, channels: stream.channels }]));
+  const twitchArt = new Map(raw.twitch.topGames.map((game) => [String(game.igdbId), game.boxArtUrl] as const));
+  const twitchStats = new Map(raw.twitch.streams.map((stream) => [String(stream.igdbId), {
+    viewers: stream.viewers,
+    channels: stream.channels,
+    ...(stream.medianViewersPerChannel === undefined ? {} : { medianViewersPerChannel: stream.medianViewersPerChannel }),
+    ...(stream.p75ViewersPerChannel === undefined ? {} : { p75ViewersPerChannel: stream.p75ViewersPerChannel }),
+    ...(stream.top10ViewerShare === undefined ? {} : { top10ViewerShare: stream.top10ViewerShare }),
+    ...(stream.viewerConcentration === undefined ? {} : { viewerConcentration: stream.viewerConcentration }),
+    ...(stream.coverage === undefined ? {} : { coverage: stream.coverage }),
+  }]));
   const twitchFor = (igdbId: string) => {
     const boxArtUrl = twitchArt.get(igdbId);
     return {
@@ -86,8 +95,9 @@ function twitchCoverUrl(value: string): string {
   return value.replace("{width}x{height}", "285x380");
 }
 
-function reviewFields(game: JoinedGame): Pick<GameRecord, "rating" | "reviewCount" | "discountPercent"> {
+function reviewFields(game: JoinedGame): Pick<GameRecord, "rating" | "reviewCount" | "discountPercent" | "quality"> {
   const steamReviews = game.steam ? game.steam.positive + game.steam.negative : 0;
+  const quality = qualityStats(game.igdb, game.steam, GLOBAL_QUALITY_PRIOR);
   const rating = steamReviews > 0
     ? game.steam!.positive / steamReviews * 100
     : game.igdb.rating;
@@ -97,6 +107,7 @@ function reviewFields(game: JoinedGame): Pick<GameRecord, "rating" | "reviewCoun
     ...(rating === undefined ? {} : { rating }),
     ...(reviewCount === undefined ? {} : { reviewCount }),
     ...(discountPercent === undefined ? {} : { discountPercent }),
+    quality,
   };
 }
 
@@ -131,6 +142,21 @@ export function enrichGames(joined: JoinedGame[], knowledge: KnowledgeAssets, ge
         twitchChannels: game.twitch.channels,
         viewerGrowth7d: null,
         isNewRelease: deriveIsNewRelease(date, generatedAt),
+      },
+      streaming: {
+        totalViewers: game.twitch.viewers,
+        channelCount: game.twitch.channels,
+        medianViewersPerChannel: game.twitch.medianViewersPerChannel ?? null,
+        p75ViewersPerChannel: game.twitch.p75ViewersPerChannel ?? null,
+        top10ViewerShare: game.twitch.top10ViewerShare ?? null,
+        viewerConcentration: game.twitch.viewerConcentration ?? null,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: null,
+        observedSnapshots: 0,
+        coverage: game.twitch.coverage ?? 0,
+        asOf: generatedAt,
       },
       topTags: game.tags.slice(0, 8).map(({ name, share }) => ({ tag: name, share })),
       ...reviewFields(game),

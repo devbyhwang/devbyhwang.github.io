@@ -33,13 +33,21 @@ jobs:
           set +e
           npm run pipeline
           pipeline_status=$?
+          validate_status=0
+          if [ "$pipeline_status" -eq 0 ]; then
+            npm run pipeline:validate
+            validate_status=$?
+          fi
           set -e
 
-          git add data/history.json data/raw src/playground/game-recommendation/catalog.json
+          git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "chore: refresh game recommendation catalog"
             git push
           fi
-          exit "$pipeline_status"
+          if [ "$pipeline_status" -ne 0 ]; then
+            exit "$pipeline_status"
+          fi
+          exit "$validate_status"

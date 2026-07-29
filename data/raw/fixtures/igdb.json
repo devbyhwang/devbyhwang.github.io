@@ -2,7 +2,17 @@
   "oauth": { "access_token": "fixture-igdb-token", "expires_in": 3600, "token_type": "bearer" },
   "recentGames": [
     { "id": 7, "name": "Recent Fixture", "first_release_date": 1784505600, "rating_count": 12 },
-    { "id": 77, "name": "Recent-only Fixture", "first_release_date": 1784505600, "rating": 81, "rating_count": 18 }
+    {
+      "id": 77,
+      "name": "Recent-only Fixture",
+      "first_release_date": 1784505600,
+      "rating": 81,
+      "rating_count": 18,
+      "aggregated_rating": 87,
+      "aggregated_rating_count": 12,
+      "total_rating": 83,
+      "total_rating_count": 30
+    }
   ],
   "topGames": [
     { "id": 42, "name": "Twitch Fixture", "first_release_date": 1784505600, "rating_count": 20 }

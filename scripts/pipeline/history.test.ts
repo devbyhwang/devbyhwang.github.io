@@ -2,9 +2,10 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { appendSnapshot, growth7d, makeDailySnapshot, readHistory, writeHistory } from "./history";
+import { appendSnapshot, deriveStreamingFeatures, makeDailySnapshot, readHistory, writeHistory } from "./history";
 import type { CatalogRecord, History, JoinedGame, KnowledgeAssets, RawSources } from "./model";
 import { runPipeline } from "./run";
+import { readEmittedCatalog } from "./test-helpers";
 
 const temporaryRoots: string[] = [];
 const asOf = "2026-07-28T12:00:00.000Z";
@@ -19,8 +20,20 @@ function temporaryRoot(): string {
   return root;
 }
 
-function joinedGame(id: number, viewers = 130, channels = 6): JoinedGame {
-  return { igdb: { id, name: `Game ${id}` }, twitch: { viewers, channels }, tags: [] };
+function joinedGame(id: number, viewers = 130, channels = 6, coverage = 1): JoinedGame {
+  return {
+    igdb: { id, name: `Game ${id}` },
+    twitch: {
+      viewers,
+      channels,
+      medianViewersPerChannel: channels > 0 ? viewers / channels : 0,
+      p75ViewersPerChannel: channels > 0 ? viewers / channels : 0,
+      top10ViewerShare: channels > 0 ? 1 : 0,
+      viewerConcentration: channels > 0 ? 1 / channels : 0,
+      coverage,
+    },
+    tags: [],
+  };
 }
 
 function rawSources(viewers = 130): RawSources {
@@ -76,6 +89,27 @@ function catalogWith(count: number): CatalogRecord {
       viewerPlayable: { ok: false },
       vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
       buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true },
+      streaming: {
+        totalViewers: 0,
+        channelCount: 0,
+        medianViewersPerChannel: 0,
+        p75ViewersPerChannel: 0,
+        top10ViewerShare: 0,
+        viewerConcentration: 0,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: null,
+        observedSnapshots: 0,
+        coverage: 0,
+        asOf,
+      },
+      quality: {
+        totalRating: 0,
+        totalRatingCount: 0,
+        steamPositive: 0,
+        steamNegative: 0,
+      },
       topTags: [],
     })),
   };
@@ -104,36 +138,45 @@ describe("daily history", () => {
     });
   });
 
-  it("retains only the latest fourteen UTC days for each game", () => {
+  it("retains only the latest ninety UTC days for each game", () => {
     const history: History = {
-      "42": Array.from({ length: 14 }, (_, index) => ({
-        date: `2026-07-${String(index + 1).padStart(2, "0")}`,
-        twitchViewers: index + 1,
-        twitchChannels: 1,
-      })),
+      "42": Array.from({ length: 90 }, (_, index) => {
+        const value = new Date("2026-07-01T00:00:00.000Z");
+        value.setUTCDate(value.getUTCDate() + index);
+        return {
+          date: value.toISOString().slice(0, 10),
+          twitchViewers: index + 1,
+          twitchChannels: 1,
+          coverage: 1,
+        };
+      }),
     };
 
     const next = appendSnapshot(history, {
-      "42": { date: "2026-07-15", twitchViewers: 15, twitchChannels: 1 },
+      "42": { date: "2026-09-29", twitchViewers: 91, twitchChannels: 1, coverage: 1 },
     });
 
     expect(next["42"].map((entry) => entry.date)).toEqual(Array.from(
-      { length: 14 },
-      (_, index) => `2026-07-${String(index + 2).padStart(2, "0")}`,
+      { length: 90 },
+      (_, index) => {
+        const value = new Date("2026-07-02T00:00:00.000Z");
+        value.setUTCDate(value.getUTCDate() + index);
+        return value.toISOString().slice(0, 10);
+      },
     ));
   });
 
   it("uses the UTC calendar date when making per-game snapshots", () => {
     expect(makeDailySnapshot([joinedGame(42), joinedGame(77, 0, 0)], asOf)).toEqual({
-      "42": { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 },
-      "77": { date: "2026-07-28", twitchViewers: 0, twitchChannels: 0 },
+      "42": { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6, coverage: 1 },
+      "77": { date: "2026-07-28", twitchViewers: 0, twitchChannels: 0, coverage: 1 },
     });
   });
 
   it("writes and reads history atomically", () => {
     const root = temporaryRoot();
     const file = join(root, "data/history.json");
-    const history: History = { "42": [{ date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 }] };
+    const history: History = { "42": [{ date: "2026-07-28", twitchViewers: 130, twitchChannels: 6, coverage: 1 }] };
 
     writeHistory(file, history);
 
@@ -142,36 +185,64 @@ describe("daily history", () => {
   });
 });
 
-describe("seven-day growth", () => {
-  it("calculates growth only when the current and exact seven-days-prior snapshots exist", () => {
+describe("derived streaming features", () => {
+  it("uses the closest valid seven-, thirty-, and ninety-day baselines", () => {
     const history: History = {
       "42": [
-        { date: "2026-07-21", twitchViewers: 100, twitchChannels: 5 },
-        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 },
+        { date: "2026-04-30", twitchViewers: 80, twitchChannels: 4, coverage: 0.9 },
+        { date: "2026-06-28", twitchViewers: 100, twitchChannels: 5, coverage: 0.9 },
+        { date: "2026-07-10", twitchViewers: 130, twitchChannels: 6, coverage: 0.9 },
+        { date: "2026-07-22", twitchViewers: 120, twitchChannels: 6, coverage: 0.9 },
+        { date: "2026-07-28", twitchViewers: 150, twitchChannels: 7, coverage: 0.75 },
       ],
     };
 
-    expect(growth7d(history, "42", asOf)).toBe(1.3);
-    expect(growth7d(history, "missing", asOf)).toBeNull();
+    const features = deriveStreamingFeatures(history, "42", asOf);
+    expect(features.growth7d).toBe(1.25);
+    expect(features.growth30d).toBe(1.5);
+    expect(features.growth90d).toBe(1.875);
+    expect(features.volatility30d).toBeCloseTo(0.12, 12);
+    expect(features.observedSnapshots).toBe(5);
+    expect(features.confidence).toBe(0.75);
   });
 
-  it("returns null for a zero baseline or a nearby-but-not-exact snapshot", () => {
-    expect(growth7d({
+  it("returns null baselines, null volatility, and zero confidence when history is unavailable", () => {
+    expect(deriveStreamingFeatures({
       zero: [
-        { date: "2026-07-21", twitchViewers: 0, twitchChannels: 5 },
-        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 },
+        { date: "2026-07-21", twitchViewers: 0, twitchChannels: 5, coverage: 1 },
+        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6, coverage: 0.5 },
       ],
-      nearby: [
-        { date: "2026-07-20", twitchViewers: 100, twitchChannels: 5 },
-        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 },
+      sparse: [
+        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6, coverage: 0.5 },
       ],
-    }, "zero", asOf)).toBeNull();
-    expect(growth7d({
-      nearby: [
-        { date: "2026-07-20", twitchViewers: 100, twitchChannels: 5 },
-        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 },
+    }, "zero", asOf)).toEqual({
+      growth7d: null,
+      growth30d: null,
+      growth90d: null,
+      volatility30d: null,
+      observedSnapshots: 2,
+      confidence: 0.5,
+    });
+    expect(deriveStreamingFeatures({
+      sparse: [
+        { date: "2026-07-28", twitchViewers: 130, twitchChannels: 6, coverage: 0.5 },
       ],
-    }, "nearby", asOf)).toBeNull();
+    }, "sparse", asOf)).toEqual({
+      growth7d: null,
+      growth30d: null,
+      growth90d: null,
+      volatility30d: null,
+      observedSnapshots: 1,
+      confidence: 0.5,
+    });
+    expect(deriveStreamingFeatures({}, "missing", asOf)).toEqual({
+      growth7d: null,
+      growth30d: null,
+      growth90d: null,
+      volatility30d: null,
+      observedSnapshots: 0,
+      confidence: 0,
+    });
   });
 });
 
@@ -187,7 +258,11 @@ describe("pipeline history ordering", () => {
 
     await expect(runPipeline({ raw: rawSources(), knowledge, rootDir: root, asOf, allowNetwork: false, logger: console })).rejects.toThrow("30%");
 
-    expect(readHistory(join(root, "data/history.json"))["42"]).toContainEqual({ date: "2026-07-28", twitchViewers: 130, twitchChannels: 6 });
+    expect(readHistory(join(root, "data/history.json"))["42"]).toContainEqual({
+      date: "2026-07-28",
+      twitchViewers: 130,
+      twitchChannels: 6,
+    });
     expect(JSON.parse(readFileSync(join(root, "src/playground/game-recommendation/catalog.json"), "utf8"))).toEqual(catalog);
     expect(readFileSync(rawCache, "utf8")).toBe('{"source":"igdb","complete":true}\n');
   });
@@ -200,7 +275,7 @@ describe("pipeline history ordering", () => {
 
     await runPipeline({ raw: rawSources(), knowledge, rootDir: root, asOf, allowNetwork: false, logger: console });
 
-    const emitted = JSON.parse(readFileSync(join(root, "src/playground/game-recommendation/catalog.json"), "utf8")) as CatalogRecord;
+    const emitted = readEmittedCatalog(root);
     expect(emitted.games[0].buzz.viewerGrowth7d).toBe(1.3);
   });
 });

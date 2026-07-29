@@ -3,7 +3,7 @@ import type { HttpClient, IgdbExternalGame, IgdbFetchInput, IgdbGame, IgdbRawSna
 const OAUTH_URL = "https://id.twitch.tv/oauth2/token";
 const GAMES_URL = "https://api.igdb.com/v4/games";
 const EXTERNAL_GAMES_URL = "https://api.igdb.com/v4/external_games";
-const QUERY_LIMIT = 500;
+export const QUERY_LIMIT = 500;
 const gameFields = [
   "id",
   "name",
@@ -11,6 +11,10 @@ const gameFields = [
   "cover.image_id",
   "external_games.uid",
   "external_games.external_game_source",
+  "game_type",
+  "parent_game",
+  "version_parent",
+  "platforms.name",
   "collection.name",
   "franchise.name",
   "genres.name",
@@ -19,6 +23,10 @@ const gameFields = [
   "multiplayer_modes.*",
   "rating",
   "rating_count",
+  "aggregated_rating",
+  "aggregated_rating_count",
+  "total_rating",
+  "total_rating_count",
 ].join(",");
 
 type OAuthResponse = { access_token: string };
@@ -27,6 +35,13 @@ function epochSeconds(iso: string): number {
   const value = Date.parse(iso);
   if (Number.isNaN(value)) throw new Error(`invalid asOf timestamp: ${iso}`);
   return Math.floor(value / 1_000);
+}
+
+function epochDay(value: string, label: "partitionStart" | "partitionEnd"): number {
+  const iso = `${value}T00:00:00.000Z`;
+  const date = new Date(iso);
+  if (value !== date.toISOString().slice(0, 10)) throw new Error(`invalid ${label} date: ${value}`);
+  return Math.floor(date.getTime() / 1_000);
 }
 
 async function token(input: IgdbFetchInput, http: HttpClient): Promise<string> {
@@ -106,6 +121,24 @@ async function requestRecentGames(
   return [...games.values()];
 }
 
+async function requestPartitionGames(
+  partitionStart: string,
+  partitionEnd: string,
+  offset: number,
+  http: HttpClient,
+  authHeaders: Record<string, string>,
+  responses: unknown[],
+  recordResponse?: IgdbFetchInput["recordResponse"],
+): Promise<IgdbGame[]> {
+  const start = epochDay(partitionStart, "partitionStart");
+  const end = epochDay(partitionEnd, "partitionEnd");
+  const body = `fields ${gameFields}; where first_release_date >= ${start} & first_release_date < ${end}; sort first_release_date asc, id asc; limit ${QUERY_LIMIT}; offset ${offset};`;
+  const response = await http.postJson<unknown>(GAMES_URL, body, authHeaders);
+  await recordResponse?.(response);
+  responses.push(response);
+  return asGames(response);
+}
+
 async function requestExternalGames(
   steamAppIds: number[],
   http: HttpClient,
@@ -139,6 +172,36 @@ export async function fetchIgdb(input: IgdbFetchInput, http: HttpClient): Promis
   const authHeaders = headers(input.clientId, accessToken);
   const responses: unknown[] = [];
   const warnings: string[] = [];
+
+  if (input.partitionStart || input.partitionEnd) {
+    if (!input.partitionStart || !input.partitionEnd) throw new Error("IGDB partition fetch requires both partitionStart and partitionEnd");
+    const games = await requestPartitionGames(
+      input.partitionStart,
+      input.partitionEnd,
+      input.offset ?? 0,
+      http,
+      authHeaders,
+      responses,
+      input.recordResponse,
+    );
+    return {
+      fetchedAt: new Date().toISOString(),
+      source: "igdb",
+      request: {
+        endpoints: [GAMES_URL],
+        asOf: input.asOf,
+        partitionStart: input.partitionStart,
+        partitionEnd: input.partitionEnd,
+        offset: input.offset ?? 0,
+      },
+      responses,
+      warnings,
+      games,
+      externalGames: [],
+      unresolvedSteamAppIds: [],
+    };
+  }
+
   const now = epochSeconds(input.asOf);
   const recentStart = now - input.recentDays * 86_400;
 
