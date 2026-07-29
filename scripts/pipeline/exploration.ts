@@ -68,11 +68,11 @@ export function emitExploration(catalog: CatalogRecord, fs: FileStore): Explorat
   return index;
 }
 
-export function readExploration(fs: FileStore): ExplorationIndex | null {
+export function readExploration(fs: FileStore, catalogIds?: ReadonlySet<string>): ExplorationIndex | null {
   const contents = fs.read(EXPLORATION_PATH);
   if (contents === null) return null;
   const index = parse<ExplorationIndex>(contents, EXPLORATION_PATH);
-  validateExploration(index, fs);
+  validateExploration(index, fs, catalogIds);
   return index;
 }
 
@@ -131,7 +131,7 @@ function pages(ids: string[]): string[][] {
   return Array.from({ length: Math.ceil(ids.length / PAGE_SIZE) }, (_, page) => ids.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE));
 }
 
-function validateExploration(index: ExplorationIndex, fs: FileStore): void {
+function validateExploration(index: ExplorationIndex, fs: FileStore, catalogIds?: ReadonlySet<string>): void {
   if (!isIso(index.generatedAt)) throw new Error("exploration generatedAt: invalid");
   if (!Number.isInteger(index.gameCount) || index.gameCount < 0) throw new Error("exploration gameCount: invalid");
   if (index.pageSize !== PAGE_SIZE) throw new Error(`exploration pageSize: expected ${PAGE_SIZE}`);
@@ -148,6 +148,9 @@ function validateExploration(index: ExplorationIndex, fs: FileStore): void {
     }
   }
   if (cards.size !== index.gameCount || [...cards.values()].some((count) => count !== 1)) throw new Error("exploration cards: count or duplicate mismatch");
+  if (catalogIds && (!sameSet(cards.keys(), catalogIds) || catalogIds.size !== index.gameCount)) {
+    throw new Error("exploration cards: outside-catalog ID or catalog coverage mismatch");
+  }
 
   for (const query of ALL_QUERIES) {
     const manifestPath = explorationManifestPath(query);
@@ -157,14 +160,19 @@ function validateExploration(index: ExplorationIndex, fs: FileStore): void {
       const count = manifest.views?.[view];
       if (!Number.isInteger(count) || count < 0) throw new Error(`${manifestPath}: missing ${view} view`);
       const ids: string[] = [];
-      for (let page = 0; page < Math.ceil(count / PAGE_SIZE); page += 1) {
+      const pageCount = Math.ceil(count / PAGE_SIZE);
+      for (let page = 0; page < pageCount; page += 1) {
         const pagePath = explorationPagePath(query, view, page);
         const value = parse<ExplorationPage>(required(fs, pagePath), pagePath);
-        if (!Array.isArray(value.ids) || value.ids.length === 0 || value.ids.length > PAGE_SIZE) throw new Error(`${pagePath}: invalid IDs`);
+        const expectedPageSize = page + 1 < pageCount ? PAGE_SIZE : count % PAGE_SIZE || PAGE_SIZE;
+        if (!Array.isArray(value.ids) || value.ids.length !== expectedPageSize) throw new Error(`${pagePath}: page size must be ${expectedPageSize}`);
         ids.push(...value.ids);
       }
       if (ids.length !== count || new Set(ids).size !== ids.length) throw new Error(`${manifestPath}: ${view} page coverage mismatch`);
-      for (const id of ids) if (cards.get(id) !== 1) throw new Error(`${manifestPath}: ${view} references ${id} without exactly one card`);
+      for (const id of ids) {
+        if (catalogIds && !catalogIds.has(id)) throw new Error(`${manifestPath}: ${view} references outside-catalog ID ${id}`);
+        if (cards.get(id) !== 1) throw new Error(`${manifestPath}: ${view} references ${id} without exactly one card`);
+      }
     }
   }
 }
@@ -187,4 +195,9 @@ function isIso(value: unknown): value is string {
 
 function sameStrings(actual: unknown, expected: string[]): actual is string[] {
   return Array.isArray(actual) && actual.length === expected.length && actual.every((value, index) => value === expected[index]);
+}
+
+function sameSet(actual: Iterable<string>, expected: ReadonlySet<string>): boolean {
+  const values = new Set(actual);
+  return values.size === expected.size && [...values].every((value) => expected.has(value));
 }

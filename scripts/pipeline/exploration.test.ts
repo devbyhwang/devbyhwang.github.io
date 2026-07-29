@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ALL_QUERIES, recommendationKey } from "../../game-recommendation/src/domain/recommendation-index";
 import {
   CARD_SHARD_COUNT,
+  cardShardFor,
   emitExploration,
   explorationCardPath,
   explorationPagePath,
@@ -95,5 +96,35 @@ describe("exploration emission", () => {
     files.set(path, JSON.stringify({ ids: ["outside-catalog"] }));
 
     expect(() => readExploration(fs)).toThrow("outside-catalog");
+  });
+
+  it("rejects a card ID replacement that preserves the shard and card count", () => {
+    const { fs, files } = memoryFileStore();
+    const catalog = catalogWith(30);
+    emitExploration(catalog, fs);
+    const shard = cardShardFor(catalog.games[0]!.id);
+    const path = explorationCardPath(shard);
+    const cards = JSON.parse(files.get(path)!) as Array<{ id: string }>;
+    const original = cards.find((card) => card.id === catalog.games[0]!.id)!;
+    const replacement = Array.from({ length: 10_000 }, (_, index) => `outside-catalog-${index}`)
+      .find((id) => cardShardFor(id) === shard)!;
+    original.id = replacement;
+    files.set(path, JSON.stringify(cards));
+    for (const [filePath, contents] of files) {
+      if (filePath !== path) files.set(filePath, contents.split(`"${catalog.games[0]!.id}"`).join(`"${replacement}"`));
+    }
+    expect(() => readExploration(fs, new Set(catalog.games.map((game) => game.id)))).toThrow("outside-catalog");
+  });
+
+  it("rejects 30 result IDs split into 10-ID and 20-ID pages", () => {
+    const { fs, files } = memoryFileStore();
+    const query = ALL_QUERIES[0]!;
+    emitExploration(catalogWith(30), fs);
+    const first = readExplorationPage(fs, query, "all", 0).ids;
+    const second = readExplorationPage(fs, query, "all", 1).ids;
+    files.set(explorationPagePath(query, "all", 0), JSON.stringify({ ids: [...first.slice(0, 10)] }));
+    files.set(explorationPagePath(query, "all", 1), JSON.stringify({ ids: [...first.slice(10), ...second] }));
+
+    expect(() => readExploration(fs)).toThrow("page size");
   });
 });
