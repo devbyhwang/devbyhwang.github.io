@@ -54,6 +54,11 @@ export type ExplorationCard = {
   discountPercent?: number;
 };
 
+/** Card payload stored in compact ordinal shards. */
+export type CompactExplorationCard = ExplorationCard & {
+  ordinal: number;
+};
+
 export function compactExplorationManifestPath(queryKey: string): string {
   return `${compactExplorationQueryPath(queryKey)}/manifest.json`;
 }
@@ -74,9 +79,17 @@ export function compactExplorationCardShardPath(shard: number): string {
   return `exploration/cards/${shard.toString().padStart(4, "0")}.json`;
 }
 
+export function compactExplorationCardPathForOrdinal(ordinal: number): string {
+  return compactExplorationCardShardPath(ordinalCardShard(ordinal));
+}
+
 export function ordinalCardShard(ordinal: number): number {
   assertOrdinal(ordinal, Number.MAX_SAFE_INTEGER);
   return ordinal % ORDINAL_CARD_SHARD_COUNT;
+}
+
+export function assertCompactExplorationCardOrdinal(card: CompactExplorationCard, gameCount: number): void {
+  assertOrdinal(card.ordinal, gameCount);
 }
 
 export function encodeOrdinalRankVector(ordinals: readonly number[], gameCount: number): Uint8Array {
@@ -144,8 +157,8 @@ export function membershipBitsetHas(bits: Uint8Array, ordinal: number, gameCount
 }
 
 function compactExplorationQueryPath(queryKey: string): string {
-  if (!/^[a-z0-9-]+$/.test(queryKey)) throw new Error(`invalid exploration query key: ${queryKey}`);
-  return `exploration/queries/${queryKey}`;
+  if (!queryKey) throw new Error("invalid exploration query key: empty");
+  return `exploration/queries/${encodeURIComponent(queryKey)}`;
 }
 
 function assertGameCount(gameCount: number): void {

@@ -4,7 +4,9 @@ import {
   DIVERSE_PREFIX_SIZE,
   ORDINAL_CARD_SHARD_COUNT,
   PAGE_SIZE,
+  assertCompactExplorationCardOrdinal,
   compactExplorationCardShardPath,
+  compactExplorationCardPathForOrdinal,
   compactExplorationManifestPath,
   compactExplorationMembershipPath,
   compactExplorationRankPath,
@@ -19,8 +21,10 @@ import {
   type ExplorationCard,
   type ExplorationManifest,
   type ExplorationPage,
+  type CompactExplorationCard,
 } from "./exploration";
 import { SAMPLE_CATALOG } from "./fixtures";
+import { ALL_QUERIES, recommendationKey } from "./recommendation-index";
 import type { Game, Scored } from "./types";
 
 const baseGame = SAMPLE_CATALOG[0]!;
@@ -50,18 +54,22 @@ describe("exploration contracts", () => {
   it("uses explicit compact artifact paths and 1,024 ordinal card shards", () => {
     expect(COMPACT_EXPLORATION_FORMAT).toBe(1);
     expect(ORDINAL_CARD_SHARD_COUNT).toBe(1024);
-    expect(compactExplorationManifestPath("short-session-solo")).toBe(
-      "exploration/queries/short-session-solo/manifest.json",
+    const key = recommendationKey(ALL_QUERIES[0]!);
+
+    expect(key).toContain("|");
+    expect(compactExplorationManifestPath(key)).toBe(
+      "exploration/queries/short%7C1%7C0%7Chealing/manifest.json",
     );
-    expect(compactExplorationRankPath("short-session-solo")).toBe(
-      "exploration/queries/short-session-solo/rank.u32le",
+    expect(compactExplorationRankPath(key)).toBe(
+      "exploration/queries/short%7C1%7C0%7Chealing/rank.u32le",
     );
-    expect(compactExplorationMembershipPath("short-session-solo", "new")).toBe(
-      "exploration/queries/short-session-solo/new.bits",
+    expect(compactExplorationMembershipPath(key, "new")).toBe(
+      "exploration/queries/short%7C1%7C0%7Chealing/new.bits",
     );
     expect(compactExplorationCardShardPath(7)).toBe("exploration/cards/0007.json");
     expect(ordinalCardShard(0)).toBe(0);
     expect(ordinalCardShard(1024)).toBe(0);
+    expect(compactExplorationCardPathForOrdinal(1031)).toBe("exploration/cards/0007.json");
     expect(() => compactExplorationMembershipPath("q", "all")).toThrow("filtered view");
     expect(() => compactExplorationCardShardPath(1024)).toThrow("card shard");
   });
@@ -216,5 +224,20 @@ describe("exploration contracts", () => {
     };
 
     expect({ manifest, page, card }).toBeTruthy();
+  });
+
+  it("requires every compact card to carry a valid ordinal for its deterministic shard", () => {
+    const card = {
+      id: "game-7",
+      name: "Game 7",
+      releaseDate: "2026-01-01T00:00:00.000Z",
+      players: { max: 4, online: true, localCoop: false },
+      sessionShape: "match" as const,
+      twitchViewers: 10,
+      ordinal: 1031,
+    } satisfies CompactExplorationCard;
+
+    expect(compactExplorationCardPathForOrdinal(card.ordinal)).toBe("exploration/cards/0007.json");
+    expect(() => assertCompactExplorationCardOrdinal({ ...card, ordinal: 10 }, 10)).toThrow("ordinal");
   });
 });
