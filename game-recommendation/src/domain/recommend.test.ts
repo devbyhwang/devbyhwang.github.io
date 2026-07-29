@@ -14,6 +14,19 @@ const q = (over: Partial<Query> = {}): Query => ({
 });
 
 describe("recommend", () => {
+  it("preserves the fixed catalog's picks, scores, and relaxations", () => {
+    const result = recommend(SAMPLE_CATALOG, q(), "2026-07-29T00:00:00.000Z");
+
+    expect(result.relaxations).toEqual([]);
+    expect(result.candidateCount).toBe(8);
+    expect(result.picks.map(({ slot, game, score }) => ({ slot, id: game.id, score }))).toEqual([
+      { slot: "safe", id: "g21", score: 0.5359460678210678 },
+      { slot: "safe", id: "g15", score: 0.5329331204026326 },
+      { slot: "safe", id: "g16", score: 0.5329027777777778 },
+      { slot: "new", id: "g24", score: 0.5591098290598291 },
+    ]);
+  });
+
   it("여유로운 조건에서는 완화 없이 safe 3개를 채운다", () => {
     const r = recommend(SAMPLE_CATALOG, q());
     expect(r.relaxations).toEqual([]);

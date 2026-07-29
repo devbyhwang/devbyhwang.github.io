@@ -10,7 +10,7 @@ import {
   SAFE_SLOT_COUNT,
 } from "./constants";
 import { rerankDiverse } from "./diversity";
-import { addPenalties, scoreGame } from "./score";
+import { addPenalties, createScoreContext, scoreGame } from "./score";
 import type { FilteredGame } from "./filter";
 import type { Game, Scored, SlotKind } from "./types";
 
@@ -73,8 +73,9 @@ export function buildSlots({ safe, rising: risingCandidates, discoveryCandidates
   }
 
   const discoveryPopulation = discoveryCandidates.map((c) => c.game);
+  const discoveryContext = createScoreContext(discoveryPopulation);
   const discovery = discoveryCandidates
-    .map((candidate) => addPenalties(scoreGame(candidate.game, discoveryPopulation), candidate.marginalSession))
+    .map((candidate) => addPenalties(scoreGame(candidate.game, discoveryContext), candidate.marginalSession))
     .filter((s) => {
       const quality = s.terms.find((t) => t.kind === "quality")?.raw ?? 0;
       const confidence = s.terms.find((t) => t.kind === "confidence")?.raw ?? 0;

@@ -1,5 +1,5 @@
 import { MIN_CHANNELS_FOR_RANKING } from "./constants";
-import { addPenalties, scoreGame } from "./score";
+import { addPenalties, createScoreContext, scoreGame } from "./score";
 import type { FilteredGame } from "./filter";
 import type { Scored } from "./types";
 
@@ -9,7 +9,8 @@ export function rankGames(candidates: FilteredGame[]): Scored[] {
     (c.game.buzz.twitchChannels === 1 && c.game.buzz.twitchViewers >= 5_000),
   );
   const population = eligible.map((c) => c.game);
+  const context = createScoreContext(population);
   return eligible
-    .map(({ game, marginalSession }) => addPenalties(scoreGame(game, population), marginalSession))
+    .map(({ game, marginalSession }) => addPenalties(scoreGame(game, context), marginalSession))
     .sort((a, b) => b.score - a.score || a.game.id.localeCompare(b.game.id));
 }

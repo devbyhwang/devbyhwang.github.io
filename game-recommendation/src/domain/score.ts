@@ -15,9 +15,63 @@ export function percentile(values: number[], v: number): number {
   return clamp((less + equal / 2) / values.length);
 }
 
-const pct = (population: number[], raw: number) => percentile(population, raw);
 const logCounts = (games: Game[], field: (g: Game) => number) =>
   games.map((g) => Math.log1p(Math.max(0, field(g))));
+const growthValue = (game: Game) => {
+  const growth = [game.streaming.growth7d, game.streaming.growth30d, game.streaming.growth90d]
+    .filter((x): x is number => x !== null && x !== undefined && x > 0);
+  return growth.length ? growth.reduce((sum, x) => sum + Math.log(x), 0) / growth.length : 0;
+};
+
+export type PercentileDistribution = number[];
+export type ScoreContext = {
+  demand: PercentileDistribution;
+  accessibility: PercentileDistribution;
+  growth: PercentileDistribution;
+};
+
+export function createPercentileDistribution(values: number[]): PercentileDistribution {
+  return [...values].sort((a, b) => a - b);
+}
+
+const lowerBound = (values: PercentileDistribution, value: number) => {
+  let low = 0;
+  let high = values.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (values[middle]! < value) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+};
+
+const upperBound = (values: PercentileDistribution, value: number) => {
+  let low = 0;
+  let high = values.length;
+  while (low < high) {
+    const middle = Math.floor((low + high) / 2);
+    if (values[middle]! <= value) low = middle + 1;
+    else high = middle;
+  }
+  return low;
+};
+
+export function percentileFromDistribution(values: PercentileDistribution, value: number): number {
+  if (values.length <= 1) return 0.5;
+  const lower = lowerBound(values, value);
+  const equal = upperBound(values, value) - lower;
+  return clamp((lower + equal / 2) / values.length);
+}
+
+export function createScoreContext(population: Game[]): ScoreContext {
+  return {
+    demand: createPercentileDistribution(logCounts(population, (g) => g.streaming.totalViewers || g.buzz.twitchViewers)),
+    accessibility: createPercentileDistribution(population.map((g) =>
+      Math.log1p(value(g.streaming.medianViewersPerChannel, g.buzz.twitchViewers / (g.buzz.twitchChannels + 10))),
+    )),
+    growth: createPercentileDistribution(population.map(growthValue)),
+  };
+}
 
 function quality(game: Game): { score: number; confidence: number } {
   const q = game.quality;
@@ -27,22 +81,16 @@ function quality(game: Game): { score: number; confidence: number } {
   return { score: clamp(0.75 + (rating - 0.75) * shrink), confidence: clamp(0.25 + 0.75 * (count / (count + 100))) };
 }
 
-export function scoreGame(game: Game, population: Game[]): Scored {
-  const pop = population.length ? population : [game];
+export function scoreGame(game: Game, context: ScoreContext): Scored {
   const s = game.streaming;
-  const rawDemand = pct(logCounts(pop, (g) => g.streaming.totalViewers || g.buzz.twitchViewers), Math.log1p(Math.max(0, s.totalViewers || game.buzz.twitchViewers)));
+  const rawDemand = percentileFromDistribution(context.demand, Math.log1p(Math.max(0, s.totalViewers || game.buzz.twitchViewers)));
   const median = s.medianViewersPerChannel;
   const accessibilityRaw = median !== null && median !== undefined
-    ? pct(pop.map((g) => Math.log1p(value(g.streaming.medianViewersPerChannel, g.buzz.twitchViewers / (g.buzz.twitchChannels + 10)))), Math.log1p(median))
+    ? percentileFromDistribution(context.accessibility, Math.log1p(median))
     : 0.5;
-  const growthValues = pop.map((g) => {
-    const gs = [g.streaming.growth7d, g.streaming.growth30d, g.streaming.growth90d]
-      .filter((x): x is number => x !== null && x !== undefined && x > 0);
-    return gs.length ? gs.reduce((a, x) => a + Math.log(x), 0) / gs.length : 0;
-  });
   const gameGrowth = [s.growth7d, s.growth30d, s.growth90d]
     .filter((x): x is number => x !== null && x !== undefined && x > 0);
-  const rawGrowth = gameGrowth.length ? pct(growthValues, gameGrowth.reduce((a, x) => a + Math.log(x), 0) / gameGrowth.length) : 0.5;
+  const rawGrowth = gameGrowth.length ? percentileFromDistribution(context.growth, growthValue(game)) : 0.5;
   const coverage = clamp(value(s.coverage, 0));
   const concentration = clamp(value(s.viewerConcentration ?? s.top10ViewerShare, 0.5));
   const volatility = clamp(value(s.volatility30d, 0.5));

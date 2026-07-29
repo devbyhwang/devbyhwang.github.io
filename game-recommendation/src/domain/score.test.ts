@@ -9,7 +9,7 @@ import {
   W_STABILITY,
 } from "./constants";
 import { SAMPLE_CATALOG } from "./fixtures";
-import { scoreGame } from "./score";
+import { createPercentileDistribution, createScoreContext, percentileFromDistribution, scoreGame } from "./score";
 import type { Game } from "./types";
 
 const baseGame = SAMPLE_CATALOG[0]!;
@@ -33,6 +33,31 @@ const makeGame = (id: string, overrides: Partial<Game> = {}): Game => ({
 });
 
 describe("scoreGame", () => {
+  it("uses lower and upper bounds to retain midpoint percentiles for tied values", () => {
+    // This fails if either binary bound treats ties as wholly lower or wholly higher.
+    const distribution = createPercentileDistribution([10, 20, 20, 20, 30]);
+
+    expect(percentileFromDistribution(distribution, 10)).toBe(0.1);
+    expect(percentileFromDistribution(distribution, 20)).toBe(0.5);
+    expect(percentileFromDistribution(distribution, 30)).toBe(0.9);
+  });
+
+  it("scores a tied candidate identically from its precomputed population context", () => {
+    // This fails if a cached distribution changes a tie's percentile or uses a different population.
+    const tied = makeGame("tied", {
+      buzz: { twitchViewers: 1_000, twitchChannels: 20, viewerGrowth7d: 1.1, isNewRelease: false },
+      streaming: { ...baseGame.streaming, totalViewers: 1_000, medianViewersPerChannel: 50, growth7d: 1.1 },
+    });
+    const sameValue = { ...tied, id: "same-value", name: "same-value" };
+    const lower = { ...tied, id: "lower", name: "lower", streaming: { ...tied.streaming, totalViewers: 500 } };
+    const higher = { ...tied, id: "higher", name: "higher", streaming: { ...tied.streaming, totalViewers: 2_000 } };
+    const population = [lower, tied, sameValue, higher];
+
+    const scored = scoreGame(tied, createScoreContext(population));
+
+    expect(scored.terms.find((term) => term.kind === "demand")?.raw).toBe(0.25);
+  });
+
   it("uses score weights that total exactly 1.0", () => {
     expect(
       W_DEMAND +
@@ -111,8 +136,9 @@ describe("scoreGame", () => {
     });
 
     const population = [fiveReviews, wellReviewed, baseline];
-    const flimsy = scoreGame(fiveReviews, population);
-    const proven = scoreGame(wellReviewed, population);
+    const context = createScoreContext(population);
+    const flimsy = scoreGame(fiveReviews, context);
+    const proven = scoreGame(wellReviewed, context);
 
     expect(proven.score).toBeGreaterThan(flimsy.score);
     expect(
@@ -188,8 +214,9 @@ describe("scoreGame", () => {
     });
 
     const population = [rich, sparse, baseline];
-    const richScore = scoreGame(rich, population);
-    const sparseScore = scoreGame(sparse, population);
+    const context = createScoreContext(population);
+    const richScore = scoreGame(rich, context);
+    const sparseScore = scoreGame(sparse, context);
     const sparseConfidence = sparseScore.terms.find((term) => term.kind === "confidence")?.raw ?? 0;
     const sparseAccessibility = sparseScore.terms.find((term) => term.kind === "accessibility")?.raw ?? 0;
 
