@@ -33,4 +33,17 @@ describe("loadRecommendations", () => {
       "recommendations.json: missing recommendation: long|5|1|spectacle",
     );
   });
+
+  it.each([
+    ["picks", "not-an-array", "picks: must be an array"],
+    ["relaxations", "not-an-array", "relaxations: invalid"],
+    ["candidateCount", -1, "candidateCount: must be a non-negative integer"],
+    ["blockedBy", "viewerPlayable", "blockedBy: invalid"],
+  ])("rejects malformed stored %s before rendering", async (field, value, expected) => {
+    const index = validIndex();
+    Object.assign(index.recommendations["medium|1|0|healing"], { [field]: value });
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(index), { status: 200 }));
+
+    await expect(loadRecommendations(fetcher)).rejects.toThrow(`recommendations.json: recommendations.medium|1|0|healing.${expected}`);
+  });
 });

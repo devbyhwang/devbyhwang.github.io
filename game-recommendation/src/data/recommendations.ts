@@ -26,6 +26,26 @@ function validateRecommendationIndex(value: unknown): asserts value is Recommend
   for (const key of Object.keys(recommendations)) {
     if (!expectedKeys.has(key)) throw new Error(`unexpected recommendation: ${key}`);
   }
+  for (const key of expectedKeys) {
+    validateRecommendation(recommendations[key], `recommendations.${key}`);
+  }
+}
+
+function validateRecommendation(value: unknown, path: string): void {
+  const recommendation = object(value, path);
+  if (!Array.isArray(recommendation.picks)) throw new Error(`${path}.picks: must be an array`);
+  if (!Array.isArray(recommendation.relaxations)
+    || recommendation.relaxations.some((relaxation) => !oneOf(relaxation, ["vibeThreshold", "sessionShape", "viewerPlayable"]))) {
+    throw new Error(`${path}.relaxations: invalid`);
+  }
+  nonNegativeInteger(recommendation.candidateCount, `${path}.candidateCount`);
+  if (recommendation.blockedBy !== null && !oneOf(recommendation.blockedBy, ["players", "vibe", "other"])) {
+    throw new Error(`${path}.blockedBy: invalid`);
+  }
+}
+
+function oneOf(value: unknown, values: readonly string[]): boolean {
+  return typeof value === "string" && values.includes(value);
 }
 
 function object(value: unknown, path: string): Record<string, unknown> {
