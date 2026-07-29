@@ -44,6 +44,7 @@ describe("catalog refresh deployment handoff", () => {
     expect(backfill).toContain('npm run pipeline:backfill -- --start "${{ inputs.start }}" --end "${{ inputs.end }}"');
     expect(backfill).toContain("npm run pipeline");
     expect(backfill).toContain("npm run pipeline:validate");
+    expect(backfill).toContain("find data/raw -type f -size +95M");
     expect(backfill).toContain("TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}");
     expect(backfill).toContain("TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}");
     expect(backfill).not.toContain("TWITCH_CLIENT_ID: ${{ vars.");
@@ -118,10 +119,11 @@ describe("pipeline CLI contracts", () => {
         fetcher: fetcher as typeof fetch,
       }, ["--start", "1990-01-01", "--end", "1991-01-01"]);
 
-      const rawPath = join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01.json");
+      const rawPath = join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01_000000.json");
       expect(existsSync(rawPath)).toBe(true);
       const raw = JSON.parse(readFileSync(rawPath, "utf8"));
       expect(raw.games).toEqual([{ id: 1, name: "Historical Fixture", first_release_date: 631152000 }]);
+      expect(raw.responses).toEqual([]);
       expect(readFileSync(rawPath, "utf8")).not.toContain("top-secret");
     } finally {
       rmSync(rootDir, { recursive: true, force: true });
@@ -148,9 +150,55 @@ describe("pipeline CLI contracts", () => {
         fetcher: fetcher as typeof fetch,
       }, ["--start", "1990-01-01", "--end", "1992-01-01"]);
 
-      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01.json"))).toBe(true);
-      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1991-01-01_1992-01-01.json"))).toBe(true);
+      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01_000000.json"))).toBe(true);
+      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1991-01-01_1992-01-01_000000.json"))).toBe(true);
       expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1990-01-01_1992-01-01.json"))).toBe(false);
+    } finally {
+      rmSync(rootDir, { recursive: true, force: true });
+    }
+  });
+
+  it("resumes a failed backfill from the saved page file without duplicating pages", async () => {
+    const rootDir = mkdtempSync(join(tmpdir(), "workflow-cli-resume-"));
+    let invocation = 0;
+    const firstFetcher = async (url: string, init?: RequestInit) => {
+      if (url === "https://id.twitch.tv/oauth2/token") return new Response(JSON.stringify({ access_token: "fixture-token" }), { status: 200 });
+      if (url === "https://api.igdb.com/v4/games") {
+        invocation += 1;
+        if (invocation === 1) {
+          return new Response(JSON.stringify(Array.from({ length: 500 }, (_, index) => ({ id: index + 1, name: `Game ${index + 1}`, first_release_date: 631152000 }))), { status: 200 });
+        }
+        throw new Error("simulated page failure");
+      }
+      throw new Error(`unexpected URL ${url} ${String(init?.body ?? "")}`);
+    };
+
+    try {
+      await expect(runCommand("backfill", {
+        rootDir,
+        env: { PIPELINE_AS_OF: "2026-07-29T00:00:00.000Z", TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+        logger: console,
+        fetcher: firstFetcher as typeof fetch,
+      }, ["--start", "1990-01-01", "--end", "1991-01-01"])).rejects.toThrow("simulated page failure");
+
+      const firstPage = join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01_000000.json");
+      expect(JSON.parse(readFileSync(firstPage, "utf8")).games).toHaveLength(500);
+
+      const secondFetcher = async (url: string, init?: RequestInit) => {
+        if (url === "https://id.twitch.tv/oauth2/token") return new Response(JSON.stringify({ access_token: "fixture-token" }), { status: 200 });
+        if (url === "https://api.igdb.com/v4/games") return new Response(JSON.stringify([{ id: 501, name: "Game 501", first_release_date: 631152000 }]), { status: 200 });
+        throw new Error(`unexpected URL ${url} ${String(init?.body ?? "")}`);
+      };
+      await runCommand("backfill", {
+        rootDir,
+        env: { PIPELINE_AS_OF: "2026-07-29T00:00:00.000Z", TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+        logger: console,
+        fetcher: secondFetcher as typeof fetch,
+      }, ["--start", "1990-01-01", "--end", "1991-01-01"]);
+
+      const secondPage = join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01_000500.json");
+      expect(JSON.parse(readFileSync(secondPage, "utf8")).games).toEqual([{ id: 501, name: "Game 501", first_release_date: 631152000 }]);
+      expect(JSON.parse(readFileSync(firstPage, "utf8")).games).toHaveLength(500);
     } finally {
       rmSync(rootDir, { recursive: true, force: true });
     }

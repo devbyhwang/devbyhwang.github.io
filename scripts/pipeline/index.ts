@@ -6,7 +6,7 @@ import { createNodeFileStore, readCatalog } from "./emit";
 import { readHistory, validateHistory } from "./history";
 import { saveRaw } from "./http";
 import { loadKnowledge } from "./knowledge";
-import type { IgdbExternalGame, IgdbGame, IgdbRawSnapshot, PipelineLogger, PipelineResult, RawResponseRecorder, RawSources, SourceConfig, SteamApp } from "./model";
+import type { IgdbExternalGame, IgdbGame, IgdbRawSnapshot, PipelineLogger, PipelineResult, RawSources, SourceConfig, SteamApp } from "./model";
 import { runPipeline } from "./run";
 
 const FIXTURE_AS_OF = "2026-07-28T00:00:00.000Z";
@@ -141,84 +141,33 @@ export function validateOutput(rootDir: string): void {
   loadKnowledge(rootDir);
 }
 
-function backfillRawPath(rootDir: string, start: string, end: string): string {
-  return resolve(rootDir, "data/raw/igdb/backfill", `${start}_${end}.json`);
+function backfillRawPath(rootDir: string, start: string, end: string, offset: number): string {
+  return resolve(rootDir, "data/raw/igdb/backfill", `${start}_${end}_${offset.toString().padStart(6, "0")}.json`);
 }
 
 type BackfillPersistence = {
-  recordResponse: RawResponseRecorder;
   recordSnapshot: (snapshot: IgdbRawSnapshot) => Promise<void>;
 };
 
-type BackfillPartitionPersistence = {
-  path: string;
-  start: string;
-  end: string;
-  games: Map<number, IgdbGame>;
-  responses: unknown[];
-};
-
 function createBackfillPersistence(rootDir: string, asOf: string): BackfillPersistence {
-  const partitions = new Map<string, BackfillPartitionPersistence>();
-  const pendingResponses: unknown[] = [];
-
-  const loadPartition = (start: string, end: string): BackfillPartitionPersistence => {
-    const key = `${start}/${end}`;
-    const existing = partitions.get(key);
-    if (existing) return existing;
-
-    const partition = {
-      path: backfillRawPath(rootDir, start, end),
-      start,
-      end,
-      games: new Map<number, IgdbGame>(),
-      responses: [] as unknown[],
-    } satisfies BackfillPartitionPersistence;
-    try {
-      const previous = JSON.parse(readFileSync(partition.path, "utf8")) as { games?: unknown; responses?: unknown };
-      if (Array.isArray(previous.games)) {
-        for (const game of previous.games) {
-          if (game && typeof game === "object" && Number.isInteger((game as { id?: unknown }).id)) {
-            const value = game as IgdbGame;
-            partition.games.set(value.id, value);
-          }
-        }
-      }
-      if (Array.isArray(previous.responses)) partition.responses.push(...previous.responses);
-    } catch {
-      // A missing or incomplete partition file is rebuilt from the checkpoint offset.
-    }
-    partitions.set(key, partition);
-    return partition;
-  };
-
-  const persist = async (partition: BackfillPartitionPersistence): Promise<void> => {
-    await saveRaw(partition.path, {
-      fetchedAt: asOf,
-      source: "igdb",
-      request: { partitionStart: partition.start, partitionEnd: partition.end },
-      responses: partition.responses,
-      warnings: [],
-      games: [...partition.games.values()],
-      externalGames: [],
-      unresolvedSteamAppIds: [],
-    });
-  };
-
   return {
-    recordResponse: async (response) => {
-      pendingResponses.push(response);
-    },
     recordSnapshot: async (snapshot) => {
       const start = snapshot.request.partitionStart;
       const end = snapshot.request.partitionEnd;
-      if (typeof start !== "string" || typeof end !== "string") {
-        throw new Error("IGDB backfill snapshot is missing partition boundaries");
+      const offset = snapshot.request.offset;
+      if (typeof start !== "string" || typeof end !== "string" || typeof offset !== "number" || !Number.isInteger(offset) || offset < 0) {
+        throw new Error("IGDB backfill snapshot is missing valid partition boundaries or offset");
       }
-      const partition = loadPartition(start, end);
-      partition.responses.push(...pendingResponses.splice(0));
-      for (const game of snapshot.games) partition.games.set(game.id, game);
-      await persist(partition);
+      await saveRaw(backfillRawPath(rootDir, start, end, offset), {
+        fetchedAt: asOf,
+        source: "igdb",
+        request: { partitionStart: start, partitionEnd: end, offset },
+        responses: [],
+        warnings: [],
+        games: snapshot.games,
+        externalGames: [],
+        unresolvedSteamAppIds: [],
+      });
     },
   };
 }
@@ -288,7 +237,6 @@ export async function runCommand(
       clientId: required(env, "TWITCH_CLIENT_ID"),
       clientSecret: required(env, "TWITCH_CLIENT_SECRET"),
       fetcher: options.fetcher,
-      recordResponse: persistence.recordResponse,
       recordSnapshot: persistence.recordSnapshot,
     });
     logger.info(`IGDB backfill result: ${JSON.stringify(result)}`);
