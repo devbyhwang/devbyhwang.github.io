@@ -79,20 +79,23 @@ jobs:
           GOOGLE_ADS_SLOT_MULTIPLEX: ${{ vars.GOOGLE_ADS_SLOT_MULTIPLEX }}
           GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT: ${{ vars.GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT }}
         run: npm run build
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
       - name: Verify game recommendation artifact
         run: |
           test -f _site/playground/game-recommendation/catalog.json
+          test -f _site/playground/game-recommendation/recommendations.json
           node --input-type=module <<'EOF'
           import { accessSync, readFileSync } from "node:fs";
           import { resolve } from "node:path";
 
           const artifactRoot = "_site/playground/game-recommendation";
           const catalogPath = `${artifactRoot}/catalog.json`;
+          const recommendationsPath = `${artifactRoot}/recommendations.json`;
           const catalog = JSON.parse(readFileSync(catalogPath, "utf8"));
+          const index = JSON.parse(readFileSync(recommendationsPath, "utf8"));
+
+          if (index === null || typeof index !== "object" || Array.isArray(index) || index.recommendations === null || typeof index.recommendations !== "object" || Array.isArray(index.recommendations)) {
+            throw new Error(`${recommendationsPath} is missing a recommendations object`);
+          }
 
           // Keep the existing 116-game catalog deployable until the first live refresh
           // rewrites it to the manifest + chunks format.
@@ -110,6 +113,10 @@ jobs:
             accessSync(resolve(artifactRoot, chunkPath.slice(2)));
           }
           EOF
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
 
   deploy:
     needs: build

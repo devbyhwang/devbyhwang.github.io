@@ -59,7 +59,7 @@ jobs:
             echo "raw cache file exceeds the safe GitHub file-size limit: $oversized"
             exit 1
           fi
-          git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json
+          git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/recommendations.json
           if [ -d src/playground/game-recommendation/catalog/chunks ]; then
             git add src/playground/game-recommendation/catalog/chunks
           fi

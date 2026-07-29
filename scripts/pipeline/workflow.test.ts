@@ -64,7 +64,7 @@ describe("catalog refresh deployment handoff", () => {
     expect(refresh).toContain("npm run pipeline:validate");
     expect(refresh).toContain("find data/raw -type f -size +95M");
     expect(refresh).not.toMatch(/pipeline:model|OPENAI_|ANTHROPIC_|COHERE_|MISTRAL_/);
-    expect(refresh).toContain("git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json");
+    expect(refresh).toContain("src/playground/game-recommendation/recommendations.json");
   });
 
   it("does not fail when a legacy catalog run has no chunk directory yet", () => {
@@ -76,10 +76,17 @@ describe("catalog refresh deployment handoff", () => {
     expect(backfill).toContain(optionalChunkStage);
   });
 
+  it("stages the recommendation index after a historical backfill", () => {
+    const backfill = workflow(".github/workflows/catalog-backfill.yml");
+
+    expect(backfill).toContain("src/playground/game-recommendation/recommendations.json");
+  });
+
   it("validates manifest chunks before uploading the Pages artifact", () => {
     const deploy = workflow(".github/workflows/deploy.yml");
 
     expect(deploy).toContain("test -f _site/playground/game-recommendation/catalog.json");
+    expect(deploy).toContain("test -f _site/playground/game-recommendation/recommendations.json");
     expect(deploy).toContain("const artifactRoot = \"_site/playground/game-recommendation\";");
     expect(deploy).toContain("for (const chunkPath of catalog.chunks)");
     expect(deploy).toContain("accessSync(resolve(artifactRoot, chunkPath.slice(2)))");
