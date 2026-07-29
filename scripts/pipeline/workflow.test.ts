@@ -15,7 +15,10 @@ describe("catalog refresh deployment handoff", () => {
     const deploy = workflow(".github/workflows/deploy.yml");
     expect(deploy).toContain("push:");
     expect(deploy).toContain("branches: [main]");
-    expect(deploy).not.toContain("workflow_run:");
+    expect(deploy).toContain("workflow_run:");
+    expect(deploy).toContain("- Refresh game recommendation catalog");
+    expect(deploy).toContain("- Backfill game recommendation catalog");
+    expect(deploy).toContain("github.event.workflow_run.conclusion == 'success'");
   });
 
   it("keeps the existing human push and dispatch triggers", () => {
