@@ -101,10 +101,13 @@ describe("catalog refresh deployment handoff", () => {
     expect(deploy).toContain("const chunkPathOnDisk = resolve(artifactRoot, chunkPath.slice(2));");
     expect(deploy).toContain("accessSync(chunkPathOnDisk);");
     expect(deploy).toContain("index.generatedAt !== catalog.generatedAt");
-    expect(deploy).toContain("index.gameCount !== catalog.gameCount");
+    expect(deploy).toContain("index.gameCount !== catalogGameCount");
     expect(deploy).toContain("const expectedKeys = new Set(");
     expect(deploy).toContain("expectedKeys.size !== 180");
     expect(deploy).toContain("recommendation picks reference game outside catalog");
+    expect(deploy).toContain("const catalogGameCount = Array.isArray(catalog.games) ? catalog.games.length : catalog.gameCount;");
+    expect(deploy).toContain("if (Array.isArray(catalog.games)) {");
+    expect(deploy).not.toContain("process.exit(0)");
   });
 
   it("validates compact exploration artifacts and their Pages-safe size before uploading", () => {
@@ -125,6 +128,8 @@ describe("catalog refresh deployment handoff", () => {
     expect(deploy).toContain("readBytes(`${artifactRoot}/${descriptor.path}`)");
     expect(deploy).toContain("compact cards do not cover the catalog exactly once");
     expect(deploy).toContain("explorationFileCount > 2000");
+    expect(deploy).toContain("const explorationByteCount = totalBytes(explorationRoot);");
+    expect(deploy).toContain("explorationByteCount >= 1024 * 1024 * 1024");
   });
 });
 
