@@ -52,7 +52,7 @@ function ExplorationContents({ query, generatedAt }: Props) {
       if (result.manifest.generatedAt !== generatedAt) throw new Error("exploration catalog timestamp mismatch");
       setCards((previous) => page === 0 ? result.cards : [...previous, ...result.cards]);
       setHasMore(result.hasMore);
-      setTotal(result.manifest.views[view]);
+      setTotal(view === "all" ? result.manifest.rank.ordinalCount : result.manifest.views[view].count);
     }).catch(() => {
       if (current) setError(true);
     }).finally(() => {
