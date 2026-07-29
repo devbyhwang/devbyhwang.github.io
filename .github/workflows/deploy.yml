@@ -253,8 +253,8 @@ jobs:
           }
           const explorationFileCount = countFiles(explorationRoot);
           if (explorationFileCount > 2000) invalid(`has too many files: ${explorationFileCount}`);
-          const explorationByteCount = totalBytes(explorationRoot);
-          if (explorationByteCount >= 1024 * 1024 * 1024) invalid(`is at least 1 GiB: ${explorationByteCount}`);
+          const siteByteCount = totalBytes("_site");
+          if (siteByteCount >= 1024 * 1024 * 1024) invalid(`site is at least 1 GiB: ${siteByteCount}`);
           EOF
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
