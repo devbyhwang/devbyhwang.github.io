@@ -51,9 +51,9 @@ describe("exploration contracts", () => {
     expect(DIVERSE_PREFIX_SIZE).toBe(96);
   });
 
-  it("uses explicit compact artifact paths and 1,024 ordinal card shards", () => {
+  it("uses explicit compact artifact paths and 896 ordinal card shards", () => {
     expect(COMPACT_EXPLORATION_FORMAT).toBe(1);
-    expect(ORDINAL_CARD_SHARD_COUNT).toBe(1024);
+    expect(ORDINAL_CARD_SHARD_COUNT).toBe(896);
     const key = recommendationKey(ALL_QUERIES[0]!);
 
     expect(key).toContain("|");
@@ -68,10 +68,10 @@ describe("exploration contracts", () => {
     );
     expect(compactExplorationCardShardPath(7)).toBe("exploration/cards/0007.json");
     expect(ordinalCardShard(0)).toBe(0);
-    expect(ordinalCardShard(1024)).toBe(0);
-    expect(compactExplorationCardPathForOrdinal(1031)).toBe("exploration/cards/0007.json");
+    expect(ordinalCardShard(896)).toBe(0);
+    expect(compactExplorationCardPathForOrdinal(1031)).toBe("exploration/cards/0135.json");
     expect(() => compactExplorationMembershipPath("q", "all")).toThrow("filtered view");
-    expect(() => compactExplorationCardShardPath(1024)).toThrow("card shard");
+    expect(() => compactExplorationCardShardPath(896)).toThrow("card shard");
   });
 
   it("round-trips rank vectors in explicit little-endian Uint32 format", () => {
@@ -260,7 +260,7 @@ describe("exploration contracts", () => {
       ordinal: 1031,
     } satisfies CompactExplorationCard;
 
-    expect(compactExplorationCardPathForOrdinal(card.ordinal)).toBe("exploration/cards/0007.json");
+    expect(compactExplorationCardPathForOrdinal(card.ordinal)).toBe("exploration/cards/0135.json");
     expect(() => assertCompactExplorationCardOrdinal({ ...card, ordinal: 10 }, 10)).toThrow("ordinal");
   });
 });

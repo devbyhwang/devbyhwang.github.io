@@ -83,8 +83,9 @@ jobs:
         run: |
           test -f _site/playground/game-recommendation/catalog.json
           test -f _site/playground/game-recommendation/recommendations.json
+          test -f _site/playground/game-recommendation/exploration/manifest.json
           node --input-type=module <<'EOF'
-          import { accessSync, readFileSync } from "node:fs";
+          import { accessSync, existsSync, readFileSync, readdirSync } from "node:fs";
           import { resolve } from "node:path";
 
           const artifactRoot = "_site/playground/game-recommendation";
@@ -156,6 +157,92 @@ jobs:
               }
             }
           }
+
+          const explorationRoot = `${artifactRoot}/exploration`;
+          const explorationPath = `${explorationRoot}/manifest.json`;
+          const exploration = JSON.parse(readFileSync(explorationPath, "utf8"));
+          const expectedQueries = [...expectedKeys];
+          const expectedQueryDirectories = expectedQueries.map(encodeURIComponent).sort();
+          const filteredViews = ["new", "rising", "discovery", "classic"];
+          const pageSize = 24;
+          const cardShardCount = 896;
+          const invalid = (message) => { throw new Error(`exploration ${message}`); };
+          const readJson = (path) => {
+            try { return JSON.parse(readFileSync(path, "utf8")); }
+            catch { invalid(`file is missing or malformed: ${path}`); }
+          };
+          const readBytes = (path) => {
+            try { return readFileSync(path); }
+            catch { invalid(`file is missing or malformed: ${path}`); }
+          };
+          const expectedBitsetBytes = Math.ceil(catalog.gameCount / 8);
+          const expectedCardShard = (ordinal) => ordinal % cardShardCount;
+          const countFiles = (path) => readdirSync(path, { withFileTypes: true }).reduce(
+            (total, entry) => total + (entry.isDirectory() ? countFiles(`${path}/${entry.name}`) : entry.isFile() ? 1 : 0), 0,
+          );
+
+          if (exploration === null || typeof exploration !== "object" || Array.isArray(exploration)) invalid("manifest is invalid");
+          if (exploration.format !== 1) invalid("manifest format is invalid");
+          if (exploration.generatedAt !== catalog.generatedAt) invalid("manifest generatedAt does not match catalog");
+          if (exploration.gameCount !== catalog.gameCount) invalid("manifest gameCount does not match catalog");
+          if (exploration.pageSize !== pageSize) invalid("manifest pageSize is invalid");
+          if (!Array.isArray(exploration.queries) || exploration.queries.length !== expectedQueries.length || exploration.queries.some((query, index) => query !== expectedQueries[index])) invalid("manifest has an unexpected query set");
+
+          const cardDirectories = readdirSync(`${explorationRoot}/cards`).sort();
+          const expectedCardFiles = Array.from({ length: cardShardCount }, (_, shard) => `${shard.toString().padStart(4, "0")}.json`);
+          if (cardDirectories.length !== expectedCardFiles.length || cardDirectories.some((file, index) => file !== expectedCardFiles[index])) invalid("card shard files are incomplete");
+          const cardsByOrdinal = new Map();
+          const cardIds = new Set();
+          for (let shard = 0; shard < cardShardCount; shard += 1) {
+            const path = `${explorationRoot}/cards/${shard.toString().padStart(4, "0")}.json`;
+            const shardCards = readJson(path);
+            if (!Array.isArray(shardCards)) invalid(`card shard is invalid: ${path}`);
+            for (const card of shardCards) {
+              if (card === null || typeof card !== "object" || Array.isArray(card) || typeof card.id !== "string" || !gameIds.has(card.id) || !Number.isInteger(card.ordinal) || card.ordinal < 0 || card.ordinal >= catalog.gameCount) invalid(`card shard contains an invalid card: ${path}`);
+              if (expectedCardShard(card.ordinal) !== shard || cardsByOrdinal.has(card.ordinal) || cardIds.has(card.id)) invalid(`card is duplicated or in the wrong shard: ${path}`);
+              cardsByOrdinal.set(card.ordinal, card.id);
+              cardIds.add(card.id);
+            }
+          }
+          if (cardsByOrdinal.size !== gameIds.size || cardIds.size !== gameIds.size || [...gameIds].some((id) => !cardIds.has(id))) invalid("compact cards do not cover the catalog exactly once");
+
+          const queryRoot = `${explorationRoot}/queries`;
+          const queryDirectories = readdirSync(queryRoot, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+          if (queryDirectories.length !== expectedQueryDirectories.length || queryDirectories.some((query, index) => query !== expectedQueryDirectories[index])) invalid("query roots are incomplete");
+          for (const query of expectedQueries) {
+            const queryPath = `${queryRoot}/${encodeURIComponent(query)}`;
+            const manifest = readJson(`${queryPath}/manifest.json`);
+            if (manifest === null || typeof manifest !== "object" || Array.isArray(manifest) || manifest.format !== 1 || manifest.generatedAt !== catalog.generatedAt || manifest.gameCount !== catalog.gameCount || manifest.pageSize !== pageSize) invalid(`query manifest metadata is invalid: ${query}`);
+            const rankPath = `exploration/queries/${encodeURIComponent(query)}/rank.u32le`;
+            if (manifest.rank === null || typeof manifest.rank !== "object" || manifest.rank.path !== rankPath || !Number.isInteger(manifest.rank.ordinalCount) || manifest.rank.ordinalCount < 0 || manifest.rank.byteLength !== manifest.rank.ordinalCount * 4) invalid(`rank descriptor is inconsistent: ${query}`);
+            if (manifest.views === null || typeof manifest.views !== "object" || Array.isArray(manifest.views) || Object.keys(manifest.views).length !== filteredViews.length || filteredViews.some((view) => !(view in manifest.views))) invalid(`membership bitset descriptors are incomplete: ${query}`);
+            const rank = readBytes(`${artifactRoot}/${manifest.rank.path}`);
+            if (rank.byteLength !== manifest.rank.byteLength) invalid(`rank vector has an invalid byte length: ${query}`);
+            const rankOrdinals = new Set();
+            for (let offset = 0; offset < rank.byteLength; offset += 4) {
+              const ordinal = rank.readUInt32LE(offset);
+              if (ordinal >= catalog.gameCount || rankOrdinals.has(ordinal) || !cardsByOrdinal.has(ordinal)) invalid(`rank vector references an invalid ordinal: ${query}`);
+              rankOrdinals.add(ordinal);
+            }
+            for (const view of filteredViews) {
+              const descriptor = manifest.views[view];
+              const path = `exploration/queries/${encodeURIComponent(query)}/${view}.bits`;
+              if (descriptor === null || typeof descriptor !== "object" || descriptor.path !== path || !Number.isInteger(descriptor.count) || descriptor.count < 0 || descriptor.byteLength !== expectedBitsetBytes) invalid(`membership bitset descriptor is inconsistent: ${query}/${view}`);
+              const bits = readBytes(`${artifactRoot}/${descriptor.path}`);
+              if (bits.byteLength !== descriptor.byteLength) invalid(`membership bitset has an invalid byte length: ${query}/${view}`);
+              if (catalog.gameCount % 8 && (bits[bits.length - 1] & ~((1 << (catalog.gameCount % 8)) - 1)) !== 0) invalid(`membership bitset has invalid padding: ${query}/${view}`);
+              let count = 0;
+              for (let ordinal = 0; ordinal < catalog.gameCount; ordinal += 1) {
+                if ((bits[Math.floor(ordinal / 8)] & (1 << (ordinal % 8))) !== 0) {
+                  if (!rankOrdinals.has(ordinal)) invalid(`membership bitset references an ordinal outside rank: ${query}/${view}`);
+                  count += 1;
+                }
+              }
+              if (count !== descriptor.count) invalid(`membership bitset count is inconsistent: ${query}/${view}`);
+            }
+          }
+          const explorationFileCount = countFiles(explorationRoot);
+          if (explorationFileCount > 2000) invalid(`has too many files: ${explorationFileCount}`);
           EOF
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

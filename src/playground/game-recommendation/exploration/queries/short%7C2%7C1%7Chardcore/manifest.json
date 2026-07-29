@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "generatedAt": "2026-07-29T12:32:05.831Z",
+  "gameCount": 278332,
+  "pageSize": 24,
+  "rank": {
+    "path": "exploration/queries/short%7C2%7C1%7Chardcore/rank.u32le",
+    "ordinalCount": 7,
+    "byteLength": 28
+  },
+  "views": {
+    "new": {
+      "path": "exploration/queries/short%7C2%7C1%7Chardcore/new.bits",
+      "count": 0,
+      "byteLength": 34792
+    },
+    "rising": {
+      "path": "exploration/queries/short%7C2%7C1%7Chardcore/rising.bits",
+      "count": 0,
+      "byteLength": 34792
+    },
+    "discovery": {
+      "path": "exploration/queries/short%7C2%7C1%7Chardcore/discovery.bits",
+      "count": 4,
+      "byteLength": 34792
+    },
+    "classic": {
+      "path": "exploration/queries/short%7C2%7C1%7Chardcore/classic.bits",
+      "count": 2,
+      "byteLength": 34792
+    }
+  }
+}

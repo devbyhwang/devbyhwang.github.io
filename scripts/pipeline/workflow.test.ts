@@ -82,6 +82,14 @@ describe("catalog refresh deployment handoff", () => {
     expect(backfill).toContain("src/playground/game-recommendation/recommendations.json");
   });
 
+  it("stages exploration assets after refreshes and backfills", () => {
+    const refresh = workflow(".github/workflows/catalog-refresh.yml");
+    const backfill = workflow(".github/workflows/catalog-backfill.yml");
+
+    expect(refresh).toContain("src/playground/game-recommendation/exploration");
+    expect(backfill).toContain("src/playground/game-recommendation/exploration");
+  });
+
   it("validates the recommendation index against manifest chunks before uploading the Pages artifact", () => {
     const deploy = workflow(".github/workflows/deploy.yml");
 
@@ -97,6 +105,26 @@ describe("catalog refresh deployment handoff", () => {
     expect(deploy).toContain("const expectedKeys = new Set(");
     expect(deploy).toContain("expectedKeys.size !== 180");
     expect(deploy).toContain("recommendation picks reference game outside catalog");
+  });
+
+  it("validates compact exploration artifacts and their Pages-safe size before uploading", () => {
+    const deploy = workflow(".github/workflows/deploy.yml");
+
+    expect(deploy).toContain("test -f _site/playground/game-recommendation/exploration/manifest.json");
+    expect(deploy).toContain("const explorationRoot = `${artifactRoot}/exploration`;");
+    expect(deploy).toContain('if (exploration.format !== 1) invalid("manifest format is invalid");');
+    expect(deploy).toContain('invalid("manifest generatedAt does not match catalog")');
+    expect(deploy).toContain('invalid("manifest gameCount does not match catalog")');
+    expect(deploy).toContain("const cardShardCount = 896;");
+    expect(deploy).toContain("rank descriptor is inconsistent");
+    expect(deploy).toContain("rank vector has an invalid byte length");
+    expect(deploy).toContain("rank vector references an invalid ordinal");
+    expect(deploy).toContain("readBytes(`${artifactRoot}/${manifest.rank.path}`)");
+    expect(deploy).toContain("membership bitset descriptor is inconsistent");
+    expect(deploy).toContain("membership bitset has an invalid byte length");
+    expect(deploy).toContain("readBytes(`${artifactRoot}/${descriptor.path}`)");
+    expect(deploy).toContain("compact cards do not cover the catalog exactly once");
+    expect(deploy).toContain("explorationFileCount > 2000");
   });
 });
 

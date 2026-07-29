@@ -5,10 +5,10 @@ export const DIVERSE_PREFIX_SIZE = 96;
 export const COMPACT_EXPLORATION_FORMAT = 1;
 export const ORDINAL_BYTE_WIDTH = 4;
 /**
- * 1,024 shards keep each 278k-game card payload small while avoiding the
- * hundreds of thousands of files produced by per-page artifacts.
+ * 896 shards keep each 278k-game card payload small while keeping the full
+ * exploration artifact below the Pages-safe 2,000-file guard.
  */
-export const ORDINAL_CARD_SHARD_COUNT = 1024;
+export const ORDINAL_CARD_SHARD_COUNT = 896;
 
 export type ExplorationView = "all" | "new" | "rising" | "discovery" | "classic";
 export type FilteredExplorationView = Exclude<ExplorationView, "all">;
