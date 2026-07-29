@@ -69,4 +69,18 @@ describe("recommendation index emission", () => {
 
     expect(() => readRecommendations(fs)).toThrow("missing recommendation");
   });
+
+  it.each([
+    ["why", [{ kind: "demand" }], []],
+    ["terms", [{ kind: "demand", text: "Demand" }], [{ kind: "demand", raw: 1 }]],
+  ])("rejects malformed pick %s details", (_field, why, terms) => {
+    const catalog = catalogWith(1);
+    const { fs, files } = memoryFileStore();
+    const index = emitRecommendations(catalog, fs);
+    const recommendation = index.recommendations[Object.keys(index.recommendations)[0]];
+    recommendation.picks = [{ slot: "safe", game: catalog.games[0], score: 1, why: why as never, terms: terms as never }];
+    files.set(RECOMMENDATIONS_PATH, JSON.stringify(index));
+
+    expect(() => readRecommendations(fs)).toThrow(_field);
+  });
 });

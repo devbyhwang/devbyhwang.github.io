@@ -61,7 +61,10 @@ function validateRecommendation(value: unknown, path: string, generatedAt: strin
     if (!oneOf(parsed.slot, ["safe", "rising", "discovery", "new"])) throw new Error(`${path}.picks[${index}].slot: invalid`);
     validateCatalog({ generatedAt, games: [parsed.game as GameRecord] });
     finite(parsed.score, `${path}.picks[${index}].score`);
-    if (!Array.isArray(parsed.why) || !Array.isArray(parsed.terms)) throw new Error(`${path}.picks[${index}]: why and terms must be arrays`);
+    if (!Array.isArray(parsed.why)) throw new Error(`${path}.picks[${index}].why: must be an array`);
+    parsed.why.forEach((why, whyIndex) => validateWhyPart(why, `${path}.picks[${index}].why[${whyIndex}]`));
+    if (!Array.isArray(parsed.terms)) throw new Error(`${path}.picks[${index}].terms: must be an array`);
+    parsed.terms.forEach((term, termIndex) => validateScoreTerm(term, `${path}.picks[${index}].terms[${termIndex}]`));
   });
   if (!Array.isArray(recommendation.relaxations) || recommendation.relaxations.some((value) => !oneOf(value, ["vibeThreshold", "sessionShape", "viewerPlayable"]))) {
     throw new Error(`${path}.relaxations: invalid`);
@@ -70,6 +73,23 @@ function validateRecommendation(value: unknown, path: string, generatedAt: strin
   if (recommendation.blockedBy !== null && !oneOf(recommendation.blockedBy, ["players", "vibe", "other"])) {
     throw new Error(`${path}.blockedBy: invalid`);
   }
+}
+
+function validateWhyPart(value: unknown, path: string): void {
+  const why = object(value, path);
+  if (!oneOf(why.kind, ["demand", "accessibility", "quality", "growth", "stability", "competition", "confidence", "unknownPlayerPenalty", "marginalSessionPenalty", "discovery", "newRelease", "playerFit", "sessionFit", "opportunity", "topOnTwitch"])) {
+    throw new Error(`${path}.kind: invalid`);
+  }
+  if (typeof why.text !== "string" || why.text.trim() === "") throw new Error(`${path}.text: must be a non-empty string`);
+}
+
+function validateScoreTerm(value: unknown, path: string): void {
+  const term = object(value, path);
+  if (!oneOf(term.kind, ["demand", "accessibility", "quality", "growth", "stability", "competition", "confidence", "unknownPlayerPenalty", "marginalSessionPenalty", "discovery", "newRelease", "playerFit", "sessionFit", "opportunity", "topOnTwitch"])) {
+    throw new Error(`${path}.kind: invalid`);
+  }
+  finite(term.raw, `${path}.raw`);
+  finite(term.contribution, `${path}.contribution`);
 }
 
 function object(value: unknown, path: string): Record<string, unknown> {

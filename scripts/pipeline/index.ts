@@ -137,11 +137,32 @@ export function validateOutput(rootDir: string): void {
   const fileStore = createNodeFileStore(rootDir);
   const catalog = readCatalog(fileStore);
   if (!catalog) throw new Error("src/playground/game-recommendation/catalog.json is missing");
-  if (!readRecommendations(fileStore)) throw new Error("src/playground/game-recommendation/recommendations.json is missing");
+  const recommendations = readRecommendations(fileStore);
+  if (!recommendations) throw new Error("src/playground/game-recommendation/recommendations.json is missing");
+  if (recommendations.generatedAt !== catalog.generatedAt) throw new Error("recommendations.json generatedAt does not match catalog");
+  if (recommendations.gameCount !== catalog.gameCount) throw new Error("recommendations.json gameCount does not match catalog");
+  const gameIds = readCatalogGameIds(fileStore, catalog.chunks);
+  for (const recommendation of Object.values(recommendations.recommendations)) {
+    for (const pick of recommendation.picks) {
+      if (!gameIds.has(pick.game.id)) throw new Error(`recommendations.json references game outside catalog: ${pick.game.id}`);
+    }
+  }
   const historyPath = resolve(rootDir, "data/history.json");
   if (!existsSync(historyPath)) throw new Error("data/history.json is missing");
   validateHistory(readHistory(historyPath), historyPath);
   loadKnowledge(rootDir);
+}
+
+function readCatalogGameIds(fileStore: ReturnType<typeof createNodeFileStore>, chunks: string[]): Set<string> {
+  const ids = new Set<string>();
+  for (const chunkPath of chunks) {
+    const filePath = `src/playground/game-recommendation/${chunkPath.slice(2)}`;
+    const contents = fileStore.read(filePath);
+    if (contents === null) throw new Error(`${filePath}: missing`);
+    const chunk = JSON.parse(contents) as { games: Array<{ id: string }> };
+    for (const game of chunk.games) ids.add(game.id);
+  }
+  return ids;
 }
 
 function backfillRawPath(rootDir: string, start: string, end: string, offset: number): string {

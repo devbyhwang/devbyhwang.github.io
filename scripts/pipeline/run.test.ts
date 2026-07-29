@@ -5,7 +5,8 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CatalogRecord, RawSources, SteamFetchInput } from "./model";
-import { fixtureSources, runCommand } from "./index";
+import { fixtureSources, runCommand, validateOutput } from "./index";
+import { RECOMMENDATIONS_PATH } from "./recommendations";
 import { runPipeline } from "./run";
 import { fetchTwitch } from "./sources/twitch";
 import { readEmittedCatalog } from "./test-helpers";
@@ -458,6 +459,30 @@ describe("pipeline CLI commands", () => {
     });
     expect(catalogText).not.toContain("\"responses\"");
     expect(catalogText).not.toContain("\"request\"");
+  });
+
+  it("rejects a recommendation index emitted for a different catalog", async () => {
+    const destination = root();
+    await runCommand("fixture", { rootDir: destination, env: { PIPELINE_AS_OF: asOf }, logger });
+    const path = join(destination, RECOMMENDATIONS_PATH);
+    const index = JSON.parse(readFileSync(path, "utf8"));
+    index.generatedAt = "2026-07-27T00:00:00.000Z";
+    writeFileSync(path, JSON.stringify(index));
+
+    expect(() => validateOutput(destination)).toThrow("generatedAt");
+  });
+
+  it("rejects a recommendation index that names a game outside the catalog", async () => {
+    const destination = root();
+    await runCommand("fixture", { rootDir: destination, env: { PIPELINE_AS_OF: asOf }, logger });
+    const path = join(destination, RECOMMENDATIONS_PATH);
+    const index = JSON.parse(readFileSync(path, "utf8"));
+    const pick = Object.values(index.recommendations).flatMap((recommendation: any) => recommendation.picks)[0];
+    expect(pick).toBeDefined();
+    pick.game.id = "outside-the-catalog";
+    writeFileSync(path, JSON.stringify(index));
+
+    expect(() => validateOutput(destination)).toThrow("outside catalog");
   });
 
   it("runs backfill mode in-process with explicit start and end boundaries", async () => {
