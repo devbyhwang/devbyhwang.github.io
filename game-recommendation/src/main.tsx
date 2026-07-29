@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { loadCatalog } from "./data/catalog";
+import { loadRecommendations } from "./data/recommendations";
 import { App } from "./ui/App";
 
 const root = createRoot(document.getElementById("root")!);
@@ -14,18 +14,23 @@ function CatalogError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-function renderCatalog() {
-  loadCatalog()
-    .then((catalog) => {
+function renderRecommendations() {
+  root.render(
+    <main className="app">
+      <p>추천 결과를 불러오는 중입니다</p>
+    </main>,
+  );
+  loadRecommendations()
+    .then((index) => {
       root.render(
         <StrictMode>
-          <App catalog={catalog} />
+          <App index={index} />
         </StrictMode>,
       );
     })
     .catch(() => {
-      root.render(<CatalogError onRetry={renderCatalog} />);
+      root.render(<CatalogError onRetry={renderRecommendations} />);
     });
 }
 
-renderCatalog();
+renderRecommendations();

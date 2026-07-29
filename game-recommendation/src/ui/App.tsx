@@ -1,11 +1,9 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { QueryPanel } from "./QueryPanel";
 import { RELAXATION_LABELS, ResultCard } from "./ResultCard";
 import { DebugPanel } from "./DebugPanel";
-import { recommend } from "../domain/recommend";
-import { SAMPLE_DATASET } from "../domain/fixtures";
+import { recommendationKey, type RecommendationIndex } from "../domain/recommendation-index";
 import {
-  type Catalog,
   LENGTH_LABELS,
   PLAYER_LABELS,
   VIBE_LABELS,
@@ -43,19 +41,17 @@ function summarize(q: Query): string {
 }
 
 type Props = {
-  catalog?: Catalog;
+  index: RecommendationIndex;
 };
 
 function formatCatalogDate(generatedAt: string): string {
   return new Date(generatedAt).toLocaleString("ko-KR");
 }
 
-export function App({ catalog = SAMPLE_DATASET }: Props) {
+export function App({ index }: Props) {
   const [query, setQuery] = useState<Query>(INITIAL);
-  const result = useMemo(
-    () => recommend(catalog.games, query, catalog.generatedAt),
-    [catalog.games, catalog.generatedAt, query],
-  );
+  const result = index.recommendations[recommendationKey(query)];
+  if (!result) throw new Error(`missing recommendation for query: ${recommendationKey(query)}`);
   const debug = new URLSearchParams(window.location.search).has("debug");
 
   const relaxed = result.relaxations.map((r) => RELAXATION_LABELS[r]).join(", ");
@@ -102,7 +98,7 @@ export function App({ catalog = SAMPLE_DATASET }: Props) {
       )}
 
       <footer className="foot">
-        카탈로그 생성 시각 {formatCatalogDate(catalog.generatedAt)} · 후보 {result.candidateCount}개
+        카탈로그 생성 시각 {formatCatalogDate(index.generatedAt)} · 후보 {result.candidateCount}개
       </footer>
     </main>
   );
