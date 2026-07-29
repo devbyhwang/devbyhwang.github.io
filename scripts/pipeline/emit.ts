@@ -9,6 +9,9 @@ const CHUNK_SIZE = 500;
 export type FileStore = {
   read(path: string): string | null;
   writeAtomic(path: string, contents: string): void;
+  /** Binary artifacts are optional so older in-memory stores remain usable. */
+  readBytes?(path: string): Uint8Array | null;
+  writeAtomicBytes?(path: string, contents: Uint8Array): void;
   delete(path: string): void;
 };
 
@@ -30,6 +33,21 @@ export function createNodeFileStore(rootDir = process.cwd()): FileStore {
       const temporary = `${destination}.tmp`;
       mkdirSync(dirname(destination), { recursive: true });
       writeFileSync(temporary, contents, "utf8");
+      renameSync(temporary, destination);
+    },
+    readBytes(path) {
+      try {
+        return new Uint8Array(readFileSync(resolve(rootDir, path)));
+      } catch (error: unknown) {
+        if (typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT") return null;
+        throw error;
+      }
+    },
+    writeAtomicBytes(path, contents) {
+      const destination = resolve(rootDir, path);
+      const temporary = `${destination}.tmp`;
+      mkdirSync(dirname(destination), { recursive: true });
+      writeFileSync(temporary, contents);
       renameSync(temporary, destination);
     },
     delete(path) {
