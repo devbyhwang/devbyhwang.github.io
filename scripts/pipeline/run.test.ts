@@ -472,6 +472,17 @@ describe("pipeline CLI commands", () => {
     expect(() => validateOutput(destination)).toThrow("generatedAt");
   });
 
+  it("rejects a recommendation index whose game count differs from the catalog", async () => {
+    const destination = root();
+    await runCommand("fixture", { rootDir: destination, env: { PIPELINE_AS_OF: asOf }, logger });
+    const path = join(destination, RECOMMENDATIONS_PATH);
+    const index = JSON.parse(readFileSync(path, "utf8"));
+    index.gameCount += 1;
+    writeFileSync(path, JSON.stringify(index));
+
+    expect(() => validateOutput(destination)).toThrow("gameCount");
+  });
+
   it("rejects a recommendation index that names a game outside the catalog", async () => {
     const destination = root();
     await runCommand("fixture", { rootDir: destination, env: { PIPELINE_AS_OF: asOf }, logger });
