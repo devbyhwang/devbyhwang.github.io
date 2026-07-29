@@ -57,7 +57,16 @@ describe("catalog refresh deployment handoff", () => {
     expect(refresh).toContain("npm run pipeline");
     expect(refresh).toContain("npm run pipeline:validate");
     expect(refresh).not.toMatch(/pipeline:model|OPENAI_|ANTHROPIC_|COHERE_|MISTRAL_/);
-    expect(refresh).toContain("git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks");
+    expect(refresh).toContain("git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json");
+  });
+
+  it("does not fail when a legacy catalog run has no chunk directory yet", () => {
+    const refresh = workflow(".github/workflows/catalog-refresh.yml");
+    const backfill = workflow(".github/workflows/catalog-backfill.yml");
+    const optionalChunkStage = "if [ -d src/playground/game-recommendation/catalog/chunks ]; then\n            git add src/playground/game-recommendation/catalog/chunks\n          fi";
+
+    expect(refresh).toContain(optionalChunkStage);
+    expect(backfill).toContain(optionalChunkStage);
   });
 
   it("validates manifest chunks before uploading the Pages artifact", () => {
