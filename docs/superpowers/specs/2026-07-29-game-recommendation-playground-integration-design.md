@@ -61,7 +61,7 @@ GitHub Pages
 - Actions는 `data/history.json`, `data/raw`, `data/checkpoints`, `src/playground/game-recommendation/catalog.json`,
   `src/playground/game-recommendation/catalog/chunks`만 갱신 커밋한다.
 - 기존 legacy `catalog.json`도 첫 live refresh 전까지 읽을 수 있으며, 새 refresh/backfill은 manifest + chunks 형식으로 전환한다.
-- 새 데이터 커밋은 `main` push로 기존 Pages 배포를 한 번 트리거한다.
+- 사람의 새 데이터 커밋은 `main` push로, Actions 봇의 새 데이터 커밋은 성공한 `workflow_run`으로 기존 Pages 배포를 한 번 트리거한다.
 - 사람의 `main` push와 수동 배포는 기존 `push`/`workflow_dispatch`로 처리하고, GitHub Actions 봇 커밋은 `workflow_run` 성공 트리거로 Pages 배포를 실행한다. 실패한 refresh/backfill은 배포하지 않는다.
 
 ## 완료 조건
