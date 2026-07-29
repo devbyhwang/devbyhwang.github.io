@@ -190,6 +190,18 @@ describe("exploration contracts", () => {
     expect(ranked.slice(96)).toEqual(["game-a", "game-A"]);
   });
 
+  it("uses locale rather than raw ASCII ID order for exact-score prefix ties", () => {
+    const lowerCase = game("game-a", { franchise: "A", releaseDate: "2024-01-01T00:00:00.000Z" });
+    const upperCase = game("game-A", { franchise: "B", releaseDate: "2024-01-01T00:00:00.000Z" });
+
+    expect("game-A" < "game-a").toBe(true);
+    expect("game-a".localeCompare("game-A")).toBeLessThan(0);
+    expect(rerankExploration([upperCase, lowerCase], [scored(upperCase, 1), scored(lowerCase, 1)])).toEqual([
+      "game-a",
+      "game-A",
+    ]);
+  });
+
   it("selects the diverse prefix without repeatedly sorting every remaining game", () => {
     const games = Array.from({ length: DIVERSE_PREFIX_SIZE + 4 }, (_, index) =>
       game(`game-${String(index).padStart(3, "0")}`, {
