@@ -18,7 +18,7 @@
 | 카탈로그 경로 | `src/playground/game-recommendation/catalog.json` |
 | 파이프라인 | 기존 `scripts/pipeline`을 블로그 저장소로 이동하고 데이터·지식 자산은 저장소 루트 `data/`에 둔다 |
 | 데이터 갱신 | 블로그 저장소의 GitHub Actions가 매일 00:00 UTC에 최신 데이터를 갱신하고, 별도 수동 workflow가 역사 데이터를 백필 |
-| 배포 | 데이터 커밋이 기존 블로그 `deploy.yml`의 `push: main`을 통해 Pages 배포를 트리거 |
+| 배포 | 사람의 `main` push/수동 실행과 main 브랜치의 성공한 데이터 workflow 실행이 기존 블로그 `deploy.yml`의 Pages 배포를 트리거 |
 | Playground 카드 | `src/_data/studio.js`에 `/playground/game-recommendation/` 링크 추가 |
 | 기존 서비스 저장소 | 통합 후 별도 Pages 배포 대상으로 사용하지 않는다. 현재 standalone PR은 통합 PR과 분리한다 |
 
@@ -61,8 +61,8 @@ GitHub Pages
 - Actions는 `data/history.json`, `data/raw`, `data/checkpoints`, `src/playground/game-recommendation/catalog.json`,
   `src/playground/game-recommendation/catalog/chunks`만 갱신 커밋한다.
 - 기존 legacy `catalog.json`도 첫 live refresh 전까지 읽을 수 있으며, 새 refresh/backfill은 manifest + chunks 형식으로 전환한다.
-- 새 데이터 커밋은 `main` push로 기존 Pages 배포를 한 번 트리거한다.
-- 별도 `workflow_run` 배포 트리거는 추가하지 않아 중복 배포를 만들지 않는다.
+- 사람의 새 데이터 커밋은 `main` push로, Actions 봇의 새 데이터 커밋은 성공한 `workflow_run`으로 기존 Pages 배포를 한 번 트리거한다.
+- 사람의 `main` push와 수동 배포는 기존 `push`/`workflow_dispatch`로 처리하고, GitHub Actions 봇 커밋은 `workflow_run` 성공 트리거로 Pages 배포를 실행한다. 실패한 refresh/backfill은 배포하지 않는다.
 
 ## 완료 조건
 

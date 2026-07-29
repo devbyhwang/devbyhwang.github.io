@@ -15,7 +15,7 @@
 - API credentials는 GitHub Actions secrets에만 두고 저장소 파일에 기록하지 않는다.
 - 데이터 갱신 workflow는 매일 `0 0 * * *` UTC에 실행한다.
 - 데이터 커밋은 `data/history.json`, `data/raw/**`, `src/playground/game-recommendation/catalog.json`만 포함한다.
-- Pages 배포는 기존 블로그 `deploy.yml`의 `push: main` 한 경로만 사용한다.
+- Pages 배포는 기존 블로그 `deploy.yml`에서 사람의 `push: main`/수동 실행과 main 브랜치의 성공한 데이터 workflow 실행을 처리한다.
 
 ---
 
@@ -151,7 +151,7 @@
 - The refresh job writes only `data/history.json`, `data/raw`, `data/checkpoints`,
   `src/playground/game-recommendation/catalog.json`, and its chunk directory, then pushes to `main`.
 - The backfill job accepts an explicit date range, persists yearly IGDB checkpoints, and serializes runs.
-- The existing Pages deployment remains the only deploy workflow; no `workflow_run` trigger is added.
+- The existing Pages deployment remains the only deploy workflow; it also listens for successful refresh/backfill `workflow_run` events because GitHub Actions bot commits do not trigger a new `push` workflow.
 
 - [x] **Step 1: Add a workflow with `workflow_dispatch` and `schedule: cron: "0 0 * * *"`.** Use Node 22, `npm ci`, repository secrets for Twitch credentials, and repository variables with defaults `TWITCH_TOP_GAME_LIMIT=100`, `TWITCH_STREAM_PAGE_LIMIT=5`, `IGDB_RECENT_DAYS=60`.
 - [x] **Step 2: Run `npm run pipeline`, validate successful output, preserve both exit codes, stage `data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks`, commit only when changed, and push.** Add concurrency `game-recommendation-refresh` with `cancel-in-progress: false` to prevent overlapping daily refreshes.
