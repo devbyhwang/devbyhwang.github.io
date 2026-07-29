@@ -51,7 +51,8 @@ function releaseDatePredicate(partitionStart: string, partitionEnd: string): str
     const startYear = Number(partitionStart.slice(0, 4));
     const endYear = Number(partitionEnd.slice(0, 4));
     const endYearExclusive = partitionEnd.endsWith("-01-01") ? endYear : endYear + 1;
-    return `release_dates.y >= ${startYear} & release_dates.y < ${endYearExclusive}`;
+    const years = Array.from({ length: Math.max(0, endYearExclusive - startYear) }, (_, index) => startYear + index);
+    return `release_dates.y = (${years.join(",")})`;
   }
   return `first_release_date >= ${start} & first_release_date < ${end}`;
 }

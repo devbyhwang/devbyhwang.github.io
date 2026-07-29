@@ -106,7 +106,7 @@ describe("IGDB backfill checkpoints", () => {
     });
 
     expect(network.calls.find((call) => call.url.endsWith("/games"))?.body)
-      .toContain("where release_dates.y >= 1950 & release_dates.y < 1951");
+      .toContain("where release_dates.y = (1950)");
     expect(snapshots[0].games).toEqual([game(1, -631_152_000)]);
     expect(result.fetchedGameCount).toBe(1);
   });
