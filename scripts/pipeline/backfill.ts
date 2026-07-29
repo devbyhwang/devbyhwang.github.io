@@ -118,6 +118,11 @@ function validCatalogGames(games: IgdbGame[]): { ids: number[]; missingReleaseDa
   return { ids, missingReleaseDates };
 }
 
+function inPartition(game: IgdbGame, partitionStart: number, partitionEnd: number): boolean {
+  if (!Number.isFinite(game.first_release_date)) return false;
+  return (game.first_release_date as number) >= partitionStart && (game.first_release_date as number) < partitionEnd;
+}
+
 export async function runBackfill(options: BackfillOptions): Promise<BackfillResult> {
   const asOf = isoTimestamp(options.asOf, "backfill asOf");
   const partitions = yearlyPartitions(options.partitionStart, options.partitionEnd);
@@ -131,6 +136,8 @@ export async function runBackfill(options: BackfillOptions): Promise<BackfillRes
   for (const partition of partitions) {
     const state = checkpoint.partitions[partition.key];
     if (state.status === "complete") continue;
+    const partitionStart = Math.floor(parseDay(partition.start, "partitionStart").getTime() / 1_000);
+    const partitionEnd = Math.floor(parseDay(partition.end, "partitionEnd").getTime() / 1_000);
 
     let offset = state.nextOffset;
     while (true) {
@@ -146,13 +153,16 @@ export async function runBackfill(options: BackfillOptions): Promise<BackfillRes
         offset,
         recordResponse: options.recordResponse,
       }, http);
-      await options.recordSnapshot?.(snapshot);
-      const { ids, missingReleaseDates: missingForPage } = validCatalogGames(snapshot.games);
+      const rawGameCount = snapshot.games.length;
+      const partitionGames = snapshot.games.filter((game) => inPartition(game, partitionStart, partitionEnd));
+      await options.recordSnapshot?.({ ...snapshot, games: partitionGames });
+      const { ids } = validCatalogGames(partitionGames);
+      const { missingReleaseDates: missingForPage } = validCatalogGames(snapshot.games);
       missingReleaseDates += missingForPage;
       for (const id of ids) seenGameIds.add(id);
 
-      const nextOffset = Math.max(state.nextOffset, offset + snapshot.games.length);
-      if (snapshot.games.length < QUERY_LIMIT) {
+      const nextOffset = Math.max(state.nextOffset, offset + rawGameCount);
+      if (rawGameCount < QUERY_LIMIT) {
         checkpoint.partitions[partition.key] = { status: "complete", nextOffset, updatedAt: asOf };
         await persistCheckpoint(options.rootDir, checkpoint);
         break;

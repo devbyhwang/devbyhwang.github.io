@@ -44,6 +44,18 @@ function epochDay(value: string, label: "partitionStart" | "partitionEnd"): numb
   return Math.floor(date.getTime() / 1_000);
 }
 
+function releaseDatePredicate(partitionStart: string, partitionEnd: string): string {
+  const start = epochDay(partitionStart, "partitionStart");
+  const end = epochDay(partitionEnd, "partitionEnd");
+  if (start < 0) {
+    const startYear = Number(partitionStart.slice(0, 4));
+    const endYear = Number(partitionEnd.slice(0, 4));
+    const endYearExclusive = partitionEnd.endsWith("-01-01") ? endYear : endYear + 1;
+    return `release_dates.y >= ${startYear} & release_dates.y < ${endYearExclusive}`;
+  }
+  return `first_release_date >= ${start} & first_release_date < ${end}`;
+}
+
 async function token(input: IgdbFetchInput, http: HttpClient): Promise<string> {
   const body = new URLSearchParams({
     client_id: input.clientId,
@@ -130,9 +142,7 @@ async function requestPartitionGames(
   responses: unknown[],
   recordResponse?: IgdbFetchInput["recordResponse"],
 ): Promise<IgdbGame[]> {
-  const start = epochDay(partitionStart, "partitionStart");
-  const end = epochDay(partitionEnd, "partitionEnd");
-  const body = `fields ${gameFields}; where first_release_date >= ${start} & first_release_date < ${end}; sort first_release_date asc, id asc; limit ${QUERY_LIMIT}; offset ${offset};`;
+  const body = `fields ${gameFields}; where ${releaseDatePredicate(partitionStart, partitionEnd)}; sort first_release_date asc, id asc; limit ${QUERY_LIMIT}; offset ${offset};`;
   const response = await http.postJson<unknown>(GAMES_URL, body, authHeaders);
   await recordResponse?.(response);
   responses.push(response);
