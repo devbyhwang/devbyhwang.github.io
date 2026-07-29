@@ -83,6 +83,22 @@ describe("compact exploration emission", () => {
     expect(() => readExploration(fs)).toThrow("invalid card");
   });
 
+  it("rejects card fields outside the catalog contract", () => {
+    const { fs, files } = memoryFileStore();
+    const corruptions: Array<(card: Record<string, unknown>) => void> = [
+      (card) => { card.releaseDate = "2026-01-01"; },
+      (card) => { card.players = { max: 0, online: false, localCoop: false }; },
+      (card) => { card.discountPercent = 101; },
+    ];
+    for (const corrupt of corruptions) {
+      emitExploration(catalogWith(2), fs);
+      const cards = JSON.parse(files.get(explorationCardPath(0))!) as Array<Record<string, unknown>>;
+      corrupt(cards[0]!);
+      files.set(explorationCardPath(0), JSON.stringify(cards));
+      expect(() => readExploration(fs)).toThrow("invalid card");
+    }
+  });
+
   it("keeps the legacy locale tie-break after the diverse prefix", () => {
     const { fs, bytes } = memoryFileStore();
     const catalog = equalScoreCatalog();

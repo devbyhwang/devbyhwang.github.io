@@ -179,6 +179,17 @@ describe("exploration contracts", () => {
     ]);
   });
 
+  it("uses legacy locale ID ties for exact-score prefix selection and tail order", () => {
+    const games = Array.from({ length: DIVERSE_PREFIX_SIZE + 2 }, (_, index) => game(
+      index < DIVERSE_PREFIX_SIZE ? `game-${String(index).padStart(3, "0")}` : index === DIVERSE_PREFIX_SIZE ? "game-a" : "game-A",
+      { franchise: `franchise-${index}`, releaseDate: "2024-01-01T00:00:00.000Z" },
+    ));
+
+    const ranked = rerankExploration(games, games.map((entry) => scored(entry, 1)));
+
+    expect(ranked.slice(96)).toEqual(["game-a", "game-A"]);
+  });
+
   it("selects the diverse prefix without repeatedly sorting every remaining game", () => {
     const games = Array.from({ length: DIVERSE_PREFIX_SIZE + 4 }, (_, index) =>
       game(`game-${String(index).padStart(3, "0")}`, {

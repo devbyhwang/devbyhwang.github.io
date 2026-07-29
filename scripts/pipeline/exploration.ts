@@ -204,21 +204,21 @@ function isCompactCard(value: unknown, gameCount: number): value is CompactExplo
   const card = value as CompactExplorationCard;
   if (typeof card.id !== "string" || !card.id
     || typeof card.name !== "string" || !card.name
-    || typeof card.releaseDate !== "string"
+    || !isIsoTimestamp(card.releaseDate)
     || !isCardPlayers(card.players)
     || !isSessionShape(card.sessionShape)
     || !isFiniteNonNegativeNumber(card.twitchViewers)
     || (card.nameKo !== undefined && typeof card.nameKo !== "string")
     || (card.coverUrl !== undefined && typeof card.coverUrl !== "string")
     || (card.storeUrl !== undefined && typeof card.storeUrl !== "string")
-    || (card.discountPercent !== undefined && !isFiniteNonNegativeNumber(card.discountPercent))) return false;
+    || (card.discountPercent !== undefined && !isFiniteNumberInRange(card.discountPercent, 0, 100))) return false;
   try { assertCompactExplorationCardOrdinal(card, gameCount); return true; } catch { return false; }
 }
 
 function isCardPlayers(value: unknown): value is CompactExplorationCard["players"] {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
   const players = value as CompactExplorationCard["players"];
-  return (players.max === "unknown" || isFiniteNonNegativeNumber(players.max))
+  return (players.max === "unknown" || isPositiveInteger(players.max))
     && typeof players.online === "boolean"
     && typeof players.localCoop === "boolean";
 }
@@ -229,6 +229,20 @@ function isSessionShape(value: unknown): value is CompactExplorationCard["sessio
 
 function isFiniteNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
+}
+
+function isFiniteNumberInRange(value: unknown, minimum: number, maximum: number): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value >= minimum && value <= maximum;
+}
+
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+function isIsoTimestamp(value: unknown): value is string {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)
+    && Number.isFinite(new Date(value).getTime())
+    && new Date(value).toISOString() === value;
 }
 
 function writeBytes(fs: FileStore, path: string, value: Uint8Array): void {

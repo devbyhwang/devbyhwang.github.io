@@ -198,7 +198,7 @@ function overlap(candidate: Game, chosen: Game): number {
 }
 
 function compareIds(a: string, b: string): number {
-  return a < b ? -1 : a > b ? 1 : 0;
+  return a.localeCompare(b);
 }
 
 function compareRank(a: { game: Game; score: number }, b: { game: Game; score: number }): number {
