@@ -48,4 +48,17 @@ describe("exploration data", () => {
 
     expect(fetcher).toHaveBeenCalledTimes(3);
   });
+
+  it("does not request a nonexistent page for an empty view", async () => {
+    const fetcher = vi.fn(async (_url: string) => response({
+      generatedAt: "2026-07-28T00:00:00.000Z", gameCount: 1, pageSize: 24,
+      views: { all: 1, new: 0, rising: 0, discovery: 0, classic: 0 },
+    }));
+    const { loadExplorationPage } = await import("./exploration");
+
+    const result = await loadExplorationPage(query, "new", 0, fetcher as typeof fetch);
+
+    expect(result).toMatchObject({ cards: [], hasMore: false });
+    expect(fetcher.mock.calls.map(([url]) => url)).not.toContain(expect.stringContaining("/new/0.json"));
+  });
 });

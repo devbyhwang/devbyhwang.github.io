@@ -99,6 +99,7 @@ export async function loadExplorationPage(
   validateManifest(manifest);
   const count = manifest.views[view];
   if (!Number.isInteger(count) || count < 0) throw new Error(`exploration manifest: invalid ${view} count`);
+  if (count === 0) return { manifest, cards: [], hasMore: false };
   const pageData = await cachedJson<unknown>(`${root}/${view}/${page}.json`, fetcher);
   validatePage(pageData);
   const cards = await loadCards(pageData.ids, fetcher);
