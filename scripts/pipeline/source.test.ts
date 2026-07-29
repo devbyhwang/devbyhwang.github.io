@@ -272,7 +272,8 @@ describe("IGDB source", () => {
 
     const body = posts.find((request) => request.url.endsWith("/games"))?.body ?? "";
     expect(body).toContain("where first_release_date >= 631152000 & first_release_date < 662688000");
-    expect(body).toContain("sort first_release_date asc, id asc;");
+    expect(body).toContain("sort id asc;");
+    expect(body).not.toContain("sort first_release_date asc;");
     expect(body).toContain("limit 500; offset 500;");
     expect(body).not.toContain("rating_count >= 5");
     expect(body).toContain("game_type");
