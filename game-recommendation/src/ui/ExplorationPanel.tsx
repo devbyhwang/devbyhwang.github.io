@@ -71,9 +71,8 @@ function ExplorationContents({ query, generatedAt }: Props) {
   };
 
   return (
-    <section className="exploration" aria-label="게임 더 찾아보기">
+    <div className="exploration">
       <div className="exploration-head">
-        <h2>더 많은 게임 찾아보기</h2>
         {total !== null && <p>{total.toLocaleString("ko-KR")}개 결과</p>}
       </div>
       <div className="exploration-tabs" role="tablist" aria-label="탐색 방식">
@@ -95,7 +94,7 @@ function ExplorationContents({ query, generatedAt }: Props) {
           )}
         </>
       )}
-    </section>
+    </div>
   );
 }
 
