@@ -42,6 +42,17 @@ describe("ExplorationPanel", () => {
     expect(screen.queryByRole("heading", { name: "더 많은 게임 찾아보기" })).toBeNull();
   });
 
+  it("결과 수를 탐색 탭과 같은 임베드 툴바에 표시한다", async () => {
+    vi.stubGlobal("fetch", compactFetch(24));
+    const { ExplorationPanel } = await import("./ExplorationPanel");
+    render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
+
+    const count = await screen.findByText("24개 결과");
+    const toolbar = count.closest(".exploration-toolbar");
+    expect(toolbar).not.toBeNull();
+    expect(toolbar?.querySelector('[role="tablist"]')).toBe(screen.getByRole("tablist", { name: "탐색 방식" }));
+  });
+
   it("replaces the 24 cards when moving between pages without another rank request", async () => {
     const fetcher = compactFetch(48); vi.stubGlobal("fetch", fetcher);
     const { ExplorationPanel } = await import("./ExplorationPanel");
