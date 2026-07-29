@@ -2,8 +2,33 @@ import type { Game, Scored, SessionShape } from "./types";
 
 export const PAGE_SIZE = 24;
 export const DIVERSE_PREFIX_SIZE = 96;
+export const COMPACT_EXPLORATION_FORMAT = 1;
+export const ORDINAL_BYTE_WIDTH = 4;
+/**
+ * 1,024 shards keep each 278k-game card payload small while avoiding the
+ * hundreds of thousands of files produced by per-page artifacts.
+ */
+export const ORDINAL_CARD_SHARD_COUNT = 1024;
 
 export type ExplorationView = "all" | "new" | "rising" | "discovery" | "classic";
+export type FilteredExplorationView = Exclude<ExplorationView, "all">;
+
+export type CompactExplorationManifest = {
+  format: typeof COMPACT_EXPLORATION_FORMAT;
+  generatedAt: string;
+  gameCount: number;
+  pageSize: typeof PAGE_SIZE;
+  rank: {
+    path: string;
+    ordinalCount: number;
+    byteLength: number;
+  };
+  views: Record<FilteredExplorationView, {
+    path: string;
+    count: number;
+    byteLength: number;
+  }>;
+};
 
 export type ExplorationManifest = {
   generatedAt: string;
@@ -28,6 +53,112 @@ export type ExplorationCard = {
   twitchViewers: number;
   discountPercent?: number;
 };
+
+export function compactExplorationManifestPath(queryKey: string): string {
+  return `${compactExplorationQueryPath(queryKey)}/manifest.json`;
+}
+
+export function compactExplorationRankPath(queryKey: string): string {
+  return `${compactExplorationQueryPath(queryKey)}/rank.u32le`;
+}
+
+export function compactExplorationMembershipPath(queryKey: string, view: ExplorationView): string {
+  if (view === "all") throw new Error("membership bitsets require a filtered view");
+  return `${compactExplorationQueryPath(queryKey)}/${view}.bits`;
+}
+
+export function compactExplorationCardShardPath(shard: number): string {
+  if (!Number.isInteger(shard) || shard < 0 || shard >= ORDINAL_CARD_SHARD_COUNT) {
+    throw new Error(`invalid ordinal card shard: ${shard}`);
+  }
+  return `exploration/cards/${shard.toString().padStart(4, "0")}.json`;
+}
+
+export function ordinalCardShard(ordinal: number): number {
+  assertOrdinal(ordinal, Number.MAX_SAFE_INTEGER);
+  return ordinal % ORDINAL_CARD_SHARD_COUNT;
+}
+
+export function encodeOrdinalRankVector(ordinals: readonly number[], gameCount: number): Uint8Array {
+  assertGameCount(gameCount);
+  const bytes = new Uint8Array(ordinals.length * ORDINAL_BYTE_WIDTH);
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const seen = new Set<number>();
+  ordinals.forEach((ordinal, index) => {
+    assertOrdinal(ordinal, gameCount);
+    if (seen.has(ordinal)) throw new Error(`duplicate ordinal: ${ordinal}`);
+    seen.add(ordinal);
+    view.setUint32(index * ORDINAL_BYTE_WIDTH, ordinal, true);
+  });
+  return bytes;
+}
+
+export function decodeOrdinalRankVector(bytes: Uint8Array, ordinalCount: number, gameCount: number): number[] {
+  assertGameCount(gameCount);
+  if (!Number.isInteger(ordinalCount) || ordinalCount < 0) throw new Error(`invalid ordinal count: ${ordinalCount}`);
+  const expectedByteLength = ordinalCount * ORDINAL_BYTE_WIDTH;
+  if (bytes.byteLength !== expectedByteLength) {
+    throw new Error(`rank vector byte length: expected ${expectedByteLength}, got ${bytes.byteLength}`);
+  }
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const seen = new Set<number>();
+  return Array.from({ length: ordinalCount }, (_, index) => {
+    const ordinal = view.getUint32(index * ORDINAL_BYTE_WIDTH, true);
+    assertOrdinal(ordinal, gameCount);
+    if (seen.has(ordinal)) throw new Error(`duplicate ordinal: ${ordinal}`);
+    seen.add(ordinal);
+    return ordinal;
+  });
+}
+
+export function membershipBitsetByteLength(gameCount: number): number {
+  assertGameCount(gameCount);
+  return Math.ceil(gameCount / 8);
+}
+
+export function encodeMembershipBitset(ordinals: Iterable<number>, gameCount: number): Uint8Array {
+  const bits = new Uint8Array(membershipBitsetByteLength(gameCount));
+  for (const ordinal of ordinals) {
+    assertOrdinal(ordinal, gameCount);
+    bits[Math.floor(ordinal / 8)]! |= 1 << (ordinal % 8);
+  }
+  return bits;
+}
+
+export function decodeMembershipBitset(bytes: Uint8Array, gameCount: number): Uint8Array {
+  const expectedByteLength = membershipBitsetByteLength(gameCount);
+  if (bytes.byteLength !== expectedByteLength) {
+    throw new Error(`membership bitset byte length: expected ${expectedByteLength}, got ${bytes.byteLength}`);
+  }
+  const finalByteBits = gameCount % 8;
+  if (finalByteBits > 0 && bytes.length > 0 && (bytes[bytes.length - 1]! & ~((1 << finalByteBits) - 1)) !== 0) {
+    throw new Error("membership bitset padding must be zero");
+  }
+  return bytes;
+}
+
+export function membershipBitsetHas(bits: Uint8Array, ordinal: number, gameCount: number): boolean {
+  if (!Number.isInteger(ordinal) || ordinal < 0 || ordinal >= gameCount) return false;
+  if (bits.byteLength !== membershipBitsetByteLength(gameCount)) return false;
+  return (bits[Math.floor(ordinal / 8)]! & (1 << (ordinal % 8))) !== 0;
+}
+
+function compactExplorationQueryPath(queryKey: string): string {
+  if (!/^[a-z0-9-]+$/.test(queryKey)) throw new Error(`invalid exploration query key: ${queryKey}`);
+  return `exploration/queries/${queryKey}`;
+}
+
+function assertGameCount(gameCount: number): void {
+  if (!Number.isInteger(gameCount) || gameCount < 0 || gameCount > 0x1_0000_0000) {
+    throw new Error(`invalid game count: ${gameCount}`);
+  }
+}
+
+function assertOrdinal(ordinal: number, gameCount: number): void {
+  if (!Number.isInteger(ordinal) || ordinal < 0 || ordinal >= gameCount) {
+    throw new Error(`invalid ordinal: ${ordinal}`);
+  }
+}
 
 function normalizedGenres(game: Game): Set<string> {
   return new Set((game.genres ?? []).map((genre) => genre.trim().toLowerCase()));

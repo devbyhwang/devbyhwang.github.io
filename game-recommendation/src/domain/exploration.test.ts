@@ -1,7 +1,20 @@
 import { describe, expect, it } from "vitest";
 import {
+  COMPACT_EXPLORATION_FORMAT,
   DIVERSE_PREFIX_SIZE,
+  ORDINAL_CARD_SHARD_COUNT,
   PAGE_SIZE,
+  compactExplorationCardShardPath,
+  compactExplorationManifestPath,
+  compactExplorationMembershipPath,
+  compactExplorationRankPath,
+  decodeMembershipBitset,
+  decodeOrdinalRankVector,
+  encodeMembershipBitset,
+  encodeOrdinalRankVector,
+  membershipBitsetByteLength,
+  membershipBitsetHas,
+  ordinalCardShard,
   rerankExploration,
   type ExplorationCard,
   type ExplorationManifest,
@@ -32,6 +45,65 @@ describe("exploration contracts", () => {
   it("uses 24-card pages and a 96-entry diverse introduction", () => {
     expect(PAGE_SIZE).toBe(24);
     expect(DIVERSE_PREFIX_SIZE).toBe(96);
+  });
+
+  it("uses explicit compact artifact paths and 1,024 ordinal card shards", () => {
+    expect(COMPACT_EXPLORATION_FORMAT).toBe(1);
+    expect(ORDINAL_CARD_SHARD_COUNT).toBe(1024);
+    expect(compactExplorationManifestPath("short-session-solo")).toBe(
+      "exploration/queries/short-session-solo/manifest.json",
+    );
+    expect(compactExplorationRankPath("short-session-solo")).toBe(
+      "exploration/queries/short-session-solo/rank.u32le",
+    );
+    expect(compactExplorationMembershipPath("short-session-solo", "new")).toBe(
+      "exploration/queries/short-session-solo/new.bits",
+    );
+    expect(compactExplorationCardShardPath(7)).toBe("exploration/cards/0007.json");
+    expect(ordinalCardShard(0)).toBe(0);
+    expect(ordinalCardShard(1024)).toBe(0);
+    expect(() => compactExplorationMembershipPath("q", "all")).toThrow("filtered view");
+    expect(() => compactExplorationCardShardPath(1024)).toThrow("card shard");
+  });
+
+  it("round-trips rank vectors in explicit little-endian Uint32 format", () => {
+    const bytes = encodeOrdinalRankVector([0, 255, 256, 65_535], 70_000);
+
+    expect(Array.from(bytes)).toEqual([
+      0, 0, 0, 0,
+      255, 0, 0, 0,
+      0, 1, 0, 0,
+      255, 255, 0, 0,
+    ]);
+    expect(decodeOrdinalRankVector(bytes, 4, 70_000)).toEqual([0, 255, 256, 65_535]);
+  });
+
+  it("rejects malformed rank vectors and out-of-range ordinals", () => {
+    expect(() => encodeOrdinalRankVector([3], 3)).toThrow("ordinal");
+    expect(() => encodeOrdinalRankVector([-1], 3)).toThrow("ordinal");
+    expect(() => encodeOrdinalRankVector([1, 1], 3)).toThrow("duplicate");
+    expect(() => decodeOrdinalRankVector(new Uint8Array([0, 0, 0]), 1, 3)).toThrow("byte length");
+    expect(() => decodeOrdinalRankVector(new Uint8Array([3, 0, 0, 0]), 1, 3)).toThrow("ordinal");
+    expect(() => decodeOrdinalRankVector(new Uint8Array([1, 0, 0, 0, 1, 0, 0, 0]), 2, 3)).toThrow("duplicate");
+  });
+
+  it("round-trips fixed-size membership bitsets and ignores invalid lookup ordinals", () => {
+    const bits = encodeMembershipBitset([0, 2, 8, 9], 10);
+
+    expect(membershipBitsetByteLength(10)).toBe(2);
+    expect(Array.from(bits)).toEqual([0b00000101, 0b00000011]);
+    expect(decodeMembershipBitset(bits, 10)).toEqual(bits);
+    expect(membershipBitsetHas(bits, 0, 10)).toBe(true);
+    expect(membershipBitsetHas(bits, 1, 10)).toBe(false);
+    expect(membershipBitsetHas(bits, 9, 10)).toBe(true);
+    expect(membershipBitsetHas(bits, -1, 10)).toBe(false);
+    expect(membershipBitsetHas(bits, 10, 10)).toBe(false);
+  });
+
+  it("rejects malformed membership bitsets, bad ordinals, and nonzero padding", () => {
+    expect(() => encodeMembershipBitset([10], 10)).toThrow("ordinal");
+    expect(() => decodeMembershipBitset(new Uint8Array([0]), 10)).toThrow("byte length");
+    expect(() => decodeMembershipBitset(new Uint8Array([0, 0b11111100]), 10)).toThrow("padding");
   });
 
   it("places a distinct near-peer ahead of a same-franchise sequel", () => {
