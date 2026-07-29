@@ -106,11 +106,55 @@ jobs:
           if (!Array.isArray(catalog.chunks)) {
             throw new Error(`${catalogPath} is missing a chunks array`);
           }
+          const gameIds = new Set();
           for (const chunkPath of catalog.chunks) {
             if (typeof chunkPath !== "string" || !/^\.\/catalog\/chunks\/\d{4}\.json$/.test(chunkPath)) {
               throw new Error(`invalid catalog chunk path: ${String(chunkPath)}`);
             }
-            accessSync(resolve(artifactRoot, chunkPath.slice(2)));
+            const chunkPathOnDisk = resolve(artifactRoot, chunkPath.slice(2));
+            accessSync(chunkPathOnDisk);
+            const chunk = JSON.parse(readFileSync(chunkPathOnDisk, "utf8"));
+            if (!Array.isArray(chunk.games)) {
+              throw new Error(`${chunkPathOnDisk} is missing games`);
+            }
+            for (const game of chunk.games) {
+              if (game === null || typeof game !== "object" || typeof game.id !== "string") {
+                throw new Error(`${chunkPathOnDisk} contains an invalid game`);
+              }
+              gameIds.add(game.id);
+            }
+          }
+
+          if (index.generatedAt !== catalog.generatedAt) {
+            throw new Error(`${recommendationsPath} generatedAt does not match catalog`);
+          }
+          if (index.gameCount !== catalog.gameCount) {
+            throw new Error(`${recommendationsPath} gameCount does not match catalog`);
+          }
+          const expectedKeys = new Set(
+            ["short", "medium", "long"].flatMap((length) =>
+              [1, 2, 3, 4, 5].flatMap((players) =>
+                [false, true].flatMap((viewerParticipation) =>
+                  ["healing", "variety", "horror", "hardcore", "chatting", "spectacle"].map((vibe) =>
+                    `${length}|${players}|${viewerParticipation ? 1 : 0}|${vibe}`,
+                  ),
+                ),
+              ),
+            ),
+          );
+          const recommendationKeys = Object.keys(index.recommendations);
+          if (expectedKeys.size !== 180 || recommendationKeys.length !== expectedKeys.size || recommendationKeys.some((key) => !expectedKeys.has(key))) {
+            throw new Error(`${recommendationsPath} has an unexpected recommendation key set`);
+          }
+          for (const recommendation of Object.values(index.recommendations)) {
+            if (recommendation === null || typeof recommendation !== "object" || !Array.isArray(recommendation.picks)) {
+              throw new Error(`${recommendationsPath} has an invalid recommendation`);
+            }
+            for (const pick of recommendation.picks) {
+              if (pick === null || typeof pick !== "object" || pick.game === null || typeof pick.game !== "object" || typeof pick.game.id !== "string" || !gameIds.has(pick.game.id)) {
+                throw new Error(`${recommendationsPath} recommendation picks reference game outside catalog`);
+              }
+            }
           }
           EOF
       - name: Upload artifact

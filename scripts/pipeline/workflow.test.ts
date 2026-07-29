@@ -82,14 +82,21 @@ describe("catalog refresh deployment handoff", () => {
     expect(backfill).toContain("src/playground/game-recommendation/recommendations.json");
   });
 
-  it("validates manifest chunks before uploading the Pages artifact", () => {
+  it("validates the recommendation index against manifest chunks before uploading the Pages artifact", () => {
     const deploy = workflow(".github/workflows/deploy.yml");
 
     expect(deploy).toContain("test -f _site/playground/game-recommendation/catalog.json");
     expect(deploy).toContain("test -f _site/playground/game-recommendation/recommendations.json");
     expect(deploy).toContain("const artifactRoot = \"_site/playground/game-recommendation\";");
+    expect(deploy).toContain("const gameIds = new Set();");
     expect(deploy).toContain("for (const chunkPath of catalog.chunks)");
-    expect(deploy).toContain("accessSync(resolve(artifactRoot, chunkPath.slice(2)))");
+    expect(deploy).toContain("const chunkPathOnDisk = resolve(artifactRoot, chunkPath.slice(2));");
+    expect(deploy).toContain("accessSync(chunkPathOnDisk);");
+    expect(deploy).toContain("index.generatedAt !== catalog.generatedAt");
+    expect(deploy).toContain("index.gameCount !== catalog.gameCount");
+    expect(deploy).toContain("const expectedKeys = new Set(");
+    expect(deploy).toContain("expectedKeys.size !== 180");
+    expect(deploy).toContain("recommendation picks reference game outside catalog");
   });
 });
 
