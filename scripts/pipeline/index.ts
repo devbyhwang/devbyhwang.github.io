@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { runBackfill } from "./backfill";
 import { createNodeFileStore, readCatalog } from "./emit";
+import { readExploration } from "./exploration";
 import { readRecommendations } from "./recommendations";
 import { readHistory, validateHistory } from "./history";
 import { saveRaw } from "./http";
@@ -142,6 +143,10 @@ export function validateOutput(rootDir: string): void {
   if (recommendations.generatedAt !== catalog.generatedAt) throw new Error("recommendations.json generatedAt does not match catalog");
   if (recommendations.gameCount !== catalog.gameCount) throw new Error("recommendations.json gameCount does not match catalog");
   const gameIds = readCatalogGameIds(fileStore, catalog.chunks);
+  const exploration = readExploration(fileStore, gameIds);
+  if (!exploration) throw new Error("src/playground/game-recommendation/exploration/manifest.json is missing");
+  if (exploration.generatedAt !== catalog.generatedAt) throw new Error("exploration generatedAt does not match catalog");
+  if (exploration.gameCount !== catalog.gameCount) throw new Error("exploration gameCount does not match catalog");
   for (const recommendation of Object.values(recommendations.recommendations)) {
     for (const pick of recommendation.picks) {
       if (!gameIds.has(pick.game.id)) throw new Error(`recommendations.json references game outside catalog: ${pick.game.id}`);

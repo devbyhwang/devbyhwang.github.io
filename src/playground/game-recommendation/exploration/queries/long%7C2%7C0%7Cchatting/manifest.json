@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "generatedAt": "2026-07-29T12:32:05.831Z",
+  "gameCount": 278332,
+  "pageSize": 24,
+  "rank": {
+    "path": "exploration/queries/long%7C2%7C0%7Cchatting/rank.u32le",
+    "ordinalCount": 4,
+    "byteLength": 16
+  },
+  "views": {
+    "new": {
+      "path": "exploration/queries/long%7C2%7C0%7Cchatting/new.bits",
+      "count": 0,
+      "byteLength": 34792
+    },
+    "rising": {
+      "path": "exploration/queries/long%7C2%7C0%7Cchatting/rising.bits",
+      "count": 0,
+      "byteLength": 34792
+    },
+    "discovery": {
+      "path": "exploration/queries/long%7C2%7C0%7Cchatting/discovery.bits",
+      "count": 4,
+      "byteLength": 34792
+    },
+    "classic": {
+      "path": "exploration/queries/long%7C2%7C0%7Cchatting/classic.bits",
+      "count": 3,
+      "byteLength": 34792
+    }
+  }
+}

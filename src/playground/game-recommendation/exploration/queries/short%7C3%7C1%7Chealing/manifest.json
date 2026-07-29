@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "generatedAt": "2026-07-29T12:32:05.831Z",
+  "gameCount": 278332,
+  "pageSize": 24,
+  "rank": {
+    "path": "exploration/queries/short%7C3%7C1%7Chealing/rank.u32le",
+    "ordinalCount": 57,
+    "byteLength": 228
+  },
+  "views": {
+    "new": {
+      "path": "exploration/queries/short%7C3%7C1%7Chealing/new.bits",
+      "count": 1,
+      "byteLength": 34792
+    },
+    "rising": {
+      "path": "exploration/queries/short%7C3%7C1%7Chealing/rising.bits",
+      "count": 0,
+      "byteLength": 34792
+    },
+    "discovery": {
+      "path": "exploration/queries/short%7C3%7C1%7Chealing/discovery.bits",
+      "count": 46,
+      "byteLength": 34792
+    },
+    "classic": {
+      "path": "exploration/queries/short%7C3%7C1%7Chealing/classic.bits",
+      "count": 37,
+      "byteLength": 34792
+    }
+  }
+}

@@ -1,6 +1,7 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { runCommand } from "./index";
 
@@ -82,6 +83,14 @@ describe("catalog refresh deployment handoff", () => {
     expect(backfill).toContain("src/playground/game-recommendation/recommendations.json");
   });
 
+  it("stages exploration assets after refreshes and backfills", () => {
+    const refresh = workflow(".github/workflows/catalog-refresh.yml");
+    const backfill = workflow(".github/workflows/catalog-backfill.yml");
+
+    expect(refresh).toContain("src/playground/game-recommendation/exploration");
+    expect(backfill).toContain("src/playground/game-recommendation/exploration");
+  });
+
   it("validates the recommendation index against manifest chunks before uploading the Pages artifact", () => {
     const deploy = workflow(".github/workflows/deploy.yml");
 
@@ -93,10 +102,60 @@ describe("catalog refresh deployment handoff", () => {
     expect(deploy).toContain("const chunkPathOnDisk = resolve(artifactRoot, chunkPath.slice(2));");
     expect(deploy).toContain("accessSync(chunkPathOnDisk);");
     expect(deploy).toContain("index.generatedAt !== catalog.generatedAt");
-    expect(deploy).toContain("index.gameCount !== catalog.gameCount");
+    expect(deploy).toContain("index.gameCount !== catalogGameCount");
     expect(deploy).toContain("const expectedKeys = new Set(");
     expect(deploy).toContain("expectedKeys.size !== 180");
     expect(deploy).toContain("recommendation picks reference game outside catalog");
+    expect(deploy).toContain("const catalogGameCount = Array.isArray(catalog.games) ? catalog.games.length : catalog.gameCount;");
+    expect(deploy).toContain("if (Array.isArray(catalog.games)) {");
+    expect(deploy).not.toContain("process.exit(0)");
+  });
+
+  it("validates compact exploration artifacts and their Pages-safe size before uploading", () => {
+    const deploy = workflow(".github/workflows/deploy.yml");
+
+    expect(deploy).toContain("test -f _site/playground/game-recommendation/exploration/manifest.json");
+    expect(deploy).toContain("const explorationRoot = `${artifactRoot}/exploration`;");
+    expect(deploy).toContain('if (exploration.format !== 1) invalid("manifest format is invalid");');
+    expect(deploy).toContain('invalid("manifest generatedAt does not match catalog")');
+    expect(deploy).toContain('invalid("manifest gameCount does not match catalog")');
+    expect(deploy).toContain("const cardShardCount = 896;");
+    expect(deploy).toContain("rank descriptor is inconsistent");
+    expect(deploy).toContain("rank vector has an invalid byte length");
+    expect(deploy).toContain("rank vector references an invalid ordinal");
+    expect(deploy).toContain("readBytes(`${artifactRoot}/${manifest.rank.path}`)");
+    expect(deploy).toContain("membership bitset descriptor is inconsistent");
+    expect(deploy).toContain("membership bitset has an invalid byte length");
+    expect(deploy).toContain("readBytes(`${artifactRoot}/${descriptor.path}`)");
+    expect(deploy).toContain("compact cards do not cover the catalog exactly once");
+    expect(deploy).toContain("explorationFileCount > 2000");
+    expect(deploy).toContain('const siteByteCount = totalBytes("_site");');
+    expect(deploy).toContain("siteByteCount >= 1024 * 1024 * 1024");
+  });
+
+  it("runs the embedded validator for legacy catalogs instead of bypassing malformed compact assets", () => {
+    const rootDir = mkdtempSync(join(tmpdir(), "workflow-legacy-artifact-"));
+    const artifactRoot = join(rootDir, "_site/playground/game-recommendation");
+    const sourceRoot = resolve("src/playground/game-recommendation");
+    const catalog = JSON.parse(readFileSync(join(sourceRoot, "catalog.json"), "utf8"));
+    const games = catalog.chunks.flatMap((chunkPath: string) => JSON.parse(readFileSync(join(sourceRoot, chunkPath.slice(2)), "utf8")).games.map((game: { id: string }) => ({ id: game.id })));
+
+    try {
+      mkdirSync(join(artifactRoot, "exploration"), { recursive: true });
+      writeFileSync(join(artifactRoot, "catalog.json"), JSON.stringify({ generatedAt: catalog.generatedAt, games }));
+      symlinkSync(join(sourceRoot, "recommendations.json"), join(artifactRoot, "recommendations.json"));
+      symlinkSync(join(sourceRoot, "exploration/cards"), join(artifactRoot, "exploration/cards"));
+      symlinkSync(join(sourceRoot, "exploration/queries"), join(artifactRoot, "exploration/queries"));
+      const manifest = JSON.parse(readFileSync(join(sourceRoot, "exploration/manifest.json"), "utf8"));
+      writeFileSync(join(artifactRoot, "exploration/manifest.json"), JSON.stringify({ ...manifest, gameCount: 0 }));
+      const deploy = workflow(".github/workflows/deploy.yml");
+      const validator = deploy.slice(deploy.indexOf("          import { accessSync"), deploy.indexOf("          EOF\n", deploy.indexOf("          import { accessSync")))
+        .split("\n").map((line) => line.replace(/^          /, "")).join("\n");
+
+      expect(() => execFileSync("node", ["--input-type=module", "--eval", validator], { cwd: rootDir, stdio: "pipe" })).toThrow(/exploration manifest gameCount does not match catalog/);
+    } finally {
+      rmSync(rootDir, { recursive: true, force: true });
+    }
   });
 });
 
