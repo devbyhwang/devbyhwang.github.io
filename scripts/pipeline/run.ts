@@ -2,6 +2,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { emitCatalog, createNodeFileStore, readCatalog } from "./emit";
+import { emitExploration } from "./exploration";
 import { emitRecommendations } from "./recommendations";
 import { appendSnapshot, deriveStreamingFeatures, makeDailySnapshot, readHistory, writeHistory } from "./history";
 import { enrichGames, joinSources } from "./join";
@@ -296,6 +297,7 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
   const catalog = { generatedAt: asOf, games };
   const emitted = emitCatalog(catalog, readCatalog(fileStore), fileStore);
   emitRecommendations(catalog, fileStore);
+  emitExploration(catalog, fileStore);
   const result: PipelineResult = {
     generatedAt: asOf,
     fetchedSources,
