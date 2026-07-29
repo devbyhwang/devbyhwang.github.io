@@ -40,7 +40,10 @@ jobs:
           fi
           set -e
 
-          git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks
+          git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json
+          if [ -d src/playground/game-recommendation/catalog/chunks ]; then
+            git add src/playground/game-recommendation/catalog/chunks
+          fi
           if ! git diff --cached --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
