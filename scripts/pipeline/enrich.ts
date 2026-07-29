@@ -48,9 +48,12 @@ export function normalizeVibes(raw: Record<string, Record<VibeKey, number>>): Re
   const normalized: Record<string, Record<VibeKey, number>> = {};
   for (const [id] of games) normalized[id] = zeroVibes();
   for (const vibe of VIBE_KEYS) {
-    const scores = games.map(([, values]) => values[vibe]);
-    const min = Math.min(...scores);
-    const max = Math.max(...scores);
+    let min = Number.POSITIVE_INFINITY;
+    let max = Number.NEGATIVE_INFINITY;
+    for (const [, values] of games) {
+      min = Math.min(min, values[vibe]);
+      max = Math.max(max, values[vibe]);
+    }
     for (const [id, values] of games) {
       normalized[id][vibe] = min === max ? 0.5 : (values[vibe] - min) / (max - min);
     }

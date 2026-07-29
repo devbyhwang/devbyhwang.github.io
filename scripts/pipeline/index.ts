@@ -6,7 +6,7 @@ import { createNodeFileStore, readCatalog } from "./emit";
 import { readHistory, validateHistory } from "./history";
 import { saveRaw } from "./http";
 import { loadKnowledge } from "./knowledge";
-import type { IgdbExternalGame, IgdbGame, IgdbRawSnapshot, PipelineLogger, PipelineResult, RawResponseRecorder, RawSources, SourceConfig, SteamApp } from "./model";
+import type { IgdbExternalGame, IgdbGame, IgdbRawSnapshot, PipelineLogger, PipelineResult, RawSources, SourceConfig, SteamApp } from "./model";
 import { runPipeline } from "./run";
 
 const FIXTURE_AS_OF = "2026-07-28T00:00:00.000Z";
@@ -141,55 +141,33 @@ export function validateOutput(rootDir: string): void {
   loadKnowledge(rootDir);
 }
 
-function backfillRawPath(rootDir: string, start: string, end: string): string {
-  return resolve(rootDir, "data/raw/igdb/backfill", `${start}_${end}.json`);
+function backfillRawPath(rootDir: string, start: string, end: string, offset: number): string {
+  return resolve(rootDir, "data/raw/igdb/backfill", `${start}_${end}_${offset.toString().padStart(6, "0")}.json`);
 }
 
 type BackfillPersistence = {
-  recordResponse: RawResponseRecorder;
   recordSnapshot: (snapshot: IgdbRawSnapshot) => Promise<void>;
 };
 
-function createBackfillPersistence(rootDir: string, start: string, end: string, asOf: string): BackfillPersistence {
-  const path = backfillRawPath(rootDir, start, end);
-  const games = new Map<number, IgdbGame>();
-  const responses: unknown[] = [];
-  try {
-    const previous = JSON.parse(readFileSync(path, "utf8")) as { games?: unknown; responses?: unknown };
-    if (Array.isArray(previous.games)) {
-      for (const game of previous.games) {
-        if (game && typeof game === "object" && Number.isInteger((game as { id?: unknown }).id)) {
-          const value = game as IgdbGame;
-          games.set(value.id, value);
-        }
-      }
-    }
-    if (Array.isArray(previous.responses)) responses.push(...previous.responses);
-  } catch {
-    // A missing or incomplete partition file is rebuilt from the checkpoint offset.
-  }
-
-  const persist = async (): Promise<void> => {
-    await saveRaw(path, {
-      fetchedAt: asOf,
-      source: "igdb",
-      request: { partitionStart: start, partitionEnd: end },
-      responses,
-      warnings: [],
-      games: [...games.values()],
-      externalGames: [],
-      unresolvedSteamAppIds: [],
-    });
-  };
-
+function createBackfillPersistence(rootDir: string, asOf: string): BackfillPersistence {
   return {
-    recordResponse: async (response) => {
-      responses.push(response);
-      await persist();
-    },
     recordSnapshot: async (snapshot) => {
-      for (const game of snapshot.games) games.set(game.id, game);
-      await persist();
+      const start = snapshot.request.partitionStart;
+      const end = snapshot.request.partitionEnd;
+      const offset = snapshot.request.offset;
+      if (typeof start !== "string" || typeof end !== "string" || typeof offset !== "number" || !Number.isInteger(offset) || offset < 0) {
+        throw new Error("IGDB backfill snapshot is missing valid partition boundaries or offset");
+      }
+      await saveRaw(backfillRawPath(rootDir, start, end, offset), {
+        fetchedAt: asOf,
+        source: "igdb",
+        request: { partitionStart: start, partitionEnd: end, offset },
+        responses: [],
+        warnings: [],
+        games: snapshot.games,
+        externalGames: [],
+        unresolvedSteamAppIds: [],
+      });
     },
   };
 }
@@ -250,7 +228,7 @@ export async function runCommand(
   if (command === "backfill") {
     const { start, end } = parseBackfillBoundaries(args);
     const asOf = env.PIPELINE_AS_OF ?? new Date().toISOString();
-    const persistence = createBackfillPersistence(rootDir, start, end, asOf);
+    const persistence = createBackfillPersistence(rootDir, asOf);
     const result = await runBackfill({
       rootDir,
       asOf,
@@ -259,7 +237,6 @@ export async function runCommand(
       clientId: required(env, "TWITCH_CLIENT_ID"),
       clientSecret: required(env, "TWITCH_CLIENT_SECRET"),
       fetcher: options.fetcher,
-      recordResponse: persistence.recordResponse,
       recordSnapshot: persistence.recordSnapshot,
     });
     logger.info(`IGDB backfill result: ${JSON.stringify(result)}`);
