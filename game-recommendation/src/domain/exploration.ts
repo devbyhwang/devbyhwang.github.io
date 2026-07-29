@@ -71,16 +71,32 @@ export function rerankExploration(games: Game[], scored: Scored[]): string[] {
     .map((entry) => ({ game: gamesById.get(entry.game.id) ?? entry.game, score: entry.score }))
     .sort(compareRank);
   const remaining = [...ranked];
+  const penalties = remaining.map(() => 0);
   const chosen: typeof ranked = [];
 
   while (remaining.length && chosen.length < DIVERSE_PREFIX_SIZE) {
-    remaining.sort((a, b) => {
-      const aUtility = a.score - chosen.reduce((total, prior) => total + overlap(a.game, prior.game), 0);
-      const bUtility = b.score - chosen.reduce((total, prior) => total + overlap(b.game, prior.game), 0);
-      return bUtility - aUtility || compareIds(a.game.id, b.game.id);
-    });
-    chosen.push(remaining.shift()!);
+    let selectedIndex = 0;
+    let selectedUtility = -Infinity;
+
+    for (let index = 0; index < remaining.length; index += 1) {
+      const candidate = remaining[index]!;
+      const utility = candidate.score - penalties[index]!;
+      const selected = remaining[selectedIndex]!;
+
+      if (utility > selectedUtility || (utility === selectedUtility && compareIds(candidate.game.id, selected.game.id) < 0)) {
+        selectedIndex = index;
+        selectedUtility = utility;
+      }
+    }
+
+    const selected = remaining.splice(selectedIndex, 1)[0]!;
+    penalties.splice(selectedIndex, 1);
+    chosen.push(selected);
+
+    for (let index = 0; index < remaining.length; index += 1) {
+      penalties[index]! += overlap(remaining[index]!.game, selected.game);
+    }
   }
 
-  return [...chosen, ...remaining.sort(compareRank)].map((entry) => entry.game.id);
+  return [...chosen, ...remaining].map((entry) => entry.game.id);
 }

@@ -99,6 +99,31 @@ describe("exploration contracts", () => {
     ]);
   });
 
+  it("selects the diverse prefix without repeatedly sorting every remaining game", () => {
+    const games = Array.from({ length: DIVERSE_PREFIX_SIZE + 4 }, (_, index) =>
+      game(`game-${String(index).padStart(3, "0")}`, {
+        franchise: `franchise-${index}`,
+        releaseDate: `${2000 + index}-01-01T00:00:00.000Z`,
+      })
+    );
+    const scores = games.map((entry, index) => scored(entry, 200 - index));
+    const originalSort = Array.prototype.sort;
+    let sortCalls = 0;
+
+    Array.prototype.sort = function <T>(this: T[], compareFn?: (a: T, b: T) => number): T[] {
+      sortCalls += 1;
+      return originalSort.call(this, compareFn);
+    };
+
+    try {
+      expect(rerankExploration(games, scores)).toEqual(games.map((entry) => entry.id));
+    } finally {
+      Array.prototype.sort = originalSort;
+    }
+
+    expect(sortCalls).toBe(1);
+  });
+
   it("keeps the static payload shapes compact and page-addressable", () => {
     const manifest: ExplorationManifest = {
       generatedAt: "2026-07-30T00:00:00.000Z",
