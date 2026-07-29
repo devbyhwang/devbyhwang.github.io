@@ -150,33 +150,56 @@ type BackfillPersistence = {
   recordSnapshot: (snapshot: IgdbRawSnapshot) => Promise<void>;
 };
 
-function createBackfillPersistence(rootDir: string, start: string, end: string, asOf: string): BackfillPersistence {
-  const path = backfillRawPath(rootDir, start, end);
-  const games = new Map<number, IgdbGame>();
-  const responses: unknown[] = [];
-  try {
-    const previous = JSON.parse(readFileSync(path, "utf8")) as { games?: unknown; responses?: unknown };
-    if (Array.isArray(previous.games)) {
-      for (const game of previous.games) {
-        if (game && typeof game === "object" && Number.isInteger((game as { id?: unknown }).id)) {
-          const value = game as IgdbGame;
-          games.set(value.id, value);
+type BackfillPartitionPersistence = {
+  path: string;
+  start: string;
+  end: string;
+  games: Map<number, IgdbGame>;
+  responses: unknown[];
+};
+
+function createBackfillPersistence(rootDir: string, asOf: string): BackfillPersistence {
+  const partitions = new Map<string, BackfillPartitionPersistence>();
+  const pendingResponses: unknown[] = [];
+
+  const loadPartition = (start: string, end: string): BackfillPartitionPersistence => {
+    const key = `${start}/${end}`;
+    const existing = partitions.get(key);
+    if (existing) return existing;
+
+    const partition = {
+      path: backfillRawPath(rootDir, start, end),
+      start,
+      end,
+      games: new Map<number, IgdbGame>(),
+      responses: [] as unknown[],
+    } satisfies BackfillPartitionPersistence;
+    try {
+      const previous = JSON.parse(readFileSync(partition.path, "utf8")) as { games?: unknown; responses?: unknown };
+      if (Array.isArray(previous.games)) {
+        for (const game of previous.games) {
+          if (game && typeof game === "object" && Number.isInteger((game as { id?: unknown }).id)) {
+            const value = game as IgdbGame;
+            partition.games.set(value.id, value);
+          }
         }
       }
+      if (Array.isArray(previous.responses)) partition.responses.push(...previous.responses);
+    } catch {
+      // A missing or incomplete partition file is rebuilt from the checkpoint offset.
     }
-    if (Array.isArray(previous.responses)) responses.push(...previous.responses);
-  } catch {
-    // A missing or incomplete partition file is rebuilt from the checkpoint offset.
-  }
+    partitions.set(key, partition);
+    return partition;
+  };
 
-  const persist = async (): Promise<void> => {
-    await saveRaw(path, {
+  const persist = async (partition: BackfillPartitionPersistence): Promise<void> => {
+    await saveRaw(partition.path, {
       fetchedAt: asOf,
       source: "igdb",
-      request: { partitionStart: start, partitionEnd: end },
-      responses,
+      request: { partitionStart: partition.start, partitionEnd: partition.end },
+      responses: partition.responses,
       warnings: [],
-      games: [...games.values()],
+      games: [...partition.games.values()],
       externalGames: [],
       unresolvedSteamAppIds: [],
     });
@@ -184,12 +207,18 @@ function createBackfillPersistence(rootDir: string, start: string, end: string, 
 
   return {
     recordResponse: async (response) => {
-      responses.push(response);
-      await persist();
+      pendingResponses.push(response);
     },
     recordSnapshot: async (snapshot) => {
-      for (const game of snapshot.games) games.set(game.id, game);
-      await persist();
+      const start = snapshot.request.partitionStart;
+      const end = snapshot.request.partitionEnd;
+      if (typeof start !== "string" || typeof end !== "string") {
+        throw new Error("IGDB backfill snapshot is missing partition boundaries");
+      }
+      const partition = loadPartition(start, end);
+      partition.responses.push(...pendingResponses.splice(0));
+      for (const game of snapshot.games) partition.games.set(game.id, game);
+      await persist(partition);
     },
   };
 }
@@ -250,7 +279,7 @@ export async function runCommand(
   if (command === "backfill") {
     const { start, end } = parseBackfillBoundaries(args);
     const asOf = env.PIPELINE_AS_OF ?? new Date().toISOString();
-    const persistence = createBackfillPersistence(rootDir, start, end, asOf);
+    const persistence = createBackfillPersistence(rootDir, asOf);
     const result = await runBackfill({
       rootDir,
       asOf,

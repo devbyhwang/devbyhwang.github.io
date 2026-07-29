@@ -127,6 +127,34 @@ describe("pipeline CLI contracts", () => {
       rmSync(rootDir, { recursive: true, force: true });
     }
   });
+
+  it("stores multi-year backfill responses in one raw file per partition", async () => {
+    const rootDir = mkdtempSync(join(tmpdir(), "workflow-cli-partitions-"));
+    const fetcher = async (url: string, init?: RequestInit) => {
+      if (url === "https://id.twitch.tv/oauth2/token") return new Response(JSON.stringify({ access_token: "fixture-token" }), { status: 200 });
+      if (url === "https://api.igdb.com/v4/games") {
+        const body = String(init?.body ?? "");
+        const start = Number(body.match(/first_release_date >= (\d+)/)?.[1] ?? 0);
+        return new Response(JSON.stringify([{ id: start, name: `Historical ${start}`, first_release_date: start }]), { status: 200 });
+      }
+      throw new Error(`unexpected URL ${url}`);
+    };
+
+    try {
+      await runCommand("backfill", {
+        rootDir,
+        env: { PIPELINE_AS_OF: "2026-07-29T00:00:00.000Z", TWITCH_CLIENT_ID: "client-id", TWITCH_CLIENT_SECRET: "top-secret" },
+        logger: console,
+        fetcher: fetcher as typeof fetch,
+      }, ["--start", "1990-01-01", "--end", "1992-01-01"]);
+
+      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1990-01-01_1991-01-01.json"))).toBe(true);
+      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1991-01-01_1992-01-01.json"))).toBe(true);
+      expect(existsSync(join(rootDir, "data/raw/igdb/backfill/1990-01-01_1992-01-01.json"))).toBe(false);
+    } finally {
+      rmSync(rootDir, { recursive: true, force: true });
+    }
+  });
 });
 
 describe("Pages-safe static assets", () => {

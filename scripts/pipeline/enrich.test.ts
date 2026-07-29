@@ -27,6 +27,15 @@ describe("vibe enrichment", () => {
     expect(Object.values(normalized.a)).toHaveLength(6);
   });
 
+  it("normalizes a catalog larger than the JavaScript argument limit", () => {
+    const raw = Object.fromEntries(Array.from({ length: 500_000 }, (_, index) => [
+      String(index), { healing: index, variety: 0, horror: 0, hardcore: 0, chatting: 0, spectacle: 0 },
+    ]));
+
+    expect(() => normalizeVibes(raw)).not.toThrow();
+    expect(normalizeVibes({ first: raw["0"], last: raw["499999"] }).first.healing).toBe(0);
+  });
+
   it("ignores unknown tags and rejects invalid tag shares", () => {
     const weights = { Cozy: { healing: 1 } } satisfies TagVibeMap;
 
