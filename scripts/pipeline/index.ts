@@ -3,6 +3,7 @@ import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
 import { runBackfill } from "./backfill";
 import { createNodeFileStore, readCatalog } from "./emit";
+import { readRecommendations } from "./recommendations";
 import { readHistory, validateHistory } from "./history";
 import { saveRaw } from "./http";
 import { loadKnowledge } from "./knowledge";
@@ -133,8 +134,10 @@ export function sourceConfig(env: NodeJS.ProcessEnv = process.env): SourceConfig
 }
 
 export function validateOutput(rootDir: string): void {
-  const catalog = readCatalog(createNodeFileStore(rootDir));
+  const fileStore = createNodeFileStore(rootDir);
+  const catalog = readCatalog(fileStore);
   if (!catalog) throw new Error("src/playground/game-recommendation/catalog.json is missing");
+  if (!readRecommendations(fileStore)) throw new Error("src/playground/game-recommendation/recommendations.json is missing");
   const historyPath = resolve(rootDir, "data/history.json");
   if (!existsSync(historyPath)) throw new Error("data/history.json is missing");
   validateHistory(readHistory(historyPath), historyPath);
