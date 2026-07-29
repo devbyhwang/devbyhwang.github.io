@@ -57,6 +57,7 @@ describe("catalog refresh deployment handoff", () => {
     expect(refresh).toContain('cron: "0 0 * * *"');
     expect(refresh).toContain("npm run pipeline");
     expect(refresh).toContain("npm run pipeline:validate");
+    expect(refresh).toContain("find data/raw -type f -size +95M");
     expect(refresh).not.toMatch(/pipeline:model|OPENAI_|ANTHROPIC_|COHERE_|MISTRAL_/);
     expect(refresh).toContain("git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json");
   });

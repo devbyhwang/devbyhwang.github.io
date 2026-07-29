@@ -40,6 +40,12 @@ jobs:
           fi
           set -e
 
+          oversized=$(find data/raw -type f -size +95M -print -quit)
+          if [ -n "$oversized" ]; then
+            echo "raw cache file exceeds the safe GitHub file-size limit: $oversized"
+            exit 1
+          fi
+
           git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json
           if [ -d src/playground/game-recommendation/catalog/chunks ]; then
             git add src/playground/game-recommendation/catalog/chunks
