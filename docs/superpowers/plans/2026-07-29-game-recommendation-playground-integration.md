@@ -15,7 +15,7 @@
 - API credentials는 GitHub Actions secrets에만 두고 저장소 파일에 기록하지 않는다.
 - 데이터 갱신 workflow는 매일 `0 0 * * *` UTC에 실행한다.
 - 데이터 커밋은 `data/history.json`, `data/raw/**`, `src/playground/game-recommendation/catalog.json`만 포함한다.
-- Pages 배포는 기존 블로그 `deploy.yml`의 `push: main` 한 경로만 사용한다.
+- Pages 배포는 기존 블로그 `deploy.yml`에서 사람의 `push: main`/수동 실행과 main 브랜치의 성공한 데이터 workflow 실행을 처리한다.
 
 ---
 

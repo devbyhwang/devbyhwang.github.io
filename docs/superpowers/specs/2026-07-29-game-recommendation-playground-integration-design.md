@@ -18,7 +18,7 @@
 | 카탈로그 경로 | `src/playground/game-recommendation/catalog.json` |
 | 파이프라인 | 기존 `scripts/pipeline`을 블로그 저장소로 이동하고 데이터·지식 자산은 저장소 루트 `data/`에 둔다 |
 | 데이터 갱신 | 블로그 저장소의 GitHub Actions가 매일 00:00 UTC에 최신 데이터를 갱신하고, 별도 수동 workflow가 역사 데이터를 백필 |
-| 배포 | 데이터 커밋이 기존 블로그 `deploy.yml`의 `push: main`을 통해 Pages 배포를 트리거 |
+| 배포 | 사람의 `main` push/수동 실행과 main 브랜치의 성공한 데이터 workflow 실행이 기존 블로그 `deploy.yml`의 Pages 배포를 트리거 |
 | Playground 카드 | `src/_data/studio.js`에 `/playground/game-recommendation/` 링크 추가 |
 | 기존 서비스 저장소 | 통합 후 별도 Pages 배포 대상으로 사용하지 않는다. 현재 standalone PR은 통합 PR과 분리한다 |
 
