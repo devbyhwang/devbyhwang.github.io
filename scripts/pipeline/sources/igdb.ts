@@ -143,7 +143,7 @@ async function requestPartitionGames(
   responses: unknown[],
   recordResponse?: IgdbFetchInput["recordResponse"],
 ): Promise<IgdbGame[]> {
-  const body = `fields ${gameFields}; where ${releaseDatePredicate(partitionStart, partitionEnd)}; sort first_release_date asc; limit ${QUERY_LIMIT}; offset ${offset};`;
+  const body = `fields ${gameFields}; where ${releaseDatePredicate(partitionStart, partitionEnd)}; sort id asc; limit ${QUERY_LIMIT}; offset ${offset};`;
   const response = await http.postJson<unknown>(GAMES_URL, body, authHeaders);
   await recordResponse?.(response);
   responses.push(response);

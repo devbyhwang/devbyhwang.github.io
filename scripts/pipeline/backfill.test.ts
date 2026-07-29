@@ -289,7 +289,7 @@ describe("IGDB backfill checkpoints", () => {
       invocation += 1;
       if (invocation === 1) return json(Array.from({ length: 500 }, (_, index) => game(index + 1)));
       if (invocation === 2) throw new Error("checkpoint after first page");
-      if (body.includes("sort first_release_date asc;")) return json([game(501)]);
+      if (body.includes("sort id asc;")) return json([game(501)]);
       return json([game(500)]);
     });
     const recordResponse = vi.fn(async (response: unknown) => {
@@ -332,7 +332,7 @@ describe("IGDB backfill checkpoints", () => {
       .map((call) => String(call[1]?.body ?? ""))
       .filter((body) => body.includes("where first_release_date")))
       .toEqual(expect.arrayContaining([
-        expect.stringContaining("sort first_release_date asc;"),
+        expect.stringContaining("sort id asc;"),
       ]));
   });
 });
