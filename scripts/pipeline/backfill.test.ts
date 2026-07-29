@@ -89,6 +89,53 @@ describe("IGDB backfill checkpoints", () => {
     });
   });
 
+  it("filters year-query candidates to the requested pre-1970 partition before persisting", async () => {
+    const destination = root();
+    const snapshots: IgdbRawSnapshot[] = [];
+    const network = fetcher([[game(1, -631_152_000), game(2, -662_688_000)]]);
+
+    const result = await runBackfill({
+      rootDir: destination,
+      asOf,
+      partitionStart: "1950-01-01",
+      partitionEnd: "1951-01-01",
+      clientId: "client",
+      clientSecret: "secret",
+      fetcher: network.mock as typeof fetch,
+      recordSnapshot: async (snapshot) => { snapshots.push(snapshot); },
+    });
+
+    expect(network.calls.find((call) => call.url.endsWith("/games"))?.body)
+      .toContain("where release_dates.y >= 1950 & release_dates.y < 1951");
+    expect(snapshots[0].games).toEqual([game(1, -631_152_000)]);
+    expect(result.fetchedGameCount).toBe(1);
+  });
+
+  it("advances by raw candidate pages when a pre-1970 page has no in-range games", async () => {
+    const destination = root();
+    const network = fetcher([
+      Array.from({ length: 500 }, (_, index) => game(index + 1, -662_688_000)),
+      [game(501, -631_152_000)],
+    ]);
+
+    const result = await runBackfill({
+      rootDir: destination,
+      asOf,
+      partitionStart: "1950-01-01",
+      partitionEnd: "1951-01-01",
+      clientId: "client",
+      clientSecret: "secret",
+      fetcher: network.mock as typeof fetch,
+    });
+
+    expect(network.calls.filter((call) => call.url.endsWith("/games")).map((call) => call.body))
+      .toEqual([
+        expect.stringContaining("offset 0;"),
+        expect.stringContaining("offset 500;"),
+      ]);
+    expect(result.fetchedGameCount).toBe(1);
+  });
+
   it("resumes a second invocation from the saved offset", async () => {
     const destination = root();
     writeCheckpoint(destination, {

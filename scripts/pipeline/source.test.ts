@@ -287,6 +287,35 @@ describe("IGDB source", () => {
     expect(JSON.stringify(snapshot)).not.toContain("secret");
   });
 
+  it("uses release-date years when querying pre-1970 historical releases", async () => {
+    const posts: string[] = [];
+    const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === "https://id.twitch.tv/oauth2/token") return json({ access_token: "fixture-token" });
+      if (url.endsWith("/games")) {
+        posts.push(String(init?.body ?? ""));
+        return json([]);
+      }
+      throw new Error(`unexpected URL ${url}`);
+    });
+
+    await fetchIgdb(
+      {
+        clientId: "client",
+        clientSecret: "secret",
+        asOf: "2026-07-28T00:00:00.000Z",
+        recentDays: 0,
+        topIgdbIds: [],
+        steamAppIds: [],
+        partitionStart: "1950-01-01",
+        partitionEnd: "1951-01-01",
+      },
+      createHttpClient(fetcher as typeof fetch),
+    );
+
+    expect(posts[0]).toContain("where release_dates.y >= 1950 & release_dates.y < 1951");
+    expect(posts[0]).not.toMatch(/first_release_date\s+[<>]=?\s+-\d/);
+  });
+
   it("batches 501 Twitch IGDB ids into predicates of at most 500 with explicit limits", async () => {
     const gamePosts: string[] = [];
     const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
