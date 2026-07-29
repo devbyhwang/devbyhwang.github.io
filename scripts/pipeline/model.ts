@@ -26,6 +26,52 @@ export type KnowledgeAssets = {
 
 export type ClassificationInput = { genres: string[]; tags: string[] };
 
+export type StreamingStats = {
+  totalViewers: number;
+  channelCount: number;
+  medianViewersPerChannel: number | null;
+  p75ViewersPerChannel: number | null;
+  top10ViewerShare: number | null;
+  viewerConcentration: number | null;
+  growth7d: number | null;
+  growth30d: number | null;
+  growth90d: number | null;
+  volatility30d: number | null;
+  observedSnapshots: number;
+  coverage: number;
+  asOf: string;
+};
+
+export type StreamingAggregate = {
+  totalViewers: number;
+  channelCount: number;
+  medianViewersPerChannel: number;
+  p75ViewersPerChannel: number;
+  top10ViewerShare: number;
+  viewerConcentration: number;
+  coverage: number;
+};
+
+export type StreamingFeatures = {
+  growth7d: number | null;
+  growth30d: number | null;
+  growth90d: number | null;
+  volatility30d: number | null;
+  observedSnapshots: number;
+  confidence: number;
+};
+
+export type QualityStats = {
+  igdbRating?: number;
+  igdbRatingCount?: number;
+  criticRating?: number;
+  criticRatingCount?: number;
+  totalRating?: number;
+  totalRatingCount?: number;
+  steamPositive?: number;
+  steamNegative?: number;
+};
+
 export type GameRecord = {
   id: string;
   steamAppId?: number;
@@ -40,18 +86,32 @@ export type GameRecord = {
   viewerPlayable: ViewerPlayable;
   vibes: Record<VibeKey, number>;
   buzz: { twitchViewers: number; twitchChannels: number; viewerGrowth7d: number | null; isNewRelease: boolean };
+  streaming: StreamingStats;
+  quality: QualityStats;
   topTags: { tag: string; share: number }[];
   discountPercent?: number;
   rating?: number;
   reviewCount?: number;
 };
 
-export type CatalogRecord = { generatedAt: string; games: GameRecord[] };
+export type CatalogManifest = {
+  generatedAt: string;
+  gameCount: number;
+  chunks: string[];
+};
+
+export type CatalogChunk = {
+  generatedAt: string;
+  games: GameRecord[];
+};
+
+export type CatalogRecord = CatalogChunk;
 
 export type DailySnapshot = {
   date: string;
   twitchViewers: number;
   twitchChannels: number;
+  coverage?: number;
 };
 
 export type History = Record<string, DailySnapshot[]>;
@@ -68,7 +128,16 @@ export type JoinedGame = {
   igdb: IgdbGame;
   steamAppId?: number;
   steam?: SteamApp;
-  twitch: { viewers: number; channels: number; boxArtUrl?: string };
+  twitch: {
+    viewers: number;
+    channels: number;
+    medianViewersPerChannel?: number | null;
+    p75ViewersPerChannel?: number | null;
+    top10ViewerShare?: number | null;
+    viewerConcentration?: number | null;
+    coverage?: number;
+    boxArtUrl?: string;
+  };
   tags: SteamTag[];
 };
 
@@ -86,6 +155,9 @@ export type IgdbFetchInput = {
   recentDays: number;
   topIgdbIds: string[];
   steamAppIds: number[];
+  partitionStart?: string;
+  partitionEnd?: string;
+  offset?: number;
   recordResponse?: RawResponseRecorder;
 };
 
@@ -120,6 +192,10 @@ export type IgdbGame = {
   first_release_date?: number;
   cover?: { image_id?: string };
   external_games?: Array<{ uid: string; external_game_source: number }>;
+  game_type?: number;
+  parent_game?: number;
+  version_parent?: number;
+  platforms?: Array<{ name?: string }>;
   collection?: { name?: string };
   franchise?: { name?: string };
   genres?: Array<{ name?: string }>;
@@ -135,12 +211,34 @@ export type IgdbGame = {
   }>;
   rating?: number;
   rating_count?: number;
+  aggregated_rating?: number;
+  aggregated_rating_count?: number;
+  total_rating?: number;
+  total_rating_count?: number;
 };
 
 export type IgdbExternalGame = { id?: number; game: number; uid: string; external_game_source: number };
 
-export type TwitchTopGame = { categoryId: string; name: string; igdbId: string; boxArtUrl?: string };
-export type TwitchStreamStat = { categoryId: string; igdbId: string; viewers: number; channels: number };
+export type TwitchTopGame = { categoryId: string; name: string; igdbId: number | string; boxArtUrl?: string };
+export type StreamObservation = {
+  categoryId: string;
+  gameId: string;
+  igdbId: number | string;
+  viewerCount: number;
+  userId?: string;
+  language?: string;
+};
+export type TwitchStreamStat = {
+  categoryId: string;
+  igdbId: number | string;
+  viewers: number;
+  channels: number;
+  medianViewersPerChannel?: number;
+  p75ViewersPerChannel?: number;
+  top10ViewerShare?: number;
+  viewerConcentration?: number;
+  coverage?: number;
+};
 
 export type SteamApp = {
   appId: number;
@@ -165,6 +263,7 @@ export type TwitchRawSnapshot = RawEnvelope & {
   source: "twitch";
   topGames: TwitchTopGame[];
   streams: TwitchStreamStat[];
+  streamObservations?: StreamObservation[];
   truncated: boolean;
 };
 
@@ -211,4 +310,22 @@ export type PipelineResult = {
   gameCount: number;
   catalogUpdated: boolean;
   historyUpdated: boolean;
+};
+
+export type BackfillOptions = {
+  rootDir: string;
+  asOf: string;
+  partitionStart: string;
+  partitionEnd: string;
+  clientId: string;
+  clientSecret: string;
+  fetcher?: typeof fetch;
+  recordResponse?: RawResponseRecorder;
+  recordSnapshot?: (snapshot: IgdbRawSnapshot) => Promise<void>;
+};
+
+export type BackfillResult = {
+  completedPartitions: string[];
+  fetchedGameCount: number;
+  remainingPartitions: string[];
 };

@@ -8,6 +8,7 @@ export const RELAXATION_LABELS: Record<Relaxation, string> = {
 
 const SLOT_BADGE: Record<Exclude<SlotKind, "safe">, string> = {
   rising: "지금 뜨는 중",
+  discovery: "발견",
   new: "신작",
 };
 

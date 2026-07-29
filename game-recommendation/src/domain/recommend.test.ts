@@ -22,7 +22,7 @@ describe("recommend", () => {
 
   it("결과는 최대 5개다", () => {
     const r = recommend(SAMPLE_CATALOG, q());
-    expect(r.picks.length).toBeLessThanOrEqual(5);
+    expect(r.picks.length).toBeLessThanOrEqual(6);
   });
 
   it("모든 pick에 근거가 1개 이상 붙는다", () => {
@@ -217,6 +217,104 @@ describe("recommend", () => {
     for (const pick of result.picks) {
       expect(pick.game.players.max).toBeGreaterThanOrEqual(2);
     }
+  });
+
+  it("discovery는 strict 후보 풀만 써서 인원 조건을 우회하지 않는다", () => {
+    const base = SAMPLE_CATALOG.find((g) => g.id === "g20")!;
+    const safe = (id: string, viewers: number): Game => ({
+      ...base,
+      id,
+      franchise: undefined,
+      players: { ...base.players, max: 2 },
+      vibes: { ...base.vibes, hardcore: 0.9 },
+      buzz: { twitchViewers: viewers, twitchChannels: 80, viewerGrowth7d: 1.05, isNewRelease: false },
+      streaming: {
+        ...base.streaming,
+        totalViewers: viewers,
+        channelCount: 80,
+        medianViewersPerChannel: 70,
+        p75ViewersPerChannel: 100,
+        top10ViewerShare: 0.2,
+        viewerConcentration: 0.18,
+        growth7d: 1.05,
+        growth30d: 1.03,
+        growth90d: 1.01,
+        volatility30d: 0.14,
+        observedSnapshots: 60,
+        coverage: 0.9,
+      },
+      quality: { totalRating: 86, totalRatingCount: 700 },
+      rating: 86,
+      reviewCount: 700,
+      topTags: [{ tag: "roguelite", share: 0.6 }],
+    });
+    const strictDiscoveryByPlayers: Game = {
+      ...safe("players-blocked-discovery", 150),
+      players: { ...base.players, max: 1 },
+      buzz: { twitchViewers: 150, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false },
+      streaming: {
+        ...safe("tmp", 150).streaming,
+        totalViewers: 150,
+        channelCount: 2,
+        medianViewersPerChannel: 40,
+        p75ViewersPerChannel: 50,
+        top10ViewerShare: 0.5,
+        viewerConcentration: 0.4,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: 0.15,
+        observedSnapshots: 20,
+        coverage: 0.7,
+      },
+      quality: { totalRating: 95, totalRatingCount: 1_200 },
+      rating: 95,
+      reviewCount: 1_200,
+      topTags: [{ tag: "story rich", share: 0.5 }],
+    };
+
+    const result = recommend([
+      safe("safe-1", 10_000),
+      safe("safe-2", 9_000),
+      safe("safe-3", 8_000),
+      strictDiscoveryByPlayers,
+    ], q({ players: 2 }));
+
+    expect(result.picks.map((pick) => pick.game.id)).not.toContain("players-blocked-discovery");
+  });
+
+  it("returns a valid strict-pool historical candidate in the discovery slot", () => {
+    const base = SAMPLE_CATALOG.find((g) => g.id === "g16")!;
+    const discovery: Game = {
+      ...base,
+      id: "strict-discovery",
+      franchise: undefined,
+      releaseDate: "2020-01-01T00:00:00.000Z",
+      vibes: { ...base.vibes, hardcore: 0.9 },
+      buzz: { twitchViewers: 7_500, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false },
+      streaming: {
+        ...base.streaming,
+        totalViewers: 7_500,
+        channelCount: 2,
+        medianViewersPerChannel: 45,
+        p75ViewersPerChannel: 70,
+        top10ViewerShare: 0.4,
+        viewerConcentration: 0.32,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: 0.2,
+        observedSnapshots: 30,
+        coverage: 0.75,
+      },
+      quality: { totalRating: 94, totalRatingCount: 1_500 },
+      rating: 94,
+      reviewCount: 1_500,
+    };
+
+    const result = recommend([discovery], q({ players: 1, vibe: "hardcore" }));
+
+    expect(result.picks.find((pick) => pick.slot === "discovery")?.game.id).toBe("strict-discovery");
   });
 
   it.each([

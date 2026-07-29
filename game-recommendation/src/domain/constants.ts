@@ -6,8 +6,13 @@ export const OPPORTUNITY_K = 10;
 /** safe·rising 슬롯 후보의 최소 채널 수. new 슬롯에는 적용하지 않는다. */
 export const MIN_CHANNELS_FOR_RANKING = 5;
 
-export const W_OPPORTUNITY = 0.6;
-export const W_VIEWERS = 0.4;
+export const W_DEMAND = 0.15;
+export const W_ACCESSIBILITY = 0.15;
+export const W_QUALITY = 0.20;
+export const W_GROWTH = 0.15;
+export const W_STABILITY = 0.15;
+export const W_COMPETITION = 0.10;
+export const W_CONFIDENCE = 0.10;
 
 export const PENALTY_UNKNOWN_PLAYERS = 0.15;
 export const PENALTY_MARGINAL_SESSION = 0.1;
@@ -25,6 +30,11 @@ export const MIN_GROWTH_MULTIPLIER = 1.3;
 export const MIN_REVIEWS_FOR_NEW = 50;
 
 export const SAFE_SLOT_COUNT = 3;
+export const MIN_QUALITY_FLOOR = 0.70;
+export const MIN_DISCOVERY_CONFIDENCE = 0.10;
+export const MAX_DISCOVERY_CHANNELS = 5;
+export const MAX_DISCOVERY_VIEWERS = 1_000;
+export const MIN_GROWTH_CONFIDENCE = 0.45;
 
 /**
  * "채널당 시청자 상위 N%" 문장을 근거로 쓰기 위한 opportunity 백분위 하한.

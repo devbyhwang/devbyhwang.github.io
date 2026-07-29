@@ -1,9 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { resolve } from "node:path";
+import { runBackfill } from "./backfill";
 import { createNodeFileStore, readCatalog } from "./emit";
 import { readHistory, validateHistory } from "./history";
+import { saveRaw } from "./http";
 import { loadKnowledge } from "./knowledge";
-import type { IgdbExternalGame, IgdbGame, PipelineLogger, PipelineResult, RawSources, SourceConfig, SteamApp } from "./model";
+import type { IgdbExternalGame, IgdbGame, IgdbRawSnapshot, PipelineLogger, PipelineResult, RawResponseRecorder, RawSources, SourceConfig, SteamApp } from "./model";
 import { runPipeline } from "./run";
 
 const FIXTURE_AS_OF = "2026-07-28T00:00:00.000Z";
@@ -138,9 +141,79 @@ export function validateOutput(rootDir: string): void {
   loadKnowledge(rootDir);
 }
 
+function backfillRawPath(rootDir: string, start: string, end: string): string {
+  return resolve(rootDir, "data/raw/igdb/backfill", `${start}_${end}.json`);
+}
+
+type BackfillPersistence = {
+  recordResponse: RawResponseRecorder;
+  recordSnapshot: (snapshot: IgdbRawSnapshot) => Promise<void>;
+};
+
+function createBackfillPersistence(rootDir: string, start: string, end: string, asOf: string): BackfillPersistence {
+  const path = backfillRawPath(rootDir, start, end);
+  const games = new Map<number, IgdbGame>();
+  const responses: unknown[] = [];
+  try {
+    const previous = JSON.parse(readFileSync(path, "utf8")) as { games?: unknown; responses?: unknown };
+    if (Array.isArray(previous.games)) {
+      for (const game of previous.games) {
+        if (game && typeof game === "object" && Number.isInteger((game as { id?: unknown }).id)) {
+          const value = game as IgdbGame;
+          games.set(value.id, value);
+        }
+      }
+    }
+    if (Array.isArray(previous.responses)) responses.push(...previous.responses);
+  } catch {
+    // A missing or incomplete partition file is rebuilt from the checkpoint offset.
+  }
+
+  const persist = async (): Promise<void> => {
+    await saveRaw(path, {
+      fetchedAt: asOf,
+      source: "igdb",
+      request: { partitionStart: start, partitionEnd: end },
+      responses,
+      warnings: [],
+      games: [...games.values()],
+      externalGames: [],
+      unresolvedSteamAppIds: [],
+    });
+  };
+
+  return {
+    recordResponse: async (response) => {
+      responses.push(response);
+      await persist();
+    },
+    recordSnapshot: async (snapshot) => {
+      for (const game of snapshot.games) games.set(game.id, game);
+      await persist();
+    },
+  };
+}
+
+function parseBackfillBoundaries(args: string[]): { start: string; end: string } {
+  const startIndex = args.indexOf("--start");
+  const endIndex = args.indexOf("--end");
+  const start = startIndex >= 0 ? args[startIndex + 1] : undefined;
+  const end = endIndex >= 0 ? args[endIndex + 1] : undefined;
+  if (!start || !end) {
+    throw new Error("backfill requires --start YYYY-MM-DD and --end YYYY-MM-DD");
+  }
+  const startDate = new Date(`${start}T00:00:00.000Z`);
+  const endDate = new Date(`${end}T00:00:00.000Z`);
+  if (start !== startDate.toISOString().slice(0, 10)) throw new Error(`invalid --start date: ${start}`);
+  if (end !== endDate.toISOString().slice(0, 10)) throw new Error(`invalid --end date: ${end}`);
+  if (startDate.getTime() >= endDate.getTime()) throw new Error(`--start must be before --end: ${start} >= ${end}`);
+  return { start, end };
+}
+
 export async function runCommand(
   command: string | undefined,
   options: { rootDir?: string; env?: NodeJS.ProcessEnv; logger?: PipelineLogger; fetcher?: typeof fetch } = {},
+  args: string[] = [],
 ): Promise<PipelineResult | void> {
   const rootDir = options.rootDir ?? process.cwd();
   const env = options.env ?? process.env;
@@ -174,11 +247,29 @@ export async function runCommand(
     logger.info("catalog valid");
     return;
   }
+  if (command === "backfill") {
+    const { start, end } = parseBackfillBoundaries(args);
+    const asOf = env.PIPELINE_AS_OF ?? new Date().toISOString();
+    const persistence = createBackfillPersistence(rootDir, start, end, asOf);
+    const result = await runBackfill({
+      rootDir,
+      asOf,
+      partitionStart: start,
+      partitionEnd: end,
+      clientId: required(env, "TWITCH_CLIENT_ID"),
+      clientSecret: required(env, "TWITCH_CLIENT_SECRET"),
+      fetcher: options.fetcher,
+      recordResponse: persistence.recordResponse,
+      recordSnapshot: persistence.recordSnapshot,
+    });
+    logger.info(`IGDB backfill result: ${JSON.stringify(result)}`);
+    return;
+  }
   throw new Error(`unsupported pipeline command: ${command ?? ""}`);
 }
 
-if (process.argv[1] && /scripts[\\/]pipeline[\\/]index\.ts$/.test(resolve(process.argv[1]))) {
-  runCommand(process.argv[2]).catch((error: unknown) => {
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  runCommand(process.argv[2], {}, process.argv.slice(3)).catch((error: unknown) => {
     console.error(error);
     process.exitCode = 1;
   });

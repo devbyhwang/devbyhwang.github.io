@@ -2,6 +2,8 @@ import { MS_PER_DAY } from "./constants";
 import type { Catalog, Game, PlayerSource, SessionShape, VibeKey } from "./types";
 import { VIBE_KEYS } from "./types";
 
+const GENERATED_AT = "2026-01-01T00:00:00.000Z";
+
 type Seed = {
   id: string;
   name: string;
@@ -102,6 +104,22 @@ function toGame(s: Seed): Game {
       viewerGrowth7d: s.growth === undefined ? null : s.growth,
       isNewRelease: s.age <= 30,
     },
+    streaming: {
+      totalViewers: s.viewers,
+      channelCount: s.channels,
+      medianViewersPerChannel: null,
+      p75ViewersPerChannel: null,
+      top10ViewerShare: null,
+      viewerConcentration: null,
+      growth7d: s.growth === undefined ? null : s.growth,
+      growth30d: null,
+      growth90d: null,
+      volatility30d: null,
+      observedSnapshots: s.growth == null ? 0 : 7,
+      coverage: 0,
+      asOf: GENERATED_AT,
+    },
+    quality: {},
     topTags: [],
     rating: s.rating,
     reviewCount: s.reviews,
@@ -116,6 +134,6 @@ function toGame(s: Seed): Game {
 export const SAMPLE_CATALOG: Game[] = SEEDS.map(toGame);
 
 export const SAMPLE_DATASET: Catalog = {
-  generatedAt: "2026-01-01T00:00:00.000Z",
+  generatedAt: GENERATED_AT,
   games: SAMPLE_CATALOG,
 };

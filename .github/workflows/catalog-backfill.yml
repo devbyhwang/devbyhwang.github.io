@@ -1,0 +1,70 @@
+name: Backfill game recommendation catalog
+
+on:
+  workflow_dispatch:
+    inputs:
+      start:
+        description: "Inclusive IGDB release date (YYYY-MM-DD)"
+        required: true
+        type: string
+      end:
+        description: "Exclusive IGDB release date (YYYY-MM-DD)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: game-catalog-backfill
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Backfill historical IGDB catalog
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+        run: |
+          set +e
+          npm run pipeline:backfill -- --start "${{ inputs.start }}" --end "${{ inputs.end }}"
+          backfill_status=$?
+          pipeline_status=0
+          validate_status=0
+          if [ "$backfill_status" -eq 0 ]; then
+            npm run pipeline
+            pipeline_status=$?
+          fi
+          if [ "$backfill_status" -eq 0 ] && [ "$pipeline_status" -eq 0 ]; then
+            npm run pipeline:validate
+            validate_status=$?
+          fi
+          echo "CATALOG_BACKFILL_STATUS=$backfill_status" >> "$GITHUB_ENV"
+          echo "CATALOG_PIPELINE_STATUS=$pipeline_status" >> "$GITHUB_ENV"
+          echo "CATALOG_VALIDATE_STATUS=$validate_status" >> "$GITHUB_ENV"
+          set -e
+
+      - name: Commit backfill checkpoint and catalog
+        run: |
+          git add data/history.json data/raw data/checkpoints src/playground/game-recommendation/catalog.json src/playground/game-recommendation/catalog/chunks
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "chore: backfill game recommendation catalog"
+            git push
+          fi
+          if [ "$CATALOG_BACKFILL_STATUS" -ne 0 ]; then
+            exit "$CATALOG_BACKFILL_STATUS"
+          fi
+          if [ "$CATALOG_PIPELINE_STATUS" -ne 0 ]; then
+            exit "$CATALOG_PIPELINE_STATUS"
+          fi
+          exit "$CATALOG_VALIDATE_STATUS"

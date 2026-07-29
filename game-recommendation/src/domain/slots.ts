@@ -1,16 +1,24 @@
 import {
+  MAX_DISCOVERY_CHANNELS,
+  MAX_DISCOVERY_VIEWERS,
+  MIN_DISCOVERY_CONFIDENCE,
   MIN_GROWTH_MULTIPLIER,
+  MIN_GROWTH_CONFIDENCE,
+  MIN_QUALITY_FLOOR,
   MIN_REVIEWS_FOR_NEW,
   MIN_VIEWERS_FOR_GROWTH,
   SAFE_SLOT_COUNT,
 } from "./constants";
+import { rerankDiverse } from "./diversity";
+import { addPenalties, scoreGame } from "./score";
 import type { FilteredGame } from "./filter";
 import type { Game, Scored, SlotKind } from "./types";
 
-export type SlotAssignment = { slot: SlotKind; scored: Scored };
+export type SlotAssignment = { slot: SlotKind | "discovery"; scored: Scored };
 export type SlotPools = {
   safe: Scored[];
   rising: Scored[];
+  discoveryCandidates: FilteredGame[];
   newCandidates: FilteredGame[];
 };
 
@@ -30,12 +38,12 @@ class Taken {
   }
 }
 
-export function buildSlots({ safe, rising: risingCandidates, newCandidates }: SlotPools): SlotAssignment[] {
+export function buildSlots({ safe, rising: risingCandidates, discoveryCandidates, newCandidates }: SlotPools): SlotAssignment[] {
   const taken = new Taken();
   const out: SlotAssignment[] = [];
 
   // ① safe — 점수 상위
-  for (const scored of safe) {
+  for (const scored of rerankDiverse(safe.filter((s) => !s.game.buzz.isNewRelease), SAFE_SLOT_COUNT)) {
     if (out.length >= SAFE_SLOT_COUNT) break;
     if (taken.blocks(scored.game)) continue;
     taken.add(scored.game);
@@ -46,18 +54,40 @@ export function buildSlots({ safe, rising: risingCandidates, newCandidates }: Sl
   const rising = risingCandidates
     .filter((s) => {
       const g = s.game.buzz;
+      const growth = s.game.streaming;
+      const windows = [growth.growth7d, growth.growth30d, growth.growth90d].filter((v): v is number => v !== null && v !== undefined);
+      const consistentGrowth = windows.length >= 2 && windows.reduce((a, v) => a + v, 0) / windows.length >= MIN_GROWTH_MULTIPLIER;
+      const confidence = s.terms.find((t) => t.kind === "confidence")?.raw ?? 0;
       return (
-        g.viewerGrowth7d !== null &&
-        g.viewerGrowth7d >= MIN_GROWTH_MULTIPLIER &&
+        consistentGrowth &&
+        confidence >= MIN_GROWTH_CONFIDENCE &&
         g.twitchViewers >= MIN_VIEWERS_FOR_GROWTH &&
         !taken.blocks(s.game)
       );
     })
-    .sort((a, b) => (b.game.buzz.viewerGrowth7d ?? 0) - (a.game.buzz.viewerGrowth7d ?? 0))[0];
+    .sort((a, b) => (b.terms.find((t) => t.kind === "growth")?.raw ?? 0) - (a.terms.find((t) => t.kind === "growth")?.raw ?? 0) || a.game.id.localeCompare(b.game.id))[0];
 
   if (rising) {
     taken.add(rising.game);
     out.push({ slot: "rising", scored: rising });
+  }
+
+  const discoveryPopulation = discoveryCandidates.map((c) => c.game);
+  const discovery = discoveryCandidates
+    .map((candidate) => addPenalties(scoreGame(candidate.game, discoveryPopulation), candidate.marginalSession))
+    .filter((s) => {
+      const quality = s.terms.find((t) => t.kind === "quality")?.raw ?? 0;
+      const confidence = s.terms.find((t) => t.kind === "confidence")?.raw ?? 0;
+      const lowExposure = s.game.buzz.twitchViewers <= MAX_DISCOVERY_VIEWERS;
+      const lowChannelCount = s.game.buzz.twitchChannels < MAX_DISCOVERY_CHANNELS;
+      return quality >= MIN_QUALITY_FLOOR && confidence >= MIN_DISCOVERY_CONFIDENCE &&
+        !s.game.buzz.isNewRelease && s.game.streaming.coverage > 0 &&
+        (lowExposure || lowChannelCount) && !taken.blocks(s.game);
+    })
+    .sort((a, b) => b.score - a.score || a.game.id.localeCompare(b.game.id))[0];
+  if (discovery) {
+    taken.add(discovery.game);
+    out.push({ slot: "discovery", scored: discovery });
   }
 
   // ③ new — 출시 30일 이내 중 평점 상위. 채널 수 하한을 적용하지 않으므로

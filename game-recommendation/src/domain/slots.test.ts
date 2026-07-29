@@ -5,140 +5,294 @@ import { SAMPLE_CATALOG } from "./fixtures";
 import type { FilteredGame } from "./filter";
 import type { Game } from "./types";
 
-const wrap = (games: Game[]): FilteredGame[] =>
-  games.map((game) => ({ game, marginalSession: false }));
+const baseGame = SAMPLE_CATALOG[0]!;
 
-const run = (games: Game[]) => {
-  const candidates = wrap(games);
-  const ranked = rankGames(candidates);
-  return buildSlots({ safe: ranked, rising: ranked, newCandidates: candidates });
+const makeGame = (id: string, overrides: Partial<Game> = {}): Game => ({
+  ...baseGame,
+  id,
+  name: overrides.name ?? id,
+  franchise: overrides.franchise,
+  releaseDate: overrides.releaseDate ?? "2020-01-01T00:00:00.000Z",
+  players: { ...baseGame.players, ...overrides.players },
+  sessionShape: overrides.sessionShape ?? "run",
+  viewerPlayable: overrides.viewerPlayable ?? { ok: false },
+  vibes: { ...baseGame.vibes, ...overrides.vibes },
+  buzz: { ...baseGame.buzz, ...overrides.buzz },
+  streaming: { ...baseGame.streaming, ...overrides.streaming },
+  quality: { ...baseGame.quality, ...overrides.quality },
+  topTags: overrides.topTags ?? [],
+  rating: overrides.rating,
+  reviewCount: overrides.reviewCount,
+});
+
+const wrap = (games: Game[], marginalSession = false): FilteredGame[] =>
+  games.map((game) => ({ game, marginalSession }));
+
+const run = (games: Game[], strictGames = games) => {
+  const strictCandidates = wrap(strictGames);
+  const strictRanked = rankGames(strictCandidates);
+  return buildSlots({
+    safe: rankGames(wrap(games)),
+    rising: strictRanked,
+    discoveryCandidates: strictCandidates,
+    newCandidates: strictCandidates,
+  });
 };
 
 describe("buildSlots", () => {
-  it("safe 슬롯을 최대 3개까지 점수 순으로 채운다", () => {
-    const slots = run(SAMPLE_CATALOG);
-    const safe = slots.filter((s) => s.slot === "safe");
-    expect(safe.length).toBe(3);
-    for (let i = 1; i < safe.length; i++) {
-      expect(safe[i - 1].scored.score).toBeGreaterThanOrEqual(safe[i].scored.score);
-    }
-  });
-
-  it("같은 프랜차이즈를 두 번 넣지 않는다", () => {
-    const overcooked = SAMPLE_CATALOG.filter((g) => g.franchise === "Overcooked");
-    expect(overcooked.length).toBe(2);
-    const slots = run(SAMPLE_CATALOG);
-    const franchises = slots
-      .map((s) => s.scored.game.franchise)
-      .filter((f): f is string => Boolean(f));
-    expect(new Set(franchises).size).toBe(franchises.length);
-  });
-
-  it("rising 슬롯은 성장률 상위 1개를 넣는다", () => {
-    // safe 3자리는 g24/g15/g16이 차지하고, 그다음 성장률 최고(2.6배)는 g10이다.
-    const slots = run(SAMPLE_CATALOG);
-    const rising = slots.filter((s) => s.slot === "rising");
-    expect(rising.length).toBe(1);
-    expect(rising[0].scored.game.id).toBe("g10");
-    expect(rising[0].scored.game.buzz.viewerGrowth7d).not.toBeNull();
-  });
-
-  it("성장률이 전부 null이면 rising 슬롯을 비운다", () => {
-    const noGrowth = SAMPLE_CATALOG.map((g) => ({
-      ...g,
-      buzz: { ...g.buzz, viewerGrowth7d: null },
-    }));
-    const slots = run(noGrowth);
-    expect(slots.some((s) => s.slot === "rising")).toBe(false);
-  });
-
-  it("성장률에 볼륨 바닥을 적용한다", () => {
-    const tiny: Game = {
-      ...SAMPLE_CATALOG[0],
-      id: "tiny",
-      franchise: undefined,
-      buzz: { twitchViewers: 40, twitchChannels: 6, viewerGrowth7d: 9.0, isNewRelease: false },
-    };
-    const slots = run([...SAMPLE_CATALOG, tiny]);
-    const rising = slots.find((s) => s.slot === "rising");
-    expect(rising?.scored.game.id).not.toBe("tiny");
-  });
-
-  it("1.2배 성장은 rising에서 제외하고 1.3배는 포함한다", () => {
-    // 성장 배수 하한을 다시 1보다 크게 낮추면, 볼륨은 충분하지만 1.2배인 이 게임이
-    // "지금 뜨는 중" 슬롯을 차지하게 된다.
-    const base = SAMPLE_CATALOG.find((g) => g.id === "g16")!;
-    const below: Game = {
-      ...base,
-      id: "below",
-      franchise: undefined,
-      releaseDate: "2020-01-01T00:00:00.000Z",
-      rating: undefined,
-      buzz: { ...base.buzz, viewerGrowth7d: 1.2, isNewRelease: false },
-    };
-
-    const safeFillers = ["safe-1", "safe-2", "safe-3"].map((id, index): Game => ({
-      ...below,
-      id,
-      buzz: {
-        ...below.buzz,
-        twitchViewers: 10_000 - index * 1_000,
-        twitchChannels: 10,
-        viewerGrowth7d: null,
+  it("fills safe with a diversity-reranked top three instead of stacking the same franchise", () => {
+    const sequelA = makeGame("sequel-a", {
+      franchise: "Shared",
+      buzz: { twitchViewers: 18_000, twitchChannels: 150, viewerGrowth7d: 1.1, isNewRelease: false },
+      streaming: {
+        totalViewers: 18_000,
+        channelCount: 150,
+        medianViewersPerChannel: 95,
+        p75ViewersPerChannel: 120,
+        top10ViewerShare: 0.2,
+        viewerConcentration: 0.18,
+        growth7d: 1.1,
+        growth30d: 1.08,
+        growth90d: 1.05,
+        volatility30d: 0.12,
+        observedSnapshots: 90,
+        coverage: 0.95,
+        asOf: "2026-07-29T00:00:00.000Z",
       },
+      quality: { totalRating: 90, totalRatingCount: 900 },
+      rating: 90,
+      reviewCount: 900,
+      topTags: [{ tag: "party", share: 0.5 }, { tag: "co-op", share: 0.3 }],
+    });
+    const sequelB = makeGame("sequel-b", {
+      franchise: "Shared",
+      buzz: { twitchViewers: 17_500, twitchChannels: 145, viewerGrowth7d: 1.09, isNewRelease: false },
+      streaming: {
+        totalViewers: 17_500,
+        channelCount: 145,
+        medianViewersPerChannel: 93,
+        p75ViewersPerChannel: 118,
+        top10ViewerShare: 0.22,
+        viewerConcentration: 0.2,
+        growth7d: 1.09,
+        growth30d: 1.07,
+        growth90d: 1.04,
+        volatility30d: 0.13,
+        observedSnapshots: 90,
+        coverage: 0.95,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 89, totalRatingCount: 850 },
+      rating: 89,
+      reviewCount: 850,
+      topTags: [{ tag: "party", share: 0.55 }, { tag: "co-op", share: 0.25 }],
+    });
+    const alternative = makeGame("alternative", {
+      buzz: { twitchViewers: 16_000, twitchChannels: 120, viewerGrowth7d: 1.08, isNewRelease: false },
+      streaming: {
+        totalViewers: 16_000,
+        channelCount: 120,
+        medianViewersPerChannel: 90,
+        p75ViewersPerChannel: 110,
+        top10ViewerShare: 0.15,
+        viewerConcentration: 0.12,
+        growth7d: 1.08,
+        growth30d: 1.07,
+        growth90d: 1.05,
+        volatility30d: 0.11,
+        observedSnapshots: 90,
+        coverage: 0.95,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 88, totalRatingCount: 920 },
+      rating: 88,
+      reviewCount: 920,
+      topTags: [{ tag: "deckbuilder", share: 0.5 }],
+    });
+    const anchor = makeGame("anchor", {
+      buzz: { twitchViewers: 20_000, twitchChannels: 180, viewerGrowth7d: 1.1, isNewRelease: false },
+      streaming: {
+        totalViewers: 20_000,
+        channelCount: 180,
+        medianViewersPerChannel: 100,
+        p75ViewersPerChannel: 135,
+        top10ViewerShare: 0.14,
+        viewerConcentration: 0.12,
+        growth7d: 1.1,
+        growth30d: 1.08,
+        growth90d: 1.06,
+        volatility30d: 0.1,
+        observedSnapshots: 90,
+        coverage: 0.98,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 91, totalRatingCount: 1000 },
+      rating: 91,
+      reviewCount: 1000,
+      topTags: [{ tag: "survival", share: 0.4 }],
+    });
+
+    const safeIds = run([anchor, sequelA, sequelB, alternative])
+      .filter((slot) => slot.slot === "safe")
+      .map((slot) => slot.scored.game.id);
+
+    expect(safeIds).toEqual(["anchor", "sequel-a", "alternative"]);
+  });
+
+  it("uses multi-window growth confidence for the rising slot", () => {
+    const safeFillers = ["safe-1", "safe-2", "safe-3"].map((id, index) => makeGame(id, {
+      buzz: { twitchViewers: 20_000 - index * 1_000, twitchChannels: 160, viewerGrowth7d: 1.05, isNewRelease: false },
+      streaming: {
+        totalViewers: 20_000 - index * 1_000,
+        channelCount: 160,
+        medianViewersPerChannel: 90,
+        p75ViewersPerChannel: 120,
+        top10ViewerShare: 0.18,
+        viewerConcentration: 0.16,
+        growth7d: 1.05,
+        growth30d: 1.04,
+        growth90d: 1.02,
+        volatility30d: 0.12,
+        observedSnapshots: 90,
+        coverage: 0.95,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 88, totalRatingCount: 900 },
+      rating: 88,
+      reviewCount: 900,
     }));
-    const at: Game = {
-      ...below,
-      id: "at",
-      buzz: { ...below.buzz, viewerGrowth7d: 1.3 },
-    };
-    const slots = run([...safeFillers, below, at]);
 
-    expect(slots.find((slot) => slot.slot === "rising")?.scored.game.id).toBe("at");
+    const spike = makeGame("spike", {
+      buzz: { twitchViewers: 4_000, twitchChannels: 40, viewerGrowth7d: 2.2, isNewRelease: false },
+      streaming: {
+        totalViewers: 4_000,
+        channelCount: 40,
+        medianViewersPerChannel: 80,
+        p75ViewersPerChannel: 140,
+        top10ViewerShare: 0.8,
+        viewerConcentration: 0.7,
+        growth7d: 2.2,
+        growth30d: 0.8,
+        growth90d: 0.7,
+        volatility30d: 0.75,
+        observedSnapshots: 14,
+        coverage: 0.3,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 82, totalRatingCount: 120 },
+      rating: 82,
+      reviewCount: 120,
+    });
+    const consistent = makeGame("consistent", {
+      buzz: { twitchViewers: 5_000, twitchChannels: 55, viewerGrowth7d: 1.45, isNewRelease: false },
+      streaming: {
+        totalViewers: 5_000,
+        channelCount: 55,
+        medianViewersPerChannel: 78,
+        p75ViewersPerChannel: 105,
+        top10ViewerShare: 0.25,
+        viewerConcentration: 0.2,
+        growth7d: 1.45,
+        growth30d: 1.4,
+        growth90d: 1.3,
+        volatility30d: 0.16,
+        observedSnapshots: 60,
+        coverage: 0.9,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 84, totalRatingCount: 400 },
+      rating: 84,
+      reviewCount: 400,
+    });
+
+    const rising = run([...safeFillers, spike, consistent]).find((slot) => slot.slot === "rising");
+
+    expect(rising?.scored.game.id).toBe("consistent");
   });
 
-  it("신작 슬롯은 채널 수가 적어도 후보가 된다", () => {
-    // g27은 채널 2개라 랭킹(safe/rising)에서 빠지지만, 신작 + 리뷰 55개라 new 슬롯에는 올라야 한다
-    const g27 = SAMPLE_CATALOG.find((g) => g.id === "g27")!;
-    const others = SAMPLE_CATALOG.filter(
-      (g) => g.vibes.horror >= 0.5 && !g.buzz.isNewRelease,
-    );
-    const slots = run([...others, g27]);
-    const isNew = slots.filter((s) => s.slot === "new");
-    expect(isNew.length).toBe(1);
-    expect(isNew[0].scored.game.id).toBe("g27");
-    expect(slots.filter((s) => s.slot === "safe").every((s) => s.scored.game.id !== "g27")).toBe(true);
+  it("adds a discovery slot for a high-quality low-exposure historical game without surfacing it as safe", () => {
+    const discovery = makeGame("discovery", {
+      releaseDate: "2020-01-01T00:00:00.000Z",
+      buzz: { twitchViewers: 120, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false },
+      streaming: {
+        totalViewers: 120,
+        channelCount: 2,
+        medianViewersPerChannel: 35,
+        p75ViewersPerChannel: 50,
+        top10ViewerShare: 0.55,
+        viewerConcentration: 0.45,
+        growth7d: null,
+        growth30d: null,
+        growth90d: null,
+        volatility30d: 0.18,
+        observedSnapshots: 25,
+        coverage: 0.7,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 94, totalRatingCount: 1_500 },
+      rating: 94,
+      reviewCount: 1_500,
+      topTags: [{ tag: "story rich", share: 0.4 }],
+    });
+    const safeGames = ["safe-1", "safe-2", "safe-3"].map((id, index) => makeGame(id, {
+      buzz: { twitchViewers: 12_000 - index * 500, twitchChannels: 120, viewerGrowth7d: 1.1, isNewRelease: false },
+      streaming: {
+        totalViewers: 12_000 - index * 500,
+        channelCount: 120,
+        medianViewersPerChannel: 85,
+        p75ViewersPerChannel: 112,
+        top10ViewerShare: 0.2,
+        viewerConcentration: 0.16,
+        growth7d: 1.1,
+        growth30d: 1.08,
+        growth90d: 1.05,
+        volatility30d: 0.12,
+        observedSnapshots: 90,
+        coverage: 0.95,
+        asOf: "2026-07-29T00:00:00.000Z",
+      },
+      quality: { totalRating: 86, totalRatingCount: 600 },
+      rating: 86,
+      reviewCount: 600,
+    }));
+
+    const slots = run([...safeGames, discovery]);
+
+    expect(slots.some((slot) => slot.slot === "safe" && slot.scored.game.id === "discovery")).toBe(false);
+    expect(slots.find((slot) => slot.slot === "discovery")?.scored.game.id).toBe("discovery");
   });
 
-  it("리뷰가 부족한 신작은 new 슬롯에 넣지 않는다", () => {
-    const flimsy: Game = {
-      ...SAMPLE_CATALOG[0],
-      id: "flimsy",
-      franchise: undefined,
-      rating: 100,
-      reviewCount: 3,
-      buzz: { twitchViewers: 100, twitchChannels: 6, viewerGrowth7d: null, isNewRelease: true },
-    };
-    const slots = run([flimsy]);
-    expect(slots.some((s) => s.scored.game.id === "flimsy" && s.slot === "new")).toBe(false);
+  it("allows discovery when either current viewers or current channels are low", () => {
+    const lowViewers = makeGame("low-viewers", {
+      buzz: { twitchViewers: 900, twitchChannels: 80, viewerGrowth7d: null, isNewRelease: false },
+      streaming: { ...baseGame.streaming, totalViewers: 900, channelCount: 80, coverage: 0.8, observedSnapshots: 40 },
+      quality: { totalRating: 92, totalRatingCount: 800 }, rating: 92, reviewCount: 800,
+    });
+    const lowChannels = makeGame("low-channels", {
+      buzz: { twitchViewers: 8_000, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false },
+      streaming: { ...baseGame.streaming, totalViewers: 8_000, channelCount: 2, coverage: 0.8, observedSnapshots: 40 },
+      quality: { totalRating: 92, totalRatingCount: 800 }, rating: 92, reviewCount: 800,
+    });
+    const safeAnchor = makeGame("safe-anchor", {
+      buzz: { twitchViewers: 12_000, twitchChannels: 120, viewerGrowth7d: 1.1, isNewRelease: false },
+      streaming: { ...baseGame.streaming, totalViewers: 12_000, channelCount: 120, coverage: 0.9, observedSnapshots: 60 },
+      quality: { totalRating: 86, totalRatingCount: 600 }, rating: 86, reviewCount: 600,
+    });
+    const safeAnchors = [safeAnchor, { ...safeAnchor, id: "safe-anchor-2" }, { ...safeAnchor, id: "safe-anchor-3" }];
+
+    expect(run([...safeAnchors, lowViewers]).find((slot) => slot.slot === "discovery")?.scored.game.id).toBe("low-viewers");
+    expect(run([lowChannels]).find((slot) => slot.slot === "discovery")?.scored.game.id).toBe("low-channels");
   });
 
-  it("같은 게임이 두 슬롯에 중복되지 않는다", () => {
+  it("returns slots in safe → rising → discovery → new order with no duplicate games", () => {
     const slots = run(SAMPLE_CATALOG);
-    const ids = slots.map((s) => s.scored.game.id);
+    const ids = slots.map((slot) => slot.scored.game.id);
+    const order = slots.map((slot) => slot.slot);
+    const rank = { safe: 0, rising: 1, discovery: 2, new: 3 } as const;
+
     expect(new Set(ids).size).toBe(ids.length);
-  });
-
-  it("safe → rising → new 순서로 반환한다", () => {
-    const slots = run(SAMPLE_CATALOG);
-    const order = slots.map((s) => s.slot);
-    const rank = { safe: 0, rising: 1, new: 2 } as const;
-    for (let i = 1; i < order.length; i++) {
-      expect(rank[order[i]]).toBeGreaterThanOrEqual(rank[order[i - 1]]);
+    for (let index = 1; index < order.length; index++) {
+      expect(rank[order[index]]).toBeGreaterThanOrEqual(rank[order[index - 1]]);
     }
-  });
-
-  it("후보가 하나도 없으면 빈 배열을 반환한다", () => {
-    expect(buildSlots({ safe: [], rising: [], newCandidates: [] })).toEqual([]);
   });
 });

@@ -41,6 +41,7 @@ function attempt(
   const slots = buildSlots({
     safe: rankGames(passed),
     rising: rankGames(strictCandidates),
+    discoveryCandidates: strictCandidates,
     newCandidates: strictCandidates,
   });
   const picks: Pick[] = slots.map(({ slot, scored }) => ({

@@ -77,7 +77,32 @@ jobs:
         with:
           path: _site
       - name: Verify game recommendation artifact
-        run: test -f _site/playground/game-recommendation/catalog.json
+        run: |
+          test -f _site/playground/game-recommendation/catalog.json
+          node --input-type=module <<'EOF'
+          import { accessSync, readFileSync } from "node:fs";
+          import { resolve } from "node:path";
+
+          const artifactRoot = "_site/playground/game-recommendation";
+          const catalogPath = `${artifactRoot}/catalog.json`;
+          const catalog = JSON.parse(readFileSync(catalogPath, "utf8"));
+
+          // Keep the existing 116-game catalog deployable until the first live refresh
+          // rewrites it to the manifest + chunks format.
+          if (Array.isArray(catalog.games)) {
+            console.log("legacy game recommendation catalog detected");
+            process.exit(0);
+          }
+          if (!Array.isArray(catalog.chunks)) {
+            throw new Error(`${catalogPath} is missing a chunks array`);
+          }
+          for (const chunkPath of catalog.chunks) {
+            if (typeof chunkPath !== "string" || !/^\.\/catalog\/chunks\/\d{4}\.json$/.test(chunkPath)) {
+              throw new Error(`invalid catalog chunk path: ${String(chunkPath)}`);
+            }
+            accessSync(resolve(artifactRoot, chunkPath.slice(2)));
+          }
+          EOF
 
   deploy:
     needs: build

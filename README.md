@@ -27,9 +27,10 @@ npm run dev
 npm run dev      # Eleventy 개발 서버
 npm run build    # 프로덕션 빌드, 출력: _site/
 npm run clean    # _site/ 삭제
-npm test         # 게임 추천 앱 테스트
+npm test         # 게임 추천 앱 + 수집 파이프라인 테스트
 npm run pipeline:fixture   # 네트워크 없는 fixture catalog 생성
 npm run pipeline:validate  # 실데이터 catalog와 history 검증
+npm run pipeline:backfill -- --start 1980-01-01 --end 2026-01-01  # 지정 기간 IGDB 역사 데이터 수집
 ```
 
 ## 프로젝트 구조
@@ -207,9 +208,12 @@ GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세
 
 게임 추천 catalog 갱신 workflow도 이 저장소에서 매일 00:00 UTC에 실행됩니다.
 처음 운영하기 전에 repository secrets에 `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`을 등록하고,
-`Refresh game recommendation catalog` workflow를 수동으로 한 번 실행하세요. 수집 범위는
+`Backfill game recommendation catalog` workflow를 먼저 수동 실행해 역사 데이터를 채우세요. 시작일은
+`YYYY-MM-DD` 형식의 포함 범위이고 종료일은 제외 범위입니다. 백필은 연도 단위 파티션과
+`data/checkpoints/igdb.json`으로 중단 후 재실행을 지원합니다. 이후
+`Refresh game recommendation catalog`가 매일 실행되어 최신 스트리밍·평가 데이터를 갱신합니다. 수집 범위는
 repository variables의 `TWITCH_TOP_GAME_LIMIT`, `TWITCH_STREAM_PAGE_LIMIT`, `IGDB_RECENT_DAYS`로
-조정할 수 있으며 기본값은 각각 `100`, `5`, `60`입니다.
+조정할 수 있으며 refresh workflow 기본값은 각각 `100`, `5`, `60`입니다.
 
 ## 라이선스
 
