@@ -120,8 +120,16 @@ async function selectedOrdinals(manifest: CompactExplorationManifest, view: Expl
   if (!isFilteredView(view)) return rank;
   const descriptor = manifest.views[view];
   const bits = decodeMembershipBitset(await cachedBytes(asset(descriptor.path), fetcher), manifest.gameCount);
+  const ranked = new Set(rank);
+  let memberCount = 0;
+  for (let ordinal = 0; ordinal < manifest.gameCount; ordinal += 1) {
+    if (!membershipBitsetHas(bits, ordinal, manifest.gameCount)) continue;
+    memberCount += 1;
+    if (!ranked.has(ordinal)) throw new Error(`exploration membership: ${view} outside rank`);
+  }
+  if (memberCount !== descriptor.count) throw new Error(`exploration membership: ${view} count mismatch`);
   const selected = rank.filter((ordinal) => membershipBitsetHas(bits, ordinal, manifest.gameCount));
-  if (selected.length !== descriptor.count) throw new Error(`exploration membership: ${view} count mismatch`);
+  if (selected.length !== memberCount) throw new Error(`exploration membership: ${view} rank mismatch`);
   return selected;
 }
 

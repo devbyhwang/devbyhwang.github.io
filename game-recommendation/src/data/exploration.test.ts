@@ -78,6 +78,17 @@ describe("compact exploration data", () => {
     expect(result.cards.map(({ ordinal }) => ordinal)).toEqual([1, 3]);
   });
 
+  it("rejects a filtered bitset with members outside the rank vector", async () => {
+    const fetcher = vi.fn(async (url: string) => {
+      if (url.endsWith("manifest.json")) return response(manifest(2, 1, { new: 1, rising: 0, discovery: 0, classic: 0 }));
+      if (url.endsWith("rank.u32le")) return bytes(encodeOrdinalRankVector([0], 2));
+      if (url.endsWith("new.bits")) return bytes(encodeMembershipBitset([0, 1], 2));
+      return response([card(0)]);
+    });
+    const { loadExplorationPage } = await import("./exploration");
+    await expect(loadExplorationPage(query, "new", 0, fetcher as typeof fetch)).rejects.toThrow("outside rank");
+  });
+
   it("returns an empty result without requesting a bitset for a zero-result view", async () => {
     const fetcher = vi.fn(async (_url: string) => response(manifest(4)));
     const { loadExplorationPage } = await import("./exploration");

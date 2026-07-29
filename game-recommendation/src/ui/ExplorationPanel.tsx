@@ -66,6 +66,8 @@ function ExplorationContents({ query, generatedAt }: Props) {
     setView(next);
     setPage(0);
     setCards([]);
+    setTotal(null);
+    setHasMore(false);
   };
 
   return (

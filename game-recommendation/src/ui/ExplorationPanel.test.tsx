@@ -63,4 +63,27 @@ describe("ExplorationPanel", () => {
     expect(screen.queryByText("게임 목록을 불러오지 못했습니다.")).toBeNull();
     expect(fetcher.mock.calls.map(([url]) => url)).not.toContain(expect.stringContaining("new.bits"));
   });
+
+  it("clears the previous tab count and more button while a new tab is loading", async () => {
+    let resolveBits: ((response: Response) => void) | undefined;
+    const fetcher = compactFetch(48, [0]);
+    fetcher.mockImplementation(async (url: string) => {
+      if (url.endsWith("new.bits")) return new Promise<Response>((resolve) => { resolveBits = resolve; });
+      const original = compactFetch(48, [0]);
+      return original(url);
+    });
+    vi.stubGlobal("fetch", fetcher);
+    const { ExplorationPanel } = await import("./ExplorationPanel");
+    render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
+    expect(await screen.findByText("48개 결과")).toBeDefined();
+    expect(screen.getByRole("button", { name: "더 보기" })).toBeDefined();
+
+    await userEvent.click(screen.getByRole("tab", { name: "신작" }));
+    expect(await screen.findByText("게임 목록을 불러오는 중입니다…")).toBeDefined();
+    expect(screen.queryByText("48개 결과")).toBeNull();
+    expect(screen.queryByRole("button", { name: "더 보기" })).toBeNull();
+
+    resolveBits?.(binary(encodeMembershipBitset([0], 48)));
+    expect(await screen.findByText("1개 결과")).toBeDefined();
+  });
 });
