@@ -271,6 +271,20 @@ body {
   color: var(--fg-label);
 }
 
+/* ── 전체 탐색 ── */
+.exploration { margin-top: 48px; border-top: 1px solid var(--opt-hover-line); padding-top: 28px; }
+.exploration-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.exploration-head h2 { font-size: 16px; margin: 0; color: var(--fg-strong); }
+.exploration-head p { margin: 0; font-size: 12px; color: var(--fg-meta); }
+.exploration-tabs { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0 18px; }
+.exploration-tabs button, .exploration-more button, .exploration-state button {
+  font: inherit; font-size: 13px; color: var(--opt); background: transparent; border: 1px solid var(--opt-hover-line); border-radius: 999px; padding: 6px 10px; cursor: pointer;
+}
+.exploration-tabs button[aria-selected="true"] { color: var(--bg); background: var(--opt-on); border-color: var(--opt-on); font-weight: 600; }
+.exploration-more { text-align: center; margin-top: 22px; }
+.exploration-more button { color: var(--fg); padding: 8px 22px; }
+.exploration-state { text-align: center; color: var(--fg-meta); font-size: 13px; padding: 24px 0; }
+
 /* ── 디버그 ── */
 .debug {
   width: 100%;

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { QueryPanel } from "./QueryPanel";
 import { RELAXATION_LABELS, ResultCard } from "./ResultCard";
 import { DebugPanel } from "./DebugPanel";
+import { ExplorationPanel } from "./ExplorationPanel";
 import { recommendationKey, type RecommendationIndex } from "../domain/recommendation-index";
 import {
   LENGTH_LABELS,
@@ -96,6 +97,8 @@ export function App({ index }: Props) {
           ))}
         </div>
       )}
+
+      <ExplorationPanel query={query} generatedAt={index.generatedAt} />
 
       <footer className="foot">
         카탈로그 생성 시각 {formatCatalogDate(index.generatedAt)} · 후보 {result.candidateCount}개
