@@ -46,4 +46,14 @@ describe("loadRecommendations", () => {
 
     await expect(loadRecommendations(fetcher)).rejects.toThrow(`recommendations.json: recommendations.medium|1|0|healing.${expected}`);
   });
+
+  it("rejects a null pick before App reads its fields", async () => {
+    const index = validIndex();
+    index.recommendations["medium|1|0|healing"].picks = [null as never];
+    const fetcher = vi.fn().mockResolvedValue(new Response(JSON.stringify(index), { status: 200 }));
+
+    await expect(loadRecommendations(fetcher)).rejects.toThrow(
+      "recommendations.json: recommendations.medium|1|0|healing.picks[0]: must be an object",
+    );
+  });
 });
