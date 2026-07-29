@@ -312,7 +312,7 @@ describe("IGDB source", () => {
       createHttpClient(fetcher as typeof fetch),
     );
 
-    expect(posts[0]).toContain("where release_dates.y >= 1950 & release_dates.y < 1951");
+    expect(posts[0]).toContain("where release_dates.y = (1950)");
     expect(posts[0]).not.toMatch(/first_release_date\s+[<>]=?\s+-\d/);
   });
 
