@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { ExplorationCard, ExplorationView } from "../domain/exploration";
+import { PAGE_SIZE, type ExplorationCard, type ExplorationView } from "../domain/exploration";
 import type { Query } from "../domain/types";
 import { SESSION_TEXT } from "../domain/types";
 import { loadExplorationPage } from "../data/exploration";
@@ -50,7 +50,7 @@ function ExplorationContents({ query, generatedAt }: Props) {
     loadExplorationPage(query, view, page).then((result) => {
       if (!current) return;
       if (result.manifest.generatedAt !== generatedAt) throw new Error("exploration catalog timestamp mismatch");
-      setCards((previous) => page === 0 ? result.cards : [...previous, ...result.cards]);
+      setCards(result.cards);
       setHasMore(result.hasMore);
       setTotal(view === "all" ? result.manifest.rank.ordinalCount : result.manifest.views[view].count);
     }).catch(() => {
@@ -83,10 +83,16 @@ function ExplorationContents({ query, generatedAt }: Props) {
         <div className="exploration-state"><p>게임 목록을 불러오지 못했습니다.</p><button type="button" onClick={() => setRetry((count) => count + 1)}>재시도</button></div>
       ) : (
         <>
-          {cards.length > 0 && <div className="cards exploration-cards">{cards.map((card, index) => <ExplorationCardView key={card.id} card={card} rank={index + 1} />)}</div>}
+          {cards.length > 0 && <div className="cards exploration-cards">{cards.map((card, index) => <ExplorationCardView key={card.id} card={card} rank={page * PAGE_SIZE + index + 1} />)}</div>}
           {!loading && cards.length === 0 && <p className="exploration-state">이 분류에는 조건에 맞는 게임이 없습니다.</p>}
           {loading && <p className="exploration-state">게임 목록을 불러오는 중입니다…</p>}
-          {!loading && hasMore && <div className="exploration-more"><button type="button" onClick={() => setPage((value) => value + 1)}>더 보기</button></div>}
+          {!loading && cards.length > 0 && (page > 0 || hasMore) && (
+            <nav className="exploration-more" aria-label="게임 목록 페이지">
+              {page > 0 && <button type="button" onClick={() => setPage((value) => value - 1)}>이전 페이지</button>}
+              <span aria-live="polite">{page + 1}페이지</span>
+              {hasMore && <button type="button" onClick={() => setPage((value) => value + 1)}>다음 페이지</button>}
+            </nav>
+          )}
         </>
       )}
     </section>

@@ -32,13 +32,22 @@ function compactFetch(gameCount: number, newOrdinals: number[] = []) {
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe("ExplorationPanel", () => {
-  it("initially shows 24 cards and appends 24 more without another rank request", async () => {
+  it("replaces the 24 cards when moving between pages without another rank request", async () => {
     const fetcher = compactFetch(48); vi.stubGlobal("fetch", fetcher);
     const { ExplorationPanel } = await import("./ExplorationPanel");
     render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
     expect(await screen.findAllByRole("article")).toHaveLength(24);
-    await userEvent.click(screen.getByRole("button", { name: "더 보기" }));
-    expect(await screen.findAllByRole("article")).toHaveLength(48);
+    expect(screen.getByRole("heading", { name: "Game 0" })).toBeDefined();
+
+    await userEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
+    expect(await screen.findAllByRole("article")).toHaveLength(24);
+    expect(screen.getByRole("heading", { name: "Game 24" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Game 0" })).toBeNull();
+    expect(screen.getByRole("button", { name: "이전 페이지" })).toBeDefined();
+
+    await userEvent.click(screen.getByRole("button", { name: "이전 페이지" }));
+    expect(await screen.findByRole("heading", { name: "Game 0" })).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "Game 24" })).toBeNull();
     expect(fetcher.mock.calls.filter(([url]) => (url as string).endsWith("rank.u32le"))).toHaveLength(1);
   });
 
@@ -47,10 +56,11 @@ describe("ExplorationPanel", () => {
     const { ExplorationPanel } = await import("./ExplorationPanel");
     const { rerender } = render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
     expect(await screen.findAllByRole("article")).toHaveLength(24);
-    await userEvent.click(screen.getByRole("button", { name: "더 보기" }));
-    expect(await screen.findAllByRole("article")).toHaveLength(48);
+    await userEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
+    expect(await screen.getByRole("heading", { name: "Game 24" })).toBeDefined();
     rerender(<ExplorationPanel query={{ ...query, vibe: "horror" }} generatedAt={generatedAt} />);
     expect(await screen.findAllByRole("article")).toHaveLength(24);
+    expect(screen.getByRole("heading", { name: "Game 0" })).toBeDefined();
   });
 
   it("shows an empty state instead of an error for an empty tab", async () => {
@@ -64,7 +74,7 @@ describe("ExplorationPanel", () => {
     expect(fetcher.mock.calls.map(([url]) => url)).not.toContain(expect.stringContaining("new.bits"));
   });
 
-  it("clears the previous tab count and more button while a new tab is loading", async () => {
+  it("clears the previous tab count and pagination controls while a new tab is loading", async () => {
     let resolveBits: ((response: Response) => void) | undefined;
     const fetcher = compactFetch(48, [0]);
     fetcher.mockImplementation(async (url: string) => {
@@ -76,12 +86,12 @@ describe("ExplorationPanel", () => {
     const { ExplorationPanel } = await import("./ExplorationPanel");
     render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
     expect(await screen.findByText("48개 결과")).toBeDefined();
-    expect(screen.getByRole("button", { name: "더 보기" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "다음 페이지" })).toBeDefined();
 
     await userEvent.click(screen.getByRole("tab", { name: "신작" }));
     expect(await screen.findByText("게임 목록을 불러오는 중입니다…")).toBeDefined();
     expect(screen.queryByText("48개 결과")).toBeNull();
-    expect(screen.queryByRole("button", { name: "더 보기" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "다음 페이지" })).toBeNull();
 
     resolveBits?.(binary(encodeMembershipBitset([0], 48)));
     expect(await screen.findByText("1개 결과")).toBeDefined();

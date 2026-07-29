@@ -281,7 +281,8 @@ body {
   font: inherit; font-size: 13px; color: var(--opt); background: transparent; border: 1px solid var(--opt-hover-line); border-radius: 999px; padding: 6px 10px; cursor: pointer;
 }
 .exploration-tabs button[aria-selected="true"] { color: var(--bg); background: var(--opt-on); border-color: var(--opt-on); font-weight: 600; }
-.exploration-more { text-align: center; margin-top: 22px; }
+.exploration-more { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 22px; }
+.exploration-more span { font-size: 13px; color: var(--fg-meta); }
 .exploration-more button { color: var(--fg); padding: 8px 22px; }
 .exploration-state { text-align: center; color: var(--fg-meta); font-size: 13px; padding: 24px 0; }
 
