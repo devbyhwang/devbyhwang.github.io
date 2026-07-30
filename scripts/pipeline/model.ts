@@ -144,6 +144,7 @@ export type JoinedGame = {
 export type HttpClient = {
   getJson<T>(url: string, headers?: Record<string, string>): Promise<T>;
   postJson<T>(url: string, body: string, headers?: Record<string, string>): Promise<T>;
+  getJsonResponse?<T>(url: string, headers?: Record<string, string>): Promise<{ status: number; headers: Record<string, string>; data?: T }>;
 };
 
 export type RawResponseRecorder = (response: unknown) => Promise<void>;

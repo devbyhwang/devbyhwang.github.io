@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createHttpClient } from "../http";
+import type { HttpClient } from "../model";
 import { fetchChzzk } from "./chzzk";
 
 function json(value: unknown, status = 200, headers?: HeadersInit): Response {
@@ -50,7 +51,7 @@ describe("Chzzk source", () => {
     expect(fetcher.mock.calls[0][1]).toMatchObject({ headers: { "Client-Id": "client", "Client-Secret": "secret" } });
   });
 
-  it("retries a rate-limited request and marks an unvisited next cursor as truncated", async () => {
+  it("honors Retry-After through its status-aware HTTP path and marks an unvisited cursor as truncated", async () => {
     vi.useFakeTimers();
     const retryPage = {
       content: {
@@ -58,19 +59,26 @@ describe("Chzzk source", () => {
         next: "more",
       },
     };
-    const fetcher = vi.fn(async (_url: string, _init?: RequestInit): Promise<Response> => json({}))
-      .mockResolvedValueOnce(new Response("slow down", { status: 429, headers: { "Retry-After": "1" } }))
-      .mockResolvedValueOnce(json(retryPage));
+    const getJsonResponse = vi.fn()
+      .mockResolvedValueOnce({ status: 429, headers: { "retry-after": "3" } })
+      .mockResolvedValueOnce({ status: 200, headers: {}, data: retryPage });
+    const http = {
+      getJson: vi.fn(async () => { throw new Error("adapter must use the status-aware HTTP method"); }),
+      postJson: vi.fn(),
+      getJsonResponse,
+    } as HttpClient;
 
     const pending = fetchChzzk(
       { clientId: "client", clientSecret: "secret", pageLimit: 1 },
-      createHttpClient(fetcher as typeof fetch),
+      http,
     );
-    await vi.advanceTimersByTimeAsync(1_000);
+    await vi.advanceTimersByTimeAsync(2_999);
+    expect(getJsonResponse).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(1);
     const snapshot = await pending;
     vi.useRealTimers();
 
-    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(getJsonResponse).toHaveBeenCalledTimes(2);
     expect(snapshot.categories).toEqual([
       { categoryId: "100", name: "Game One", viewers: 50, channels: 1, coverage: 0.5 },
     ]);

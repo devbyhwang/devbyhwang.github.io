@@ -27,18 +27,23 @@ function requestUrl(cursor: string | undefined): string {
   return `${LIVES_URL}?${query.toString()}`;
 }
 
-function isRateLimitError(error: unknown): boolean {
-  return error instanceof Error && /:\s*429:/.test(error.message);
+function retryAfterMs(value: string | undefined): number {
+  if (!value) return 1_000;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1_000;
+  const date = Date.parse(value);
+  return Number.isNaN(date) ? 1_000 : Math.max(0, date - Date.now());
 }
 
 async function requestPage(http: HttpClient, url: string, headers: Record<string, string>): Promise<ChzzkLivesResponse> {
+  if (!http.getJsonResponse) return http.getJson<ChzzkLivesResponse>(url, headers);
   for (let attempt = 0; ; attempt += 1) {
-    try {
-      return await http.getJson<ChzzkLivesResponse>(url, headers);
-    } catch (error) {
-      if (!isRateLimitError(error) || attempt >= MAX_RATE_LIMIT_RETRIES) throw error;
-      await new Promise<void>((resolve) => setTimeout(resolve, 1_000));
+    const response = await http.getJsonResponse<ChzzkLivesResponse>(url, headers);
+    if (response.status >= 200 && response.status < 300 && response.data !== undefined) return response.data;
+    if (response.status !== 429 || attempt >= MAX_RATE_LIMIT_RETRIES) {
+      throw new Error(`${url}: ${response.status}`);
     }
+    await new Promise<void>((resolve) => setTimeout(resolve, retryAfterMs(response.headers["retry-after"])));
   }
 }
 

@@ -29,9 +29,22 @@ async function requestJson<T>(
   }
 }
 
+async function requestJsonResponse<T>(
+  fetcher: typeof fetch,
+  url: string,
+  init: RequestInit,
+): Promise<{ status: number; headers: Record<string, string>; data?: T }> {
+  const response = await fetcher(url, init);
+  const headers = Object.fromEntries(response.headers.entries());
+  return response.ok
+    ? { status: response.status, headers, data: await response.json() as T }
+    : { status: response.status, headers };
+}
+
 export function createHttpClient(fetcher: typeof fetch = fetch): HttpClient {
   return {
     getJson: <T>(url: string, headers?: Record<string, string>) => requestJson<T>(fetcher, url, { headers }),
+    getJsonResponse: <T>(url: string, headers?: Record<string, string>) => requestJsonResponse<T>(fetcher, url, { headers }),
     postJson: <T>(url: string, body: string, headers?: Record<string, string>) => requestJson<T>(fetcher, url, {
       method: "POST",
       body,
