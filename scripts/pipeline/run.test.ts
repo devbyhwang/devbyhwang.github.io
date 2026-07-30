@@ -424,7 +424,7 @@ describe("live pipeline orchestration", () => {
 
   it("keeps raw and history writes when the catalog decline guard rejects the emit", async () => {
     const destination = root();
-    const previous = catalog(2);
+    const previous = catalog(3);
     writeFileSync(join(destination, "src/playground/game-recommendation/catalog.json"), `${JSON.stringify(previous)}\n`);
 
     await expect(runPipeline({
@@ -454,7 +454,7 @@ describe("live pipeline orchestration", () => {
       config: { twitchClientId: "client-id", twitchClientSecret: "top-secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ generatedAt: asOf, gameCount: 1, catalogUpdated: true, historyUpdated: true, staleSources: ["chzzk"] });
+    expect(result).toMatchObject({ generatedAt: asOf, gameCount: 2, catalogUpdated: true, historyUpdated: true, staleSources: ["chzzk"] });
     expect(existsSync(join(destination, "src/playground/game-recommendation/catalog.json"))).toBe(true);
     expect(existsSync(join(destination, "data/history.json"))).toBe(true);
     expect(messages.join("\n")).not.toContain("top-secret");

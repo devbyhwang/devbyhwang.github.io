@@ -44,7 +44,10 @@ function rawSources(viewers = 130): RawSources {
       request: {},
       responses: [],
       warnings: [],
-      games: [{ id: 42, name: "Game 42", first_release_date: 1_784_505_600 }],
+      games: [
+        { id: 42, name: "Game 42", first_release_date: 1_784_505_600, genres: [{ name: "FirstHalfVibes" }] },
+        { id: 43, name: "Game 43", first_release_date: 1_784_505_600, genres: [{ name: "SecondHalfVibes" }] },
+      ],
       externalGames: [],
       unresolvedSteamAppIds: [],
     },
@@ -81,7 +84,14 @@ function rawSources(viewers = 130): RawSources {
 }
 
 const knowledge: KnowledgeAssets = {
-  vibeWeights: { genres: {}, themes: {}, tags: {} },
+  vibeWeights: {
+    genres: {
+      FirstHalfVibes: { healing: 1, variety: 1, horror: 1 },
+      SecondHalfVibes: { hardcore: 1, chatting: 1, spectacle: 1 },
+    },
+    themes: {},
+    tags: {},
+  },
   sessionRules: { rules: [], default: "run" },
   viewerPlayable: { games: {}, tags: {} },
   chzzkAliases: [],
@@ -261,7 +271,7 @@ describe("derived streaming features", () => {
 describe("pipeline history ordering", () => {
   it("writes history before an emit guard failure and leaves the raw cache untouched", async () => {
     const root = temporaryRoot();
-    const catalog = catalogWith(2);
+    const catalog = catalogWith(3);
     const rawCache = join(root, "data/raw/igdb/latest.json");
     mkdirSync(join(root, "data/raw/igdb"), { recursive: true });
     mkdirSync(join(root, "src/playground/game-recommendation"), { recursive: true });
