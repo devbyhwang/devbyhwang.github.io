@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { enrichGames, EXCLUDED_THEMES, joinSources } from "./join";
+import { enrichGames, joinSources } from "./join";
 import type { KnowledgeAssets, JoinedGame } from "./model";
 
 const generatedAt = "2026-07-28T00:00:00.000Z";
