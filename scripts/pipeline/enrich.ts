@@ -2,7 +2,8 @@ import type {
   ClassificationInput,
   SessionRules,
   SteamTag,
-  TagVibeMap,
+  VibeWeightMap,
+  VibeWeights,
   VibeKey,
   ViewerPlayable,
   ViewerPlayableRules,
@@ -30,35 +31,38 @@ function same(value: string, candidate: string): boolean {
   return value.localeCompare(candidate, undefined, { sensitivity: "accent" }) === 0;
 }
 
-export function deriveRawVibes(tags: SteamTag[], weights: TagVibeMap): Record<VibeKey, number> {
-  const result = zeroVibes();
-  for (const tag of tags) {
+export function deriveVibes(
+  input: { genres: string[]; themes: string[]; tags: SteamTag[] },
+  weights: VibeWeights,
+): Record<VibeKey, number> {
+  const complement: Record<VibeKey, number> = { healing: 1, variety: 1, horror: 1, hardcore: 1, chatting: 1, spectacle: 1 };
+  const applied = new Set<string>();
+
+  const apply = (map: VibeWeightMap, section: string, name: string, share: number) => {
+    const key = `${section}:${name}`;
+    if (applied.has(key)) return;
+    applied.add(key);
+    const entry = map[name];
+    if (!entry) return;
+    for (const vibe of VIBE_KEYS) {
+      const weight = entry[vibe] ?? 0;
+      if (weight <= 0) continue;
+      complement[vibe] *= 1 - weight * share;
+    }
+  };
+
+  for (const name of input.genres) apply(weights.genres, "genre", name, 1);
+  for (const name of input.themes) apply(weights.themes, "theme", name, 1);
+  for (const tag of input.tags) {
     if (!Number.isFinite(tag.share) || tag.share < 0 || tag.share > 1) {
       throw new RangeError(`tag share must be between 0 and 1: ${tag.name}`);
     }
-    const tagWeights = weights[tag.name];
-    if (!tagWeights) continue;
-    for (const vibe of VIBE_KEYS) result[vibe] += tag.share * (tagWeights[vibe] ?? 0);
+    apply(weights.tags, "tag", tag.name, tag.share);
   }
-  return result;
-}
 
-export function normalizeVibes(raw: Record<string, Record<VibeKey, number>>): Record<string, Record<VibeKey, number>> {
-  const games = Object.entries(raw);
-  const normalized: Record<string, Record<VibeKey, number>> = {};
-  for (const [id] of games) normalized[id] = zeroVibes();
-  for (const vibe of VIBE_KEYS) {
-    let min = Number.POSITIVE_INFINITY;
-    let max = Number.NEGATIVE_INFINITY;
-    for (const [, values] of games) {
-      min = Math.min(min, values[vibe]);
-      max = Math.max(max, values[vibe]);
-    }
-    for (const [id, values] of games) {
-      normalized[id][vibe] = min === max ? 0.5 : (values[vibe] - min) / (max - min);
-    }
-  }
-  return normalized;
+  const result = zeroVibes();
+  for (const vibe of VIBE_KEYS) result[vibe] = 1 - complement[vibe];
+  return result;
 }
 
 export function classifySessionShape(input: ClassificationInput, rules: SessionRules) {

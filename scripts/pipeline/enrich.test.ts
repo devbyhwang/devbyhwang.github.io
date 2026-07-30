@@ -2,46 +2,66 @@ import { describe, expect, it } from "vitest";
 import {
   classifySessionShape,
   deriveIsNewRelease,
-  deriveRawVibes,
+  deriveVibes,
   normalizePlayers,
-  normalizeVibes,
   resolveViewerPlayable,
 } from "./enrich";
-import type { SessionRules, TagVibeMap, ViewerPlayableRules } from "./model";
+import type { SessionRules, ViewerPlayableRules } from "./model";
+import type { VibeWeights } from "./model";
 
-describe("vibe enrichment", () => {
-  it("normalizes tag scores with negative weights per axis", () => {
-    const weights = {
-      Cozy: { healing: 1 },
-      Horror: { horror: 1, healing: -1 },
-    } satisfies TagVibeMap;
-    const raw = {
-      a: deriveRawVibes([{ name: "Cozy", share: 1 }], weights),
-      b: deriveRawVibes([{ name: "Horror", share: 1 }], weights),
-    };
+const WEIGHTS = {
+  genres: { Puzzle: { healing: 0.5 }, Shooter: { hardcore: 0.6 } },
+  themes: { Horror: { horror: 1 }, Comedy: { variety: 0.5 }, Party: { variety: 0.5 } },
+  tags: { Cozy: { healing: 1 } },
+} satisfies VibeWeights;
 
-    const normalized = normalizeVibes(raw);
+const EMPTY = { genres: [], themes: [], tags: [] };
 
-    expect(normalized.a.healing).toBe(1);
-    expect(normalized.b.healing).toBe(0);
-    expect(Object.values(normalized.a)).toHaveLength(6);
+describe("deriveVibes", () => {
+  it("returns all zeros when the game has no known terms", () => {
+    expect(deriveVibes(EMPTY, WEIGHTS)).toEqual({
+      healing: 0, variety: 0, horror: 0, hardcore: 0, chatting: 0, spectacle: 0,
+    });
   });
 
-  it("normalizes a catalog larger than the JavaScript argument limit", () => {
-    const raw = Object.fromEntries(Array.from({ length: 500_000 }, (_, index) => [
-      String(index), { healing: index, variety: 0, horror: 0, hardcore: 0, chatting: 0, spectacle: 0 },
-    ]));
-
-    expect(() => normalizeVibes(raw)).not.toThrow();
-    expect(normalizeVibes({ first: raw["0"], last: raw["499999"] }).first.healing).toBe(0);
+  it("ignores terms absent from the vocabulary", () => {
+    expect(deriveVibes({ ...EMPTY, genres: ["Unmapped"], themes: ["Alsomissing"] }, WEIGHTS).healing).toBe(0);
   });
 
-  it("ignores unknown tags and rejects invalid tag shares", () => {
-    const weights = { Cozy: { healing: 1 } } satisfies TagVibeMap;
+  it("saturates on a single full-weight term", () => {
+    expect(deriveVibes({ ...EMPTY, themes: ["Horror"] }, WEIGHTS).horror).toBe(1);
+  });
 
-    expect(deriveRawVibes([{ name: "Unknown", share: 0.7 }], weights)).toMatchObject({ healing: 0 });
-    expect(() => deriveRawVibes([{ name: "Cozy", share: -0.1 }], weights)).toThrow(RangeError);
-    expect(() => deriveRawVibes([{ name: "Cozy", share: 1.1 }], weights)).toThrow(RangeError);
+  it("combines two weak terms without exceeding one", () => {
+    expect(deriveVibes({ ...EMPTY, themes: ["Comedy", "Party"] }, WEIGHTS).variety).toBeCloseTo(0.75, 10);
+  });
+
+  it("attenuates tag contributions by share", () => {
+    expect(deriveVibes({ ...EMPTY, tags: [{ name: "Cozy", share: 0.4 }] }, WEIGHTS).healing).toBeCloseTo(0.4, 10);
+  });
+
+  it("counts a repeated term only once", () => {
+    expect(deriveVibes({ ...EMPTY, genres: ["Puzzle", "Puzzle"] }, WEIGHTS).healing).toBeCloseTo(0.5, 10);
+  });
+
+  it("combines across genres, themes and tags", () => {
+    const result = deriveVibes(
+      { genres: ["Puzzle"], themes: ["Comedy"], tags: [{ name: "Cozy", share: 0.5 }] },
+      WEIGHTS,
+    );
+    expect(result.healing).toBeCloseTo(0.75, 10);
+    expect(result.variety).toBeCloseTo(0.5, 10);
+  });
+
+  it("does not depend on other games in the catalog", () => {
+    const alone = deriveVibes({ ...EMPTY, genres: ["Puzzle"] }, WEIGHTS);
+    const again = deriveVibes({ ...EMPTY, genres: ["Puzzle"] }, WEIGHTS);
+    expect(alone).toEqual(again);
+  });
+
+  it("rejects a tag share outside zero to one", () => {
+    expect(() => deriveVibes({ ...EMPTY, tags: [{ name: "Cozy", share: -0.1 }] }, WEIGHTS)).toThrow(RangeError);
+    expect(() => deriveVibes({ ...EMPTY, tags: [{ name: "Cozy", share: 1.1 }] }, WEIGHTS)).toThrow(RangeError);
   });
 });
 
