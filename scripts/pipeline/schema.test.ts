@@ -14,7 +14,7 @@ function validGame(): GameRecord {
     sessionShape: "run",
     viewerPlayable: { ok: false },
     vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
-    buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true },
+    buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, sources: { chzzk: false, twitch: true } },
     streaming: {
       totalViewers: 0,
       channelCount: 0,
@@ -71,7 +71,7 @@ describe("validateCatalog", () => {
     catalog.games[0] = {
       ...catalog.games[0],
       releaseDate: "2024-07-28T00:00:00.000Z",
-      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: false },
+      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: false, demandShare: 0, sources: { chzzk: false, twitch: true } },
       streaming: {
         ...catalog.games[0].streaming,
         growth7d: null,
@@ -93,6 +93,13 @@ describe("validateCatalog", () => {
     catalog.games[0].streaming.growth90d = -0.73;
 
     expect(() => validateCatalog(catalog)).not.toThrow();
+  });
+
+  it("rejects a demand share outside its normalized range", () => {
+    const catalog = validCatalog();
+    catalog.games[0].buzz.demandShare = 1.01;
+
+    expect(() => validateCatalog(catalog)).toThrow("games[0].buzz.demandShare");
   });
 });
 

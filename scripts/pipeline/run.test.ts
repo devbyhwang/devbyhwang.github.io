@@ -60,6 +60,15 @@ function sources(staleSources: string[] = []): RawSources {
       apps: [],
       staleSources,
     },
+    chzzk: {
+      fetchedAt: asOf,
+      source: "chzzk",
+      request: { test: true },
+      responses: [],
+      warnings: [],
+      categories: [],
+      truncated: false,
+    },
   };
 }
 
@@ -77,6 +86,10 @@ function adapters(raw: RawSources, failures: Partial<Record<keyof RawSources, Er
       if (failures.igdb) throw failures.igdb;
       return raw.igdb;
     },
+    chzzk: async () => {
+      if (failures.chzzk) throw failures.chzzk;
+      return raw.chzzk;
+    },
   };
 }
 
@@ -91,7 +104,7 @@ function catalog(count: number): CatalogRecord {
       sessionShape: "run",
       viewerPlayable: { ok: false },
       vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
-      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true },
+      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, sources: { chzzk: false, twitch: true } },
       streaming: {
         totalViewers: 0,
         channelCount: 0,
@@ -116,6 +129,93 @@ function catalog(count: number): CatalogRecord {
 const logger = { info: () => undefined, warn: () => undefined, error: () => undefined };
 
 describe("live pipeline orchestration", () => {
+  it("emits a fresh Chzzk snapshot and combines its mapped demand with Twitch", async () => {
+    const destination = root();
+    const base = sources();
+    const raw = {
+      ...base,
+      igdb: {
+        ...base.igdb,
+        games: [
+          { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600 },
+          { id: 43, name: "Second Fixture Game", first_release_date: 1_784_505_600 },
+        ],
+      },
+      twitch: {
+        ...base.twitch,
+        topGames: [
+          { categoryId: "42", igdbId: "42", name: "Fixture Game" },
+          { categoryId: "43", igdbId: "43", name: "Second Fixture Game" },
+        ],
+        streams: [
+          { categoryId: "42", igdbId: "42", viewers: 40, channels: 2, coverage: 1 },
+          { categoryId: "43", igdbId: "43", viewers: 60, channels: 3, coverage: 1 },
+        ],
+      },
+      chzzk: {
+        ...base.chzzk,
+        categories: [
+          { categoryId: "fixture", name: "Fixture Game", viewers: 80, channels: 2, coverage: 1 },
+          { categoryId: "second", name: "Second Fixture Game", viewers: 20, channels: 1, coverage: 1 },
+        ],
+      },
+    };
+
+    await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: adapters(raw),
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkClientId: "chzzk-client", chzzkClientSecret: "chzzk-secret", chzzkPageLimit: 1, chzzkRetryLimit: 1 },
+    });
+
+    expect(JSON.parse(readFileSync(join(destination, "data/raw/chzzk/latest.json"), "utf8"))).toMatchObject(raw.chzzk);
+    expect(readEmittedCatalog(destination).games.map((game) => ({ id: game.id, demandShare: game.buzz.demandShare }))).toEqual([
+      { id: "42", demandShare: 0.64 },
+      { id: "43", demandShare: 0.36 },
+    ]);
+  });
+
+  it("continues with Twitch-only demand and a stale Chzzk marker when credentials are absent", async () => {
+    const destination = root();
+    const raw = sources();
+    let chzzkCalled = false;
+
+    const result = await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: { ...adapters(raw), chzzk: async () => { chzzkCalled = true; return raw.chzzk; } },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
+    });
+
+    expect(chzzkCalled).toBe(false);
+    expect(result.staleSources).toContain("chzzk");
+    expect(readEmittedCatalog(destination).games[0].buzz.demandShare).toBe(1);
+  });
+
+  it("uses an empty fresh Chzzk snapshot when its adapter rejects", async () => {
+    const destination = root();
+    const raw = sources();
+    mkdirSync(join(destination, "data/raw/chzzk"), { recursive: true });
+    writeFileSync(join(destination, "data/raw/chzzk/latest.json"), `${JSON.stringify({ ...raw.chzzk, categories: [{ categoryId: "stale", name: "Fixture Game", viewers: 999, channels: 9, coverage: 1 }] })}\n`);
+
+    const result = await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: adapters(raw, { chzzk: new Error("offline") }),
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkClientId: "chzzk-client", chzzkClientSecret: "chzzk-secret", chzzkPageLimit: 1, chzzkRetryLimit: 1 },
+    });
+
+    expect(result.staleSources).toContain("chzzk");
+    expect(readEmittedCatalog(destination).games[0].buzz.demandShare).toBe(1);
+    expect(JSON.parse(readFileSync(join(destination, "data/raw/chzzk/latest.json"), "utf8")).categories).toHaveLength(1);
+  });
+
   it("runs a second Steam pass for an IGDB source-one mapping and emits its details", async () => {
     const destination = root();
     const base = sources();
@@ -150,11 +250,12 @@ describe("live pipeline orchestration", () => {
           steamInputs.push(input);
           return steamInputs.length === 1 ? initialSteam : detailSteam;
         },
+        chzzk: async () => base.chzzk,
       },
-      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ catalogUpdated: true, fetchedSources: ["twitch", "steam", "igdb"], staleSources: [] });
+    expect(result).toMatchObject({ catalogUpdated: true, fetchedSources: ["twitch", "steam", "igdb"], staleSources: ["chzzk"] });
     expect(steamInputs).toEqual([
       expect.objectContaining({ steamAppIds: [] }),
       expect.objectContaining({ steamAppIds: [730], includeTopSellers: false }),
@@ -198,10 +299,10 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger,
       adapters: adapters(sources(["steamspy:730"])),
-      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ catalogUpdated: true, historyUpdated: true, fetchedSources: ["twitch", "steam", "igdb"], staleSources: ["steamspy:730"] });
+    expect(result).toMatchObject({ catalogUpdated: true, historyUpdated: true, fetchedSources: ["twitch", "steam", "igdb"], staleSources: ["chzzk", "steamspy:730"] });
     expect(existsSync(join(destination, "src/playground/game-recommendation/catalog.json"))).toBe(true);
   });
 
@@ -216,7 +317,7 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger,
       adapters: adapters(sources(), { igdb: new Error("https://api.igdb.com/v4/games?token=secret") }),
-      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     })).rejects.toThrow("IGDB source failed and no latest raw cache is available");
 
     expect(JSON.parse(readFileSync(join(destination, "src/playground/game-recommendation/catalog.json"), "utf8"))).toEqual(previous);
@@ -233,10 +334,10 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger,
       adapters: adapters(sources(), { igdb: new Error("offline") }),
-      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ fetchedSources: ["twitch", "steam"], staleSources: ["igdb"], catalogUpdated: true });
+    expect(result).toMatchObject({ fetchedSources: ["twitch", "steam"], staleSources: ["igdb", "chzzk"], catalogUpdated: true });
   });
 
   it("keeps raw and history writes when the catalog decline guard rejects the emit", async () => {
@@ -250,7 +351,7 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger,
       adapters: adapters(sources()),
-      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     })).rejects.toThrow("30%");
 
     expect(existsSync(join(destination, "data/raw/igdb/latest.json"))).toBe(true);
@@ -268,10 +369,10 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger: { info: (message: unknown) => messages.push(String(message)), warn: (message: unknown) => messages.push(String(message)), error: (message: unknown) => messages.push(String(message)) },
       adapters: adapters(sources()),
-      config: { twitchClientId: "client-id", twitchClientSecret: "top-secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client-id", twitchClientSecret: "top-secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ generatedAt: asOf, gameCount: 1, catalogUpdated: true, historyUpdated: true, staleSources: [] });
+    expect(result).toMatchObject({ generatedAt: asOf, gameCount: 1, catalogUpdated: true, historyUpdated: true, staleSources: ["chzzk"] });
     expect(existsSync(join(destination, "src/playground/game-recommendation/catalog.json"))).toBe(true);
     expect(existsSync(join(destination, "data/history.json"))).toBe(true);
     expect(messages.join("\n")).not.toContain("top-secret");
@@ -298,7 +399,7 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger,
       adapters: adapters(sources()),
-      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60 },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
     expect(result).toMatchObject({ gameCount: 2, catalogUpdated: true });
@@ -361,13 +462,13 @@ describe("live pipeline orchestration", () => {
         twitchClientSecret: "top-secret",
         twitchTopGameLimit: 1,
         twitchStreamPageLimit: 2,
-        igdbRecentDays: 60,
+        igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1,
       },
     });
 
     expect(result).toMatchObject({
       fetchedSources: ["steam", "igdb"],
-      staleSources: ["twitch"],
+      staleSources: ["twitch", "chzzk"],
       historyUpdated: false,
     });
     expect(JSON.parse(readFileSync(join(destination, "data/history.json"), "utf8"))).toEqual(existingHistory);

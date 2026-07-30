@@ -1,6 +1,7 @@
 import type { fetchIgdb } from "./sources/igdb";
 import type { fetchSteam } from "./sources/steam";
 import type { fetchTwitch } from "./sources/twitch";
+import type { fetchChzzk } from "./sources/chzzk";
 
 export type VibeKey = "healing" | "variety" | "horror" | "hardcore" | "chatting" | "spectacle";
 export type SessionShape = "match" | "run" | "chapter" | "openended";
@@ -102,7 +103,7 @@ export type GameRecord = {
   sessionShape: SessionShape;
   viewerPlayable: ViewerPlayable;
   vibes: Record<VibeKey, number>;
-  buzz: { twitchViewers: number; twitchChannels: number; viewerGrowth7d: number | null; isNewRelease: boolean };
+  buzz: { twitchViewers: number; twitchChannels: number; viewerGrowth7d: number | null; isNewRelease: boolean; demandShare: number; sources: { chzzk: boolean; twitch: boolean } };
   streaming: StreamingStats;
   quality: QualityStats;
   topTags: { tag: string; share: number }[];
@@ -138,6 +139,7 @@ export type RawSources = {
   igdb: IgdbRawSnapshot;
   twitch: TwitchRawSnapshot;
   steam: SteamRawSnapshot;
+  chzzk: ChzzkRawSnapshot;
 };
 
 /** A numeric-IGDB join before knowledge-based catalog enrichment. */
@@ -334,12 +336,17 @@ export type SourceConfig = {
   twitchTopGameLimit: number;
   twitchStreamPageLimit: number;
   igdbRecentDays: number;
+  chzzkClientId?: string;
+  chzzkClientSecret?: string;
+  chzzkPageLimit: number;
+  chzzkRetryLimit: number;
 };
 
 export type SourceAdapters = {
   igdb: typeof fetchIgdb;
   twitch: typeof fetchTwitch;
   steam: typeof fetchSteam;
+  chzzk: typeof fetchChzzk;
 };
 
 export type PipelineResult = {

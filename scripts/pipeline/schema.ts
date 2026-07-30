@@ -135,6 +135,10 @@ function validateGame(value: unknown, index: number, generatedAt: string, ids: S
   finite(buzz.twitchViewers, `${path}.buzz.twitchViewers`, 0);
   finite(buzz.twitchChannels, `${path}.buzz.twitchChannels`, 0);
   if (buzz.viewerGrowth7d !== null) finite(buzz.viewerGrowth7d, `${path}.buzz.viewerGrowth7d`, -Infinity);
+  finite(buzz.demandShare, `${path}.buzz.demandShare`, 0, 1);
+  const sources = object(buzz.sources, `${path}.buzz.sources`);
+  bool(sources.chzzk, `${path}.buzz.sources.chzzk`);
+  bool(sources.twitch, `${path}.buzz.sources.twitch`);
   const isNewRelease = bool(buzz.isNewRelease, `${path}.buzz.isNewRelease`);
   if (isNewRelease !== deriveIsNewRelease(releaseDate, generatedAt)) fail(`${path}.buzz.isNewRelease`, "must match generatedAt and releaseDate");
   validateStreaming(game.streaming, `${path}.streaming`);

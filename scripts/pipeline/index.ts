@@ -107,6 +107,15 @@ export function fixtureSources(rootDir: string, asOf: string): RawSources {
       apps,
       staleSources: [],
     },
+    chzzk: {
+      fetchedAt: asOf,
+      source: "chzzk",
+      request: { fixture: true },
+      responses: [],
+      warnings: [],
+      categories: [],
+      truncated: false,
+    },
   };
 }
 
@@ -131,6 +140,10 @@ export function sourceConfig(env: NodeJS.ProcessEnv = process.env): SourceConfig
     twitchTopGameLimit: positiveInteger(env, "TWITCH_TOP_GAME_LIMIT", 1000),
     twitchStreamPageLimit: positiveInteger(env, "TWITCH_STREAM_PAGE_LIMIT", 20),
     igdbRecentDays: positiveInteger(env, "IGDB_RECENT_DAYS", 60),
+    ...(env.CHZZK_CLIENT_ID?.trim() ? { chzzkClientId: env.CHZZK_CLIENT_ID.trim() } : {}),
+    ...(env.CHZZK_CLIENT_SECRET?.trim() ? { chzzkClientSecret: env.CHZZK_CLIENT_SECRET.trim() } : {}),
+    chzzkPageLimit: positiveInteger(env, "CHZZK_PAGE_LIMIT", 20),
+    chzzkRetryLimit: positiveInteger(env, "CHZZK_RETRY_LIMIT", 3),
   };
 }
 

@@ -11,7 +11,7 @@ function catalogWith(count: number): CatalogRecord { return { generatedAt, games
   id: `game-${index}`, name: `Game ${index}`, releaseDate: index % 3 === 0 ? "2019-01-01T00:00:00.000Z" : "2026-07-20T00:00:00.000Z",
   players: { max: "unknown", source: "unknown", online: false, localCoop: false }, sessionShape: "run", viewerPlayable: { ok: false },
   vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
-  buzz: { twitchViewers: index % 4 === 0 ? 500 : 10_000 - index, twitchChannels: index % 4 === 0 ? 2 : 10, viewerGrowth7d: index % 2 ? 1.5 : 0.5, isNewRelease: index % 3 !== 0 },
+  buzz: { twitchViewers: index % 4 === 0 ? 500 : 10_000 - index, twitchChannels: index % 4 === 0 ? 2 : 10, viewerGrowth7d: index % 2 ? 1.5 : 0.5, isNewRelease: index % 3 !== 0, demandShare: 0, sources: { chzzk: false, twitch: true } },
   streaming: { totalViewers: 10_000 - index, channelCount: 10, medianViewersPerChannel: 1_000, p75ViewersPerChannel: 1_200, top10ViewerShare: 1, viewerConcentration: 1, growth7d: index % 2 ? 1.5 : 0.5, growth30d: null, growth90d: null, volatility30d: null, observedSnapshots: 7, coverage: 1, asOf: generatedAt },
   quality: { totalRating: 80, totalRatingCount: 100 }, topTags: [],
 })) }; }
@@ -22,7 +22,7 @@ function equalScoreCatalog(): CatalogRecord {
   catalog.games.forEach((game, index) => {
     game.id = index < 96 ? `game-${String(index).padStart(3, "0")}` : index === 96 ? "game-a" : "game-A";
     game.releaseDate = "2026-07-20T00:00:00.000Z";
-    game.buzz = { twitchViewers: 1_000, twitchChannels: 10, viewerGrowth7d: 1, isNewRelease: true };
+    game.buzz = { twitchViewers: 1_000, twitchChannels: 10, viewerGrowth7d: 1, isNewRelease: true, demandShare: 0, sources: { chzzk: false, twitch: true } };
     game.streaming.growth7d = 1;
   });
   return catalog;

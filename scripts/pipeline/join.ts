@@ -112,7 +112,13 @@ function reviewFields(game: JoinedGame): Pick<GameRecord, "rating" | "reviewCoun
 }
 
 /** Converts joined raw candidates to validated-shape records except for catalog-wide validation. */
-export function enrichGames(joined: JoinedGame[], knowledge: KnowledgeAssets, generatedAt: string): GameRecord[] {
+export function enrichGames(
+  joined: JoinedGame[],
+  knowledge: KnowledgeAssets,
+  generatedAt: string,
+  demandShares: ReadonlyMap<string, number> = new Map(),
+  sources: GameRecord["buzz"]["sources"] = { chzzk: false, twitch: true },
+): GameRecord[] {
   const candidates = joined.flatMap((game) => {
     const date = releaseDate(game.igdb);
     if (!date) return [];
@@ -142,6 +148,8 @@ export function enrichGames(joined: JoinedGame[], knowledge: KnowledgeAssets, ge
         twitchChannels: game.twitch.channels,
         viewerGrowth7d: null,
         isNewRelease: deriveIsNewRelease(date, generatedAt),
+        demandShare: demandShares.get(String(game.igdb.id)) ?? 0,
+        sources,
       },
       streaming: {
         totalViewers: game.twitch.viewers,

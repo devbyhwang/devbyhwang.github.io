@@ -7,16 +7,18 @@ import { emitRecommendations } from "./recommendations";
 import { appendSnapshot, deriveStreamingFeatures, makeDailySnapshot, readHistory, writeHistory } from "./history";
 import { enrichGames, joinSources } from "./join";
 import { loadKnowledge } from "./knowledge";
-import type { IgdbGame, IgdbRawSnapshot, PipelineOptions, PipelineResult, RawResponseRecorder, RawSources, SourceAdapters, SourceConfig, SteamRawSnapshot, TwitchRawSnapshot } from "./model";
+import { combineDemandShares, resolveChzzkCategories } from "./chzzk";
+import type { ChzzkRawSnapshot, DemandShareEntry, IgdbGame, IgdbRawSnapshot, KnowledgeAssets, PipelineOptions, PipelineResult, RawResponseRecorder, RawSources, SourceAdapters, SourceConfig, SteamRawSnapshot, TwitchRawSnapshot } from "./model";
 import { createHttpClient, saveRaw } from "./http";
 import { fetchIgdb } from "./sources/igdb";
 import { fetchSteam, mergeSteamSnapshots } from "./sources/steam";
 import { fetchTwitch } from "./sources/twitch";
+import { fetchChzzk } from "./sources/chzzk";
 
 type SourceName = keyof RawSources;
-type SourceSnapshot = IgdbRawSnapshot | TwitchRawSnapshot | SteamRawSnapshot;
+type SourceSnapshot = IgdbRawSnapshot | TwitchRawSnapshot | SteamRawSnapshot | ChzzkRawSnapshot;
 
-const defaultAdapters: SourceAdapters = { igdb: fetchIgdb, twitch: fetchTwitch, steam: fetchSteam };
+const defaultAdapters: SourceAdapters = { igdb: fetchIgdb, twitch: fetchTwitch, steam: fetchSteam, chzzk: fetchChzzk };
 
 function latestPath(rootDir: string, source: SourceName): string {
   return resolve(rootDir, "data", "raw", source, "latest.json");
@@ -106,6 +108,18 @@ function sourceFailure(source: SourceName): Error {
   return new Error(`${source.toUpperCase()} source failed and no latest raw cache is available`);
 }
 
+function emptyChzzkSnapshot(asOf: string, warning: string): ChzzkRawSnapshot {
+  return {
+    fetchedAt: asOf,
+    source: "chzzk",
+    request: { disabled: true },
+    responses: [],
+    warnings: [warning],
+    categories: [],
+    truncated: false,
+  };
+}
+
 function mappedSteamAppIds(snapshot: IgdbRawSnapshot): number[] {
   const values = [
     ...snapshot.externalGames
@@ -160,7 +174,9 @@ async function fetchAllSourcesWithStatus(
   const http = createHttpClient(fetcher);
   const twitchPartial = createPartialRecorder(rootDir, "twitch", asOf);
   const steamPartial = createPartialRecorder(rootDir, "steam", asOf);
-  const [twitchResult, steamResult] = await Promise.allSettled([
+  const chzzkEnabled = Boolean(config.chzzkClientId?.trim() && config.chzzkClientSecret?.trim());
+  const chzzkPartial = chzzkEnabled ? createPartialRecorder(rootDir, "chzzk", asOf) : undefined;
+  const [twitchResult, steamResult, chzzkResult] = await Promise.allSettled([
     adapters.twitch({
       clientId: config.twitchClientId,
       clientSecret: config.twitchClientSecret,
@@ -169,11 +185,31 @@ async function fetchAllSourcesWithStatus(
       recordResponse: twitchPartial.record,
     }, http),
     adapters.steam({ steamAppIds: [], cachePath: latestPath(rootDir, "steam"), recordResponse: steamPartial.record }, http),
+    chzzkEnabled
+      ? adapters.chzzk({
+        clientId: config.chzzkClientId!,
+        clientSecret: config.chzzkClientSecret!,
+        pageLimit: config.chzzkPageLimit,
+        recordResponse: chzzkPartial!.record,
+      }, http)
+      : Promise.resolve(emptyChzzkSnapshot(asOf, "Chzzk credentials are unavailable")),
   ]);
   const twitch = await resolveSource("twitch", twitchResult, rootDir, logger, twitchPartial);
   const steam = await resolveSource("steam", steamResult, rootDir, logger, steamPartial);
   if (!twitch.snapshot) throw sourceFailure("twitch");
   if (!steam.snapshot) throw sourceFailure("steam");
+  let chzzk: { snapshot: ChzzkRawSnapshot; fresh: boolean };
+  if (chzzkEnabled && chzzkResult.status === "fulfilled") {
+    await cacheFresh(rootDir, "chzzk", chzzkResult.value);
+    await chzzkPartial!.discard();
+    chzzk = { snapshot: chzzkResult.value, fresh: true };
+  } else {
+    if (chzzkEnabled) logger.warn("chzzk source failed; using an empty snapshot");
+    chzzk = {
+      snapshot: emptyChzzkSnapshot(asOf, chzzkEnabled ? "Chzzk source failed" : "Chzzk credentials are unavailable"),
+      fresh: false,
+    };
+  }
 
   const igdbPartial = createPartialRecorder(rootDir, "igdb", asOf);
   const [igdbResult] = await Promise.allSettled([
@@ -223,15 +259,46 @@ async function fetchAllSourcesWithStatus(
     ["twitch", twitch],
     ["steam", { snapshot: steamSnapshot, fresh: steamFresh }],
     ["igdb", igdb],
+    ["chzzk", chzzk],
   ] as const;
   return {
-    raw: { igdb: igdb.snapshot, twitch: twitch.snapshot, steam: steamSnapshot },
+    raw: { igdb: igdb.snapshot, twitch: twitch.snapshot, steam: steamSnapshot, chzzk: chzzk.snapshot },
     fetchedSources: sourceResults.flatMap(([source, result]) => result.fresh ? [source] : []),
     staleSources: [
       ...sourceResults.flatMap(([source, result]) => result.fresh ? [] : [source]),
       ...steamSnapshot.staleSources,
       ...(steamDetailsStale ? ["steam-details"] : []),
     ],
+  };
+}
+
+function demandFor(raw: RawSources, aliases: KnowledgeAssets["chzzkAliases"]): {
+  shares: Map<string, number>;
+  sources: { chzzk: boolean; twitch: boolean };
+  warnings: string[];
+} {
+  const resolution = resolveChzzkCategories(raw.chzzk.categories, raw.igdb.games, aliases);
+  const chzzkByGame = new Map<string, { viewers: number; coverage: number }>();
+  for (const stat of resolution.stats) {
+    const existing = chzzkByGame.get(stat.igdbId) ?? { viewers: 0, coverage: 0 };
+    chzzkByGame.set(stat.igdbId, { viewers: existing.viewers + stat.viewers, coverage: Math.max(existing.coverage, stat.coverage) });
+  }
+  const twitchByGame = new Map(raw.twitch.streams.map((stat) => [String(stat.igdbId), {
+    viewers: stat.viewers,
+    coverage: stat.coverage ?? 1,
+  }]));
+  const entries: DemandShareEntry[] = raw.igdb.games.map((game) => ({
+    igdbId: String(game.id),
+    ...(chzzkByGame.has(String(game.id)) ? { chzzk: chzzkByGame.get(String(game.id))! } : {}),
+    ...(twitchByGame.has(String(game.id)) ? { twitch: twitchByGame.get(String(game.id))! } : {}),
+  }));
+  return {
+    shares: combineDemandShares(entries),
+    sources: {
+      chzzk: [...chzzkByGame.values()].some((stat) => stat.viewers > 0 && stat.coverage > 0),
+      twitch: [...twitchByGame.values()].some((stat) => stat.viewers > 0 && stat.coverage > 0),
+    },
+    warnings: resolution.warnings,
   };
 }
 
@@ -263,7 +330,13 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
     fetchedSources = fetched.fetchedSources;
     staleSources = fetched.staleSources;
   }
-  const joined = joinSources(mergeBackfillGames(raw, rootDir));
+  raw = mergeBackfillGames(raw, rootDir);
+  const demand = demandFor(raw, knowledge.chzzkAliases);
+  if (demand.warnings.length > 0) {
+    raw = { ...raw, chzzk: { ...raw.chzzk, warnings: [...raw.chzzk.warnings, ...demand.warnings] } };
+    if (fetchedSources.includes("chzzk")) await cacheFresh(rootDir, "chzzk", raw.chzzk);
+  }
+  const joined = joinSources(raw);
   const historyPath = resolve(rootDir, "data/history.json");
   const twitchFresh = fetchedSources.includes("twitch");
   const currentHistory = readHistory(historyPath);
@@ -273,7 +346,7 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
   const historyForFeatures = twitchFresh ? nextHistory : currentHistory;
   if (twitchFresh) writeHistory(historyPath, nextHistory);
 
-  const games = enrichGames(joined, knowledge, asOf).map((game) => {
+  const games = enrichGames(joined, knowledge, asOf, demand.shares, demand.sources).map((game) => {
     const features = deriveStreamingFeatures(historyForFeatures, game.id, asOf);
     return {
       ...game,
