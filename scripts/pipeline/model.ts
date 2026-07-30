@@ -32,6 +32,7 @@ export type ChzzkAlias = {
 };
 
 export type ResolvedChzzkStat = ChzzkCategoryStat & { igdbId: string };
+export type ChzzkCategoryResolution = { stats: ResolvedChzzkStat[]; warnings: string[] };
 
 export type DemandSourceStat = { viewers: number; coverage: number };
 export type DemandShareEntry = {

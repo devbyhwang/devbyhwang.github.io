@@ -1,4 +1,4 @@
-import type { ChzzkAlias, ChzzkCategoryStat, DemandShareEntry, IgdbGame, ResolvedChzzkStat } from "./model";
+import type { ChzzkAlias, ChzzkCategoryResolution, ChzzkCategoryStat, DemandShareEntry, DemandSourceStat, IgdbGame } from "./model";
 
 export const CHZZK_WEIGHT = 0.60;
 export const TWITCH_WEIGHT = 0.40;
@@ -16,11 +16,13 @@ export function resolveChzzkCategories(
   categories: ChzzkCategoryStat[],
   igdbGames: IgdbGame[],
   aliases: ChzzkAlias[],
-  warnings: string[] = [],
-): ResolvedChzzkStat[] {
+): ChzzkCategoryResolution {
+  const warnings: string[] = [];
+  const stats = [];
   const aliasesByCategoryId = new Map<string, string[]>();
   const aliasesByName = new Map<string, string[]>();
   const igdbByName = new Map<string, string[]>();
+  const igdbIds = new Set(igdbGames.map((game) => String(game.id)));
   const add = (index: Map<string, string[]>, key: string, igdbId: string) => index.set(key, [...(index.get(key) ?? []), igdbId]);
 
   for (const alias of aliases) {
@@ -29,7 +31,7 @@ export function resolveChzzkCategories(
   }
   for (const game of igdbGames) add(igdbByName, normalizeChzzkName(game.name), String(game.id));
 
-  return categories.flatMap((category) => {
+  for (const category of categories) {
     const name = normalizeChzzkName(category.name);
     const categoryMatches = aliasesByCategoryId.get(category.categoryId) ?? [];
     const categoryMatch = uniqueMatches(categoryMatches);
@@ -38,35 +40,51 @@ export function resolveChzzkCategories(
     const igdbMatches = igdbByName.get(name) ?? [];
     const igdbMatch = uniqueMatches(igdbMatches);
     if (categoryMatches.length > 0) {
-      if (categoryMatch) return [{ ...category, igdbId: categoryMatch }];
-      warnings.push(`Chzzk category ${category.categoryId} (${category.name}) has an ambiguous category id match`);
-      return [];
+      if (categoryMatch && igdbIds.has(categoryMatch)) {
+        stats.push({ ...category, igdbId: categoryMatch });
+        continue;
+      }
+      warnings.push(categoryMatch
+        ? `Chzzk category ${category.categoryId} (${category.name}) aliases missing IGDB id ${categoryMatch}`
+        : `Chzzk category ${category.categoryId} (${category.name}) has an ambiguous category id match`);
+      continue;
     }
     if (aliasMatches.length > 0) {
-      if (aliasMatch) return [{ ...category, igdbId: aliasMatch }];
-      warnings.push(`Chzzk category ${category.categoryId} (${category.name}) has an ambiguous alias name match`);
-      return [];
+      if (aliasMatch && igdbIds.has(aliasMatch)) {
+        stats.push({ ...category, igdbId: aliasMatch });
+        continue;
+      }
+      warnings.push(aliasMatch
+        ? `Chzzk category ${category.categoryId} (${category.name}) aliases missing IGDB id ${aliasMatch}`
+        : `Chzzk category ${category.categoryId} (${category.name}) has an ambiguous alias name match`);
+      continue;
     }
-    if (igdbMatch) return [{ ...category, igdbId: igdbMatch }];
+    if (igdbMatch) {
+      stats.push({ ...category, igdbId: igdbMatch });
+      continue;
+    }
     warnings.push(igdbMatches.length > 1
       ? `Chzzk category ${category.categoryId} (${category.name}) has an ambiguous IGDB name match`
       : `Chzzk category ${category.categoryId} (${category.name}) could not be mapped to an IGDB game`);
-    return [];
+  }
+  return { stats, warnings };
+}
+
+function observedStats(entries: DemandShareEntry[], source: "chzzk" | "twitch"): DemandSourceStat[] {
+  return entries.flatMap((entry) => {
+    const stat = entry[source];
+    return stat && stat.viewers > 0 && stat.coverage > 0 ? [stat] : [];
   });
 }
 
-function available(entries: DemandShareEntry[], source: "chzzk" | "twitch"): boolean {
-  const total = entries.reduce((sum, entry) => sum + (entry[source]?.viewers ?? 0), 0);
-  return total > 0 && entries.some((entry) => (entry[source]?.coverage ?? 0) > 0);
-}
-
 export function combineDemandShares(entries: DemandShareEntry[]): Map<string, number> {
-  const active = (["chzzk", "twitch"] as const).filter((source) => available(entries, source));
+  const observed = new Map((["chzzk", "twitch"] as const).map((source) => [source, observedStats(entries, source)]));
+  const active = (["chzzk", "twitch"] as const).filter((source) => (observed.get(source)?.length ?? 0) > 0);
   const weights = { chzzk: CHZZK_WEIGHT, twitch: TWITCH_WEIGHT };
   const totalWeight = active.reduce((sum, source) => sum + weights[source], 0);
-  const totals = new Map(active.map((source) => [source, entries.reduce((sum, entry) => sum + (entry[source]?.viewers ?? 0), 0)]));
+  const totals = new Map(active.map((source) => [source, (observed.get(source) ?? []).reduce((sum, stat) => sum + stat.viewers, 0)]));
   return new Map(entries.map((entry) => [entry.igdbId, active.reduce((sum, source) => {
     const stat = entry[source];
-    return sum + (stat && stat.coverage > 0 ? weights[source] * stat.viewers / (totals.get(source) ?? 1) : 0);
+    return sum + (stat && stat.viewers > 0 && stat.coverage > 0 ? weights[source] * stat.viewers / (totals.get(source) ?? 1) : 0);
   }, 0) / totalWeight]));
 }
