@@ -169,6 +169,13 @@ export type TwitchFetchInput = {
   recordResponse?: RawResponseRecorder;
 };
 
+export type ChzzkFetchInput = {
+  clientId: string;
+  clientSecret: string;
+  pageLimit: number;
+  recordResponse?: RawResponseRecorder;
+};
+
 export type SteamFetchInput = {
   steamAppIds: number[];
   /** Allows tests and callers with an alternate data root to keep cache writes isolated. */
@@ -180,7 +187,7 @@ export type SteamFetchInput = {
 
 export type RawEnvelope = {
   fetchedAt: string;
-  source: "igdb" | "twitch" | "steam";
+  source: "igdb" | "twitch" | "steam" | "chzzk";
   request: Record<string, unknown>;
   responses: unknown[];
   warnings: string[];
@@ -264,6 +271,20 @@ export type TwitchRawSnapshot = RawEnvelope & {
   topGames: TwitchTopGame[];
   streams: TwitchStreamStat[];
   streamObservations?: StreamObservation[];
+  truncated: boolean;
+};
+
+export type ChzzkCategoryStat = {
+  categoryId: string;
+  name: string;
+  viewers: number;
+  channels: number;
+  coverage: number;
+};
+
+export type ChzzkRawSnapshot = RawEnvelope & {
+  source: "chzzk";
+  categories: ChzzkCategoryStat[];
   truncated: boolean;
 };
 
