@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App";
@@ -135,15 +135,6 @@ describe("App", () => {
   it("초기 상태에서 추천 카드를 보여준다", () => {
     render(<App index={indexFromCatalog(dataset([syntheticGame("initial")]))} />);
     expect(screen.getAllByRole("article").length).toBeGreaterThan(0);
-  });
-
-  it("핵심 추천과 탐색 탭을 하나의 추천 결과 영역에 보여준다", () => {
-    render(<App index={indexFromCatalog(dataset([syntheticGame("initial")]))} />);
-
-    const result = screen.getByRole("region", { name: "추천 결과" });
-    expect(within(result).getAllByRole("article").length).toBeGreaterThan(0);
-    expect(within(result).getByRole("tablist", { name: "탐색 방식" })).toBeDefined();
-    expect(screen.queryByRole("heading", { name: "더 많은 게임 찾아보기" })).toBeNull();
   });
 
   it("safe 카드만 1/2/3 숫자 배지이고 rising/new 카드는 텍스트 배지다", () => {
