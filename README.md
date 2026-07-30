@@ -163,9 +163,13 @@ Playground는 독립형 데모 영역입니다.
 | --- | --- | --- |
 | `TWITCH_CLIENT_ID` | Twitch/IGDB API client ID | 필수 |
 | `TWITCH_CLIENT_SECRET` | Twitch app access token 발급용 secret | 필수 |
+| `CHZZK_CLIENT_ID` | Chzzk Open API client ID | 선택 |
+| `CHZZK_CLIENT_SECRET` | Chzzk Open API client secret | 선택 |
 | `TWITCH_TOP_GAME_LIMIT` | Twitch 인기 게임 수집 개수 | `1000` |
 | `TWITCH_STREAM_PAGE_LIMIT` | Twitch stream 페이지 제한 | `20` |
 | `IGDB_RECENT_DAYS` | IGDB 최근 출시 게임 검색 기간 | `60` |
+| `CHZZK_PAGE_LIMIT` | Chzzk live 페이지 제한 | `20` |
+| `CHZZK_RETRY_LIMIT` | Chzzk API 요청 재시도 제한 | `3` |
 
 광고 동작:
 
@@ -214,6 +218,9 @@ GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세
 `Refresh game recommendation catalog`가 매일 실행되어 최신 스트리밍·평가 데이터를 갱신합니다. 수집 범위는
 repository variables의 `TWITCH_TOP_GAME_LIMIT`, `TWITCH_STREAM_PAGE_LIMIT`, `IGDB_RECENT_DAYS`로
 조정할 수 있으며 refresh workflow 기본값은 각각 `100`, `5`, `60`입니다.
+Chzzk 수집을 사용하려면 refresh workflow secrets에 `CHZZK_CLIENT_ID`, `CHZZK_CLIENT_SECRET`을
+등록하고, `CHZZK_PAGE_LIMIT`, `CHZZK_RETRY_LIMIT` repository variables로 범위를 조정할 수 있습니다.
+두 Chzzk secret 중 하나라도 없으면 Chzzk 수집은 비활성화되며 Twitch 기반 refresh는 계속 성공합니다.
 
 ## 라이선스
 

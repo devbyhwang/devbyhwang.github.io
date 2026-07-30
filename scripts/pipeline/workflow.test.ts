@@ -68,6 +68,18 @@ describe("catalog refresh deployment handoff", () => {
     expect(refresh).toContain("src/playground/game-recommendation/recommendations.json");
   });
 
+  it("configures Chzzk refresh credentials as secrets with bounded defaults and stages raw snapshots", () => {
+    const refresh = workflow(".github/workflows/catalog-refresh.yml");
+
+    expect(refresh).toContain("CHZZK_CLIENT_ID: ${{ secrets.CHZZK_CLIENT_ID }}");
+    expect(refresh).toContain("CHZZK_CLIENT_SECRET: ${{ secrets.CHZZK_CLIENT_SECRET }}");
+    expect(refresh).not.toContain("CHZZK_CLIENT_ID: ${{ vars.");
+    expect(refresh).not.toContain("CHZZK_CLIENT_SECRET: ${{ vars.");
+    expect(refresh).toContain("CHZZK_PAGE_LIMIT: ${{ vars.CHZZK_PAGE_LIMIT || '20' }}");
+    expect(refresh).toContain("CHZZK_RETRY_LIMIT: ${{ vars.CHZZK_RETRY_LIMIT || '3' }}");
+    expect(refresh).toContain("git add data/history.json data/raw data/checkpoints");
+  });
+
   it("does not fail when a legacy catalog run has no chunk directory yet", () => {
     const refresh = workflow(".github/workflows/catalog-refresh.yml");
     const backfill = workflow(".github/workflows/catalog-backfill.yml");
