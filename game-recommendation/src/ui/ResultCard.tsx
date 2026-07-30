@@ -1,4 +1,4 @@
-import { SESSION_TEXT, type Pick, type Relaxation, type SlotKind } from "../domain/types";
+import { SESSION_TEXT, type Pick, type Relaxation, type SlotKind, type WhyPart } from "../domain/types";
 
 export const RELAXATION_LABELS: Record<Relaxation, string> = {
   vibeThreshold: "분위기 조건",
@@ -17,6 +17,13 @@ type Props = {
   /** 안전한 선택 슬롯의 순위(1부터). 다른 슬롯이면 null */
   rank: number | null;
 };
+
+/** 이전 recommendations.json은 시청자 수 문장을 저장한다. 파싱은 유지하되 화면에는 중립 문구만 보인다. */
+function displayWhyText(why: WhyPart): string {
+  if (/^채널당 시청자\s+[\d,]+명$/.test(why.text)) return "방송 참여가 활발함";
+  if (/^현재\s+[\d,]+명 시청 중$/.test(why.text)) return "지금 관심이 높은 게임";
+  return why.text;
+}
 
 export function ResultCard({ pick, rank }: Props) {
   const { game } = pick;
@@ -46,7 +53,7 @@ export function ResultCard({ pick, rank }: Props) {
         )}
       </h2>
 
-      <p className="card-why">{pick.why.map((w) => w.text).join(" · ")}</p>
+      <p className="card-why">{pick.why.map(displayWhyText).join(" · ")}</p>
 
       <ul className="card-meta">
         <li className="session">{SESSION_TEXT[game.sessionShape]}</li>

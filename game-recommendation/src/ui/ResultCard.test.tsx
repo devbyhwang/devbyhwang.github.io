@@ -89,6 +89,13 @@ describe("ResultCard", () => {
     expect(container.textContent).not.toMatch(/\d[\d,]*명 시청 중/);
   });
 
+  it("persisted accessibility viewer-count 이유를 중립 문구로 표시한다", () => {
+    render(<ResultCard pick={{ ...base, why: [{ kind: "accessibility", text: "채널당 시청자 14명" }] }} rank={1} />);
+
+    expect(screen.queryByText("채널당 시청자 14명")).toBeNull();
+    expect(screen.getByText("방송 참여가 활발함")).toBeDefined();
+  });
+
   it("세션 형태에 맞는 방송 길이 안내를 보여준다", () => {
     render(<ResultCard pick={base} rank={1} />);
     expect(screen.getByText("한 판 20~60분")).toBeDefined();
