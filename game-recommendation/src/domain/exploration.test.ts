@@ -149,6 +149,21 @@ describe("exploration contracts", () => {
     ]);
   });
 
+  it("pushes back a candidate sharing a genre with an already-chosen game", () => {
+    // a and b share the "puzzle" genre and both default to the same release era
+    // and empty topTags, so once a is chosen first (highest score), b picks up a
+    // 0.06 genre penalty plus a 0.04 era penalty (0.10 total). c shares no genre
+    // with a, only the 0.04 era penalty, so c's utility (0.9 - 0.04 = 0.86) beats
+    // b's (0.95 - 0.10 = 0.85) and c is chosen second, pushing b to last.
+    const a = game("a", { genres: ["Puzzle"] });
+    const b = game("b", { genres: ["Puzzle"] });
+    const c = game("c", { genres: ["Shooter"] });
+    const games = [a, b, c];
+    const scores = [scored(a, 1), scored(b, 0.95), scored(c, 0.9)];
+
+    expect(rerankExploration(games, scores)).toEqual(["a", "c", "b"]);
+  });
+
   it("separates near-peers from the same release era", () => {
     const recentA = game("recent-a", { releaseDate: "2024-01-01T00:00:00.000Z" });
     const recentB = game("recent-b", { releaseDate: "2023-01-01T00:00:00.000Z" });

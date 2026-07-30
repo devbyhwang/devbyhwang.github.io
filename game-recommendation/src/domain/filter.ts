@@ -47,7 +47,14 @@ export function filterGames(
     : afterPlayers;
   counts.viewerPlayable = afterViewer.length;
 
-  // ③ 분위기
+  // ③ 분위기 — 근거 없는 게임은 탈락시킨다.
+  //
+  // ①의 인원 필터는 "정보 없음"을 통과시키지만 분위기는 다르다. 분위기는 사용자가
+  // 명시적으로 고른 조건이고, 근거 없는 게임을 통과시킨 것이 2026-07 사고의 본질이었다.
+  // (전역 min-max 정규화가 "태그 없음"을 healing 0.872로 만들어 카탈로그의 99.997%가
+  // 힐링 조건을 통과했다.) 장르·테마·태그가 하나도 없으면 여섯 축이 모두 0이므로 여기서
+  // 걸러진다. 결과가 적을 때는 완화 사다리가 임계값을 0.35로 낮추는 것이 올바른 밸브이며,
+  // 근거가 0인 게임은 어느 임계값에서도 통과하지 않는다. 기본 통과로 되돌리지 말 것.
   const afterVibe = afterViewer.filter(
     (g) => g.vibes[query.vibe] >= opts.vibeThreshold,
   );

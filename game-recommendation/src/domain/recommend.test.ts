@@ -15,15 +15,19 @@ const q = (over: Partial<Query> = {}): Query => ({
 
 describe("recommend", () => {
   it("preserves the fixed catalog's picks, scores, and relaxations", () => {
+    // 후보 집합과 점수는 fixtures.ts의 genres/themes 기반 vibes(2026-07 사고 수정) 재계산
+    // 결과다. scoreGame은 vibes를 직접 읽지 않으므로, 값 자체가 아니라 어떤 게임이
+    // hardcore 필터를 통과하는지(후보 모집단)만 바뀌었다 — 그 모집단 안에서의 퍼센타일
+    // 계산이라 통과 집합이 바뀌면 점수도 함께 바뀐다.
     const result = recommend(SAMPLE_CATALOG, q(), "2026-07-29T00:00:00.000Z");
 
     expect(result.relaxations).toEqual([]);
-    expect(result.candidateCount).toBe(8);
+    expect(result.candidateCount).toBe(9);
     expect(result.picks.map(({ slot, game, score }) => ({ slot, id: game.id, score }))).toEqual([
-      { slot: "safe", id: "g21", score: 0.5359460678210678 },
-      { slot: "safe", id: "g15", score: 0.5329331204026326 },
-      { slot: "safe", id: "g16", score: 0.5329027777777778 },
-      { slot: "new", id: "g24", score: 0.5591098290598291 },
+      { slot: "safe", id: "g16", score: 0.5381111111111111 },
+      { slot: "safe", id: "g12", score: 0.4969394041218638 },
+      { slot: "safe", id: "g13", score: 0.47252777777777777 },
+      { slot: "new", id: "g24", score: 0.5611931623931624 },
     ]);
   });
 
@@ -98,10 +102,10 @@ describe("recommend", () => {
 
     // chatting >= VIBE_THRESHOLD_BASE, 채널 수 >= 랭킹 하한, medium 세션 적합.
     const catalog: Game[] = [
-      withViewerPlayable(base("g20"), true), // Vampire Survivors, chatting 0.9
-      withViewerPlayable(base("g21"), true), // Balatro, chatting 0.85
-      withViewerPlayable(base("g23"), true), // PowerWash Simulator, chatting 0.9
-      withViewerPlayable(base("g1"), false), // Stardew Valley, chatting 0.7 — 걸러져야 한다
+      withViewerPlayable(base("g7"), true), // Jackbox Party Pack 10, chatting 0.96
+      withViewerPlayable(base("g29"), true), // Gartic Phone, chatting 0.92
+      withViewerPlayable(base("g31"), true), // skribbl.io, chatting 0.92
+      withViewerPlayable(base("g1"), false), // Stardew Valley, chatting 0 — 걸러져야 한다
     ];
 
     // 전제 조건: 필터가 실제로 배제할 대상이 카탈로그에 존재한다.
