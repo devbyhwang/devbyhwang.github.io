@@ -71,12 +71,13 @@ function ExplorationContents({ query, generatedAt }: Props) {
   };
 
   return (
-    <div className="exploration">
-      <div className="exploration-toolbar">
-        <div className="exploration-tabs" role="tablist" aria-label="탐색 방식">
-          {VIEWS.map(({ id, label }) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => selectView(id)}>{label}</button>)}
-        </div>
+    <section className="exploration" aria-label="게임 더 찾아보기">
+      <div className="exploration-head">
+        <h2>더 많은 게임 찾아보기</h2>
         {total !== null && <p>{total.toLocaleString("ko-KR")}개 결과</p>}
+      </div>
+      <div className="exploration-tabs" role="tablist" aria-label="탐색 방식">
+        {VIEWS.map(({ id, label }) => <button key={id} type="button" role="tab" aria-selected={view === id} onClick={() => selectView(id)}>{label}</button>)}
       </div>
       {error ? (
         <div className="exploration-state"><p>게임 목록을 불러오지 못했습니다.</p><button type="button" onClick={() => setRetry((count) => count + 1)}>재시도</button></div>
@@ -94,7 +95,7 @@ function ExplorationContents({ query, generatedAt }: Props) {
           )}
         </>
       )}
-    </div>
+    </section>
   );
 }
 

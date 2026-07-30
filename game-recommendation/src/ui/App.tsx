@@ -78,29 +78,27 @@ export function App({ index }: Props) {
         <p className="notice">딱 맞는 게임이 적어서 {relaxed}을(를) 완화했습니다</p>
       )}
 
-      <section className="recommendation-flow" aria-label="추천 결과">
-        {empty ? (
-          <div className="empty">
-            <p className="empty-title">조건에 맞는 게임이 없습니다</p>
-            <p className="empty-body">
-              {EMPTY_HINT[result.blockedBy ?? "players"].reason}
-              <br />
-              <b>{EMPTY_HINT[result.blockedBy ?? "players"].suggest}</b>.
-            </p>
-          </div>
-        ) : (
-          <div className="cards">
-            {result.picks.map((p) => (
-              <div key={p.game.id} className="card-slot">
-                <ResultCard pick={p} rank={ranks.get(p.game.id) ?? null} />
-                {debug && <DebugPanel pick={p} />}
-              </div>
-            ))}
-          </div>
-        )}
+      {empty ? (
+        <div className="empty">
+          <p className="empty-title">조건에 맞는 게임이 없습니다</p>
+          <p className="empty-body">
+            {EMPTY_HINT[result.blockedBy ?? "players"].reason}
+            <br />
+            <b>{EMPTY_HINT[result.blockedBy ?? "players"].suggest}</b>.
+          </p>
+        </div>
+      ) : (
+        <div className="cards">
+          {result.picks.map((p) => (
+            <div key={p.game.id} className="card-slot">
+              <ResultCard pick={p} rank={ranks.get(p.game.id) ?? null} />
+              {debug && <DebugPanel pick={p} />}
+            </div>
+          ))}
+        </div>
+      )}
 
-        <ExplorationPanel query={query} generatedAt={index.generatedAt} />
-      </section>
+      <ExplorationPanel query={query} generatedAt={index.generatedAt} />
 
       <footer className="foot">
         카탈로그 생성 시각 {formatCatalogDate(index.generatedAt)} · 후보 {result.candidateCount}개
