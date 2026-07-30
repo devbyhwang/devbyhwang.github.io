@@ -1,7 +1,7 @@
 {
   "oauth": { "access_token": "fixture-igdb-token", "expires_in": 3600, "token_type": "bearer" },
   "recentGames": [
-    { "id": 7, "name": "Recent Fixture", "first_release_date": 1784505600, "rating_count": 12 },
+    { "id": 7, "name": "Recent Fixture", "first_release_date": 1784505600, "rating_count": 12, "genres": [{ "name": "Puzzle" }, { "name": "Simulator" }], "themes": [{ "name": "Party" }] },
     {
       "id": 77,
       "name": "Recent-only Fixture",
@@ -11,14 +11,16 @@
       "aggregated_rating": 87,
       "aggregated_rating_count": 12,
       "total_rating": 83,
-      "total_rating_count": 30
+      "total_rating_count": 30,
+      "genres": [{ "name": "Quiz/Trivia" }, { "name": "Card & Board Game" }],
+      "themes": [{ "name": "Comedy" }]
     }
   ],
   "topGames": [
-    { "id": 42, "name": "Twitch Fixture", "first_release_date": 1784505600, "rating_count": 20 }
+    { "id": 42, "name": "Twitch Fixture", "first_release_date": 1784505600, "rating_count": 20, "genres": [{ "name": "Shooter" }, { "name": "Fighting" }], "themes": [{ "name": "Horror" }] }
   ],
   "steamMappedGames": [
-    { "id": 88, "name": "Steam-only Fixture", "first_release_date": 1784505600, "rating_count": 30 }
+    { "id": 88, "name": "Steam-only Fixture", "first_release_date": 1784505600, "rating_count": 30, "genres": [{ "name": "Role-playing (RPG)" }, { "name": "Adventure" }], "themes": [{ "name": "Fantasy" }, { "name": "Action" }] }
   ],
   "externalGames": [
     { "game": 7, "uid": "570", "external_game_source": 1 },

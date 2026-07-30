@@ -36,7 +36,10 @@ function sources(staleSources: string[] = []): RawSources {
       request: { test: true },
       responses: [{ id: 42 }],
       warnings: [],
-      games: [{ id: 42, name: "Fixture Game", first_release_date: 1_784_505_600 }],
+      games: [
+        { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }, { name: "Music" }], themes: [{ name: "Party" }, { name: "Horror" }] },
+        { id: 99, name: "Spectacle Fixture", first_release_date: 1_784_505_600, genres: [{ name: "Role-playing (RPG)" }], themes: [] },
+      ],
       externalGames: [],
       unresolvedSteamAppIds: [],
     },
@@ -139,8 +142,8 @@ describe("live pipeline orchestration", () => {
       igdb: {
         ...base.igdb,
         games: [
-          { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600 },
-          { id: 43, name: "Second Fixture Game", first_release_date: 1_784_505_600 },
+          { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }], themes: [{ name: "Horror" }, { name: "Comedy" }] },
+          { id: 43, name: "Second Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Adventure" }], themes: [{ name: "Fantasy" }] },
         ],
       },
       twitch: {
@@ -297,9 +300,23 @@ describe("live pipeline orchestration", () => {
       topSellerAppIds: [570],
       apps: [{ appId: 730, tags: { Strategy: 100 }, positive: 90, negative: 10, owners: "", price: "0", discount: "0", categories: ["Multi-player"] }],
     };
+    const twitch = {
+      ...base.twitch,
+      topGames: [
+        ...base.twitch.topGames,
+        { categoryId: "99", igdbId: "99", name: "Spectacle Fixture" },
+      ],
+      streams: [
+        ...base.twitch.streams,
+        { categoryId: "99", igdbId: "99", viewers: 0, channels: 0 },
+      ],
+    };
     const igdb = {
       ...base.igdb,
-      games: [{ id: 42, name: "Mapped Twitch Game", first_release_date: 1_784_505_600 }],
+      games: [
+        { id: 42, name: "Mapped Twitch Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }, { name: "Role-playing (RPG)" }], themes: [{ name: "Comedy" }, { name: "Horror" }] },
+        { id: 99, name: "Spectacle Fixture", first_release_date: 1_784_505_600, genres: [{ name: "Role-playing (RPG)" }], themes: [] },
+      ],
       externalGames: [{ game: 42, uid: "730", external_game_source: 1 }],
     };
 
@@ -309,7 +326,7 @@ describe("live pipeline orchestration", () => {
       allowNetwork: true,
       logger,
       adapters: {
-        twitch: async () => base.twitch,
+        twitch: async () => twitch,
         igdb: async () => igdb,
         steam: async (input) => {
           steamInputs.push(input);
@@ -451,7 +468,7 @@ describe("live pipeline orchestration", () => {
       request: { partitionStart: "1990-01-01", partitionEnd: "1991-01-01" },
       responses: [],
       warnings: [],
-      games: [{ id: 99, name: "Historical Fixture Game", first_release_date: 631152000 }],
+      games: [{ id: 99, name: "Historical Fixture Game", first_release_date: 631152000, genres: [{ name: "Strategy" }], themes: [{ name: "Thriller" }] }],
       externalGames: [],
       unresolvedSteamAppIds: [],
     };
