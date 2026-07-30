@@ -236,6 +236,34 @@ describe("catalog emission", () => {
     expect(() => readCatalog(persisted.fs)).toThrow("src/playground/game-recommendation/catalog.json");
   });
 
+  it("reads a legacy chunk without demand source metadata for a guarded refresh", () => {
+    const { demandShare: _demandShare, demandSources: _demandSources, sourceStatus: _sourceStatus, ...legacyBuzz } = legacyCatalog().games[0].buzz;
+    const persisted = memoryFileStore({
+      "src/playground/game-recommendation/catalog.json": JSON.stringify({
+        generatedAt,
+        gameCount: 1,
+        chunks: ["./catalog/chunks/0000.json"],
+      }),
+      "src/playground/game-recommendation/catalog/chunks/0000.json": JSON.stringify({
+        generatedAt,
+        games: [{ ...legacyCatalog().games[0], buzz: legacyBuzz }],
+      }),
+    });
+
+    const previous = readCatalog(persisted.fs);
+    expect(previous).toEqual({
+      generatedAt,
+      gameCount: 1,
+      chunks: ["./catalog/chunks/0000.json"],
+    });
+    emitCatalog(catalogWith(1), previous, persisted.fs);
+    expect(JSON.parse(persisted.fs.read("src/playground/game-recommendation/catalog/chunks/0000.json")!).games[0].buzz).toMatchObject({
+      demandShare: 0,
+      demandSources: { chzzk: false, twitch: true },
+      sourceStatus: { chzzk: "fresh", twitch: "fresh" },
+    });
+  });
+
   it("rejects a persisted manifest with chunk paths outside the contract", () => {
     const persisted = memoryFileStore({
       "src/playground/game-recommendation/catalog.json": JSON.stringify({

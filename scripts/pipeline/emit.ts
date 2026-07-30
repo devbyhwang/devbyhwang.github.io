@@ -85,12 +85,13 @@ export function readCatalog(fs: FileStore): CatalogManifest | null {
     const chunkContents = fs.read(filePath);
     if (chunkContents === null) throw new Error(`${filePath}: missing`);
     const chunk = parseJson(chunkContents, filePath);
+    const legacyChunk = normalizeLegacyCatalog(chunk);
     try {
-      validateCatalogChunk(chunk, parsed.generatedAt);
+      validateCatalogChunk(legacyChunk, parsed.generatedAt);
     } catch (error) {
       throw new Error(`${filePath}: ${error instanceof Error ? error.message : String(error)}`);
     }
-    gameCount += chunk.games.length;
+    gameCount += legacyChunk.games.length;
   }
   if (gameCount !== parsed.gameCount) {
     throw new Error(`${CATALOG_PATH}: gameCount ${parsed.gameCount} does not match chunk total ${gameCount}`);
@@ -183,6 +184,12 @@ function normalizeLegacyGame(value: unknown, generatedAt: string) {
     : {};
   return {
     ...game,
+    buzz: {
+      ...buzz,
+      demandShare: "demandShare" in buzz ? buzz.demandShare : 0,
+      demandSources: "demandSources" in buzz ? buzz.demandSources : { chzzk: false, twitch: true },
+      sourceStatus: "sourceStatus" in buzz ? buzz.sourceStatus : { chzzk: "disabled", twitch: "fresh" },
+    },
     streaming: hasStreamingObject
       ? {
         ...legacyStreaming,
