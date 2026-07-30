@@ -2,9 +2,8 @@ import { GLOBAL_QUALITY_PRIOR, qualityStats } from "./metrics/quality";
 import {
   classifySessionShape,
   deriveIsNewRelease,
-  deriveRawVibes,
+  deriveVibes,
   normalizePlayers,
-  normalizeVibes,
   resolveViewerPlayable,
 } from "./enrich";
 import type { GameRecord, IgdbGame, JoinedGame, KnowledgeAssets, RawSources, SteamApp, SteamTag } from "./model";
@@ -124,6 +123,8 @@ export function enrichGames(
     const date = releaseDate(game.igdb);
     if (!date) return [];
     const tagNames = game.tags.map((tag) => tag.name);
+    const genreNames = (game.igdb.genres ?? []).flatMap((genre) => genre.name ? [genre.name] : []);
+    const themeNames = (game.igdb.themes ?? []).flatMap((theme) => theme.name ? [theme.name] : []);
     const players = normalizePlayers(
       { multiplayer_modes: game.igdb.multiplayer_modes, game_modes: gameModeNames(game.igdb) },
       { categories: game.steam?.categories ?? [] },
@@ -141,9 +142,11 @@ export function enrichGames(
       ...(game.igdb.franchise?.name ?? game.igdb.collection?.name ? { franchise: game.igdb.franchise?.name ?? game.igdb.collection?.name } : {}),
       releaseDate: date,
       players,
-      sessionShape: classifySessionShape({ genres: (game.igdb.genres ?? []).flatMap((genre) => genre.name ? [genre.name] : []), tags: tagNames }, knowledge.sessionRules),
+      sessionShape: classifySessionShape({ genres: genreNames, tags: tagNames }, knowledge.sessionRules),
+      genres: genreNames,
+      themes: themeNames,
       viewerPlayable: resolveViewerPlayable(String(game.igdb.id), tagNames, knowledge.viewerPlayable),
-      vibes: deriveRawVibes(game.tags, knowledge.tagVibes),
+      vibes: deriveVibes({ genres: genreNames, themes: themeNames, tags: game.tags }, knowledge.vibeWeights),
       buzz: {
         twitchViewers: game.twitch.viewers,
         twitchChannels: game.twitch.channels,
@@ -173,6 +176,5 @@ export function enrichGames(
     };
     return [record];
   });
-  const normalized = normalizeVibes(Object.fromEntries(candidates.map((game) => [game.id, game.vibes])));
-  return candidates.map((game) => ({ ...game, vibes: normalized[game.id] }));
+  return candidates;
 }

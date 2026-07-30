@@ -13,6 +13,8 @@ function validGame(): GameRecord {
     players: { max: "unknown", source: "unknown", online: false, localCoop: false },
     sessionShape: "run",
     viewerPlayable: { ok: false },
+    genres: [],
+    themes: [],
     vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
     buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
     streaming: {
@@ -45,6 +47,16 @@ function validCatalog(): CatalogRecord {
 }
 
 describe("validateCatalog", () => {
+  it.each([
+    ["a non-array genres field", (catalog: CatalogRecord) => { (catalog.games[0] as Record<string, unknown>).genres = "Puzzle"; }, "games[0].genres"],
+    ["a non-string genre entry", (catalog: CatalogRecord) => { catalog.games[0].genres = [1] as unknown as string[]; }, "games[0].genres"],
+    ["a missing themes field", (catalog: CatalogRecord) => { delete (catalog.games[0] as Partial<GameRecord>).themes; }, "games[0].themes"],
+  ])("rejects %s", (_label, mutate, path) => {
+    const catalog = validCatalog();
+    mutate(catalog);
+    expect(() => validateCatalog(catalog)).toThrow(path);
+  });
+
   it("rejects a game without streaming.totalViewers", () => {
     const catalog = validCatalog();
     delete (catalog.games[0].streaming as Partial<typeof catalog.games[0]["streaming"]>).totalViewers;

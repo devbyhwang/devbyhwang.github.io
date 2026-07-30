@@ -307,4 +307,52 @@ describe("GameRecord enrichment", () => {
     expect(records[0].topTags).toHaveLength(8);
     expect(records[0].topTags.map((tag) => tag.tag)).toEqual(["Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5", "Tag 6", "Tag 7", "Tag 8"]);
   });
+
+  it("preserves IGDB genres and themes on the record", () => {
+    const records = enrichGames(joinSources(raw({
+      igdb: {
+        ...raw().igdb,
+        games: [{
+          id: 42,
+          name: "Genres and themes",
+          first_release_date: 1784505600,
+          genres: [{ name: "Puzzle" }],
+          themes: [{ name: "Comedy" }],
+        }],
+      },
+    })), knowledge, generatedAt);
+
+    expect(records[0].genres).toEqual(["Puzzle"]);
+    expect(records[0].themes).toEqual(["Comedy"]);
+  });
+
+  it("emits empty arrays when IGDB supplies no genres or themes", () => {
+    const records = enrichGames(joinSources(raw({
+      igdb: {
+        ...raw().igdb,
+        games: [{ id: 42, name: "No genres or themes", first_release_date: 1784505600 }],
+      },
+    })), knowledge, generatedAt);
+
+    expect(records[0].genres).toEqual([]);
+    expect(records[0].themes).toEqual([]);
+  });
+
+  it("drops genre and theme entries with no name", () => {
+    const records = enrichGames(joinSources(raw({
+      igdb: {
+        ...raw().igdb,
+        games: [{
+          id: 42,
+          name: "Partial genres and themes",
+          first_release_date: 1784505600,
+          genres: [{ name: "Puzzle" }, {}],
+          themes: [{}],
+        }],
+      },
+    })), knowledge, generatedAt);
+
+    expect(records[0].genres).toEqual(["Puzzle"]);
+    expect(records[0].themes).toEqual([]);
+  });
 });

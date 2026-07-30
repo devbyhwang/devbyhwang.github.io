@@ -106,6 +106,8 @@ export type GameRecord = {
   releaseDate: string;
   players: { max: number | "unknown"; source: "igdb_multiplayer" | "igdb_gamemodes" | "steam_categories" | "unknown"; online: boolean; localCoop: boolean };
   sessionShape: SessionShape;
+  genres: string[];
+  themes: string[];
   viewerPlayable: ViewerPlayable;
   vibes: Record<VibeKey, number>;
   buzz: {

@@ -123,6 +123,12 @@ function validateGame(value: unknown, index: number, generatedAt: string, ids: S
   bool(players.localCoop, `${path}.players.localCoop`);
 
   if (typeof game.sessionShape !== "string" || !SESSION_SHAPES.has(game.sessionShape as SessionShape)) fail(`${path}.sessionShape`, "must be a SessionShape");
+  for (const field of ["genres", "themes"] as const) {
+    const value = game[field];
+    if (!Array.isArray(value) || value.some((entry) => typeof entry !== "string" || entry.length === 0)) {
+      fail(`${path}.${field}`, "must be an array of non-empty strings");
+    }
+  }
   const viewerPlayable = object(game.viewerPlayable, `${path}.viewerPlayable`);
   bool(viewerPlayable.ok, `${path}.viewerPlayable.ok`);
   if (viewerPlayable.reason !== undefined) string(viewerPlayable.reason, `${path}.viewerPlayable.reason`, true);

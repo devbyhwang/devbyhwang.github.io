@@ -15,6 +15,8 @@ function catalogWith(count: number): CatalogRecord {
       releaseDate: "2026-07-20T00:00:00.000Z",
       players: { max: "unknown", source: "unknown", online: false, localCoop: false },
       sessionShape: "run",
+      genres: [],
+      themes: [],
       viewerPlayable: { ok: false },
       vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
       buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },

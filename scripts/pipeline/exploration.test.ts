@@ -9,7 +9,7 @@ import type { CatalogRecord } from "./model";
 const generatedAt = "2026-07-28T00:00:00.000Z";
 function catalogWith(count: number): CatalogRecord { return { generatedAt, games: Array.from({ length: count }, (_, index) => ({
   id: `game-${index}`, name: `Game ${index}`, releaseDate: index % 3 === 0 ? "2019-01-01T00:00:00.000Z" : "2026-07-20T00:00:00.000Z",
-  players: { max: "unknown", source: "unknown", online: false, localCoop: false }, sessionShape: "run", viewerPlayable: { ok: false },
+  players: { max: "unknown", source: "unknown", online: false, localCoop: false }, sessionShape: "run", genres: [], themes: [], viewerPlayable: { ok: false },
   vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
   buzz: { twitchViewers: index % 4 === 0 ? 500 : 10_000 - index, twitchChannels: index % 4 === 0 ? 2 : 10, viewerGrowth7d: index % 2 ? 1.5 : 0.5, isNewRelease: index % 3 !== 0, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
   streaming: { totalViewers: 10_000 - index, channelCount: 10, medianViewersPerChannel: 1_000, p75ViewersPerChannel: 1_200, top10ViewerShare: 1, viewerConcentration: 1, growth7d: index % 2 ? 1.5 : 0.5, growth30d: null, growth90d: null, volatility30d: null, observedSnapshots: 7, coverage: 1, asOf: generatedAt },
