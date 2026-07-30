@@ -75,6 +75,7 @@ const knowledge: KnowledgeAssets = {
   tagVibes: {},
   sessionRules: { rules: [], default: "run" },
   viewerPlayable: { games: {}, tags: {} },
+  chzzkAliases: [],
 };
 
 function catalogWith(count: number): CatalogRecord {

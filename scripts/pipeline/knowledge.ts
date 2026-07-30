@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type {
   KnowledgeAssets,
+  ChzzkAlias,
   SessionRule,
   SessionRules,
   TagVibeMap,
@@ -88,13 +89,34 @@ function parseViewerPlayableRules(value: unknown, path: string): ViewerPlayableR
   return result;
 }
 
+function nonEmptyStrings(value: unknown, path: string, field: string): string[] {
+  const result = strings(value, path, field);
+  if (result.some((entry) => entry.trim().length === 0)) fail(path, field);
+  return result;
+}
+
+function parseChzzkAliases(value: unknown, path: string): ChzzkAlias[] {
+  if (!Array.isArray(value)) fail(path, "root");
+  return value.map((entry, index) => {
+    const alias = object(entry, path, `[${index}]`);
+    if (typeof alias.igdbId !== "string" || !/^[1-9]\\d*$/.test(alias.igdbId)) fail(path, `[${index}].igdbId`);
+    const result: ChzzkAlias = { igdbId: alias.igdbId };
+    for (const key of ["categoryIds", "names"] as const) {
+      if (alias[key] !== undefined) result[key] = nonEmptyStrings(alias[key], path, `[${index}].${key}`);
+    }
+    return result;
+  });
+}
+
 export function loadKnowledge(rootDir: string): KnowledgeAssets {
   const tagVibes = readJson(rootDir, "tag-vibes.json");
   const sessionRules = readJson(rootDir, "session-shape.json");
   const viewerPlayable = readJson(rootDir, "viewer-playable.json");
+  const chzzkAliases = readJson(rootDir, "chzzk-game-aliases.json");
   return {
     tagVibes: parseTagVibes(tagVibes.value, tagVibes.path),
     sessionRules: parseSessionRules(sessionRules.value, sessionRules.path),
     viewerPlayable: parseViewerPlayableRules(viewerPlayable.value, viewerPlayable.path),
+    chzzkAliases: parseChzzkAliases(chzzkAliases.value, chzzkAliases.path),
   };
 }

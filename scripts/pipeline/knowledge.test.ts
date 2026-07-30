@@ -38,6 +38,7 @@ describe("loadKnowledge", () => {
       tagVibes: { Cozy: { healing: expect.any(Number) } },
       sessionRules: { default: "openended" },
       viewerPlayable: { games: expect.any(Object), tags: expect.any(Object) },
+      chzzkAliases: [],
     });
   });
 
@@ -66,5 +67,13 @@ describe("loadKnowledge", () => {
     });
 
     expect(() => loadKnowledge(root)).toThrow(/viewer-playable\.json.*reason/);
+  });
+
+  it("rejects Chzzk aliases with invalid IGDB ids or empty values", async () => {
+    const root = await knowledgeCopy();
+    const path = join(root, "data", "knowledge", "chzzk-game-aliases.json");
+    await writeFile(path, JSON.stringify([{ igdbId: "0", names: [""] }]), "utf8");
+
+    expect(() => loadKnowledge(root)).toThrow(/chzzk-game-aliases\.json.*igdbId/);
   });
 });

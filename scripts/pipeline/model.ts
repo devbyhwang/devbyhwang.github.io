@@ -22,6 +22,22 @@ export type KnowledgeAssets = {
   tagVibes: TagVibeMap;
   sessionRules: SessionRules;
   viewerPlayable: ViewerPlayableRules;
+  chzzkAliases: ChzzkAlias[];
+};
+
+export type ChzzkAlias = {
+  igdbId: string;
+  categoryIds?: string[];
+  names?: string[];
+};
+
+export type ResolvedChzzkStat = ChzzkCategoryStat & { igdbId: string };
+
+export type DemandSourceStat = { viewers: number; coverage: number };
+export type DemandShareEntry = {
+  igdbId: string;
+  chzzk?: DemandSourceStat;
+  twitch?: DemandSourceStat;
 };
 
 export type ClassificationInput = { genres: string[]; tags: string[] };

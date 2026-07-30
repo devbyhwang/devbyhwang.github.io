@@ -12,6 +12,7 @@ const knowledge: KnowledgeAssets = {
   },
   sessionRules: { rules: [{ shape: "chapter", genresAny: ["Adventure"] }], default: "run" },
   viewerPlayable: { games: {}, tags: {} },
+  chzzkAliases: [],
 };
 
 function raw(overrides: Record<string, unknown> = {}) {
