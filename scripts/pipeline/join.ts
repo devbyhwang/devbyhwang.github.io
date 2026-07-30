@@ -8,6 +8,19 @@ import {
 } from "./enrich";
 import type { GameRecord, IgdbGame, JoinedGame, KnowledgeAssets, RawSources, SteamApp, SteamTag } from "./model";
 
+/**
+ * 방송용 추천에서 제외할 IGDB 테마.
+ *
+ * Twitch·Chzzk 모두 방송 내 성적 콘텐츠를 금지하므로 성인용 게임은 "뭘 방송할까"의
+ * 유효한 답이 아니다. 또한 청소년보호법의 청소년유해매체물은 본인확인 기반 연령
+ * 인증을 요구하는데, 이 사이트는 백엔드·계정·세션이 없는 정적 배포라 인증을
+ * 구현할 수 없다. 따라서 선택지는 제외 아니면 미검증 배포이지 게이트가 아니다.
+ *
+ * 이것은 휴리스틱이지 컴플라이언스가 아니다. IGDB Erotic 테마는 법적 등급이 아니며
+ * 게임물관리위원회 청소년이용불가와 대응하지 않는다. 노출을 줄일 뿐이다.
+ */
+export const EXCLUDED_THEMES: ReadonlySet<string> = new Set(["Erotic"]);
+
 function appId(value: string): number | undefined {
   const parsed = Number(value);
   return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
@@ -125,6 +138,7 @@ export function enrichGames(
     const tagNames = game.tags.map((tag) => tag.name);
     const genreNames = (game.igdb.genres ?? []).flatMap((genre) => genre.name ? [genre.name] : []);
     const themeNames = (game.igdb.themes ?? []).flatMap((theme) => theme.name ? [theme.name] : []);
+    if (themeNames.some((theme) => EXCLUDED_THEMES.has(theme))) return [];
     const players = normalizePlayers(
       { multiplayer_modes: game.igdb.multiplayer_modes, game_modes: gameModeNames(game.igdb) },
       { categories: game.steam?.categories ?? [] },

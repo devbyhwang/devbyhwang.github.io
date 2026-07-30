@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { enrichGames, joinSources } from "./join";
-import type { KnowledgeAssets } from "./model";
+import { enrichGames, EXCLUDED_THEMES, joinSources } from "./join";
+import type { KnowledgeAssets, JoinedGame } from "./model";
 
 const generatedAt = "2026-07-28T00:00:00.000Z";
 
@@ -354,5 +354,39 @@ describe("GameRecord enrichment", () => {
 
     expect(records[0].genres).toEqual(["Puzzle"]);
     expect(records[0].themes).toEqual([]);
+  });
+});
+
+function joinedGame(overrides: Partial<JoinedGame> & { id?: number } = {}): JoinedGame {
+  const { id = 1, igdb: igdbOverrides, twitch: twitchOverrides, ...rest } = overrides;
+  return {
+    igdb: {
+      id,
+      name: `Game ${id}`,
+      first_release_date: 1784505600,
+      ...igdbOverrides,
+    },
+    twitch: {
+      viewers: 0,
+      channels: 0,
+      ...twitchOverrides,
+    },
+    tags: [],
+    ...rest,
+  } as JoinedGame;
+}
+
+describe("adult content exclusion", () => {
+  it("drops games carrying the Erotic theme", () => {
+    const records = enrichGames(
+      [
+        joinedGame({ id: 1, igdb: { id: 1, name: "Game 1", themes: [{ name: "Erotic" }] } }),
+        joinedGame({ id: 2, igdb: { id: 2, name: "Game 2", themes: [{ name: "Comedy" }] } }),
+      ],
+      knowledge,
+      generatedAt,
+    );
+
+    expect(records.map((record) => record.id)).toEqual(["2"]);
   });
 });
