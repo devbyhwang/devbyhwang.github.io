@@ -5,10 +5,14 @@ import type { KnowledgeAssets } from "./model";
 const generatedAt = "2026-07-28T00:00:00.000Z";
 
 const knowledge: KnowledgeAssets = {
-  tagVibes: {
-    Strategy: { hardcore: 1 },
-    Cozy: { healing: 1 },
-    Horror: { horror: 1, healing: -1 },
+  vibeWeights: {
+    genres: {},
+    themes: {},
+    tags: {
+      Strategy: { hardcore: 1 },
+      Cozy: { healing: 1 },
+      Horror: { horror: 1 },
+    },
   },
   sessionRules: { rules: [{ shape: "chapter", genresAny: ["Adventure"] }], default: "run" },
   viewerPlayable: { games: {}, tags: {} },

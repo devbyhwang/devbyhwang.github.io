@@ -5,7 +5,8 @@ import type {
   ChzzkAlias,
   SessionRule,
   SessionRules,
-  TagVibeMap,
+  VibeWeightMap,
+  VibeWeights,
   ViewerPlayable,
   ViewerPlayableRules,
 } from "./model";
@@ -37,18 +38,29 @@ function readJson(rootDir: string, name: string): { path: string; value: unknown
   }
 }
 
-function parseTagVibes(value: unknown, path: string): TagVibeMap {
-  const result: TagVibeMap = {};
-  for (const [tag, weights] of Object.entries(object(value, path, "root"))) {
-    const parsed = object(weights, path, tag);
-    result[tag] = {};
+function parseVibeWeightMap(value: unknown, path: string, section: string): VibeWeightMap {
+  const result: VibeWeightMap = {};
+  for (const [term, weights] of Object.entries(object(value, path, section))) {
+    const parsed = object(weights, path, `${section}.${term}`);
+    result[term] = {};
     for (const [vibe, weight] of Object.entries(parsed)) {
-      if (!VIBE_KEYS.has(vibe)) fail(path, `${tag}.${vibe}`);
-      if (typeof weight !== "number" || !Number.isFinite(weight)) fail(path, `${tag}.${vibe}`);
-      result[tag][vibe as keyof typeof result[string]] = weight;
+      if (!VIBE_KEYS.has(vibe)) fail(path, `${section}.${term}.${vibe}`);
+      if (typeof weight !== "number" || !Number.isFinite(weight) || weight < 0 || weight > 1) {
+        fail(path, `${section}.${term}.${vibe}`);
+      }
+      result[term][vibe as keyof typeof result[string]] = weight;
     }
   }
   return result;
+}
+
+function parseVibeWeights(value: unknown, path: string): VibeWeights {
+  const source = object(value, path, "root");
+  return {
+    genres: parseVibeWeightMap(source.genres, path, "genres"),
+    themes: parseVibeWeightMap(source.themes, path, "themes"),
+    tags: parseVibeWeightMap(source.tags, path, "tags"),
+  };
 }
 
 function parseSessionRule(value: unknown, path: string, field: string): SessionRule {
@@ -109,12 +121,12 @@ function parseChzzkAliases(value: unknown, path: string): ChzzkAlias[] {
 }
 
 export function loadKnowledge(rootDir: string): KnowledgeAssets {
-  const tagVibes = readJson(rootDir, "tag-vibes.json");
+  const vibeWeights = readJson(rootDir, "tag-vibes.json");
   const sessionRules = readJson(rootDir, "session-shape.json");
   const viewerPlayable = readJson(rootDir, "viewer-playable.json");
   const chzzkAliases = readJson(rootDir, "chzzk-game-aliases.json");
   return {
-    tagVibes: parseTagVibes(tagVibes.value, tagVibes.path),
+    vibeWeights: parseVibeWeights(vibeWeights.value, vibeWeights.path),
     sessionRules: parseSessionRules(sessionRules.value, sessionRules.path),
     viewerPlayable: parseViewerPlayableRules(viewerPlayable.value, viewerPlayable.path),
     chzzkAliases: parseChzzkAliases(chzzkAliases.value, chzzkAliases.path),

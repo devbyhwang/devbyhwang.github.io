@@ -81,7 +81,7 @@ function rawSources(viewers = 130): RawSources {
 }
 
 const knowledge: KnowledgeAssets = {
-  tagVibes: {},
+  vibeWeights: { genres: {}, themes: {}, tags: {} },
   sessionRules: { rules: [], default: "run" },
   viewerPlayable: { games: {}, tags: {} },
   chzzkAliases: [],

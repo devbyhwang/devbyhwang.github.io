@@ -7,7 +7,12 @@ export type VibeKey = "healing" | "variety" | "horror" | "hardcore" | "chatting"
 export type SessionShape = "match" | "run" | "chapter" | "openended";
 export type ViewerPlayable = { ok: boolean; reason?: string };
 export type SteamTag = { name: string; share: number };
-export type TagVibeMap = Record<string, Partial<Record<VibeKey, number>>>;
+export type VibeWeightMap = Record<string, Partial<Record<VibeKey, number>>>;
+export type VibeWeights = {
+  genres: VibeWeightMap;
+  themes: VibeWeightMap;
+  tags: VibeWeightMap;
+};
 export type SessionRule = {
   shape: SessionShape;
   genresAny?: string[];
@@ -20,7 +25,7 @@ export type ViewerPlayableRules = {
   tags: Record<string, ViewerPlayable>;
 };
 export type KnowledgeAssets = {
-  tagVibes: TagVibeMap;
+  vibeWeights: VibeWeights;
   sessionRules: SessionRules;
   viewerPlayable: ViewerPlayableRules;
   chzzkAliases: ChzzkAlias[];

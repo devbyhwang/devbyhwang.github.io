@@ -35,7 +35,11 @@ describe("loadKnowledge", () => {
     const root = await knowledgeCopy();
 
     expect(loadKnowledge(root)).toMatchObject({
-      tagVibes: { Cozy: { healing: expect.any(Number) } },
+      vibeWeights: {
+        genres: expect.any(Object),
+        themes: expect.any(Object),
+        tags: { Cozy: { healing: expect.any(Number) } },
+      },
       sessionRules: { default: "openended" },
       viewerPlayable: { games: expect.any(Object), tags: expect.any(Object) },
       chzzkAliases: [],
@@ -45,10 +49,28 @@ describe("loadKnowledge", () => {
   it("rejects a tag vibe key outside the pipeline contract", async () => {
     const root = await knowledgeCopy();
     await changeAsset(root, "tag-vibes.json", (value) => {
-      (value.Cozy as Record<string, number>).relaxing = 1;
+      ((value.tags as Record<string, Record<string, number>>).Cozy).relaxing = 1;
     });
 
     expect(() => loadKnowledge(root)).toThrow(/tag-vibes\.json.*relaxing/);
+  });
+
+  it("rejects a negative vibe weight", async () => {
+    const root = await knowledgeCopy();
+    await changeAsset(root, "tag-vibes.json", (value) => {
+      ((value.themes as Record<string, Record<string, number>>).Horror).healing = -1;
+    });
+
+    expect(() => loadKnowledge(root)).toThrow(/tag-vibes\.json.*Horror\.healing/);
+  });
+
+  it("rejects a vibe weight above one", async () => {
+    const root = await knowledgeCopy();
+    await changeAsset(root, "tag-vibes.json", (value) => {
+      ((value.genres as Record<string, Record<string, number>>).Puzzle).healing = 1.5;
+    });
+
+    expect(() => loadKnowledge(root)).toThrow(/tag-vibes\.json.*Puzzle\.healing/);
   });
 
   it("rejects an invalid session shape", async () => {
