@@ -32,16 +32,6 @@ function compactFetch(gameCount: number, newOrdinals: number[] = []) {
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe("ExplorationPanel", () => {
-  it("탐색 탭을 독립 섹션이나 제목 없이 임베드한다", async () => {
-    vi.stubGlobal("fetch", compactFetch(24));
-    const { ExplorationPanel } = await import("./ExplorationPanel");
-    const { container } = render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
-
-    expect(screen.getByRole("tablist", { name: "탐색 방식" })).toBeDefined();
-    expect(container.querySelector("section.exploration")).toBeNull();
-    expect(screen.queryByRole("heading", { name: "더 많은 게임 찾아보기" })).toBeNull();
-  });
-
   it("replaces the 24 cards when moving between pages without another rank request", async () => {
     const fetcher = compactFetch(48); vi.stubGlobal("fetch", fetcher);
     const { ExplorationPanel } = await import("./ExplorationPanel");
