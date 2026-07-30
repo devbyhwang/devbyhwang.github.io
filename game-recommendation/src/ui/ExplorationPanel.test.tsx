@@ -32,6 +32,15 @@ function compactFetch(gameCount: number, newOrdinals: number[] = []) {
 afterEach(() => { vi.restoreAllMocks(); });
 
 describe("ExplorationPanel", () => {
+  it("플랫폼 시청자 수를 노출하지 않는다", async () => {
+    vi.stubGlobal("fetch", compactFetch(1));
+    const { ExplorationPanel } = await import("./ExplorationPanel");
+    const { container } = render(<ExplorationPanel query={query} generatedAt={generatedAt} />);
+
+    await screen.findByRole("heading", { name: "Game 0" });
+    expect(container.textContent).not.toMatch(/\d[\d,]*명 시청 중/);
+  });
+
   it("replaces the 24 cards when moving between pages without another rank request", async () => {
     const fetcher = compactFetch(48); vi.stubGlobal("fetch", fetcher);
     const { ExplorationPanel } = await import("./ExplorationPanel");

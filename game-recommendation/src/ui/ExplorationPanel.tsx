@@ -24,7 +24,6 @@ function ExplorationCardView({ card, rank }: { card: ExplorationCard; rank: numb
       </div>
       <h2 className="card-title">{card.storeUrl ? <a href={card.storeUrl} target="_blank" rel="noreferrer">{title}</a> : title}</h2>
       <ul className="card-meta">
-        <li><b>{card.twitchViewers.toLocaleString("ko-KR")}</b>명 시청 중</li>
         <li className="session">{SESSION_TEXT[card.sessionShape]}</li>
         {card.players.max === "unknown" ? <li className="players-unknown">인원 정보 없음</li> : <li className="players-known">최대 {card.players.max}인</li>}
         {card.discountPercent !== undefined && card.discountPercent > 0 && <li>-{card.discountPercent}% 할인 중</li>}

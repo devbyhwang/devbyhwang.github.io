@@ -1,4 +1,4 @@
-import { MIN_OPPORTUNITY_PCT_FOR_REASON, MS_PER_DAY } from "./constants";
+import { MIN_DEMAND_PERCENTILE_FOR_REASON, MS_PER_DAY } from "./constants";
 import { SESSION_TEXT } from "./types";
 import type { Game, Query, Scored, ScoreTerm, SlotKind, WhyKindWithLegacy, WhyPart } from "./types";
 
@@ -11,9 +11,9 @@ function scoreTermText(kind: WhyKindWithLegacy, raw: number, game: Game): string
     case "quality":
       return `평점 ${new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 1 }).format((game.quality.totalRating ?? game.rating ?? 75))}`;
     case "accessibility":
-      return `채널당 시청자 ${Math.round(game.streaming.medianViewersPerChannel ?? game.buzz.twitchViewers / (game.buzz.twitchChannels + 10))}명`;
+      return "방송 참여가 활발함";
     case "demand":
-      return raw >= MIN_OPPORTUNITY_PCT_FOR_REASON ? `현재 ${game.buzz.twitchViewers.toLocaleString("ko-KR")}명 시청 중` : null;
+      return raw >= MIN_DEMAND_PERCENTILE_FOR_REASON ? "지금 관심이 높은 게임" : null;
     case "growth":
       return growthText(game);
     case "stability":
@@ -52,7 +52,7 @@ function growthText(game: Game): string | null {
   const strongest = windows
     .filter((entry): entry is [string, number] => entry[1] !== null)
     .sort((a, b) => b[1] - a[1])[0];
-  return strongest ? `최근 ${strongest[0]} 시청자 ${strongest[1].toFixed(1)}배 상승` : null;
+  return strongest ? `최근 ${strongest[0]} 관심도 ${strongest[1].toFixed(1)}배 상승` : null;
 }
 
 function newReleaseText(game: Game, asOf?: string): string {

@@ -38,6 +38,7 @@ describe("rankGames", () => {
         twitchChannels: 1,
         viewerGrowth7d: 2.4,
         isNewRelease: false,
+        demandShare: 0.08,
       },
       streaming: {
         totalViewers: 32_000,
@@ -69,6 +70,7 @@ describe("rankGames", () => {
         twitchChannels: 140,
         viewerGrowth7d: 1.3,
         isNewRelease: false,
+        demandShare: 0.04,
       },
       streaming: {
         totalViewers: 12_000,
@@ -100,6 +102,7 @@ describe("rankGames", () => {
         twitchChannels: 80,
         viewerGrowth7d: 1.05,
         isNewRelease: false,
+        demandShare: 0.02,
       },
       streaming: {
         totalViewers: 7_000,

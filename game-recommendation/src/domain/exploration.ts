@@ -50,7 +50,6 @@ export type ExplorationCard = {
   releaseDate: string;
   players: { max: number | "unknown"; online: boolean; localCoop: boolean };
   sessionShape: SessionShape;
-  twitchViewers: number;
   discountPercent?: number;
 };
 

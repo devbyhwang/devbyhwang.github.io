@@ -21,7 +21,10 @@ export const VIBE_THRESHOLD_BASE = 0.5;
 export const VIBE_THRESHOLD_RELAXED = 0.35;
 
 /** 성장률 항의 볼륨 바닥. 34명 → 116명도 3.4배라 소규모는 잡음이다. */
-export const MIN_VIEWERS_FOR_GROWTH = 500;
+/** "지금 뜨는 중" 후보에 필요한 후보군 내 통합 수요 백분위. */
+export const MIN_DEMAND_PERCENTILE_FOR_GROWTH = 0.5;
+/** 소수 채널 방송을 순위 후보로 포함할 후보군 내 통합 수요 백분위. */
+export const MIN_DEMAND_PERCENTILE_FOR_RANKING = 0.75;
 
 /** "지금 뜨는 중"으로 표시할 최소 7일 성장 배수 */
 export const MIN_GROWTH_MULTIPLIER = 1.3;
@@ -32,15 +35,14 @@ export const MIN_REVIEWS_FOR_NEW = 50;
 export const SAFE_SLOT_COUNT = 3;
 export const MIN_QUALITY_FLOOR = 0.70;
 export const MIN_DISCOVERY_CONFIDENCE = 0.10;
-export const MAX_DISCOVERY_CHANNELS = 5;
-export const MAX_DISCOVERY_VIEWERS = 1_000;
+/** 발견 슬롯은 후보군 내 통합 수요가 이 백분위 이하인 게임만 고려한다. */
+export const MAX_DEMAND_PERCENTILE_FOR_DISCOVERY = 0.5;
 export const MIN_GROWTH_CONFIDENCE = 0.45;
 
 /**
- * "채널당 시청자 상위 N%" 문장을 근거로 쓰기 위한 opportunity 백분위 하한.
- * 이 아래는 사실 하위권이라, "상위 %"로 표현하면 나쁜 순위를 장점처럼 포장하게 된다.
+ * 통합 수요를 긍정 근거로 표현하기 위한 후보군 내 백분위 하한.
  */
-export const MIN_OPPORTUNITY_PCT_FOR_REASON = 0.6;
+export const MIN_DEMAND_PERCENTILE_FOR_REASON = 0.6;
 
 /** 하루를 밀리초로 환산 */
 export const MS_PER_DAY = 86_400_000;

@@ -103,6 +103,7 @@ function toGame(s: Seed): Game {
       twitchChannels: s.channels,
       viewerGrowth7d: s.growth === undefined ? null : s.growth,
       isNewRelease: s.age <= 30,
+      demandShare: s.viewers / 40_000,
     },
     streaming: {
       totalViewers: s.viewers,

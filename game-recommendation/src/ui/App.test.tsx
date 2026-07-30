@@ -12,6 +12,7 @@ type GameOptions = {
   hardcore?: number;
   channels?: number;
   viewers?: number;
+  demandShare?: number;
   growth?: number | null;
   growth30d?: number | null;
   growth90d?: number | null;
@@ -55,6 +56,7 @@ function syntheticGame(id: string, options: GameOptions = {}): Game {
       twitchChannels: channels,
       viewerGrowth7d: growth,
       isNewRelease: options.isNewRelease ?? false,
+      demandShare: options.demandShare ?? viewers / 100_000,
     },
     streaming: {
       totalViewers: viewers,
@@ -142,7 +144,7 @@ describe("App", () => {
       syntheticGame("safe-1", { viewers: 5_000 }),
       syntheticGame("safe-2", { viewers: 4_000 }),
       syntheticGame("safe-3", { viewers: 3_000 }),
-      syntheticGame("rising", { viewers: 500, channels: 100, growth: 2, growth30d: 1.8, growth90d: 1.6, coverage: 0.95, observedSnapshots: 60, volatility30d: 1 }),
+      syntheticGame("rising", { viewers: 500, demandShare: 0.1, channels: 100, growth: 2, growth30d: 1.8, growth90d: 1.6, coverage: 0.95, observedSnapshots: 60, volatility30d: 1, isNewRelease: true }),
       syntheticGame("new", { channels: 2, isNewRelease: true }),
     ];
 

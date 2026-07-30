@@ -90,6 +90,8 @@ export type Game = {
     twitchChannels: number;
     viewerGrowth7d: number | null;
     isNewRelease: boolean;
+    /** CHZZK/Twitch 가중 합산 수요 점유율. 시청자 수가 아니다. */
+    demandShare?: number;
   };
   streaming: StreamingStats;
   quality: QualityStats;

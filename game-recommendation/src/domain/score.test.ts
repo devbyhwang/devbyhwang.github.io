@@ -33,6 +33,21 @@ const makeGame = (id: string, overrides: Partial<Game> = {}): Game => ({
 });
 
 describe("scoreGame", () => {
+  it("ranks combined demand share above a larger Twitch-only audience", () => {
+    const higherCombinedDemand = makeGame("combined-demand", {
+      buzz: { ...baseGame.buzz, twitchViewers: 500, twitchChannels: 20, demandShare: 0.08 },
+      streaming: { ...baseGame.streaming, totalViewers: 500, medianViewersPerChannel: 50 },
+    });
+    const higherTwitchOnly = makeGame("twitch-only", {
+      buzz: { ...baseGame.buzz, twitchViewers: 50_000, twitchChannels: 20, demandShare: 0.02 },
+      streaming: { ...baseGame.streaming, totalViewers: 50_000, medianViewersPerChannel: 50 },
+    });
+
+    const context = createScoreContext([higherCombinedDemand, higherTwitchOnly]);
+
+    expect(scoreGame(higherCombinedDemand, context).score).toBeGreaterThan(scoreGame(higherTwitchOnly, context).score);
+  });
+
   it("uses lower and upper bounds to retain midpoint percentiles for tied values", () => {
     // This fails if either binary bound treats ties as wholly lower or wholly higher.
     const distribution = createPercentileDistribution([10, 20, 20, 20, 30]);

@@ -84,9 +84,9 @@ describe("ResultCard", () => {
     expect(screen.getAllByText("Lethal Company").length).toBe(2);
   });
 
-  it("현재 시청자 수를 보여준다", () => {
-    render(<ResultCard pick={base} rank={1} />);
-    expect(screen.getByText(/22,000/)).toBeDefined();
+  it("플랫폼 시청자 수를 노출하지 않는다", () => {
+    const { container } = render(<ResultCard pick={base} rank={1} />);
+    expect(container.textContent).not.toMatch(/\d[\d,]*명 시청 중/);
   });
 
   it("세션 형태에 맞는 방송 길이 안내를 보여준다", () => {

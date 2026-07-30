@@ -49,9 +49,6 @@ export function ResultCard({ pick, rank }: Props) {
       <p className="card-why">{pick.why.map((w) => w.text).join(" · ")}</p>
 
       <ul className="card-meta">
-        <li>
-          <b>{game.buzz.twitchViewers.toLocaleString("ko-KR")}</b>명 시청 중
-        </li>
         <li className="session">{SESSION_TEXT[game.sessionShape]}</li>
         {unknownPlayers ? (
           <li className="players-unknown">인원 정보 없음</li>

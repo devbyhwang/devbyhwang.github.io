@@ -245,7 +245,6 @@ describe("exploration contracts", () => {
       releaseDate: "2026-01-01T00:00:00.000Z",
       players: { max: 4, online: true, localCoop: false },
       sessionShape: "match",
-      twitchViewers: 10,
       coverUrl: "https://example.com/game.jpg",
       storeUrl: "https://example.com/game",
     };
@@ -260,7 +259,6 @@ describe("exploration contracts", () => {
       releaseDate: "2026-01-01T00:00:00.000Z",
       players: { max: 4, online: true, localCoop: false },
       sessionShape: "match" as const,
-      twitchViewers: 10,
       ordinal: 1031,
     } satisfies CompactExplorationCard;
 

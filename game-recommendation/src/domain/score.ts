@@ -15,8 +15,7 @@ export function percentile(values: number[], v: number): number {
   return clamp((less + equal / 2) / values.length);
 }
 
-const logCounts = (games: Game[], field: (g: Game) => number) =>
-  games.map((g) => Math.log1p(Math.max(0, field(g))));
+const demandShare = (game: Game) => Math.max(0, game.buzz.demandShare ?? 0);
 const growthValue = (game: Game) => {
   const growth = [game.streaming.growth7d, game.streaming.growth30d, game.streaming.growth90d]
     .filter((x): x is number => x !== null && x !== undefined && x > 0);
@@ -65,12 +64,16 @@ export function percentileFromDistribution(values: PercentileDistribution, value
 
 export function createScoreContext(population: Game[]): ScoreContext {
   return {
-    demand: createPercentileDistribution(logCounts(population, (g) => g.streaming.totalViewers || g.buzz.twitchViewers)),
+    demand: createPercentileDistribution(population.map(demandShare)),
     accessibility: createPercentileDistribution(population.map((g) =>
       Math.log1p(value(g.streaming.medianViewersPerChannel, g.buzz.twitchViewers / (g.buzz.twitchChannels + 10))),
     )),
     growth: createPercentileDistribution(population.map(growthValue)),
   };
+}
+
+export function demandPercentile(game: Game, context: ScoreContext): number {
+  return percentileFromDistribution(context.demand, demandShare(game));
 }
 
 function quality(game: Game): { score: number; confidence: number } {
@@ -83,7 +86,7 @@ function quality(game: Game): { score: number; confidence: number } {
 
 export function scoreGame(game: Game, context: ScoreContext): Scored {
   const s = game.streaming;
-  const rawDemand = percentileFromDistribution(context.demand, Math.log1p(Math.max(0, s.totalViewers || game.buzz.twitchViewers)));
+  const rawDemand = demandPercentile(game, context);
   const median = s.medianViewersPerChannel;
   const accessibilityRaw = median !== null && median !== undefined
     ? percentileFromDistribution(context.accessibility, Math.log1p(median))

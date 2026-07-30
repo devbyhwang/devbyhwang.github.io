@@ -93,7 +93,6 @@ function validateCard(value: unknown, gameCount: number, expectedShard: number):
     || (card.players.max !== "unknown" && (!Number.isInteger(card.players.max) || card.players.max < 1))
     || typeof card.players.online !== "boolean" || typeof card.players.localCoop !== "boolean"
     || !["match", "run", "chapter", "openended"].includes(card.sessionShape)
-    || typeof card.twitchViewers !== "number" || !Number.isFinite(card.twitchViewers) || card.twitchViewers < 0
     || (card.discountPercent !== undefined && (typeof card.discountPercent !== "number" || card.discountPercent < 0 || card.discountPercent > 100))
     || (card.nameKo !== undefined && typeof card.nameKo !== "string")
     || (card.coverUrl !== undefined && typeof card.coverUrl !== "string")

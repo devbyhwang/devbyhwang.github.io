@@ -20,10 +20,10 @@ import {
   type CompactExplorationManifest,
   type FilteredExplorationView,
 } from "../../game-recommendation/src/domain/exploration";
-import { MIN_GROWTH_MULTIPLIER, MIN_VIEWERS_FOR_GROWTH } from "../../game-recommendation/src/domain/constants";
+import { MAX_DEMAND_PERCENTILE_FOR_DISCOVERY, MIN_DEMAND_PERCENTILE_FOR_GROWTH, MIN_GROWTH_MULTIPLIER } from "../../game-recommendation/src/domain/constants";
 import { filterGames, baseOptions } from "../../game-recommendation/src/domain/filter";
 import { ALL_QUERIES, recommendationKey } from "../../game-recommendation/src/domain/recommendation-index";
-import { addPenalties, createScoreContext, scoreGame } from "../../game-recommendation/src/domain/score";
+import { addPenalties, createScoreContext, demandPercentile, scoreGame } from "../../game-recommendation/src/domain/score";
 import type { Query } from "../../game-recommendation/src/domain/types";
 import type { FileStore } from "./emit";
 import type { CatalogRecord, GameRecord } from "./model";
@@ -113,14 +113,15 @@ function rankedIds(games: GameRecord[], query: Query): string[] {
 
 function viewOrdinals(games: GameRecord[], orderedIds: string[], ordinalsById: ReadonlyMap<string, number>, generatedAt: string): Record<FilteredExplorationView, Set<number>> {
   const gamesById = new Map(games.map((game) => [game.id, game]));
+  const demandContext = createScoreContext(orderedIds.map((id) => gamesById.get(id)!));
   const selected = (predicate: (game: GameRecord) => boolean) => new Set(orderedIds
     .filter((id) => predicate(gamesById.get(id)!))
     .map((id) => requiredOrdinal(ordinalsById, id)));
   const classicYear = new Date(generatedAt).getUTCFullYear() - 5;
   return {
     new: selected((game) => game.buzz.isNewRelease),
-    rising: selected((game) => game.buzz.twitchViewers >= MIN_VIEWERS_FOR_GROWTH && (game.streaming.growth7d ?? game.buzz.viewerGrowth7d ?? 0) >= MIN_GROWTH_MULTIPLIER),
-    discovery: selected((game) => !game.buzz.isNewRelease && (game.buzz.twitchViewers <= 1_000 || game.buzz.twitchChannels < 5)),
+    rising: selected((game) => demandPercentile(game, demandContext) >= MIN_DEMAND_PERCENTILE_FOR_GROWTH && (game.streaming.growth7d ?? game.buzz.viewerGrowth7d ?? 0) >= MIN_GROWTH_MULTIPLIER),
+    discovery: selected((game) => !game.buzz.isNewRelease && demandPercentile(game, demandContext) <= MAX_DEMAND_PERCENTILE_FOR_DISCOVERY),
     classic: selected((game) => new Date(game.releaseDate).getUTCFullYear() <= classicYear),
   };
 }
@@ -130,7 +131,7 @@ function toCard(game: GameRecord, ordinal: number): CompactExplorationCard {
     id: game.id, name: game.name, ...(game.nameKo ? { nameKo: game.nameKo } : {}), ...(game.coverUrl ? { coverUrl: game.coverUrl } : {}), ...(game.storeUrl ? { storeUrl: game.storeUrl } : {}),
     releaseDate: game.releaseDate,
     players: { max: game.players.max, online: game.players.online, localCoop: game.players.localCoop },
-    sessionShape: game.sessionShape, twitchViewers: game.buzz.twitchViewers,
+    sessionShape: game.sessionShape,
     ...(game.discountPercent === undefined ? {} : { discountPercent: game.discountPercent }), ordinal,
   };
 }
@@ -207,7 +208,6 @@ function isCompactCard(value: unknown, gameCount: number): value is CompactExplo
     || !isIsoTimestamp(card.releaseDate)
     || !isCardPlayers(card.players)
     || !isSessionShape(card.sessionShape)
-    || !isFiniteNonNegativeNumber(card.twitchViewers)
     || (card.nameKo !== undefined && typeof card.nameKo !== "string")
     || (card.coverUrl !== undefined && typeof card.coverUrl !== "string")
     || (card.storeUrl !== undefined && typeof card.storeUrl !== "string")
@@ -225,10 +225,6 @@ function isCardPlayers(value: unknown): value is CompactExplorationCard["players
 
 function isSessionShape(value: unknown): value is CompactExplorationCard["sessionShape"] {
   return value === "match" || value === "run" || value === "chapter" || value === "openended";
-}
-
-function isFiniteNonNegativeNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
 function isFiniteNumberInRange(value: unknown, minimum: number, maximum: number): value is number {

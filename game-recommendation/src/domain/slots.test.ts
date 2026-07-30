@@ -213,7 +213,7 @@ describe("buildSlots", () => {
   it("adds a discovery slot for a high-quality low-exposure historical game without surfacing it as safe", () => {
     const discovery = makeGame("discovery", {
       releaseDate: "2020-01-01T00:00:00.000Z",
-      buzz: { twitchViewers: 120, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false },
+      buzz: { twitchViewers: 120, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false, demandShare: 0.001 },
       streaming: {
         totalViewers: 120,
         channelCount: 2,
@@ -235,7 +235,7 @@ describe("buildSlots", () => {
       topTags: [{ tag: "story rich", share: 0.4 }],
     });
     const safeGames = ["safe-1", "safe-2", "safe-3"].map((id, index) => makeGame(id, {
-      buzz: { twitchViewers: 12_000 - index * 500, twitchChannels: 120, viewerGrowth7d: 1.1, isNewRelease: false },
+      buzz: { twitchViewers: 12_000 - index * 500, twitchChannels: 120, viewerGrowth7d: 1.1, isNewRelease: false, demandShare: 0.05 - index * 0.001 },
       streaming: {
         totalViewers: 12_000 - index * 500,
         channelCount: 120,
@@ -262,19 +262,19 @@ describe("buildSlots", () => {
     expect(slots.find((slot) => slot.slot === "discovery")?.scored.game.id).toBe("discovery");
   });
 
-  it("allows discovery when either current viewers or current channels are low", () => {
+  it("allows discovery when combined demand share is in the lower candidate percentiles", () => {
     const lowViewers = makeGame("low-viewers", {
-      buzz: { twitchViewers: 900, twitchChannels: 80, viewerGrowth7d: null, isNewRelease: false },
+      buzz: { twitchViewers: 900, twitchChannels: 80, viewerGrowth7d: null, isNewRelease: false, demandShare: 0.001 },
       streaming: { ...baseGame.streaming, totalViewers: 900, channelCount: 80, coverage: 0.8, observedSnapshots: 40 },
       quality: { totalRating: 92, totalRatingCount: 800 }, rating: 92, reviewCount: 800,
     });
     const lowChannels = makeGame("low-channels", {
-      buzz: { twitchViewers: 8_000, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false },
+      buzz: { twitchViewers: 8_000, twitchChannels: 2, viewerGrowth7d: null, isNewRelease: false, demandShare: 0.001 },
       streaming: { ...baseGame.streaming, totalViewers: 8_000, channelCount: 2, coverage: 0.8, observedSnapshots: 40 },
       quality: { totalRating: 92, totalRatingCount: 800 }, rating: 92, reviewCount: 800,
     });
     const safeAnchor = makeGame("safe-anchor", {
-      buzz: { twitchViewers: 12_000, twitchChannels: 120, viewerGrowth7d: 1.1, isNewRelease: false },
+      buzz: { twitchViewers: 12_000, twitchChannels: 120, viewerGrowth7d: 1.1, isNewRelease: false, demandShare: 0.05 },
       streaming: { ...baseGame.streaming, totalViewers: 12_000, channelCount: 120, coverage: 0.9, observedSnapshots: 60 },
       quality: { totalRating: 86, totalRatingCount: 600 }, rating: 86, reviewCount: 600,
     });

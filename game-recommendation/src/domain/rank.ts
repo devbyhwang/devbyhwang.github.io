@@ -1,12 +1,13 @@
-import { MIN_CHANNELS_FOR_RANKING } from "./constants";
-import { addPenalties, createScoreContext, scoreGame } from "./score";
+import { MIN_CHANNELS_FOR_RANKING, MIN_DEMAND_PERCENTILE_FOR_RANKING } from "./constants";
+import { addPenalties, createScoreContext, demandPercentile, scoreGame } from "./score";
 import type { FilteredGame } from "./filter";
 import type { Scored } from "./types";
 
 export function rankGames(candidates: FilteredGame[]): Scored[] {
+  const candidateContext = createScoreContext(candidates.map((candidate) => candidate.game));
   const eligible = candidates.filter((c) =>
     c.game.buzz.twitchChannels >= MIN_CHANNELS_FOR_RANKING ||
-    (c.game.buzz.twitchChannels === 1 && c.game.buzz.twitchViewers >= 5_000),
+    (c.game.buzz.twitchChannels === 1 && demandPercentile(c.game, candidateContext) >= MIN_DEMAND_PERCENTILE_FOR_RANKING),
   );
   const population = eligible.map((c) => c.game);
   const context = createScoreContext(population);

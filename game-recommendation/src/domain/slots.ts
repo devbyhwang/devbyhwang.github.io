@@ -1,16 +1,15 @@
 import {
-  MAX_DISCOVERY_CHANNELS,
-  MAX_DISCOVERY_VIEWERS,
+  MAX_DEMAND_PERCENTILE_FOR_DISCOVERY,
   MIN_DISCOVERY_CONFIDENCE,
   MIN_GROWTH_MULTIPLIER,
   MIN_GROWTH_CONFIDENCE,
   MIN_QUALITY_FLOOR,
   MIN_REVIEWS_FOR_NEW,
-  MIN_VIEWERS_FOR_GROWTH,
+  MIN_DEMAND_PERCENTILE_FOR_GROWTH,
   SAFE_SLOT_COUNT,
 } from "./constants";
 import { rerankDiverse } from "./diversity";
-import { addPenalties, createScoreContext, scoreGame } from "./score";
+import { addPenalties, createScoreContext, demandPercentile, scoreGame } from "./score";
 import type { FilteredGame } from "./filter";
 import type { Game, Scored, SlotKind } from "./types";
 
@@ -51,9 +50,9 @@ export function buildSlots({ safe, rising: risingCandidates, discoveryCandidates
   }
 
   // ② rising — 성장률 상위 1개. 볼륨 바닥 미달은 제외
+  const risingContext = createScoreContext(risingCandidates.map((candidate) => candidate.game));
   const rising = risingCandidates
     .filter((s) => {
-      const g = s.game.buzz;
       const growth = s.game.streaming;
       const windows = [growth.growth7d, growth.growth30d, growth.growth90d].filter((v): v is number => v !== null && v !== undefined);
       const consistentGrowth = windows.length >= 2 && windows.reduce((a, v) => a + v, 0) / windows.length >= MIN_GROWTH_MULTIPLIER;
@@ -61,7 +60,7 @@ export function buildSlots({ safe, rising: risingCandidates, discoveryCandidates
       return (
         consistentGrowth &&
         confidence >= MIN_GROWTH_CONFIDENCE &&
-        g.twitchViewers >= MIN_VIEWERS_FOR_GROWTH &&
+        demandPercentile(s.game, risingContext) >= MIN_DEMAND_PERCENTILE_FOR_GROWTH &&
         !taken.blocks(s.game)
       );
     })
@@ -79,11 +78,9 @@ export function buildSlots({ safe, rising: risingCandidates, discoveryCandidates
     .filter((s) => {
       const quality = s.terms.find((t) => t.kind === "quality")?.raw ?? 0;
       const confidence = s.terms.find((t) => t.kind === "confidence")?.raw ?? 0;
-      const lowExposure = s.game.buzz.twitchViewers <= MAX_DISCOVERY_VIEWERS;
-      const lowChannelCount = s.game.buzz.twitchChannels < MAX_DISCOVERY_CHANNELS;
       return quality >= MIN_QUALITY_FLOOR && confidence >= MIN_DISCOVERY_CONFIDENCE &&
         !s.game.buzz.isNewRelease && s.game.streaming.coverage > 0 &&
-        (lowExposure || lowChannelCount) && !taken.blocks(s.game);
+        demandPercentile(s.game, discoveryContext) <= MAX_DEMAND_PERCENTILE_FOR_DISCOVERY && !taken.blocks(s.game);
     })
     .sort((a, b) => b.score - a.score || a.game.id.localeCompare(b.game.id))[0];
   if (discovery) {
