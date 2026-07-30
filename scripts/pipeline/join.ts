@@ -117,7 +117,8 @@ export function enrichGames(
   knowledge: KnowledgeAssets,
   generatedAt: string,
   demandShares: ReadonlyMap<string, number> = new Map(),
-  sources: GameRecord["buzz"]["sources"] = { chzzk: false, twitch: true },
+  demandSources: GameRecord["buzz"]["demandSources"] = { chzzk: false, twitch: true },
+  sourceStatus: GameRecord["buzz"]["sourceStatus"] = { chzzk: "fresh", twitch: "fresh" },
 ): GameRecord[] {
   const candidates = joined.flatMap((game) => {
     const date = releaseDate(game.igdb);
@@ -149,7 +150,8 @@ export function enrichGames(
         viewerGrowth7d: null,
         isNewRelease: deriveIsNewRelease(date, generatedAt),
         demandShare: demandShares.get(String(game.igdb.id)) ?? 0,
-        sources,
+        demandSources,
+        sourceStatus,
       },
       streaming: {
         totalViewers: game.twitch.viewers,

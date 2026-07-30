@@ -14,7 +14,7 @@ function validGame(): GameRecord {
     sessionShape: "run",
     viewerPlayable: { ok: false },
     vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
-    buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, sources: { chzzk: false, twitch: true } },
+    buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
     streaming: {
       totalViewers: 0,
       channelCount: 0,
@@ -71,7 +71,7 @@ describe("validateCatalog", () => {
     catalog.games[0] = {
       ...catalog.games[0],
       releaseDate: "2024-07-28T00:00:00.000Z",
-      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: false, demandShare: 0, sources: { chzzk: false, twitch: true } },
+      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: false, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
       streaming: {
         ...catalog.games[0].streaming,
         growth7d: null,

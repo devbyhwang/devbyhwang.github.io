@@ -104,7 +104,7 @@ function catalog(count: number): CatalogRecord {
       sessionShape: "run",
       viewerPlayable: { ok: false },
       vibes: { healing: 0.5, variety: 0.5, horror: 0.5, hardcore: 0.5, chatting: 0.5, spectacle: 0.5 },
-      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, sources: { chzzk: false, twitch: true } },
+      buzz: { twitchViewers: 0, twitchChannels: 0, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
       streaming: {
         totalViewers: 0,
         channelCount: 0,
@@ -194,6 +194,10 @@ describe("live pipeline orchestration", () => {
     expect(chzzkCalled).toBe(false);
     expect(result.staleSources).toContain("chzzk");
     expect(readEmittedCatalog(destination).games[0].buzz.demandShare).toBe(1);
+    expect(readEmittedCatalog(destination).games[0].buzz).toMatchObject({
+      sourceStatus: { chzzk: "disabled" },
+      demandSources: { chzzk: false, twitch: true },
+    });
   });
 
   it("uses an empty fresh Chzzk snapshot when its adapter rejects", async () => {
@@ -213,7 +217,66 @@ describe("live pipeline orchestration", () => {
 
     expect(result.staleSources).toContain("chzzk");
     expect(readEmittedCatalog(destination).games[0].buzz.demandShare).toBe(1);
+    expect(readEmittedCatalog(destination).games[0].buzz).toMatchObject({
+      sourceStatus: { chzzk: "failed" },
+      demandSources: { chzzk: false, twitch: true },
+    });
     expect(JSON.parse(readFileSync(join(destination, "data/raw/chzzk/latest.json"), "utf8")).categories).toHaveLength(1);
+  });
+
+  it("reports a fresh Chzzk source separately from its zero-demand availability", async () => {
+    const destination = root();
+    const raw = sources();
+
+    await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: adapters(raw),
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkClientId: "chzzk-client", chzzkClientSecret: "chzzk-secret", chzzkPageLimit: 1, chzzkRetryLimit: 2 },
+    });
+
+    expect(readEmittedCatalog(destination).games[0].buzz).toMatchObject({
+      sourceStatus: { chzzk: "fresh" },
+      demandSources: { chzzk: false, twitch: true },
+    });
+  });
+
+  it("emits zero rather than NaN demand when neither platform has observed viewers", async () => {
+    const destination = root();
+    const base = sources();
+    const raw = { ...base, twitch: { ...base.twitch, streams: [{ categoryId: "42", igdbId: "42", viewers: 0, channels: 0, coverage: 0 }] } };
+
+    await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: adapters(raw),
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkClientId: "chzzk-client", chzzkClientSecret: "chzzk-secret", chzzkPageLimit: 1, chzzkRetryLimit: 2 },
+    });
+
+    const demandShare = readEmittedCatalog(destination).games[0].buzz.demandShare;
+    expect(demandShare).toBe(0);
+    expect(Number.isFinite(demandShare)).toBe(true);
+  });
+
+  it("passes the configured Chzzk retry limit to its adapter", async () => {
+    const destination = root();
+    const raw = sources();
+    let retryLimit: number | undefined;
+
+    await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: { ...adapters(raw), chzzk: async (input) => { retryLimit = input.retryLimit; return raw.chzzk; } },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkClientId: "chzzk-client", chzzkClientSecret: "chzzk-secret", chzzkPageLimit: 1, chzzkRetryLimit: 2 },
+    });
+
+    expect(retryLimit).toBe(2);
   });
 
   it("runs a second Steam pass for an IGDB source-one mapping and emits its details", async () => {

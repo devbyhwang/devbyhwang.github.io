@@ -34,7 +34,7 @@ describe("Chzzk source", () => {
     const fetcher = vi.fn(async (_url: string, _init?: RequestInit) => json(pages[page++]));
 
     const snapshot = await fetchChzzk(
-      { clientId: "client", clientSecret: "secret", pageLimit: 2 },
+      { clientId: "client", clientSecret: "secret", pageLimit: 2, retryLimit: 3 },
       createHttpClient(fetcher as typeof fetch),
     );
 
@@ -69,7 +69,7 @@ describe("Chzzk source", () => {
     } as HttpClient;
 
     const pending = fetchChzzk(
-      { clientId: "client", clientSecret: "secret", pageLimit: 1 },
+      { clientId: "client", clientSecret: "secret", pageLimit: 1, retryLimit: 3 },
       http,
     );
     await vi.advanceTimersByTimeAsync(2_999);
@@ -84,5 +84,19 @@ describe("Chzzk source", () => {
     ]);
     expect(snapshot.truncated).toBe(true);
     expect(snapshot.responses).toEqual([retryPage]);
+  });
+
+  it("uses retryLimit to bound status-aware rate-limit retries", async () => {
+    const http = {
+      getJson: vi.fn(),
+      postJson: vi.fn(),
+      getJsonResponse: vi.fn().mockResolvedValue({ status: 429, headers: {} }),
+    } as HttpClient;
+
+    await expect(fetchChzzk(
+      { clientId: "client", clientSecret: "secret", pageLimit: 1, retryLimit: 0 },
+      http,
+    )).rejects.toThrow(": 429");
+    expect(http.getJsonResponse).toHaveBeenCalledTimes(1);
   });
 });

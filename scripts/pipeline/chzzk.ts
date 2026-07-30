@@ -82,6 +82,7 @@ export function combineDemandShares(entries: DemandShareEntry[]): Map<string, nu
   const active = (["chzzk", "twitch"] as const).filter((source) => (observed.get(source)?.length ?? 0) > 0);
   const weights = { chzzk: CHZZK_WEIGHT, twitch: TWITCH_WEIGHT };
   const totalWeight = active.reduce((sum, source) => sum + weights[source], 0);
+  if (totalWeight === 0) return new Map(entries.map((entry) => [entry.igdbId, 0]));
   const totals = new Map(active.map((source) => [source, (observed.get(source) ?? []).reduce((sum, stat) => sum + stat.viewers, 0)]));
   return new Map(entries.map((entry) => [entry.igdbId, active.reduce((sum, source) => {
     const stat = entry[source];

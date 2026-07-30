@@ -103,7 +103,15 @@ export type GameRecord = {
   sessionShape: SessionShape;
   viewerPlayable: ViewerPlayable;
   vibes: Record<VibeKey, number>;
-  buzz: { twitchViewers: number; twitchChannels: number; viewerGrowth7d: number | null; isNewRelease: boolean; demandShare: number; sources: { chzzk: boolean; twitch: boolean } };
+  buzz: {
+    twitchViewers: number;
+    twitchChannels: number;
+    viewerGrowth7d: number | null;
+    isNewRelease: boolean;
+    demandShare: number;
+    demandSources: { chzzk: boolean; twitch: boolean };
+    sourceStatus: { chzzk: "fresh" | "disabled" | "failed"; twitch: "fresh" | "stale" };
+  };
   streaming: StreamingStats;
   quality: QualityStats;
   topTags: { tag: string; share: number }[];
@@ -193,6 +201,7 @@ export type ChzzkFetchInput = {
   clientId: string;
   clientSecret: string;
   pageLimit: number;
+  retryLimit: number;
   recordResponse?: RawResponseRecorder;
 };
 

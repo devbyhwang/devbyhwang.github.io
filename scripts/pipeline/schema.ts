@@ -136,9 +136,12 @@ function validateGame(value: unknown, index: number, generatedAt: string, ids: S
   finite(buzz.twitchChannels, `${path}.buzz.twitchChannels`, 0);
   if (buzz.viewerGrowth7d !== null) finite(buzz.viewerGrowth7d, `${path}.buzz.viewerGrowth7d`, -Infinity);
   finite(buzz.demandShare, `${path}.buzz.demandShare`, 0, 1);
-  const sources = object(buzz.sources, `${path}.buzz.sources`);
-  bool(sources.chzzk, `${path}.buzz.sources.chzzk`);
-  bool(sources.twitch, `${path}.buzz.sources.twitch`);
+  const demandSources = object(buzz.demandSources, `${path}.buzz.demandSources`);
+  bool(demandSources.chzzk, `${path}.buzz.demandSources.chzzk`);
+  bool(demandSources.twitch, `${path}.buzz.demandSources.twitch`);
+  const sourceStatus = object(buzz.sourceStatus, `${path}.buzz.sourceStatus`);
+  if (sourceStatus.chzzk !== "fresh" && sourceStatus.chzzk !== "disabled" && sourceStatus.chzzk !== "failed") fail(`${path}.buzz.sourceStatus.chzzk`, "must be a Chzzk source status");
+  if (sourceStatus.twitch !== "fresh" && sourceStatus.twitch !== "stale") fail(`${path}.buzz.sourceStatus.twitch`, "must be a Twitch source status");
   const isNewRelease = bool(buzz.isNewRelease, `${path}.buzz.isNewRelease`);
   if (isNewRelease !== deriveIsNewRelease(releaseDate, generatedAt)) fail(`${path}.buzz.isNewRelease`, "must match generatedAt and releaseDate");
   validateStreaming(game.streaming, `${path}.streaming`);

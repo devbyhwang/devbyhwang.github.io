@@ -161,6 +161,7 @@ type FetchAllSourcesResult = {
   raw: RawSources;
   fetchedSources: string[];
   staleSources: string[];
+  sourceStatus: { chzzk: "fresh" | "disabled" | "failed"; twitch: "fresh" | "stale" };
 };
 
 async function fetchAllSourcesWithStatus(
@@ -190,6 +191,7 @@ async function fetchAllSourcesWithStatus(
         clientId: config.chzzkClientId!,
         clientSecret: config.chzzkClientSecret!,
         pageLimit: config.chzzkPageLimit,
+        retryLimit: config.chzzkRetryLimit,
         recordResponse: chzzkPartial!.record,
       }, http)
       : Promise.resolve(emptyChzzkSnapshot(asOf, "Chzzk credentials are unavailable")),
@@ -269,12 +271,16 @@ async function fetchAllSourcesWithStatus(
       ...steamSnapshot.staleSources,
       ...(steamDetailsStale ? ["steam-details"] : []),
     ],
+    sourceStatus: {
+      chzzk: chzzk.fresh ? "fresh" : chzzkEnabled ? "failed" : "disabled",
+      twitch: twitch.fresh ? "fresh" : "stale",
+    },
   };
 }
 
 function demandFor(raw: RawSources, aliases: KnowledgeAssets["chzzkAliases"]): {
   shares: Map<string, number>;
-  sources: { chzzk: boolean; twitch: boolean };
+  demandSources: { chzzk: boolean; twitch: boolean };
   warnings: string[];
 } {
   const resolution = resolveChzzkCategories(raw.chzzk.categories, raw.igdb.games, aliases);
@@ -294,7 +300,7 @@ function demandFor(raw: RawSources, aliases: KnowledgeAssets["chzzkAliases"]): {
   }));
   return {
     shares: combineDemandShares(entries),
-    sources: {
+    demandSources: {
       chzzk: [...chzzkByGame.values()].some((stat) => stat.viewers > 0 && stat.coverage > 0),
       twitch: [...twitchByGame.values()].some((stat) => stat.viewers > 0 && stat.coverage > 0),
     },
@@ -318,10 +324,12 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
   let raw: RawSources;
   let fetchedSources: string[];
   let staleSources: string[];
+  let sourceStatus: { chzzk: "fresh" | "disabled" | "failed"; twitch: "fresh" | "stale" };
   if (options.raw) {
     raw = options.raw;
     fetchedSources = ["igdb", "twitch", "steam"];
     staleSources = [...raw.steam.staleSources];
+    sourceStatus = { chzzk: "fresh", twitch: "fresh" };
   } else {
     if (!options.allowNetwork) throw new Error("network source fetching is disabled");
     if (!options.config) throw new Error("live pipeline source configuration is required");
@@ -329,6 +337,7 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
     raw = fetched.raw;
     fetchedSources = fetched.fetchedSources;
     staleSources = fetched.staleSources;
+    sourceStatus = fetched.sourceStatus;
   }
   raw = mergeBackfillGames(raw, rootDir);
   const demand = demandFor(raw, knowledge.chzzkAliases);
@@ -346,7 +355,7 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
   const historyForFeatures = twitchFresh ? nextHistory : currentHistory;
   if (twitchFresh) writeHistory(historyPath, nextHistory);
 
-  const games = enrichGames(joined, knowledge, asOf, demand.shares, demand.sources).map((game) => {
+  const games = enrichGames(joined, knowledge, asOf, demand.shares, demand.demandSources, sourceStatus).map((game) => {
     const features = deriveStreamingFeatures(historyForFeatures, game.id, asOf);
     return {
       ...game,

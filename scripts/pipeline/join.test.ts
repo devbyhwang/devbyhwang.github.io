@@ -200,7 +200,7 @@ describe("GameRecord enrichment", () => {
       players: { max: 4, source: "igdb_multiplayer" },
       sessionShape: "chapter",
       viewerPlayable: { ok: false },
-      buzz: { twitchViewers: 1200, twitchChannels: 12, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, sources: { chzzk: false, twitch: true } },
+      buzz: { twitchViewers: 1200, twitchChannels: 12, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
       rating: 90,
       reviewCount: 100,
       discountPercent: 15,

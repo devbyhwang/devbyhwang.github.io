@@ -104,4 +104,13 @@ describe("combineDemandShares", () => {
     expect(shares.get("10")).toBeCloseTo(0.60 * 1 + 0.40 * 0.10);
     expect(shares.get("20")).toBeCloseTo(0.40 * 0.90);
   });
+
+  it("returns zero demand for every game when neither platform has an observed total", () => {
+    const shares = combineDemandShares([
+      { igdbId: "10", chzzk: { viewers: 0, coverage: 1 }, twitch: { viewers: 0, coverage: 1 } },
+      { igdbId: "20", chzzk: { viewers: 20, coverage: 0 }, twitch: { viewers: 10, coverage: 0 } },
+    ]);
+
+    expect(shares).toEqual(new Map([["10", 0], ["20", 0]]));
+  });
 });
