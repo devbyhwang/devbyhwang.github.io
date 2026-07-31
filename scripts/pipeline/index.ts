@@ -8,6 +8,7 @@ import { readRecommendations } from "./recommendations";
 import { readHistory, validateHistory } from "./history";
 import { saveRaw } from "./http";
 import { loadKnowledge } from "./knowledge";
+import { runSteamBackfill } from "./steam-backfill";
 import type { IgdbExternalGame, IgdbGame, IgdbRawSnapshot, PipelineLogger, PipelineResult, RawSources, SourceConfig, SteamApp } from "./model";
 import { runPipeline } from "./run";
 
@@ -282,6 +283,23 @@ export async function runCommand(
       recordSnapshot: persistence.recordSnapshot,
     });
     logger.info(`IGDB backfill result: ${JSON.stringify(result)}`);
+    return;
+  }
+  if (command === "steam-backfill") {
+    const asOf = env.PIPELINE_AS_OF ?? new Date().toISOString();
+    const maxPagesIndex = args.indexOf("--max-pages");
+    const maxPagesValue = maxPagesIndex >= 0 ? Number(args[maxPagesIndex + 1]) : undefined;
+    if (maxPagesValue !== undefined && (!Number.isInteger(maxPagesValue) || maxPagesValue <= 0)) {
+      throw new Error("--max-pages must be a positive integer");
+    }
+    const result = await runSteamBackfill({
+      rootDir,
+      asOf,
+      fetcher: options.fetcher,
+      ...(maxPagesValue === undefined ? {} : { maxPages: maxPagesValue }),
+    });
+    logger.info(`SteamSpy backfill result: ${JSON.stringify(result)}`);
+    if (result.blocked) logger.warn(`SteamSpy backfill stopped at page ${result.nextPage}; rerun to continue`);
     return;
   }
   throw new Error(`unsupported pipeline command: ${command ?? ""}`);

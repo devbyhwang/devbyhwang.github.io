@@ -17,6 +17,7 @@
     "typecheck:pipeline": "tsc --noEmit -p tsconfig.game-recommendation-pipeline.json",
     "pipeline": "tsx scripts/pipeline/index.ts run",
     "pipeline:backfill": "tsx scripts/pipeline/index.ts backfill",
+    "pipeline:steam-backfill": "tsx scripts/pipeline/index.ts steam-backfill",
     "pipeline:fixture": "tsx scripts/pipeline/index.ts fixture",
     "pipeline:validate": "tsx scripts/pipeline/index.ts validate"
   },
