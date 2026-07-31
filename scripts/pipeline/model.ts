@@ -391,3 +391,16 @@ export type BackfillResult = {
   fetchedGameCount: number;
   remainingPartitions: string[];
 };
+
+export type SteamSpyAllEntry = {
+  appId: number;
+  name?: string;
+  positive: number;
+  negative: number;
+};
+
+export type SteamSpyPage = {
+  page: number;
+  entries: SteamSpyAllEntry[];
+  outcome: "ok" | "end" | "blocked";
+};
