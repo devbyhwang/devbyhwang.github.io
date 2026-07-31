@@ -1,27 +1,9 @@
-import type { HttpClient } from "../model";
+import type { HttpClient, SteamSpyAllEntry, SteamSpyPage } from "../model";
 
 const STEAMSPY_ALL_URL = "https://steamspy.com/api.php?request=all&page=";
 
 /** SteamSpy returns at most this many apps per `request=all` page. */
 export const STEAMSPY_PAGE_SIZE = 1000;
-
-export type SteamSpyAllEntry = {
-  appId: number;
-  name?: string;
-  positive: number;
-  negative: number;
-};
-
-/**
- * `blocked` is deliberately distinct from `end`. A failed request tells us
- * nothing about whether more pages exist, and treating it as the end would
- * silently freeze coverage at whatever happened to be fetched.
- */
-export type SteamSpyPage = {
-  page: number;
-  entries: SteamSpyAllEntry[];
-  outcome: "ok" | "end" | "blocked";
-};
 
 function entry(value: unknown): SteamSpyAllEntry | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -47,6 +29,9 @@ export async function fetchSteamSpyPage(page: number, http: HttpClient): Promise
   try {
     payload = await http.getJson<unknown>(`${STEAMSPY_ALL_URL}${page}`);
   } catch {
+    // `blocked` is deliberately distinct from `end`. A failed request tells us
+    // nothing about whether more pages exist, and treating it as the end would
+    // silently freeze coverage at whatever happened to be fetched.
     return { page, entries: [], outcome: "blocked" };
   }
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
