@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { runSteamBackfill } from "./steam-backfill";
 import { STEAMSPY_PAGE_SIZE } from "./sources/steamspy-all";
 
@@ -56,23 +56,21 @@ describe("runSteamBackfill", () => {
   });
 
   it("does not mark complete when a page is blocked", async () => {
-    // Fails on page 0 (rather than a later page) so the retry/backoff inside
-    // http.ts is the only pending async work when fake timers take over --
-    // real fs writes from earlier successful pages don't reliably progress
-    // while `vi.runAllTimersAsync()` is driving only the virtual clock.
+    // Blocks on page 2, after pages 0 and 1 succeed, to exercise the
+    // page-increment/checkpoint-persist loop across multiple successful
+    // iterations before hitting the failure. This waits through http.ts's
+    // real retry backoff (~7s), so it gets a per-test timeout override
+    // instead of fake timers -- fake timers have nothing to pump until the
+    // retry path registers a real timer, and by then the earlier pages'
+    // real fs writes may not have settled, which can hang the run.
     const rootDir = await root();
-    vi.useFakeTimers();
-    const pending = runSteamBackfill({ rootDir, asOf: AS_OF, fetcher: fetcher(5, 0), requestIntervalMs: 0 });
-
-    await vi.runAllTimersAsync();
-    const result = await pending;
-    vi.useRealTimers();
+    const result = await runSteamBackfill({ rootDir, asOf: AS_OF, fetcher: fetcher(5, 2), requestIntervalMs: 0 });
 
     expect(result.blocked).toBe(true);
     expect(result.status).toBe("pending");
-    expect(result.nextPage).toBe(0);
-    expect(await checkpoint(rootDir)).toMatchObject({ status: "pending", nextPage: 0 });
-  });
+    expect(result.nextPage).toBe(2);
+    expect(await checkpoint(rootDir)).toMatchObject({ status: "pending", nextPage: 2 });
+  }, 15000);
 
   it("resumes from the recorded page", async () => {
     const rootDir = await root();
