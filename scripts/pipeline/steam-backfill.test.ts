@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, mkdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { runSteamBackfill } from "./steam-backfill";
 import { STEAMSPY_PAGE_SIZE } from "./sources/steamspy-all";
 
@@ -56,13 +56,22 @@ describe("runSteamBackfill", () => {
   });
 
   it("does not mark complete when a page is blocked", async () => {
+    // Fails on page 0 (rather than a later page) so the retry/backoff inside
+    // http.ts is the only pending async work when fake timers take over --
+    // real fs writes from earlier successful pages don't reliably progress
+    // while `vi.runAllTimersAsync()` is driving only the virtual clock.
     const rootDir = await root();
-    const result = await runSteamBackfill({ rootDir, asOf: AS_OF, fetcher: fetcher(5, 2), requestIntervalMs: 0 });
+    vi.useFakeTimers();
+    const pending = runSteamBackfill({ rootDir, asOf: AS_OF, fetcher: fetcher(5, 0), requestIntervalMs: 0 });
+
+    await vi.runAllTimersAsync();
+    const result = await pending;
+    vi.useRealTimers();
 
     expect(result.blocked).toBe(true);
     expect(result.status).toBe("pending");
-    expect(result.nextPage).toBe(2);
-    expect(await checkpoint(rootDir)).toMatchObject({ status: "pending", nextPage: 2 });
+    expect(result.nextPage).toBe(0);
+    expect(await checkpoint(rootDir)).toMatchObject({ status: "pending", nextPage: 0 });
   });
 
   it("resumes from the recorded page", async () => {
