@@ -1,33 +1,33 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-30T01:27:50.269Z",
-  "gameCount": 278319,
+  "generatedAt": "2026-07-31T01:24:21.127Z",
+  "gameCount": 269454,
   "pageSize": 24,
   "rank": {
     "path": "exploration/queries/medium_4_1_healing/rank.u32le",
-    "ordinalCount": 12,
-    "byteLength": 48
+    "ordinalCount": 3,
+    "byteLength": 12
   },
   "views": {
     "new": {
       "path": "exploration/queries/medium_4_1_healing/new.bits",
-      "count": 1,
-      "byteLength": 34790
+      "count": 0,
+      "byteLength": 33682
     },
     "rising": {
       "path": "exploration/queries/medium_4_1_healing/rising.bits",
-      "count": 3,
-      "byteLength": 34790
+      "count": 0,
+      "byteLength": 33682
     },
     "discovery": {
       "path": "exploration/queries/medium_4_1_healing/discovery.bits",
-      "count": 1,
-      "byteLength": 34790
+      "count": 2,
+      "byteLength": 33682
     },
     "classic": {
       "path": "exploration/queries/medium_4_1_healing/classic.bits",
-      "count": 8,
-      "byteLength": 34790
+      "count": 2,
+      "byteLength": 33682
     }
   }
 }
