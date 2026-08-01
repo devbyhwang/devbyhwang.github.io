@@ -45,8 +45,9 @@ function rawSources(viewers = 130): RawSources {
       responses: [],
       warnings: [],
       games: [
-        { id: 42, name: "Game 42", first_release_date: 1_784_505_600, genres: [{ name: "FirstHalfVibes" }] },
+        { id: 42, name: "Game 42", first_release_date: 1_784_505_600, genres: [{ name: "FirstHalfVibes" }], total_rating: 75, total_rating_count: 100 },
         { id: 43, name: "Game 43", first_release_date: 1_784_505_600, genres: [{ name: "SecondHalfVibes" }] },
+        { id: 44, name: "Game 44", first_release_date: 1_784_505_600, genres: [{ name: "ThirdVibes" }] },
       ],
       externalGames: [],
       unresolvedSteamAppIds: [],
@@ -271,7 +272,7 @@ describe("derived streaming features", () => {
 describe("pipeline history ordering", () => {
   it("writes history before an emit guard failure and leaves the raw cache untouched", async () => {
     const root = temporaryRoot();
-    const catalog = catalogWith(3);
+    const catalog = catalogWith(5);
     const rawCache = join(root, "data/raw/igdb/latest.json");
     mkdirSync(join(root, "data/raw/igdb"), { recursive: true });
     mkdirSync(join(root, "src/playground/game-recommendation"), { recursive: true });

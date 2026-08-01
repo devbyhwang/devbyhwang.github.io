@@ -3,6 +3,7 @@ import { rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { emitCatalog, createNodeFileStore, readCatalog } from "./emit";
 import { assertVibeDistribution, formatVibeDistribution, measureVibeDistribution } from "./vibe-distribution";
+import { assertEvidenceCoverage, formatEvidenceCoverage, measureEvidenceCoverage } from "./quality-coverage";
 import { emitExploration } from "./exploration";
 import { emitRecommendations } from "./recommendations";
 import { appendSnapshot, deriveStreamingFeatures, makeDailySnapshot, readHistory, writeHistory } from "./history";
@@ -424,6 +425,9 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
   const vibeDistribution = measureVibeDistribution(catalog.games);
   console.log(`vibe distribution:\n${formatVibeDistribution(vibeDistribution)}`);
   assertVibeDistribution(vibeDistribution);
+  const evidenceCoverage = measureEvidenceCoverage(catalog.games);
+  console.log(formatEvidenceCoverage(evidenceCoverage));
+  assertEvidenceCoverage(evidenceCoverage);
   const emitted = emitCatalog(catalog, readCatalog(fileStore), fileStore);
   emitRecommendations(catalog, fileStore);
   emitExploration(catalog, fileStore);

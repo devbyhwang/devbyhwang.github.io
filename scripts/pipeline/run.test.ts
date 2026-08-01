@@ -37,8 +37,9 @@ function sources(staleSources: string[] = []): RawSources {
       responses: [{ id: 42 }],
       warnings: [],
       games: [
-        { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }, { name: "Music" }], themes: [{ name: "Party" }, { name: "Horror" }] },
+        { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }, { name: "Music" }], themes: [{ name: "Party" }, { name: "Horror" }], total_rating: 75, total_rating_count: 100 },
         { id: 99, name: "Spectacle Fixture", first_release_date: 1_784_505_600, genres: [{ name: "Role-playing (RPG)" }], themes: [] },
+        { id: 100, name: "Third Fixture", first_release_date: 1_784_505_600, genres: [{ name: "Adventure" }], themes: [] },
       ],
       externalGames: [],
       unresolvedSteamAppIds: [],
@@ -142,8 +143,9 @@ describe("live pipeline orchestration", () => {
       igdb: {
         ...base.igdb,
         games: [
-          { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }], themes: [{ name: "Horror" }, { name: "Comedy" }] },
+          { id: 42, name: "Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }], themes: [{ name: "Horror" }, { name: "Comedy" }], total_rating: 75, total_rating_count: 100 },
           { id: 43, name: "Second Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Adventure" }], themes: [{ name: "Fantasy" }] },
+          { id: 44, name: "Third Fixture Game", first_release_date: 1_784_505_600, genres: [{ name: "Strategy" }], themes: [] },
         ],
       },
       twitch: {
@@ -179,6 +181,7 @@ describe("live pipeline orchestration", () => {
     expect(readEmittedCatalog(destination).games.map((game) => ({ id: game.id, demandShare: game.buzz.demandShare }))).toEqual([
       { id: "42", demandShare: 0.64 },
       { id: "43", demandShare: 0.36 },
+      { id: "44", demandShare: 0 },
     ]);
   });
 
@@ -316,6 +319,7 @@ describe("live pipeline orchestration", () => {
       games: [
         { id: 42, name: "Mapped Twitch Game", first_release_date: 1_784_505_600, genres: [{ name: "Puzzle" }, { name: "Shooter" }, { name: "Role-playing (RPG)" }], themes: [{ name: "Comedy" }, { name: "Horror" }] },
         { id: 99, name: "Spectacle Fixture", first_release_date: 1_784_505_600, genres: [{ name: "Role-playing (RPG)" }], themes: [] },
+        { id: 101, name: "Additional Fixture", first_release_date: 1_784_505_600, genres: [{ name: "Adventure" }], themes: [], total_rating: 75, total_rating_count: 100 },
       ],
       externalGames: [{ game: 42, uid: "730", external_game_source: 1 }],
     };
@@ -484,7 +488,7 @@ describe("live pipeline orchestration", () => {
 
   it("keeps raw and history writes when the catalog decline guard rejects the emit", async () => {
     const destination = root();
-    const previous = catalog(3);
+    const previous = catalog(5);
     writeFileSync(join(destination, "src/playground/game-recommendation/catalog.json"), `${JSON.stringify(previous)}\n`);
 
     await expect(runPipeline({
@@ -514,7 +518,7 @@ describe("live pipeline orchestration", () => {
       config: { twitchClientId: "client-id", twitchClientSecret: "top-secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ generatedAt: asOf, gameCount: 2, catalogUpdated: true, historyUpdated: true, staleSources: ["chzzk"] });
+    expect(result).toMatchObject({ generatedAt: asOf, gameCount: 3, catalogUpdated: true, historyUpdated: true, staleSources: ["chzzk"] });
     expect(existsSync(join(destination, "src/playground/game-recommendation/catalog.json"))).toBe(true);
     expect(existsSync(join(destination, "data/history.json"))).toBe(true);
     expect(messages.join("\n")).not.toContain("top-secret");
@@ -544,8 +548,8 @@ describe("live pipeline orchestration", () => {
       config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
     });
 
-    expect(result).toMatchObject({ gameCount: 2, catalogUpdated: true });
-    expect(readEmittedCatalog(destination).games.map((game) => game.id)).toEqual(["42", "99"]);
+    expect(result).toMatchObject({ gameCount: 3, catalogUpdated: true });
+    expect(readEmittedCatalog(destination).games.map((game) => game.id)).toEqual(["42", "99", "100"]);
   });
 
   it("retains successful early pages as partial raw without replacing latest or manufacturing stale Twitch growth", async () => {
