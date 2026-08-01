@@ -1,32 +1,32 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-31T01:24:21.127Z",
-  "gameCount": 269454,
+  "generatedAt": "2026-08-01T10:38:15.045Z",
+  "gameCount": 269456,
   "pageSize": 24,
   "rank": {
     "path": "exploration/queries/short_3_0_horror/rank.u32le",
-    "ordinalCount": 15720,
-    "byteLength": 62880
+    "ordinalCount": 15722,
+    "byteLength": 62888
   },
   "views": {
     "new": {
       "path": "exploration/queries/short_3_0_horror/new.bits",
-      "count": 173,
+      "count": 170,
       "byteLength": 33682
     },
     "rising": {
       "path": "exploration/queries/short_3_0_horror/rising.bits",
-      "count": 0,
+      "count": 2,
       "byteLength": 33682
     },
     "discovery": {
       "path": "exploration/queries/short_3_0_horror/discovery.bits",
-      "count": 15539,
+      "count": 15545,
       "byteLength": 33682
     },
     "classic": {
       "path": "exploration/queries/short_3_0_horror/classic.bits",
-      "count": 7728,
+      "count": 7729,
       "byteLength": 33682
     }
   }

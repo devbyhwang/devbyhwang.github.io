@@ -1,7 +1,7 @@
 [
   {
-    "id": "245497",
-    "name": "Electronic Hockey 2",
+    "id": "245495",
+    "name": "Electronic Poker",
     "releaseDate": "1979-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -12,12 +12,12 @@
     "ordinal": 749
   },
   {
-    "id": "18558",
-    "name": "Fantastic Voyage",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/wv6fk4kchm0s6glzxiav.jpg",
+    "id": "18555",
+    "name": "Gangster Alley",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/swofhv7g0vafjp2pvd3l.jpg",
     "releaseDate": "1982-12-31T00:00:00.000Z",
     "players": {
-      "max": "unknown",
+      "max": 2,
       "online": false,
       "localCoop": false
     },
@@ -25,9 +25,9 @@
     "ordinal": 1645
   },
   {
-    "id": "8405",
-    "name": "Juice!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8hak.jpg",
+    "id": "8404",
+    "name": "Suicide Strike",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/d1ain3rlnr0ecidbv3jv.jpg",
     "releaseDate": "1983-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -38,9 +38,9 @@
     "ordinal": 2541
   },
   {
-    "id": "200340",
-    "name": "Puffi",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4q5m.jpg",
+    "id": "200324",
+    "name": "King Kong",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4q57.jpg",
     "releaseDate": "1983-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -51,35 +51,36 @@
     "ordinal": 3437
   },
   {
-    "id": "41080",
-    "name": "Forty-Love",
+    "id": "41079",
+    "name": "Vs. Ice Climber",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc7cv.jpg",
     "releaseDate": "1984-10-01T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": false,
+      "localCoop": true
+    },
+    "sessionShape": "openended",
+    "ordinal": 4333
+  },
+  {
+    "id": "25920",
+    "name": "Kennedy Approach",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co74hg.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2373380/",
+    "releaseDate": "1985-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
-    "ordinal": 4333
-  },
-  {
-    "id": "25922",
-    "name": "Crusade in Europe",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/vroo4kspmgs7dxcienft.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1703100/",
-    "releaseDate": "1985-12-31T00:00:00.000Z",
-    "players": {
-      "max": 2,
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 5229
   },
   {
-    "id": "15228",
-    "name": "Gambler Jiko Chuushin-ha: Mahjong Kouisen",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9v5f.jpg",
+    "id": "15215",
+    "name": "Halls of Kairos",
     "releaseDate": "1986-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -90,23 +91,25 @@
     "ordinal": 6125
   },
   {
-    "id": "11898",
-    "name": "Amegas",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/onlsxiwpc4ltkeojehgl.jpg",
+    "id": "11891",
+    "name": "Airborne Ranger",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2y3m.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1703070/",
     "releaseDate": "1987-12-31T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 7021
   },
   {
-    "id": "130828",
-    "name": "Extermination",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co63a0.jpg",
-    "releaseDate": "1987-02-01T00:00:00.000Z",
+    "id": "129148",
+    "name": "Ballerburg",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobuis.jpg",
+    "releaseDate": "1987-04-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -116,9 +119,9 @@
     "ordinal": 7917
   },
   {
-    "id": "54670",
-    "name": "Teladon",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/tcb36k0x1chhqucp3gpz.jpg",
+    "id": "54666",
+    "name": "The Plot",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co66rc.jpg",
     "releaseDate": "1988-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -129,22 +132,22 @@
     "ordinal": 8813
   },
   {
-    "id": "13017",
-    "name": "Moonwalker",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/kqi4gojwsea1vtcpgmdl.jpg",
+    "id": "12943",
+    "name": "Boulder Dash Construction Kit",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/jdsajsucqwn5smzmjjhd.jpg",
     "releaseDate": "1989-12-31T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 9709
   },
   {
-    "id": "261711",
-    "name": "UIM",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6xxe.jpg",
+    "id": "261710",
+    "name": "White Magic",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6xxc.jpg",
     "releaseDate": "1989-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -155,10 +158,10 @@
     "ordinal": 10605
   },
   {
-    "id": "48150",
-    "name": "Kid Kool and the Quest for the Seven Wonder Herbs",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3c4d.jpg",
-    "releaseDate": "1990-03-01T00:00:00.000Z",
+    "id": "48149",
+    "name": "King Neptune's Adventure",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob1um.jpg",
+    "releaseDate": "1990-02-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -168,10 +171,10 @@
     "ordinal": 11501
   },
   {
-    "id": "3664",
-    "name": "Kid Icarus: Of Myths and Monsters",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5v48.jpg",
-    "releaseDate": "1991-11-05T00:00:00.000Z",
+    "id": "3653",
+    "name": "HAL's Hole in One Golf",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3gcc.jpg",
+    "releaseDate": "1991-02-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -181,10 +184,10 @@
     "ordinal": 12397
   },
   {
-    "id": "71478",
-    "name": "Kick Off 2: Return to Europe",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob6oz.jpg",
-    "releaseDate": "1991-11-01T00:00:00.000Z",
+    "id": "71472",
+    "name": "The Space Adventure",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8c0l.jpg",
+    "releaseDate": "1991-07-07T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -194,9 +197,9 @@
     "ordinal": 13293
   },
   {
-    "id": "9645",
-    "name": "Jill Saves the Prince",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2w5b.jpg",
+    "id": "9641",
+    "name": "Jill of the Jungle",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4vuu.jpg",
     "releaseDate": "1992-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -207,12 +210,12 @@
     "ordinal": 14189
   },
   {
-    "id": "72923",
-    "name": "Hit the Ice",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3b7o.jpg",
-    "releaseDate": "1992-12-31T00:00:00.000Z",
+    "id": "72805",
+    "name": "Choujikuu Yousai Macross 2036",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa571.jpg",
+    "releaseDate": "1992-04-03T00:00:00.000Z",
     "players": {
-      "max": 2,
+      "max": "unknown",
       "online": false,
       "localCoop": false
     },
@@ -220,10 +223,10 @@
     "ordinal": 15085
   },
   {
-    "id": "4507",
-    "name": "Winter Olympic Games",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9ier.jpg",
-    "releaseDate": "1993-12-31T00:00:00.000Z",
+    "id": "4504",
+    "name": "Saturday Night Slam Masters",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9p01.jpg",
+    "releaseDate": "1993-07-13T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -233,12 +236,12 @@
     "ordinal": 15981
   },
   {
-    "id": "66671",
-    "name": "The Great Battle III",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co523c.jpg",
-    "releaseDate": "1993-03-26T00:00:00.000Z",
+    "id": "66647",
+    "name": "Super Maze Wars",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6n1n.jpg",
+    "releaseDate": "1993-12-31T00:00:00.000Z",
     "players": {
-      "max": "unknown",
+      "max": 8,
       "online": false,
       "localCoop": false
     },
@@ -246,10 +249,10 @@
     "ordinal": 16877
   },
   {
-    "id": "4290",
-    "name": "Policenauts",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co720g.jpg",
-    "releaseDate": "1994-07-29T00:00:00.000Z",
+    "id": "4289",
+    "name": "Quarantine",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1p5q.jpg",
+    "releaseDate": "1994-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -259,10 +262,10 @@
     "ordinal": 17773
   },
   {
-    "id": "47006",
-    "name": "1942: Pacific Air War",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa43i.jpg",
-    "releaseDate": "1994-07-06T00:00:00.000Z",
+    "id": "46996",
+    "name": "Franko: The Crazy Revenge",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa5m7.jpg",
+    "releaseDate": "1994-09-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -272,10 +275,10 @@
     "ordinal": 18669
   },
   {
-    "id": "362507",
-    "name": "The Adventures of Batman & Robin: Tiger Barcodzz - 08: The Riddler",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coac9t.jpg",
-    "releaseDate": "1994-12-31T00:00:00.000Z",
+    "id": "362035",
+    "name": "Earthworm Jim",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaea5.jpg",
+    "releaseDate": "1994-10-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -285,11 +288,10 @@
     "ordinal": 19565
   },
   {
-    "id": "42592",
-    "name": "Gourmet Warriors",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4n1b.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1104460/",
-    "releaseDate": "1995-09-29T00:00:00.000Z",
+    "id": "42585",
+    "name": "Looney Tunes B-Ball",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3b7j.jpg",
+    "releaseDate": "1995-03-01T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -299,9 +301,9 @@
     "ordinal": 20461
   },
   {
-    "id": "210113",
-    "name": "Dole: 5 A Day Adventures",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4zst.jpg",
+    "id": "210102",
+    "name": "NHL Hockey",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6yn8.jpg",
     "releaseDate": "1995-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -338,36 +340,37 @@
     "ordinal": 23149
   },
   {
-    "id": "4097",
-    "name": "Tomba!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co55st.jpg",
-    "releaseDate": "1997-12-25T00:00:00.000Z",
+    "id": "3737",
+    "name": "Putt-Putt Travels Through Time",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3y4k.jpg",
+    "storeUrl": "https://store.steampowered.com/app/294670/",
+    "releaseDate": "1997-11-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 24045
   },
   {
-    "id": "94486",
-    "name": "Air Warrior II",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8aim.jpg",
-    "releaseDate": "1997-12-31T00:00:00.000Z",
+    "id": "94459",
+    "name": "War Inc.",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7k7c.jpg",
+    "releaseDate": "1997-08-31T00:00:00.000Z",
     "players": {
-      "max": 8,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 24941
   },
   {
-    "id": "367597",
-    "name": "Edna",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coahhr.jpg",
-    "releaseDate": "1997-12-31T00:00:00.000Z",
+    "id": "366690",
+    "name": "GBKiss Mini Games",
+    "releaseDate": "1997-11-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -377,10 +380,10 @@
     "ordinal": 25837
   },
   {
-    "id": "70133",
-    "name": "Incubation: Hidden Worlds",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobdau.jpg",
-    "releaseDate": "1998-12-31T00:00:00.000Z",
+    "id": "70107",
+    "name": "PC Fútbol 6.0",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co835h.jpg",
+    "releaseDate": "1998-01-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -390,10 +393,10 @@
     "ordinal": 26733
   },
   {
-    "id": "266642",
-    "name": "Gas Girl",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobqtz.jpg",
-    "releaseDate": "1998-12-31T00:00:00.000Z",
+    "id": "266637",
+    "name": "Air Bob",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co77b6.jpg",
+    "releaseDate": "1998-03-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -468,10 +471,10 @@
     "ordinal": 32109
   },
   {
-    "id": "37478",
-    "name": "Super Robot Taisen Compact 2 Dai-3-bu: Ginga Kessen-hen",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5qk4.jpg",
-    "releaseDate": "2001-01-18T00:00:00.000Z",
+    "id": "37548",
+    "name": "Dokodemo Hamster 3: O Dekake Safuran",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8ikf.jpg",
+    "releaseDate": "2001-01-14T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -481,10 +484,10 @@
     "ordinal": 33005
   },
   {
-    "id": "137210",
-    "name": "The Castle of Dr. Malvado",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co99z1.jpg",
-    "releaseDate": "2001-01-01T00:00:00.000Z",
+    "id": "137320",
+    "name": "Seigi no Mikata",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co687e.jpg",
+    "releaseDate": "2001-11-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -494,23 +497,23 @@
     "ordinal": 33901
   },
   {
-    "id": "1197",
-    "name": "Crash Bandicoot: The Huge Adventure",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3py8.jpg",
-    "releaseDate": "2002-02-25T00:00:00.000Z",
+    "id": "1203",
+    "name": "Tales of Destiny 2",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1p27.jpg",
+    "releaseDate": "2002-11-28T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 34797
   },
   {
-    "id": "51818",
-    "name": "Icewind Dale II Complete",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co21uj.jpg",
-    "releaseDate": "2002-10-16T00:00:00.000Z",
+    "id": "51824",
+    "name": "Haegemonia: Gold Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2v60.jpg",
+    "releaseDate": "2002-11-14T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -520,10 +523,10 @@
     "ordinal": 35693
   },
   {
-    "id": "241163",
-    "name": "Calm Falls",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co68uh.jpg",
-    "releaseDate": "2002-12-21T00:00:00.000Z",
+    "id": "241228",
+    "name": "Fantasy of Master",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co68xu.jpg",
+    "releaseDate": "2002-08-25T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -533,64 +536,66 @@
     "ordinal": 36589
   },
   {
-    "id": "6184",
-    "name": "SNK vs. Capcom: SVC Chaos",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1ydh.jpg",
-    "releaseDate": "2003-07-24T00:00:00.000Z",
+    "id": "6190",
+    "name": "Tao Feng: Fist of the Lotus",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6amx.jpg",
+    "releaseDate": "2003-03-18T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 37485
   },
   {
-    "id": "91744",
-    "name": "Scholastic Animal Genius",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8tso.jpg",
+    "id": "92054",
+    "name": "HellMoo",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9kiv.jpg",
     "releaseDate": "2003-12-31T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 38381
-  },
-  {
-    "id": "319675",
-    "name": "Forgotten Hope",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8xnn.jpg",
-    "releaseDate": "2003-10-11T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
-    "ordinal": 39277
+    "ordinal": 38381
   },
   {
-    "id": "24139",
-    "name": "MTV Music Generator 3: This is the Remix",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7md7.jpg",
-    "releaseDate": "2004-06-18T00:00:00.000Z",
+    "id": "319808",
+    "name": "Casablanca: The Day After",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8xw8.jpg",
+    "releaseDate": "2003-06-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "ordinal": 39277
+  },
+  {
+    "id": "24163",
+    "name": "Pacific Fighters",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9nfo.jpg",
+    "storeUrl": "https://store.steampowered.com/app/15280/",
+    "releaseDate": "2004-10-22T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 40173
   },
   {
-    "id": "166443",
-    "name": "Ayumu Kasuga's Mail Order Life",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4zvi.jpg",
-    "releaseDate": "2004-01-28T00:00:00.000Z",
+    "id": "170252",
+    "name": "Famicom Mini: Clu Clu Land",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co438u.jpg",
+    "releaseDate": "2004-05-21T00:00:00.000Z",
     "players": {
-      "max": "unknown",
+      "max": 2,
       "online": false,
       "localCoop": false
     },
@@ -598,8 +603,8 @@
     "ordinal": 41069
   },
   {
-    "id": "353512",
-    "name": "Pikmin Puzzle Card e+: No.01 - Hikkonuki Pikmin: Aka Chappy",
+    "id": "353515",
+    "name": "Pikmin Puzzle Card e+: No.04 - Hikkonuki Pikmin: Aka Ko Chappy",
     "releaseDate": "2004-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -610,21 +615,21 @@
     "ordinal": 41965
   },
   {
-    "id": "44524",
-    "name": "Infected",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4eqc.jpg",
-    "releaseDate": "2005-11-15T00:00:00.000Z",
+    "id": "44684",
+    "name": "Code of the Samurai",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co56cl.jpg",
+    "releaseDate": "2005-02-10T00:00:00.000Z",
     "players": {
-      "max": 8,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 42861
   },
   {
-    "id": "198064",
-    "name": "Bomberman Next Gotochi Kinki-hen",
+    "id": "198190",
+    "name": "Bomberman Kart Special Mini",
     "releaseDate": "2005-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -635,9 +640,9 @@
     "ordinal": 43757
   },
   {
-    "id": "337309",
-    "name": "The Curse of Dragmoria",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9t51.jpg",
+    "id": "338755",
+    "name": "Babala",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9mqv.jpg",
     "releaseDate": "2005-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -648,11 +653,10 @@
     "ordinal": 44653
   },
   {
-    "id": "27826",
-    "name": "Sam & Max: Save the World - Episode 1: Culture Shock",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5z2c.jpg",
-    "storeUrl": "https://store.steampowered.com/app/8200/",
-    "releaseDate": "2006-10-17T00:00:00.000Z",
+    "id": "28810",
+    "name": "Line Rider",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2kzk.jpg",
+    "releaseDate": "2006-09-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -662,10 +666,10 @@
     "ordinal": 45549
   },
   {
-    "id": "144840",
-    "name": "The Ghoul's Forest 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4nxn.jpg",
-    "releaseDate": "2006-09-30T00:00:00.000Z",
+    "id": "145056",
+    "name": "Resident Evil 10th Anniversary Collection",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2w7m.jpg",
+    "releaseDate": "2006-10-24T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -675,36 +679,36 @@
     "ordinal": 46445
   },
   {
-    "id": "292985",
-    "name": "Burger Time",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc8v3.jpg",
-    "releaseDate": "2006-09-01T00:00:00.000Z",
+    "id": "294565",
+    "name": "Call of Duty 2: Bonus Map Pack",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co804n.jpg",
+    "releaseDate": "2006-05-24T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 47341
   },
   {
-    "id": "18108",
-    "name": "Kingdom Under Fire: Circle of Doom",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1tbj.jpg",
-    "releaseDate": "2007-12-05T00:00:00.000Z",
+    "id": "18242",
+    "name": "American Girl: Julie Saves the Eagles",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/pdjeq02jtuuoagzogaw4.jpg",
+    "releaseDate": "2007-10-15T00:00:00.000Z",
     "players": {
-      "max": 4,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 48237
   },
   {
-    "id": "83232",
-    "name": "Casper and the Ghostly Trio",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/fa2dgjbjbhezhyyj1h6d.jpg",
-    "releaseDate": "2007-02-10T00:00:00.000Z",
+    "id": "83247",
+    "name": "Thunderbirds",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/emgk2e5py7ijfaxx5lyf.jpg",
+    "releaseDate": "2007-06-07T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -714,10 +718,10 @@
     "ordinal": 49133
   },
   {
-    "id": "252171",
-    "name": "Touhou Maiden",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6l7t.jpg",
-    "releaseDate": "2007-12-29T00:00:00.000Z",
+    "id": "252290",
+    "name": "Broken Picture Telephone",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6lc0.jpg",
+    "releaseDate": "2007-10-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -727,11 +731,10 @@
     "ordinal": 50029
   },
   {
-    "id": "4228",
-    "name": "Sid Meier's Civilization IV: Colonization",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1rjn.jpg",
-    "storeUrl": "https://store.steampowered.com/app/34470/",
-    "releaseDate": "2008-09-22T00:00:00.000Z",
+    "id": "4648",
+    "name": "Pro Evolution Soccer 2009",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5vzo.jpg",
+    "releaseDate": "2008-10-17T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -741,10 +744,10 @@
     "ordinal": 50925
   },
   {
-    "id": "47786",
-    "name": "American Girl: Kit Mystery Challenge!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/h2nvoueo7pzgzvs3pih6.jpg",
-    "releaseDate": "2008-07-23T00:00:00.000Z",
+    "id": "47798",
+    "name": "Soul of Darkness",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/ttk93kp1vrnbznt7cuxn.jpg",
+    "releaseDate": "2008-07-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -754,10 +757,10 @@
     "ordinal": 51821
   },
   {
-    "id": "135094",
-    "name": "The Legend of the Radient Mask",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co29u3.jpg",
-    "releaseDate": "2008-09-17T00:00:00.000Z",
+    "id": "135166",
+    "name": "Commander in Chief: Geo-Political Simulator 2009",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2a5y.jpg",
+    "releaseDate": "2008-07-25T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -767,9 +770,10 @@
     "ordinal": 52717
   },
   {
-    "id": "272120",
-    "name": "The Dream",
-    "releaseDate": "2008-02-07T00:00:00.000Z",
+    "id": "272436",
+    "name": "Warzone Tower Defense",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co78ya.jpg",
+    "releaseDate": "2008-10-26T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -779,10 +783,10 @@
     "ordinal": 53613
   },
   {
-    "id": "7008",
-    "name": "Heroes Over Europe",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5x8a.jpg",
-    "releaseDate": "2009-09-14T00:00:00.000Z",
+    "id": "7036",
+    "name": "The King of Fighters XII",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9xqu.jpg",
+    "releaseDate": "2009-04-10T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -792,10 +796,10 @@
     "ordinal": 54509
   },
   {
-    "id": "50970",
-    "name": "Aliens in the Attic",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9pon.jpg",
-    "releaseDate": "2009-09-04T00:00:00.000Z",
+    "id": "50991",
+    "name": "Mr. Driller W",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co68az.jpg",
+    "releaseDate": "2009-02-24T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -805,10 +809,9 @@
     "ordinal": 55405
   },
   {
-    "id": "92459",
-    "name": "Farmerama",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4n7p.jpg",
-    "releaseDate": "2009-10-09T00:00:00.000Z",
+    "id": "92622",
+    "name": "Petanque Pro",
+    "releaseDate": "2009-09-06T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -818,9 +821,9 @@
     "ordinal": 56301
   },
   {
-    "id": "246326",
-    "name": "Dream Bubble",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocb8e.jpg",
+    "id": "246337",
+    "name": "Happy Farm",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocapu.jpg",
     "releaseDate": "2009-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -831,9 +834,10 @@
     "ordinal": 57197
   },
   {
-    "id": "395749",
-    "name": "The Fairly OddParents Wishology: Chapter 3 - The Return of the Chosen One!",
-    "releaseDate": "2009-05-03T00:00:00.000Z",
+    "id": "398858",
+    "name": "Gothic II: Battle of the Kings 3",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coby8n.jpg",
+    "releaseDate": "2009-02-25T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -843,11 +847,10 @@
     "ordinal": 58093
   },
   {
-    "id": "27899",
-    "name": "Serious Sam HD: Gold Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co85n4.jpg",
-    "storeUrl": "https://store.steampowered.com/app/901553/",
-    "releaseDate": "2010-09-23T00:00:00.000Z",
+    "id": "27913",
+    "name": "Anno 1404: Gold Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2fky.jpg",
+    "releaseDate": "2010-12-08T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -857,12 +860,12 @@
     "ordinal": 58989
   },
   {
-    "id": "72742",
-    "name": "Monster Racers",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9iht.jpg",
-    "releaseDate": "2010-05-11T00:00:00.000Z",
+    "id": "74298",
+    "name": "Everybody Edits",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9qcs.jpg",
+    "releaseDate": "2010-05-10T00:00:00.000Z",
     "players": {
-      "max": 4,
+      "max": 2,
       "online": true,
       "localCoop": false
     },
@@ -870,9 +873,9 @@
     "ordinal": 59885
   },
   {
-    "id": "175215",
-    "name": "Finger Balance",
-    "releaseDate": "2010-08-05T00:00:00.000Z",
+    "id": "175282",
+    "name": "Airport Mania: First Flight HD",
+    "releaseDate": "2010-08-27T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -882,50 +885,49 @@
     "ordinal": 60781
   },
   {
-    "id": "281023",
-    "name": "MTV Jersey Shore",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7k2c.jpg",
-    "releaseDate": "2010-12-26T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 61677
-  },
-  {
-    "id": "8182",
-    "name": "Adam's Venture Episode 2: Solomon's Secret",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1ydy.jpg",
-    "storeUrl": "https://store.steampowered.com/app/210390/",
-    "releaseDate": "2011-04-08T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 62573
-  },
-  {
-    "id": "50993",
-    "name": "Downtown Nekketsu Dodgeball",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9q3x.jpg",
-    "releaseDate": "2011-08-12T00:00:00.000Z",
+    "id": "281446",
+    "name": "ZombieSmash HD",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7kv2.jpg",
+    "releaseDate": "2010-12-16T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "ordinal": 61677
+  },
+  {
+    "id": "8248",
+    "name": "Marvel vs. Capcom 3: Fate of Two Worlds",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1ye3.jpg",
+    "releaseDate": "2011-02-15T00:00:00.000Z",
+    "players": {
+      "max": 8,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "ordinal": 62573
+  },
+  {
+    "id": "51044",
+    "name": "Chuck E. Cheese's Super Collection",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9pwg.jpg",
+    "releaseDate": "2011-10-20T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
     "ordinal": 63469
   },
   {
-    "id": "92226",
-    "name": "Nin2-Jump",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co501r.jpg",
-    "releaseDate": "2011-04-27T00:00:00.000Z",
+    "id": "92279",
+    "name": "Mos Speedrun",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2s8y.jpg",
+    "releaseDate": "2011-04-07T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -935,10 +937,10 @@
     "ordinal": 64365
   },
   {
-    "id": "218853",
-    "name": "Bitejacker",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5dbg.jpg",
-    "releaseDate": "2011-02-05T00:00:00.000Z",
+    "id": "219160",
+    "name": "Portal Unity",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5gjt.jpg",
+    "releaseDate": "2011-03-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -948,9 +950,9 @@
     "ordinal": 65261
   },
   {
-    "id": "358836",
-    "name": "Motor Rally 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocakw.jpg",
+    "id": "358840",
+    "name": "Time Trio",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coal5d.jpg",
     "releaseDate": "2011-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -961,23 +963,23 @@
     "ordinal": 66157
   },
   {
-    "id": "20015",
-    "name": "Legends of War: Patton",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8052.jpg",
-    "releaseDate": "2012-11-20T00:00:00.000Z",
+    "id": "20114",
+    "name": "Sorcery",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4vpd.jpg",
+    "releaseDate": "2012-05-22T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 67053
   },
   {
-    "id": "64104",
-    "name": "Mobiloid",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/vrxwxug72zjbneipumnn.jpg",
-    "releaseDate": "2012-08-22T00:00:00.000Z",
+    "id": "64138",
+    "name": "Rockman Xover",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5ts3.jpg",
+    "releaseDate": "2012-11-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -987,10 +989,10 @@
     "ordinal": 67949
   },
   {
-    "id": "140984",
-    "name": "Be Richest!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2w6v.jpg",
-    "releaseDate": "2012-08-02T00:00:00.000Z",
+    "id": "141218",
+    "name": "Oshigoto Theme Park 2",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2l05.jpg",
+    "releaseDate": "2012-12-20T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1000,10 +1002,10 @@
     "ordinal": 68845
   },
   {
-    "id": "254886",
-    "name": "GraviMaze",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6ohr.jpg",
-    "releaseDate": "2012-02-01T00:00:00.000Z",
+    "id": "255369",
+    "name": "Super Metroid: Digital Cube",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co79ey.jpg",
+    "releaseDate": "2012-10-07T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1013,36 +1015,38 @@
     "ordinal": 69741
   },
   {
-    "id": "3003",
-    "name": "NHL 14",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2qu8.jpg",
-    "releaseDate": "2013-09-10T00:00:00.000Z",
-    "players": {
-      "max": 2,
-      "online": true,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 70637
-  },
-  {
-    "id": "24549",
-    "name": "Doctor Who: Legacy",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2pxl.jpg",
-    "releaseDate": "2013-11-27T00:00:00.000Z",
+    "id": "3035",
+    "name": "The Stanley Parable",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1rc9.jpg",
+    "storeUrl": "https://store.steampowered.com/app/221910/",
+    "releaseDate": "2013-10-17T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 70637
+  },
+  {
+    "id": "24725",
+    "name": "S.T.A.L.K.E.R. Collection",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/wbznuo39lf8roulnmv1m.jpg",
+    "releaseDate": "2013-12-10T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
     "ordinal": 71533
   },
   {
-    "id": "64247",
-    "name": "10 Frame Bowling",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/qj0tqdcproeupivxhkoy.jpg",
-    "releaseDate": "2013-03-12T00:00:00.000Z",
+    "id": "64384",
+    "name": "Passing Time",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocdy6.jpg",
+    "releaseDate": "2013-05-22T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1052,26 +1056,26 @@
     "ordinal": 72429
   },
   {
-    "id": "147732",
-    "name": "Mexican Train Dominoes Gold",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3nv4.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1437890/",
-    "releaseDate": "2013-04-11T00:00:00.000Z",
+    "id": "148874",
+    "name": "Magicka: Tower of Niflheim",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7fti.jpg",
+    "storeUrl": "https://store.steampowered.com/app/73119/",
+    "releaseDate": "2013-04-09T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 73325
   },
   {
-    "id": "259929",
-    "name": "Royal Flush: Princess Sidestory",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9uzm.jpg",
-    "releaseDate": "2013-10-28T00:00:00.000Z",
+    "id": "260513",
+    "name": "ConC.E.R.Ned",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6wi6.jpg",
+    "releaseDate": "2013-07-16T00:00:00.000Z",
     "players": {
-      "max": 2,
+      "max": "unknown",
       "online": false,
       "localCoop": false
     },
@@ -1079,11 +1083,10 @@
     "ordinal": 74221
   },
   {
-    "id": "6880",
-    "name": "Metro Redux",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4b2q.jpg",
-    "storeUrl": "https://store.steampowered.com/app/286690/",
-    "releaseDate": "2014-08-25T00:00:00.000Z",
+    "id": "6887",
+    "name": "Persona Q: Shadow of the Labyrinth",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6jpi.jpg",
+    "releaseDate": "2014-06-05T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1093,24 +1096,25 @@
     "ordinal": 75117
   },
   {
-    "id": "17431",
-    "name": "Cyto",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9s76.jpg",
-    "storeUrl": "https://store.steampowered.com/app/302650/",
-    "releaseDate": "2014-07-10T00:00:00.000Z",
+    "id": "17433",
+    "name": "Metal Dead",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3nui.jpg",
+    "storeUrl": "https://store.steampowered.com/app/302690/",
+    "releaseDate": "2014-09-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 76013
   },
   {
-    "id": "42935",
-    "name": "Wolfenstein: The New Order - Occupied Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co21gw.jpg",
-    "releaseDate": "2014-06-20T00:00:00.000Z",
+    "id": "42943",
+    "name": "Far Cry 4: Limited Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2npe.jpg",
+    "releaseDate": "2014-11-18T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1120,10 +1124,10 @@
     "ordinal": 76909
   },
   {
-    "id": "86725",
-    "name": "Dinosaurs - Connect the Dots and Add Colors",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/bcdogqfpcgzx0ppzm0y6.jpg",
-    "releaseDate": "2014-12-17T00:00:00.000Z",
+    "id": "86774",
+    "name": "Bubble Cloud: Spinning Bubbles",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/vg1ey0jdrhhu47jwekmr.jpg",
+    "releaseDate": "2014-03-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1133,23 +1137,22 @@
     "ordinal": 77805
   },
   {
-    "id": "160279",
-    "name": "Child of Light: Dark Aurora Pack",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co60cd.jpg",
-    "storeUrl": "https://store.steampowered.com/app/290402/",
-    "releaseDate": "2014-04-30T00:00:00.000Z",
+    "id": "161966",
+    "name": "Train Simulator: Network SouthEast Class 121 DMU Add-On",
+    "storeUrl": "https://store.steampowered.com/app/258646/",
+    "releaseDate": "2014-06-05T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 78701
   },
   {
-    "id": "247530",
-    "name": "Heiankyo Parameters",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6fh5.jpg",
+    "id": "248179",
+    "name": "Iron Man",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6fzm.jpg",
     "releaseDate": "2014-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -1160,10 +1163,10 @@
     "ordinal": 79597
   },
   {
-    "id": "380351",
-    "name": "Promesst 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaxzn.jpg",
-    "releaseDate": "2014-05-18T00:00:00.000Z",
+    "id": "380641",
+    "name": "Endless Doves",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coayy2.jpg",
+    "releaseDate": "2014-11-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1173,39 +1176,41 @@
     "ordinal": 80493
   },
   {
-    "id": "17519",
-    "name": "Project Aura",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/dxxm94ygfsqpw98xhcvn.jpg",
-    "storeUrl": "https://store.steampowered.com/app/305940/",
-    "releaseDate": "2015-01-05T00:00:00.000Z",
+    "id": "17530",
+    "name": "BattleSpace",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob8sy.jpg",
+    "storeUrl": "https://store.steampowered.com/app/306930/",
+    "releaseDate": "2015-01-07T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 81389
   },
   {
-    "id": "34056",
-    "name": "Krum: Edge of Darkness",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co453a.jpg",
-    "storeUrl": "https://store.steampowered.com/app/420210/",
-    "releaseDate": "2015-11-24T00:00:00.000Z",
+    "id": "34058",
+    "name": "UnSummoning: the Spectral Horde",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob6a7.jpg",
+    "storeUrl": "https://store.steampowered.com/app/417060/",
+    "releaseDate": "2015-12-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 82285
   },
   {
-    "id": "35536",
-    "name": "VR Karts",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7za3.jpg",
-    "storeUrl": "https://store.steampowered.com/app/357730/",
-    "releaseDate": "2015-04-17T00:00:00.000Z",
+    "id": "35538",
+    "name": "The District",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1jyk.jpg",
+    "storeUrl": "https://store.steampowered.com/app/357770/",
+    "releaseDate": "2015-03-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1215,10 +1220,10 @@
     "ordinal": 83181
   },
   {
-    "id": "59037",
-    "name": "Keep Them Below",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/ljlopkbc8jmmsgfpvluo.jpg",
-    "releaseDate": "2015-10-22T00:00:00.000Z",
+    "id": "59058",
+    "name": "Vecxis",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/tnfjytrznmnlh5rqwvxo.jpg",
+    "releaseDate": "2015-11-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1228,10 +1233,10 @@
     "ordinal": 84077
   },
   {
-    "id": "102520",
-    "name": "Slendrina: Asylum",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co94g0.jpg",
-    "releaseDate": "2015-07-05T00:00:00.000Z",
+    "id": "102595",
+    "name": "Crash the Comet",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co28eu.jpg",
+    "releaseDate": "2015-08-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1241,9 +1246,9 @@
     "ordinal": 84973
   },
   {
-    "id": "175147",
-    "name": "Lethargy",
-    "releaseDate": "2015-10-20T00:00:00.000Z",
+    "id": "175155",
+    "name": "Civil War: Pea Ridge",
+    "releaseDate": "2015-11-18T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1253,107 +1258,112 @@
     "ordinal": 85869
   },
   {
-    "id": "268568",
-    "name": "Jubeat Prop",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7500.jpg",
-    "releaseDate": "2015-02-20T00:00:00.000Z",
+    "id": "268682",
+    "name": "The Legend of Zelda: Ruinous Shards",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co790q.jpg",
+    "releaseDate": "2015-05-21T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 86765
   },
   {
-    "id": "9106",
-    "name": "The Westport Independent",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7qb0.jpg",
-    "storeUrl": "https://store.steampowered.com/app/352240/",
-    "releaseDate": "2016-01-21T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 87661
-  },
-  {
-    "id": "22806",
-    "name": "Zombie City Defense 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/a2xrscd4siusi7rkfg7i.jpg",
-    "storeUrl": "https://store.steampowered.com/app/473970/",
-    "releaseDate": "2016-08-19T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 88557
-  },
-  {
-    "id": "30258",
-    "name": "Cargo Cult: Shoot'n'Loot VR",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2sbs.jpg",
-    "storeUrl": "https://store.steampowered.com/app/565380/",
-    "releaseDate": "2016-12-08T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 89453
-  },
-  {
-    "id": "31648",
-    "name": "Board Defenders",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3b9p.jpg",
-    "storeUrl": "https://store.steampowered.com/app/516010/",
-    "releaseDate": "2016-09-06T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 90349
-  },
-  {
-    "id": "32833",
-    "name": "Bayla Bunny",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3z92.jpg",
-    "storeUrl": "https://store.steampowered.com/app/489900/",
-    "releaseDate": "2016-06-13T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 91245
-  },
-  {
-    "id": "34014",
-    "name": "Elite vs. Freedom",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob85v.jpg",
-    "storeUrl": "https://store.steampowered.com/app/420670/",
-    "releaseDate": "2016-05-31T00:00:00.000Z",
+    "id": "9209",
+    "name": "Capitalism Plus",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/zzluxpzfyeo8tattihmu.jpg",
+    "storeUrl": "https://store.steampowered.com/app/450120/",
+    "releaseDate": "2016-03-22T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "ordinal": 87661
+  },
+  {
+    "id": "22813",
+    "name": "The Huntsman: Winter's Curse",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4wo4.jpg",
+    "storeUrl": "https://store.steampowered.com/app/446990/",
+    "releaseDate": "2016-04-22T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 88557
+  },
+  {
+    "id": "30262",
+    "name": "Spacecats with Lasers VR",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/v52x0llf3ta413ydcfe3.jpg",
+    "storeUrl": "https://store.steampowered.com/app/565190/",
+    "releaseDate": "2016-12-19T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 89453
+  },
+  {
+    "id": "31652",
+    "name": "Best in Show Solitaire",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob766.jpg",
+    "storeUrl": "https://store.steampowered.com/app/514780/",
+    "releaseDate": "2016-10-06T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 90349
+  },
+  {
+    "id": "32840",
+    "name": "Locomancer",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9q8f.jpg",
+    "storeUrl": "https://store.steampowered.com/app/490250/",
+    "releaseDate": "2016-05-23T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 91245
+  },
+  {
+    "id": "34018",
+    "name": "Mech Anarchy",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa45g.jpg",
+    "storeUrl": "https://store.steampowered.com/app/420900/",
+    "releaseDate": "2016-03-15T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 92141
   },
   {
-    "id": "57734",
-    "name": "Gemini: A Journey of Two Stars",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/nueydwmv7aj7f2q26kdt.jpg",
-    "releaseDate": "2016-08-25T00:00:00.000Z",
+    "id": "57746",
+    "name": "Light House",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/rm0yqvc06ni7xdqg2kyz.jpg",
+    "releaseDate": "2016-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1363,11 +1373,10 @@
     "ordinal": 93037
   },
   {
-    "id": "96957",
-    "name": "Mystery Tales: Alaskan Wild - Collector's Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8gkf.jpg",
-    "storeUrl": "https://store.steampowered.com/app/838720/",
-    "releaseDate": "2016-02-17T00:00:00.000Z",
+    "id": "97303",
+    "name": "Niva",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1j78.jpg",
+    "releaseDate": "2016-11-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1377,10 +1386,10 @@
     "ordinal": 93933
   },
   {
-    "id": "158437",
-    "name": "Zaccaria Pinball: Star's Phoenix Table",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4wpt.jpg",
-    "storeUrl": "https://store.steampowered.com/app/478053/",
+    "id": "158446",
+    "name": "Zaccaria Pinball: Red Show Table",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4wpi.jpg",
+    "storeUrl": "https://store.steampowered.com/app/485146/",
     "releaseDate": "2016-06-16T00:00:00.000Z",
     "players": {
       "max": 2,
@@ -1391,10 +1400,10 @@
     "ordinal": 94829
   },
   {
-    "id": "219158",
-    "name": "Portal: Project Beta",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5gju.jpg",
-    "releaseDate": "2016-09-30T00:00:00.000Z",
+    "id": "220559",
+    "name": "Open Up!",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5fks.jpg",
+    "releaseDate": "2016-07-19T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1404,10 +1413,10 @@
     "ordinal": 95725
   },
   {
-    "id": "324114",
-    "name": "Cursed Loot",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co93vo.jpg",
-    "releaseDate": "2016-03-15T00:00:00.000Z",
+    "id": "324819",
+    "name": "April Freebee",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co94me.jpg",
+    "releaseDate": "2016-04-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1417,65 +1426,70 @@
     "ordinal": 96621
   },
   {
-    "id": "27101",
-    "name": "Blocky Adventure: The Escape",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/jvbhc1oxoln1mksz40ej.jpg",
-    "releaseDate": "2017-02-01T00:00:00.000Z",
+    "id": "27114",
+    "name": "Avorion",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1puf.jpg",
+    "storeUrl": "https://store.steampowered.com/app/445220/",
+    "releaseDate": "2017-01-23T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 10,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 97517
   },
   {
-    "id": "29277",
-    "name": "Forged Adventure",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2bfj.jpg",
-    "storeUrl": "https://store.steampowered.com/app/602560/",
-    "releaseDate": "2017-05-11T00:00:00.000Z",
+    "id": "29281",
+    "name": "Fated Souls 3",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7jng.jpg",
+    "storeUrl": "https://store.steampowered.com/app/602790/",
+    "releaseDate": "2017-03-10T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 98413
   },
   {
-    "id": "30970",
-    "name": "Tiny Thor's Revenge",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co46eh.jpg",
-    "storeUrl": "https://store.steampowered.com/app/541310/",
-    "releaseDate": "2017-09-29T00:00:00.000Z",
+    "id": "30998",
+    "name": "Hop Step Sing! High Quality Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co26u8.jpg",
+    "storeUrl": "https://store.steampowered.com/app/538000/",
+    "releaseDate": "2017-06-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 99309
   },
   {
-    "id": "39760",
-    "name": "Mafia III: Stones Unturned",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2mjm.jpg",
-    "storeUrl": "https://store.steampowered.com/app/598021/",
-    "releaseDate": "2017-05-30T00:00:00.000Z",
+    "id": "39764",
+    "name": "Gravity Quest",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co217o.jpg",
+    "storeUrl": "https://store.steampowered.com/app/645450/",
+    "releaseDate": "2017-06-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 100205
   },
   {
-    "id": "51997",
-    "name": "Towers That Don't Like Each Other",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/psjz0exnxjh1jetcgcdr.jpg",
-    "releaseDate": "2017-07-23T00:00:00.000Z",
+    "id": "52002",
+    "name": "The Big Fear of Heights Experience",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/ubjsjz3rmrepbfltwpju.jpg",
+    "releaseDate": "2017-07-14T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1485,67 +1499,70 @@
     "ordinal": 101101
   },
   {
-    "id": "55727",
-    "name": "Kung Fu All-Star VR",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co266w.jpg",
-    "storeUrl": "https://store.steampowered.com/app/697320/",
-    "releaseDate": "2017-09-01T00:00:00.000Z",
+    "id": "55731",
+    "name": "Over the Moonlight",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8pt4.jpg",
+    "storeUrl": "https://store.steampowered.com/app/692270/",
+    "releaseDate": "2017-09-27T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 101997
   },
   {
-    "id": "69384",
-    "name": "C2H6O",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2a83.jpg",
-    "storeUrl": "https://store.steampowered.com/app/714350/",
-    "releaseDate": "2017-09-25T00:00:00.000Z",
+    "id": "69391",
+    "name": "Panzer Doctrine",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co278n.jpg",
+    "storeUrl": "https://store.steampowered.com/app/709880/",
+    "releaseDate": "2017-12-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 102893
   },
   {
-    "id": "75599",
-    "name": "The Mystery Room",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/xlndi9ewp0zavwwewzqb.jpg",
-    "storeUrl": "https://store.steampowered.com/app/727060/",
-    "releaseDate": "2017-12-07T00:00:00.000Z",
+    "id": "75603",
+    "name": "New World: The Tupis",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobax9.jpg",
+    "storeUrl": "https://store.steampowered.com/app/723880/",
+    "releaseDate": "2017-11-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 103789
   },
   {
-    "id": "81756",
-    "name": "Dolphins-Cyborgs and open space",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2aw0.jpg",
-    "storeUrl": "https://store.steampowered.com/app/767170/",
-    "releaseDate": "2017-12-29T00:00:00.000Z",
+    "id": "81767",
+    "name": "Heart of the Emberstone: Coliseum",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co82ny.jpg",
+    "storeUrl": "https://store.steampowered.com/app/767690/",
+    "releaseDate": "2017-12-18T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 104685
   },
   {
-    "id": "101330",
-    "name": "Plants",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co283n.jpg",
-    "storeUrl": "https://store.steampowered.com/app/855730/",
-    "releaseDate": "2017-11-16T00:00:00.000Z",
+    "id": "101417",
+    "name": "Papa's Hot Doggeria to Go!",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4kmi.jpg",
+    "releaseDate": "2017-11-20T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1555,10 +1572,11 @@
     "ordinal": 105581
   },
   {
-    "id": "144646",
-    "name": "Choker: Chess & Poker",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2v8z.jpg",
-    "releaseDate": "2017-03-01T00:00:00.000Z",
+    "id": "144963",
+    "name": "Cossacks 3: The Golden Age",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2vy8.jpg",
+    "storeUrl": "https://store.steampowered.com/app/694190/",
+    "releaseDate": "2017-08-24T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -1568,10 +1586,10 @@
     "ordinal": 106477
   },
   {
-    "id": "184070",
-    "name": "The Colored Moth",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc0hb.jpg",
-    "releaseDate": "2017-07-31T00:00:00.000Z",
+    "id": "184200",
+    "name": "SJW: Digital Zine Quest",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9dfl.jpg",
+    "releaseDate": "2017-03-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1581,9 +1599,10 @@
     "ordinal": 107373
   },
   {
-    "id": "270653",
-    "name": "Shaky Grounds: Tragedy",
-    "releaseDate": "2017-10-26T00:00:00.000Z",
+    "id": "271230",
+    "name": "Xmas Jam 2017",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co78df.jpg",
+    "releaseDate": "2017-12-27T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1593,11 +1612,10 @@
     "ordinal": 108269
   },
   {
-    "id": "7937",
-    "name": "La-Mulana 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3w00.jpg",
-    "storeUrl": "https://store.steampowered.com/app/835430/",
-    "releaseDate": "2018-07-30T00:00:00.000Z",
+    "id": "8653",
+    "name": "Before",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co67ip.jpg",
+    "releaseDate": "2018-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1607,146 +1625,156 @@
     "ordinal": 109165
   },
   {
-    "id": "69372",
-    "name": "Smashing Four",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co26sz.jpg",
-    "releaseDate": "2018-02-01T00:00:00.000Z",
-    "players": {
-      "max": 2,
-      "online": true,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 110061
-  },
-  {
-    "id": "82372",
-    "name": "Beholder: Complete Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co28vg.jpg",
-    "releaseDate": "2018-01-16T00:00:00.000Z",
+    "id": "69482",
+    "name": "Heaven Will Be Mine",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1uqp.jpg",
+    "storeUrl": "https://store.steampowered.com/app/836450/",
+    "releaseDate": "2018-07-25T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 110061
+  },
+  {
+    "id": "82394",
+    "name": "Rising Thunder: Community Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2ygj.jpg",
+    "releaseDate": "2018-01-18T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 110957
   },
   {
-    "id": "88179",
-    "name": "Super Benbo Quest: Turbo Deluxe",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2ow3.jpg",
-    "storeUrl": "https://store.steampowered.com/app/793740/",
-    "releaseDate": "2018-03-09T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 111853
-  },
-  {
-    "id": "95208",
-    "name": "Cryptocurrency Clicker",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobffx.jpg",
-    "storeUrl": "https://store.steampowered.com/app/820750/",
-    "releaseDate": "2018-04-06T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 112749
-  },
-  {
-    "id": "99499",
-    "name": "Deadly Delivery",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobfe5.jpg",
-    "storeUrl": "https://store.steampowered.com/app/819740/",
-    "releaseDate": "2018-06-20T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 113645
-  },
-  {
-    "id": "103188",
-    "name": "Neo Neo",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3q25.jpg",
-    "storeUrl": "https://store.steampowered.com/app/873070/",
-    "releaseDate": "2018-06-16T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 114541
-  },
-  {
-    "id": "105323",
-    "name": "Pif Paf",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobgdy.jpg",
-    "storeUrl": "https://store.steampowered.com/app/881970/",
-    "releaseDate": "2018-07-06T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 115437
-  },
-  {
-    "id": "107938",
-    "name": "Death Fungeon",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3o9o.jpg",
-    "storeUrl": "https://store.steampowered.com/app/897630/",
-    "releaseDate": "2018-08-17T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 116333
-  },
-  {
-    "id": "110685",
-    "name": "Bibi Blocksberg: Big Broom Race 3",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2dvh.jpg",
-    "storeUrl": "https://store.steampowered.com/app/947260/",
-    "releaseDate": "2018-11-18T00:00:00.000Z",
+    "id": "88183",
+    "name": "Geometry Runner Online",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobkgf.jpg",
+    "storeUrl": "https://store.steampowered.com/app/794990/",
+    "releaseDate": "2018-03-07T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
-    "ordinal": 117229
+    "ordinal": 111853
   },
   {
-    "id": "112816",
-    "name": "Gem Crash",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co57ov.jpg",
-    "releaseDate": "2018-11-22T00:00:00.000Z",
+    "id": "95213",
+    "name": "Ria's Hook",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3yit.jpg",
+    "storeUrl": "https://store.steampowered.com/app/821500/",
+    "releaseDate": "2018-04-04T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 112749
+  },
+  {
+    "id": "99538",
+    "name": "Ultimate Racing 2D",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1uqw.jpg",
+    "storeUrl": "https://store.steampowered.com/app/808080/",
+    "releaseDate": "2018-05-24T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 113645
+  },
+  {
+    "id": "103192",
+    "name": "Teleportals. I swear it's a nice game.",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co42z0.jpg",
+    "storeUrl": "https://store.steampowered.com/app/873200/",
+    "releaseDate": "2018-04-18T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 114541
+  },
+  {
+    "id": "105327",
+    "name": "Star'Shoot",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2rf0.jpg",
+    "storeUrl": "https://store.steampowered.com/app/882080/",
+    "releaseDate": "2018-09-27T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 115437
+  },
+  {
+    "id": "107943",
+    "name": "Mendel",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2a46.jpg",
+    "storeUrl": "https://store.steampowered.com/app/899340/",
+    "releaseDate": "2018-09-06T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 116333
+  },
+  {
+    "id": "110698",
+    "name": "Impixable",
+    "storeUrl": "https://store.steampowered.com/app/937180/",
+    "releaseDate": "2018-11-13T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 117229
+  },
+  {
+    "id": "112825",
+    "name": "Gizmo",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co23zm.jpg",
+    "storeUrl": "https://store.steampowered.com/app/979260/",
+    "releaseDate": "2018-12-05T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 118125
   },
   {
-    "id": "134555",
-    "name": "House of Cards: A Modern Fantasy Story Game",
-    "releaseDate": "2018-03-09T00:00:00.000Z",
+    "id": "134660",
+    "name": "Brassica: A Marry Tale",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5bib.jpg",
+    "releaseDate": "2018-08-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1756,11 +1784,11 @@
     "ordinal": 119021
   },
   {
-    "id": "165992",
-    "name": "BlazBlue: Cross Tag Battle - Character Pack Vol. 1: Platinum/Kanji/Orie",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coabfe.jpg",
-    "storeUrl": "https://store.steampowered.com/app/804642/",
-    "releaseDate": "2018-06-05T00:00:00.000Z",
+    "id": "165997",
+    "name": "BlazBlue: Cross Tag Battle - Character Pack Vol. 6: Nine/Labrys/Mika",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coabfb.jpg",
+    "storeUrl": "https://store.steampowered.com/app/804647/",
+    "releaseDate": "2018-08-06T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -1770,10 +1798,9 @@
     "ordinal": 119917
   },
   {
-    "id": "215662",
-    "name": "Nintendo Classic Mini Double Pack",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co569k.jpg",
-    "releaseDate": "2018-10-15T00:00:00.000Z",
+    "id": "216159",
+    "name": "A Few Minutes of Glory",
+    "releaseDate": "2018-12-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1783,10 +1810,10 @@
     "ordinal": 120813
   },
   {
-    "id": "297527",
-    "name": "Duckz!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9hsp.jpg",
-    "releaseDate": "2018-12-11T00:00:00.000Z",
+    "id": "298727",
+    "name": "Anbennar",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co842i.jpg",
+    "releaseDate": "2018-05-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1796,39 +1823,41 @@
     "ordinal": 121709
   },
   {
-    "id": "21999",
-    "name": "Parachronism: Order of Chaos",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3qtv.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1131430/",
-    "releaseDate": "2019-09-13T00:00:00.000Z",
+    "id": "23275",
+    "name": "Streets of Rogue",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1rbv.jpg",
+    "storeUrl": "https://store.steampowered.com/app/512900/",
+    "releaseDate": "2019-07-11T00:00:00.000Z",
     "players": {
-      "max": "unknown",
+      "max": 2,
       "online": false,
-      "localCoop": false
+      "localCoop": true
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 122605
   },
   {
-    "id": "105650",
-    "name": "Happy Empire - The Marriage Voyage",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobglb.jpg",
-    "storeUrl": "https://store.steampowered.com/app/898310/",
-    "releaseDate": "2019-03-11T00:00:00.000Z",
+    "id": "105744",
+    "name": "Elo Hell",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2q1j.jpg",
+    "storeUrl": "https://store.steampowered.com/app/655940/",
+    "releaseDate": "2019-07-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 123501
   },
   {
-    "id": "113678",
-    "name": "The Pack",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobna8.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1010710/",
-    "releaseDate": "2019-01-27T00:00:00.000Z",
+    "id": "113681",
+    "name": "Ellie",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaz1z.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1012140/",
+    "releaseDate": "2019-01-28T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1838,51 +1867,53 @@
     "ordinal": 124397
   },
   {
-    "id": "115284",
-    "name": "The Legend of Zelda: Link's Awakening",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1qve.jpg",
-    "releaseDate": "2019-09-20T00:00:00.000Z",
+    "id": "115292",
+    "name": "Flash Pool Game (8 Ball & 9 Ball)",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1jbh.jpg",
+    "releaseDate": "2019-02-14T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 125293
   },
   {
-    "id": "116917",
-    "name": "Match Three Pirates! Heir to Davy Jones",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5akc.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1020980/",
-    "releaseDate": "2019-02-27T00:00:00.000Z",
+    "id": "116920",
+    "name": "Steel Fight",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6vvh.jpg",
+    "storeUrl": "https://store.steampowered.com/app/994450/",
+    "releaseDate": "2019-04-14T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 126189
   },
   {
-    "id": "118581",
-    "name": "Variables",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3oj1.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1054800/",
-    "releaseDate": "2019-07-30T00:00:00.000Z",
+    "id": "118589",
+    "name": "First Day",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4ah7.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1067810/",
+    "releaseDate": "2019-07-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 127085
   },
   {
-    "id": "120488",
-    "name": "Don't Even Think",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2463.jpg",
-    "releaseDate": "2019-01-10T00:00:00.000Z",
+    "id": "120501",
+    "name": "Café Enchanté",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2jrh.jpg",
+    "releaseDate": "2019-10-10T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1892,10 +1923,10 @@
     "ordinal": 127981
   },
   {
-    "id": "122335",
-    "name": "Caged Bird Don't Fly Caught in a Wire Sing Like a Good Canary Come When Called",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1qf9.jpg",
-    "releaseDate": "2019-09-03T00:00:00.000Z",
+    "id": "122339",
+    "name": "Key Defence",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1qfh.jpg",
+    "releaseDate": "2019-08-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1905,37 +1936,40 @@
     "ordinal": 128877
   },
   {
-    "id": "125680",
-    "name": "Galactic Defence Squadron",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4dnx.jpg",
-    "releaseDate": "2019-11-13T00:00:00.000Z",
+    "id": "125685",
+    "name": "Gravity Garden",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co26lh.jpg",
+    "storeUrl": "https://store.steampowered.com/app/609360/",
+    "releaseDate": "2019-11-04T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 129773
   },
   {
-    "id": "130292",
-    "name": "Mr Bullet",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5a49.jpg",
-    "releaseDate": "2019-01-16T00:00:00.000Z",
+    "id": "130344",
+    "name": "Deus Ex Machina",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co29uj.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1119950/",
+    "releaseDate": "2019-09-27T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 130669
   },
   {
-    "id": "149298",
-    "name": "Warhammer 40,000: Inquisitor - Martyr: Desperate Crusade",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9zyx.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1028894/",
-    "releaseDate": "2019-04-18T00:00:00.000Z",
+    "id": "149314",
+    "name": "Warhammer 40,000: Inquisitor - Martyr: Discordant Choir",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9zyv.jpg",
+    "storeUrl": "https://store.steampowered.com/app/995654/",
+    "releaseDate": "2019-02-19T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -1945,10 +1979,10 @@
     "ordinal": 131565
   },
   {
-    "id": "174556",
-    "name": "Space Pirate Trainer DX",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co63le.jpg",
-    "releaseDate": "2019-05-21T00:00:00.000Z",
+    "id": "174688",
+    "name": "Bright Memory Mobile",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8v2q.jpg",
+    "releaseDate": "2019-11-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1958,23 +1992,24 @@
     "ordinal": 132461
   },
   {
-    "id": "224270",
-    "name": "Farm Together: Ginger Pack",
-    "storeUrl": "https://store.steampowered.com/app/924150/",
-    "releaseDate": "2019-04-05T00:00:00.000Z",
+    "id": "224308",
+    "name": "Euro Truck Simulator 2: Actros Tuning Pack",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5rps.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1056761/",
+    "releaseDate": "2019-09-04T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 133357
   },
   {
-    "id": "288986",
-    "name": "Runonce",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coccbn.jpg",
-    "releaseDate": "2019-02-27T00:00:00.000Z",
+    "id": "289031",
+    "name": "Super Contra Hot",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7u11.jpg",
+    "releaseDate": "2019-11-04T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1984,11 +2019,10 @@
     "ordinal": 134253
   },
   {
-    "id": "385030",
-    "name": "Girl Kill Zombies",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob9ne.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1156050/",
-    "releaseDate": "2019-09-27T00:00:00.000Z",
+    "id": "386270",
+    "name": "Guilty Gear 20th Anniversary Pack: Day One Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobbex.jpg",
+    "releaseDate": "2019-05-17T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -1998,25 +2032,26 @@
     "ordinal": 135149
   },
   {
-    "id": "115062",
-    "name": "Into the Radius",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5q1l.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1012790/",
-    "releaseDate": "2020-02-13T00:00:00.000Z",
+    "id": "115134",
+    "name": "Bomb Bots Arena",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2ele.jpg",
+    "storeUrl": "https://store.steampowered.com/app/754050/",
+    "releaseDate": "2020-06-01T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 136045
   },
   {
-    "id": "127245",
-    "name": "Night Witch: 588",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2jj8.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1204030/",
-    "releaseDate": "2020-01-31T00:00:00.000Z",
+    "id": "127256",
+    "name": "Dead Cells: The Bad Seed",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7jey.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1204130/",
+    "releaseDate": "2020-02-11T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2026,38 +2061,38 @@
     "ordinal": 136941
   },
   {
-    "id": "129800",
-    "name": "TT Isle of Man: Ride on the Edge 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co20hk.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1082180/",
-    "releaseDate": "2020-03-19T00:00:00.000Z",
-    "players": {
-      "max": 2,
-      "online": true,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 137837
-  },
-  {
-    "id": "132891",
-    "name": "Wanko of Marriage: Welcome to the Dog's Tail!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3lai.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1233200/",
-    "releaseDate": "2020-10-20T00:00:00.000Z",
+    "id": "129827",
+    "name": "Touch",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2p05.jpg",
+    "releaseDate": "2020-01-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "ordinal": 137837
+  },
+  {
+    "id": "132898",
+    "name": "The Last Archwing",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2rmr.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1236160/",
+    "releaseDate": "2020-03-27T00:00:00.000Z",
+    "players": {
+      "max": 2,
+      "online": true,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 138733
   },
   {
-    "id": "136003",
-    "name": "Oddworld: Stranger's Wrath HD - Limited Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3guc.jpg",
-    "releaseDate": "2020-05-26T00:00:00.000Z",
+    "id": "136026",
+    "name": "OMSI 2: London",
+    "storeUrl": "https://store.steampowered.com/app/434063/",
+    "releaseDate": "2020-12-10T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2067,94 +2102,98 @@
     "ordinal": 139629
   },
   {
-    "id": "139945",
-    "name": "Human: Fall Flat - Anniversary Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3qit.jpg",
-    "releaseDate": "2020-11-17T00:00:00.000Z",
+    "id": "139950",
+    "name": "Railway Empire: Complete Collection",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2x9m.jpg",
+    "releaseDate": "2020-05-08T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 140525
   },
   {
-    "id": "143927",
-    "name": "Thomas Scott",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co44m0.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1279480/",
-    "releaseDate": "2020-06-13T00:00:00.000Z",
+    "id": "143932",
+    "name": "The Broston Saga",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4335.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1286170/",
+    "releaseDate": "2020-04-25T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 141421
   },
   {
-    "id": "149330",
-    "name": "The Spiral Labyrinth",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4446.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1409310/",
-    "releaseDate": "2020-09-29T00:00:00.000Z",
+    "id": "149339",
+    "name": "Pole of Cold",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co475z.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1446100/",
+    "releaseDate": "2020-11-05T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 142317
   },
   {
-    "id": "155358",
-    "name": "American Truck Simulator: Cabin Accessories",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5uhu.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1477840/",
-    "releaseDate": "2020-12-03T00:00:00.000Z",
+    "id": "155368",
+    "name": "Tales of Lagoona 3: Frauds, Forgeries, and Fishsticks",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co42wh.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1471510/",
+    "releaseDate": "2020-12-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 143213
   },
   {
-    "id": "158759",
-    "name": "Harvest Green",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co427h.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1455430/",
-    "releaseDate": "2020-12-30T00:00:00.000Z",
+    "id": "158804",
+    "name": "Dung Beetle Strike",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3p8c.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1402060/",
+    "releaseDate": "2020-10-13T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 144109
   },
   {
-    "id": "166860",
-    "name": "Danger Zombies",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5cy6.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1284150/",
-    "releaseDate": "2020-05-16T00:00:00.000Z",
+    "id": "166885",
+    "name": "Kanały '44",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5hv5.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1384570/",
+    "releaseDate": "2020-10-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 145005
   },
   {
-    "id": "175746",
-    "name": "Climb Jump",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7pac.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2796060/",
-    "releaseDate": "2020-11-23T00:00:00.000Z",
+    "id": "175838",
+    "name": "A Wave of Lights",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5rma.jpg",
+    "releaseDate": "2020-08-09T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2164,9 +2203,10 @@
     "ordinal": 145901
   },
   {
-    "id": "202571",
-    "name": "IRL: The Game",
-    "releaseDate": "2020-10-20T00:00:00.000Z",
+    "id": "202712",
+    "name": "Moving On",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4sdi.jpg",
+    "releaseDate": "2020-06-08T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2176,10 +2216,10 @@
     "ordinal": 146797
   },
   {
-    "id": "239050",
-    "name": "Grand Theft Auto Online: The Cayo Perico Heist",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co66mp.jpg",
-    "releaseDate": "2020-11-15T00:00:00.000Z",
+    "id": "239344",
+    "name": "Turbo 84",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co66x6.jpg",
+    "releaseDate": "2020-10-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2189,10 +2229,10 @@
     "ordinal": 147693
   },
   {
-    "id": "295935",
-    "name": "Monopoly Junior",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coarnm.jpg",
-    "releaseDate": "2020-09-07T00:00:00.000Z",
+    "id": "296062",
+    "name": "Fantasy Mosaics 41: Wizard's Realm",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co81ji.jpg",
+    "releaseDate": "2020-06-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2202,13 +2242,12 @@
     "ordinal": 148589
   },
   {
-    "id": "369722",
-    "name": "Wu Confucian Painting Volume: Apocalypse",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coajix.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1204490/",
-    "releaseDate": "2020-07-07T00:00:00.000Z",
+    "id": "369891",
+    "name": "Quinb: 4 Players Reaction Game",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coajrw.jpg",
+    "releaseDate": "2020-12-13T00:00:00.000Z",
     "players": {
-      "max": "unknown",
+      "max": 4,
       "online": false,
       "localCoop": false
     },
@@ -2216,25 +2255,25 @@
     "ordinal": 149485
   },
   {
-    "id": "122429",
-    "name": "Firestone: Online Idle RPG",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co1xcx.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1013320/",
-    "releaseDate": "2021-01-11T00:00:00.000Z",
+    "id": "122795",
+    "name": "Wargs",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3lel.jpg",
+    "storeUrl": "https://store.steampowered.com/app/766210/",
+    "releaseDate": "2021-08-27T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 150381
   },
   {
-    "id": "142281",
-    "name": "Frame of Mind",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2nvz.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1485250/",
-    "releaseDate": "2021-01-19T00:00:00.000Z",
+    "id": "142313",
+    "name": "Cultist Simulator: Initiate Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2nyn.jpg",
+    "releaseDate": "2021-02-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2244,65 +2283,69 @@
     "ordinal": 151277
   },
   {
-    "id": "145538",
-    "name": "MLB 9 Innings 21",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2xd5.jpg",
-    "releaseDate": "2021-02-05T00:00:00.000Z",
+    "id": "145560",
+    "name": "Bug Fables: Aphid Festival",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2xgb.jpg",
+    "releaseDate": "2021-04-01T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 152173
   },
   {
-    "id": "148260",
-    "name": "Dàndàn Zhǎngmén Rìzhì",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5cxl.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1567830/",
-    "releaseDate": "2021-05-20T00:00:00.000Z",
+    "id": "148272",
+    "name": "Reconnect: The Heart of Darkness",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co30qg.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1492260/",
+    "releaseDate": "2021-06-10T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 153069
   },
   {
-    "id": "150895",
-    "name": "Dig Deep: Race to the Core!",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3om1.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1526170/",
-    "releaseDate": "2021-02-16T00:00:00.000Z",
+    "id": "150918",
+    "name": "Bunny Count",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3mn9.jpg",
+    "storeUrl": "https://store.steampowered.com/app/931840/",
+    "releaseDate": "2021-01-22T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 153965
   },
   {
-    "id": "153139",
-    "name": "#1 Crosswords Bundle",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3bbs.jpg",
-    "releaseDate": "2021-06-25T00:00:00.000Z",
+    "id": "153145",
+    "name": "Grayscale Memories",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co469g.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1645780/",
+    "releaseDate": "2021-06-09T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 154861
   },
   {
-    "id": "155912",
-    "name": "Escape the Underground",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3qd9.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1463530/",
-    "releaseDate": "2021-03-15T00:00:00.000Z",
+    "id": "155928",
+    "name": "Partless Ron",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3quw.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1560750/",
+    "releaseDate": "2021-03-14T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2312,24 +2355,25 @@
     "ordinal": 155757
   },
   {
-    "id": "159223",
-    "name": "Chess with Lasers",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocj9h.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1517240/",
-    "releaseDate": "2021-09-14T00:00:00.000Z",
+    "id": "159251",
+    "name": "Dragon Drop",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3m7y.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1581500/",
+    "releaseDate": "2021-09-27T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": 4,
+      "online": false,
       "localCoop": true
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 156653
   },
   {
-    "id": "160846",
-    "name": "Tiger Tank 59 I: Break the Fog MP008",
-    "storeUrl": "https://store.steampowered.com/app/1687807/",
-    "releaseDate": "2021-07-07T00:00:00.000Z",
+    "id": "160852",
+    "name": "Tiger Tank 59 I: Air Strike MP064",
+    "storeUrl": "https://store.steampowered.com/app/1675783/",
+    "releaseDate": "2021-06-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2339,51 +2383,54 @@
     "ordinal": 157549
   },
   {
-    "id": "163746",
-    "name": "Old Quarry",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3qkc.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1591610/",
-    "releaseDate": "2021-04-15T00:00:00.000Z",
+    "id": "163758",
+    "name": "Porter in the Castle",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3vih.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1691790/",
+    "releaseDate": "2021-08-24T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 158445
   },
   {
-    "id": "166147",
-    "name": "Guilty Gear: Strive - Additional Character 2: Jack-O'",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6if3.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1544402/",
-    "releaseDate": "2021-08-27T00:00:00.000Z",
-    "players": {
-      "max": 2,
-      "online": true,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 159341
-  },
-  {
-    "id": "170557",
-    "name": "Hidden Objects: Cartoon Fantasy",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5eai.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1746730/",
-    "releaseDate": "2021-09-15T00:00:00.000Z",
+    "id": "166168",
+    "name": "Space X Collector",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4h4l.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1723440/",
+    "releaseDate": "2021-09-02T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 159341
+  },
+  {
+    "id": "170590",
+    "name": "Pre-Strike",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4h10.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1400080/",
+    "releaseDate": "2021-07-02T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 160237
   },
   {
-    "id": "173634",
-    "name": "Tiger Fighter 1931: Tora! MP068",
-    "storeUrl": "https://store.steampowered.com/app/1704027/",
+    "id": "173640",
+    "name": "Tiger Fighter 1931: Tora! MP062",
+    "storeUrl": "https://store.steampowered.com/app/1704021/",
     "releaseDate": "2021-09-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -2394,50 +2441,55 @@
     "ordinal": 161133
   },
   {
-    "id": "179208",
-    "name": "Crawlspace",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5d6p.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1787860/",
-    "releaseDate": "2021-11-03T00:00:00.000Z",
+    "id": "179214",
+    "name": "The Robin",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4hpk.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1772750/",
+    "releaseDate": "2021-11-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 162029
   },
   {
-    "id": "186947",
-    "name": "Escape from Mirrorland: The Adventures of Nyanzou & Kumakichi - Escape Game Series",
-    "releaseDate": "2021-12-16T00:00:00.000Z",
+    "id": "186955",
+    "name": "Kubinashi Recollection",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4coa.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1635980/",
+    "releaseDate": "2021-03-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 162925
   },
   {
-    "id": "190131",
-    "name": "A Distant Stabbing",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co56xr.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1805230/",
-    "releaseDate": "2021-12-15T00:00:00.000Z",
+    "id": "190155",
+    "name": "The Infecting 3",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5n4z.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1814560/",
+    "releaseDate": "2021-11-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 163821
   },
   {
-    "id": "194333",
-    "name": "Simon's Cat: Story Time",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4kcf.jpg",
-    "releaseDate": "2021-04-02T00:00:00.000Z",
+    "id": "194355",
+    "name": "Not Escape Room",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4kd5.jpg",
+    "releaseDate": "2021-09-11T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2447,36 +2499,36 @@
     "ordinal": 164717
   },
   {
-    "id": "218147",
-    "name": "Cr1me Fr0g",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5wmt.jpg",
-    "releaseDate": "2021-09-13T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 165613
-  },
-  {
-    "id": "246206",
-    "name": "Nullscape",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6ee9.jpg",
-    "releaseDate": "2021-09-02T00:00:00.000Z",
+    "id": "218195",
+    "name": "Baneball",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5b1w.jpg",
+    "releaseDate": "2021-03-31T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "ordinal": 165613
+  },
+  {
+    "id": "246585",
+    "name": "Mother 2 Deluxe",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co79f5.jpg",
+    "releaseDate": "2021-02-04T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
     "ordinal": 166509
   },
   {
-    "id": "299315",
-    "name": "Of Slimes and Sandwiches",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co84sw.jpg",
-    "releaseDate": "2021-10-08T00:00:00.000Z",
+    "id": "299866",
+    "name": "Mythia",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co85nq.jpg",
+    "releaseDate": "2021-08-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2486,10 +2538,9 @@
     "ordinal": 167405
   },
   {
-    "id": "362817",
-    "name": "Pokémon Dumbdumb Island",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coac02.jpg",
-    "releaseDate": "2021-07-11T00:00:00.000Z",
+    "id": "362912",
+    "name": "Ratstronaut",
+    "releaseDate": "2021-11-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2499,38 +2550,40 @@
     "ordinal": 168301
   },
   {
-    "id": "130957",
-    "name": "Extremely Realistic Siege Warfare Simulator",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3a0f.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1222210/",
-    "releaseDate": "2022-09-07T00:00:00.000Z",
+    "id": "131957",
+    "name": "Beyond the Wire",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co2iug.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1058650/",
+    "releaseDate": "2022-08-31T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 169197
   },
   {
-    "id": "164119",
-    "name": "Prehistoric Marine Monsters",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3vjt.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1679670/",
-    "releaseDate": "2022-10-01T00:00:00.000Z",
+    "id": "164177",
+    "name": "Ruggnar",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co47ag.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1303050/",
+    "releaseDate": "2022-06-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 170093
   },
   {
-    "id": "187177",
-    "name": "Galactic Ravager",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5de4.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1823860/",
+    "id": "187182",
+    "name": "SuchInheritance",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5okk.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1842310/",
     "releaseDate": "2022-01-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -2541,11 +2594,10 @@
     "ordinal": 170989
   },
   {
-    "id": "190848",
-    "name": "Siege of Treboulain",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5l6o.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1849760/",
-    "releaseDate": "2022-04-14T00:00:00.000Z",
+    "id": "190874",
+    "name": "Inkfish",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4g6t.jpg",
+    "releaseDate": "2022-01-09T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2555,11 +2607,11 @@
     "ordinal": 171885
   },
   {
-    "id": "193472",
-    "name": "World of Retailing",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co59r5.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1901090/",
-    "releaseDate": "2022-03-22T00:00:00.000Z",
+    "id": "193480",
+    "name": "Legacy of Aeroja",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5isr.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1824380/",
+    "releaseDate": "2022-03-04T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2569,24 +2621,26 @@
     "ordinal": 172781
   },
   {
-    "id": "196248",
-    "name": "Teisatsu",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4mif.jpg",
-    "releaseDate": "2022-04-02T00:00:00.000Z",
+    "id": "196263",
+    "name": "Bunker 2322",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5ceq.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1936130/",
+    "releaseDate": "2022-04-20T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 173677
   },
   {
-    "id": "199678",
-    "name": "Armageddon War: Old Era Wreckers",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co583p.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1867550/",
-    "releaseDate": "2022-05-06T00:00:00.000Z",
+    "id": "199686",
+    "name": "Sunline",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5on0.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1964000/",
+    "releaseDate": "2022-05-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2596,38 +2650,40 @@
     "ordinal": 174573
   },
   {
-    "id": "202666",
-    "name": "Godland: The Fire Quest",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5dqc.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1428570/",
-    "releaseDate": "2022-05-31T00:00:00.000Z",
+    "id": "202671",
+    "name": "Corgi",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5d45.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2000360/",
+    "releaseDate": "2022-05-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 175469
   },
   {
-    "id": "205861",
-    "name": "Blue Star Mobile Team",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5bsc.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2011540/",
-    "releaseDate": "2022-06-28T00:00:00.000Z",
+    "id": "205867",
+    "name": "Everyone Moves With You",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5hg3.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2009220/",
+    "releaseDate": "2022-06-27T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 176365
   },
   {
-    "id": "209838",
-    "name": "Digimon Survive: Month 1 Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co50to.jpg",
-    "releaseDate": "2022-07-29T00:00:00.000Z",
+    "id": "209918",
+    "name": "Round Invaders Rush",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co4znn.jpg",
+    "releaseDate": "2022-08-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2637,25 +2693,25 @@
     "ordinal": 177261
   },
   {
-    "id": "213409",
-    "name": "Trainz Railroad Simulator 2019: QR National GE C44aci",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6ito.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2096430/",
-    "releaseDate": "2022-08-05T00:00:00.000Z",
+    "id": "213424",
+    "name": "The Hunter's Journals: Wight Chapel Dreams",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5n4r.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2084250/",
+    "releaseDate": "2022-10-31T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 178157
   },
   {
-    "id": "216771",
-    "name": "0Hz Zero Hertz",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6ape.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2006640/",
-    "releaseDate": "2022-05-18T00:00:00.000Z",
+    "id": "216794",
+    "name": "The last four",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co58e6.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2116840/",
+    "releaseDate": "2022-10-05T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2665,52 +2721,56 @@
     "ordinal": 179053
   },
   {
-    "id": "220881",
-    "name": "Shutter Nyan!: Enhanced Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5ged.jpg",
-    "releaseDate": "2022-10-20T00:00:00.000Z",
+    "id": "220915",
+    "name": "King of Water",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5fym.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2142370/",
+    "releaseDate": "2022-11-05T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 179949
   },
   {
-    "id": "224894",
-    "name": "Castle Defense Battles",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5qyj.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2196150/",
-    "releaseDate": "2022-11-13T00:00:00.000Z",
+    "id": "224904",
+    "name": "Book Travelers: A Victorian Story - Collector's Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7gmv.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2193500/",
+    "releaseDate": "2022-11-04T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 180845
   },
   {
-    "id": "228204",
-    "name": "Beach Invasion 1944",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7iqs.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2209680/",
-    "releaseDate": "2022-12-02T00:00:00.000Z",
+    "id": "228213",
+    "name": "Fate Seeker: Journey",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5yrq.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2124420/",
+    "releaseDate": "2022-12-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 181741
   },
   {
-    "id": "236265",
-    "name": "Lord of Bones",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co64fm.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2246820/",
-    "releaseDate": "2022-12-30T00:00:00.000Z",
+    "id": "236317",
+    "name": "Fushigi no Daibouken Chiruno Kenzan!",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7hb8.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2056110/",
+    "releaseDate": "2022-12-26T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2720,10 +2780,9 @@
     "ordinal": 182637
   },
   {
-    "id": "259200",
-    "name": "Summit: Virtual Pro-Wrestling Gamma",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6uv3.jpg",
-    "releaseDate": "2022-10-21T00:00:00.000Z",
+    "id": "259366",
+    "name": "Every 10 Seconds I Find New and Exciting Ways to Hate Myself",
+    "releaseDate": "2022-10-03T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2733,105 +2792,114 @@
     "ordinal": 183533
   },
   {
-    "id": "294670",
-    "name": "Ad Astra",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co808n.jpg",
-    "releaseDate": "2022-06-19T00:00:00.000Z",
+    "id": "294792",
+    "name": "Pikmin 2 Maps in Pikmin 3",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8q14.jpg",
+    "releaseDate": "2022-05-01T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 184429
   },
   {
-    "id": "345246",
-    "name": "Epic Mickey Awesome Edition",
-    "releaseDate": "2022-03-23T00:00:00.000Z",
+    "id": "345528",
+    "name": "Nightmare Hunter",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc13u.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2128970/",
+    "releaseDate": "2022-10-30T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 185325
   },
   {
-    "id": "54189",
-    "name": "Tourist Trap",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7f4p.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2206660/",
-    "releaseDate": "2023-11-15T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 186221
-  },
-  {
-    "id": "173080",
-    "name": "Phantom Blade: Executioners",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7ag9.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2365940/",
-    "releaseDate": "2023-11-02T00:00:00.000Z",
+    "id": "55472",
+    "name": "Super Bunny Man",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6i0j.jpg",
+    "storeUrl": "https://store.steampowered.com/app/673750/",
+    "releaseDate": "2023-05-16T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
+      "localCoop": true
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 186221
+  },
+  {
+    "id": "173363",
+    "name": "Street Legal: Revision",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5odl.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1571280/",
+    "releaseDate": "2023-07-28T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 187117
   },
   {
-    "id": "211215",
-    "name": "Space Trash Scavenger",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5mak.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1759350/",
-    "releaseDate": "2023-11-09T00:00:00.000Z",
+    "id": "211241",
+    "name": "Delicious Dungeon",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co52c9.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2072360/",
+    "releaseDate": "2023-11-03T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 188013
   },
   {
-    "id": "226002",
-    "name": "Tempo Trigger",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5sc2.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2202930/",
-    "releaseDate": "2023-02-21T00:00:00.000Z",
+    "id": "226021",
+    "name": "Popcorn Rocket",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co5scl.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2182190/",
+    "releaseDate": "2023-10-17T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 188909
   },
   {
-    "id": "233267",
-    "name": "Coffee Talk: Episode 2 - Hibiscus & Butterfly: Collector's Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6sqz.jpg",
-    "releaseDate": "2023-10-24T00:00:00.000Z",
+    "id": "233276",
+    "name": "RPG Architect",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co61ul.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2158670/",
+    "releaseDate": "2023-01-20T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 189805
   },
   {
-    "id": "236780",
-    "name": "Ravva and the Phantom Library",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6wzd.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2271490/",
-    "releaseDate": "2023-07-07T00:00:00.000Z",
+    "id": "236802",
+    "name": "Battle for Borders",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co681s.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2151900/",
+    "releaseDate": "2023-02-22T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2841,10 +2909,10 @@
     "ordinal": 190701
   },
   {
-    "id": "240151",
-    "name": "Pokémon Go: Rising Heroes",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co68ws.jpg",
-    "releaseDate": "2023-03-01T00:00:00.000Z",
+    "id": "240179",
+    "name": "Moe Waifu H",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6sec.jpg",
+    "releaseDate": "2023-04-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2854,11 +2922,11 @@
     "ordinal": 191597
   },
   {
-    "id": "243532",
-    "name": "Pactum + Episode 1",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6e2m.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2366730/",
-    "releaseDate": "2023-04-07T00:00:00.000Z",
+    "id": "243537",
+    "name": "Kill Your Shapes",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6dh6.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2329950/",
+    "releaseDate": "2023-03-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2868,10 +2936,10 @@
     "ordinal": 192493
   },
   {
-    "id": "246880",
-    "name": "Cyber Neon Bundle",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6rum.jpg",
-    "releaseDate": "2023-04-27T00:00:00.000Z",
+    "id": "246885",
+    "name": "Perquisite Strata X",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6eza.jpg",
+    "releaseDate": "2023-04-23T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2881,11 +2949,10 @@
     "ordinal": 193389
   },
   {
-    "id": "249770",
-    "name": "Architecture Zeitgeist",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6hsj.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2318860/",
-    "releaseDate": "2023-03-27T00:00:00.000Z",
+    "id": "249789",
+    "name": "Hidden",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9tfq.jpg",
+    "releaseDate": "2023-05-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2895,38 +2962,40 @@
     "ordinal": 194285
   },
   {
-    "id": "252539",
-    "name": "Bloody Woman",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6lmq.jpg",
-    "releaseDate": "2023-05-02T00:00:00.000Z",
+    "id": "252591",
+    "name": "Virus Infinite",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6lo6.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2353640/",
+    "releaseDate": "2023-08-02T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 195181
   },
   {
-    "id": "255280",
-    "name": "Poly Jigsaw: Furries",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6uka.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2485470/",
-    "releaseDate": "2023-07-07T00:00:00.000Z",
+    "id": "255286",
+    "name": "My Lovely Pets 2: Collector's Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6r29.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2480780/",
+    "releaseDate": "2023-07-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 196077
   },
   {
-    "id": "258225",
-    "name": "Good Luck My Lord",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co95dk.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2476020/",
-    "releaseDate": "2023-08-30T00:00:00.000Z",
+    "id": "258253",
+    "name": "Pretzel Rides VR",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6tvc.jpg",
+    "releaseDate": "2023-05-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2936,25 +3005,25 @@
     "ordinal": 196973
   },
   {
-    "id": "261396",
-    "name": "End Up Alone",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6xll.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2532700/",
-    "releaseDate": "2023-08-14T00:00:00.000Z",
+    "id": "261417",
+    "name": "As Talk As Walk Wayfarer Team: One Percent Sleepy",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8d09.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2465530/",
+    "releaseDate": "2023-08-28T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 197869
   },
   {
-    "id": "264548",
-    "name": "Girl Up",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co72o1.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2567040/",
-    "releaseDate": "2023-09-16T00:00:00.000Z",
+    "id": "264555",
+    "name": "Pass Problems",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9y57.jpg",
+    "releaseDate": "2023-09-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2964,10 +3033,10 @@
     "ordinal": 198765
   },
   {
-    "id": "267311",
-    "name": "Motorsport Manager 4",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co88c6.jpg",
-    "releaseDate": "2023-09-14T00:00:00.000Z",
+    "id": "267355",
+    "name": "Casual Crusade",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7kiw.jpg",
+    "releaseDate": "2023-09-09T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -2977,38 +3046,40 @@
     "ordinal": 199661
   },
   {
-    "id": "270902",
-    "name": "Sorrows End",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7cik.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2628370/",
-    "releaseDate": "2023-10-31T00:00:00.000Z",
+    "id": "270934",
+    "name": "GoGoGo",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co77hi.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2626450/",
+    "releaseDate": "2023-10-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 200557
   },
   {
-    "id": "274360",
-    "name": "The Da Vinci Cryptex",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7aur.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2666270/",
-    "releaseDate": "2023-11-08T00:00:00.000Z",
+    "id": "274379",
+    "name": "Drone Flight Simulator Online",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7co4.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2668180/",
+    "releaseDate": "2023-11-10T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 201453
   },
   {
-    "id": "276866",
-    "name": "Madden NFL 24: Michael Vick 20th Anniversary Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7dkh.jpg",
-    "releaseDate": "2023-11-15T00:00:00.000Z",
+    "id": "276889",
+    "name": "Forza Customs",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9jjc.jpg",
+    "releaseDate": "2023-10-17T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3018,24 +3089,23 @@
     "ordinal": 202349
   },
   {
-    "id": "279875",
-    "name": "Arcade Archives: Pole Position II",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coad1x.jpg",
-    "releaseDate": "2023-12-07T00:00:00.000Z",
+    "id": "279885",
+    "name": "AEW: Fight Forever - Bring the Boom Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7t5n.jpg",
+    "releaseDate": "2023-12-06T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
+      "max": 4,
+      "online": true,
+      "localCoop": true
     },
     "sessionShape": "openended",
     "ordinal": 203245
   },
   {
-    "id": "286964",
-    "name": "Tiny Connections",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7rnw.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2736650/",
-    "releaseDate": "2023-11-09T00:00:00.000Z",
+    "id": "287145",
+    "name": "Grave Digger",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co81pq.jpg",
+    "releaseDate": "2023-10-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3045,10 +3115,10 @@
     "ordinal": 204141
   },
   {
-    "id": "311392",
-    "name": "IKD",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8vcv.jpg",
-    "releaseDate": "2023-08-01T00:00:00.000Z",
+    "id": "311942",
+    "name": "Bring Your Own Class",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8mco.jpg",
+    "releaseDate": "2023-05-22T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3058,11 +3128,10 @@
     "ordinal": 205037
   },
   {
-    "id": "355847",
-    "name": "Golf With Your Friends: Teams Mascot Sticker Pack",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa54j.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2710870/",
-    "releaseDate": "2023-11-02T00:00:00.000Z",
+    "id": "356081",
+    "name": "Synth Riders: The Midnight - \"Sunset\"",
+    "storeUrl": "https://store.steampowered.com/app/2484744/",
+    "releaseDate": "2023-07-13T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -3072,10 +3141,10 @@
     "ordinal": 205933
   },
   {
-    "id": "406789",
-    "name": "Catburglar",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc97a.jpg",
-    "releaseDate": "2023-11-19T00:00:00.000Z",
+    "id": "407427",
+    "name": "Terror on Tromos 5",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coca9x.jpg",
+    "releaseDate": "2023-12-01T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3085,67 +3154,68 @@
     "ordinal": 206829
   },
   {
-    "id": "194436",
-    "name": "Flintlock: The Siege of Dawn",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co84rp.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1832040/",
-    "releaseDate": "2024-07-18T00:00:00.000Z",
+    "id": "195136",
+    "name": "Sunshower",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9ofr.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1942850/",
+    "releaseDate": "2024-11-01T00:00:00.000Z",
     "players": {
-      "max": "unknown",
+      "max": 2,
       "online": false,
-      "localCoop": false
+      "localCoop": true
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 207725
   },
   {
-    "id": "237267",
-    "name": "Kiki",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobhkv.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2142680/",
-    "releaseDate": "2024-04-08T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 208621
-  },
-  {
-    "id": "258660",
-    "name": "Bullet",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8g6u.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2494360/",
-    "releaseDate": "2024-06-19T00:00:00.000Z",
-    "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
-    },
-    "sessionShape": "openended",
-    "ordinal": 209517
-  },
-  {
-    "id": "272346",
-    "name": "Grooove",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co78vy.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2587340/",
-    "releaseDate": "2024-11-15T00:00:00.000Z",
+    "id": "238133",
+    "name": "Pogo Girlfriend",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co65x4.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2318880/",
+    "releaseDate": "2024-03-15T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "ordinal": 208621
+  },
+  {
+    "id": "258706",
+    "name": "One S'More",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7i1j.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2452930/",
+    "releaseDate": "2024-09-27T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 209517
+  },
+  {
+    "id": "272433",
+    "name": "End The World",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co78xx.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3026620/",
+    "releaseDate": "2024-06-06T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
     "ordinal": 210413
   },
   {
-    "id": "279962",
-    "name": "Rock and Roots",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8dac.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2722380/",
-    "releaseDate": "2024-02-28T00:00:00.000Z",
+    "id": "280067",
+    "name": "Hentai Girls: College Crush",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7s8w.jpg",
+    "releaseDate": "2024-02-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3155,52 +3225,55 @@
     "ordinal": 211309
   },
   {
-    "id": "284863",
-    "name": "Fuel & Food Bundle",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7pc7.jpg",
-    "releaseDate": "2024-01-16T00:00:00.000Z",
+    "id": "284875",
+    "name": "Connected Hearts: Cost of Beauty Collector's Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7pcn.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2737810/",
+    "releaseDate": "2024-02-06T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 212205
   },
   {
-    "id": "287606",
-    "name": "Starground",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7s9u.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2793380/",
-    "releaseDate": "2024-08-19T00:00:00.000Z",
+    "id": "287657",
+    "name": "Kittenrock Cats - A Hidden Object Game",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobx5o.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2786450/",
+    "releaseDate": "2024-02-20T00:00:00.000Z",
     "players": {
-      "max": 8,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 213101
   },
   {
-    "id": "289641",
-    "name": "Street Cleaner Simulator",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7ulx.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2856100/",
-    "releaseDate": "2024-03-25T00:00:00.000Z",
+    "id": "289649",
+    "name": "Hidden Cats In Breeze Village",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co88ze.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2845400/",
+    "releaseDate": "2024-03-06T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 213997
   },
   {
-    "id": "291457",
-    "name": "Find Room 96",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co996t.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2732640/",
-    "releaseDate": "2024-01-01T00:00:00.000Z",
+    "id": "291472",
+    "name": "Jets Killer",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7w9r.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2879240/",
+    "releaseDate": "2024-03-25T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3210,24 +3283,25 @@
     "ordinal": 214893
   },
   {
-    "id": "293539",
-    "name": "Faceless",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7z40.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2854770/",
-    "releaseDate": "2024-03-30T00:00:00.000Z",
+    "id": "293561",
+    "name": "Heromantic",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7z4k.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2836270/",
+    "releaseDate": "2024-05-14T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 215789
   },
   {
-    "id": "295713",
-    "name": "Zombodesert",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co818i.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2864300/",
+    "id": "295724",
+    "name": "Wobbles",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co818p.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2270370/",
     "releaseDate": "2024-04-05T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -3238,11 +3312,11 @@
     "ordinal": 216685
   },
   {
-    "id": "298155",
-    "name": "Tashikani",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co83j9.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2859060/",
-    "releaseDate": "2024-06-01T00:00:00.000Z",
+    "id": "298174",
+    "name": "Outlanders: The Keeper's Shanty",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co919o.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2815220/",
+    "releaseDate": "2024-04-11T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3252,51 +3326,52 @@
     "ordinal": 217581
   },
   {
-    "id": "301271",
-    "name": "Search and Rescue: Snowman From Outer Space",
-    "storeUrl": "https://store.steampowered.com/app/2931140/",
-    "releaseDate": "2024-04-21T00:00:00.000Z",
+    "id": "301290",
+    "name": "Scorching Earth",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co87kz.jpg",
+    "releaseDate": "2024-05-16T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 218477
   },
   {
-    "id": "303374",
-    "name": "Bike Stunt 3D Freestyle",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co89rz.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2476990/",
-    "releaseDate": "2024-10-22T00:00:00.000Z",
+    "id": "303381",
+    "name": "Bug Ball 3D",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8of9.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2976450/",
+    "releaseDate": "2024-10-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 219373
   },
   {
-    "id": "305519",
-    "name": "Physical Spheres",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8fvs.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2900800/",
-    "releaseDate": "2024-06-18T00:00:00.000Z",
+    "id": "305527",
+    "name": "The Finals: Season 3 Starter Pack",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaqyl.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3025990/",
+    "releaseDate": "2024-06-13T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 220269
   },
   {
-    "id": "308302",
-    "name": "Colorama Cubes",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8j5i.jpg",
-    "releaseDate": "2024-08-02T00:00:00.000Z",
+    "id": "308317",
+    "name": "Elemental Cube",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8i4x.jpg",
+    "releaseDate": "2024-06-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3306,51 +3381,56 @@
     "ordinal": 221165
   },
   {
-    "id": "310146",
-    "name": "Death Sword Spirit",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8kej.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2919200/",
-    "releaseDate": "2024-05-11T00:00:00.000Z",
+    "id": "310161",
+    "name": "Space Zone",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8kez.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2926460/",
+    "releaseDate": "2024-05-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 222061
   },
   {
-    "id": "312197",
-    "name": "I am Sorry",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8nfq.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3034120/",
-    "releaseDate": "2024-08-08T00:00:00.000Z",
+    "id": "312208",
+    "name": "Black Submarine: Deep Seek",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc268.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3024710/",
+    "releaseDate": "2024-10-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 222957
   },
   {
-    "id": "314930",
-    "name": "PowerWash Simulator: Shrek Special Pack",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8qmk.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2983890/",
-    "releaseDate": "2024-10-10T00:00:00.000Z",
+    "id": "314944",
+    "name": "Castlevania Dominus Collection",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob9xk.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2369900/",
+    "releaseDate": "2024-08-27T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 223853
   },
   {
-    "id": "317683",
-    "name": "RetroRealms Arcade: Ash vs. Evil Dead Add-On",
-    "releaseDate": "2024-10-18T00:00:00.000Z",
+    "id": "317691",
+    "name": "Prince of Persia: The Lost Crown - Complete Upgrade Pack",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cocckn.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3140380/",
+    "releaseDate": "2024-09-17T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3360,24 +3440,25 @@
     "ordinal": 224749
   },
   {
-    "id": "319968",
-    "name": "Bomb the Town",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8ysj.jpg",
-    "releaseDate": "2024-10-01T00:00:00.000Z",
+    "id": "319987",
+    "name": "GatePass",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8y71.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3250940/",
+    "releaseDate": "2024-10-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 225645
   },
   {
-    "id": "322636",
-    "name": "Memocratie",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9268.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2843030/",
-    "releaseDate": "2024-05-20T00:00:00.000Z",
+    "id": "322656",
+    "name": "Ball Rush 2",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co927w.jpg",
+    "releaseDate": "2024-11-02T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3387,23 +3468,22 @@
     "ordinal": 226541
   },
   {
-    "id": "325166",
-    "name": "Lost Footage: Sound In The Silence",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co94z6.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3389500/",
-    "releaseDate": "2024-12-19T00:00:00.000Z",
+    "id": "325225",
+    "name": "Hot Wheels: Race Off+",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9jjb.jpg",
+    "releaseDate": "2024-12-05T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 227437
   },
   {
-    "id": "328758",
-    "name": "Fit My Zoo: Special Edition",
-    "releaseDate": "2024-09-06T00:00:00.000Z",
+    "id": "328765",
+    "name": "Hotel Hustle: Definitive Edition",
+    "releaseDate": "2024-09-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3413,11 +3493,10 @@
     "ordinal": 228333
   },
   {
-    "id": "336028",
-    "name": "MySims Kingdom",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9jux.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3328910/",
-    "releaseDate": "2024-11-19T00:00:00.000Z",
+    "id": "336115",
+    "name": "Astroidle",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9k9s.jpg",
+    "releaseDate": "2024-06-19T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3427,24 +3506,25 @@
     "ordinal": 229229
   },
   {
-    "id": "340402",
-    "name": "Guardian of the Grave",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob7z0.jpg",
-    "storeUrl": "https://store.steampowered.com/app/536360/",
-    "releaseDate": "2024-10-12T00:00:00.000Z",
+    "id": "340417",
+    "name": "Harvest Village",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coago6.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3210720/",
+    "releaseDate": "2024-12-09T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 230125
   },
   {
-    "id": "356838",
-    "name": "Idutshane",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa9y0.jpg",
-    "releaseDate": "2024-08-05T00:00:00.000Z",
+    "id": "357197",
+    "name": "Hello, Neighbor! Reborn",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa6dh.jpg",
+    "releaseDate": "2024-11-28T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3454,10 +3534,9 @@
     "ordinal": 231021
   },
   {
-    "id": "370515",
-    "name": "Petscop: Restored",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob00q.jpg",
-    "releaseDate": "2024-10-26T00:00:00.000Z",
+    "id": "370639",
+    "name": "Fortnite Festival: Creatures In Heaven",
+    "releaseDate": "2024-05-03T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3467,94 +3546,97 @@
     "ordinal": 231917
   },
   {
-    "id": "404364",
-    "name": "RPG Plus: Virtual Tabletop",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc671.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2072070/",
-    "releaseDate": "2024-02-14T00:00:00.000Z",
+    "id": "404602",
+    "name": "Tales of Sintra: The Dark Vortex",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc6iw.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2285640/",
+    "releaseDate": "2024-02-27T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 232813
   },
   {
-    "id": "215613",
-    "name": "Microscopic",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co564s.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2105430/",
-    "releaseDate": "2025-11-09T00:00:00.000Z",
+    "id": "216193",
+    "name": "Sword: Depths of the Void",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co6g7h.jpg",
+    "releaseDate": "2025-06-01T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
-      "localCoop": false
+      "max": 3,
+      "online": true,
+      "localCoop": true
     },
     "sessionShape": "openended",
     "ordinal": 233709
   },
   {
-    "id": "267128",
-    "name": "The Diner at the End of the Galaxy",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co983s.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2577420/",
-    "releaseDate": "2025-11-18T00:00:00.000Z",
+    "id": "267466",
+    "name": "Coneru: Dimension Girl",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7gqi.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2600700/",
+    "releaseDate": "2025-05-28T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 234605
   },
   {
-    "id": "295769",
-    "name": "Chromatrix",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co819x.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2859510/",
-    "releaseDate": "2025-03-13T00:00:00.000Z",
+    "id": "295796",
+    "name": "Dodgy Deliveries",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9chn.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2231300/",
+    "releaseDate": "2025-01-31T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 235501
   },
   {
-    "id": "315613",
-    "name": "Backrooms Media",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8swy.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2714970/",
-    "releaseDate": "2025-12-16T00:00:00.000Z",
-    "players": {
-      "max": 5,
-      "online": true,
-      "localCoop": true
-    },
-    "sessionShape": "openended",
-    "ordinal": 236397
-  },
-  {
-    "id": "327411",
-    "name": "Fentanyl Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co98q0.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3035890/",
-    "releaseDate": "2025-09-18T00:00:00.000Z",
+    "id": "315734",
+    "name": "Beastkin Training: The Trials of a Beastkin Noblewoman",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co8trc.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2939800/",
+    "releaseDate": "2025-04-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
+    "ordinal": 236397
+  },
+  {
+    "id": "327450",
+    "name": "Acid Web",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co99tm.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3190560/",
+    "releaseDate": "2025-04-01T00:00:00.000Z",
+    "players": {
+      "max": "unknown",
+      "online": false,
+      "localCoop": false
+    },
+    "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 237293
   },
   {
-    "id": "330690",
-    "name": "The Pow-er",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9d9e.jpg",
-    "releaseDate": "2025-02-02T00:00:00.000Z",
+    "id": "330724",
+    "name": "Bubble Dreams 3D",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9dao.jpg",
+    "releaseDate": "2025-01-28T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3564,25 +3646,26 @@
     "ordinal": 238189
   },
   {
-    "id": "333485",
-    "name": "Dogs Contrast",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9gip.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3375220/",
-    "releaseDate": "2025-03-05T00:00:00.000Z",
+    "id": "333492",
+    "name": "Rabbit Trail",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9gjc.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3371710/",
+    "releaseDate": "2025-03-06T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 239085
   },
   {
-    "id": "335998",
-    "name": "Hollowglass",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9jt8.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3547580/",
-    "releaseDate": "2025-03-14T00:00:00.000Z",
+    "id": "336004",
+    "name": "Yeonkyung",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9jtf.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3467700/",
+    "releaseDate": "2025-03-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3592,11 +3675,10 @@
     "ordinal": 239981
   },
   {
-    "id": "338631",
-    "name": "So Fart Away",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9mm4.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2895750/",
-    "releaseDate": "2025-03-07T00:00:00.000Z",
+    "id": "338646",
+    "name": "How a Body Sounds",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9nv8.jpg",
+    "releaseDate": "2025-03-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3606,10 +3688,11 @@
     "ordinal": 240877
   },
   {
-    "id": "341476",
-    "name": "Fallout 76: Ghoul Within",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9pz8.jpg",
-    "releaseDate": "2025-03-18T00:00:00.000Z",
+    "id": "341503",
+    "name": "Oh Boy Cheese Remastered",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9q0n.jpg",
+    "storeUrl": "https://store.steampowered.com/app/2858750/",
+    "releaseDate": "2025-01-25T00:00:00.000Z",
     "players": {
       "max": 2,
       "online": true,
@@ -3619,24 +3702,26 @@
     "ordinal": 241773
   },
   {
-    "id": "343726",
-    "name": "Bubble Trouble: Adventures",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9x49.jpg",
-    "releaseDate": "2025-05-30T00:00:00.000Z",
+    "id": "343736",
+    "name": "Meaning of Flower",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaq0e.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3658000/",
+    "releaseDate": "2025-05-06T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 242669
   },
   {
-    "id": "346406",
-    "name": "PogoPogo",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9w9y.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3364560/",
-    "releaseDate": "2025-06-30T00:00:00.000Z",
+    "id": "346419",
+    "name": "Jackie Hart: Headhunter",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9wa2.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3509730/",
+    "releaseDate": "2025-10-24T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3646,11 +3731,11 @@
     "ordinal": 243565
   },
   {
-    "id": "348843",
-    "name": "Dungeon Weiqi",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9ymm.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3540430/",
-    "releaseDate": "2025-07-17T00:00:00.000Z",
+    "id": "348853",
+    "name": "3D Escape Room: Mystic Manor",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9ymz.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3612480/",
+    "releaseDate": "2025-07-21T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3660,24 +3745,24 @@
     "ordinal": 244461
   },
   {
-    "id": "351031",
-    "name": "Rollbot",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa1b6.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3656840/",
-    "releaseDate": "2025-11-28T00:00:00.000Z",
+    "id": "351064",
+    "name": "Smash Remix: Version 2.0.0",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa1dl.jpg",
+    "releaseDate": "2025-06-26T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
-      "localCoop": false
+      "max": 4,
+      "online": false,
+      "localCoop": true
     },
     "sessionShape": "openended",
     "ordinal": 245357
   },
   {
-    "id": "354884",
-    "name": "Pressure Cooker",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa4k4.jpg",
-    "releaseDate": "2025-07-14T00:00:00.000Z",
+    "id": "354913",
+    "name": "Die For The Lich",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa4rm.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3415570/",
+    "releaseDate": "2025-11-10T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3687,25 +3772,26 @@
     "ordinal": 246253
   },
   {
-    "id": "358041",
-    "name": "İstanbul Puzzle",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa71l.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3413810/",
-    "releaseDate": "2025-03-10T00:00:00.000Z",
+    "id": "358060",
+    "name": "Accursed Isle: Survival",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coabzq.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3533520/",
+    "releaseDate": "2025-03-12T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
+    "discountPercent": 0,
     "ordinal": 247149
   },
   {
-    "id": "360647",
-    "name": "Pawn.OS()",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa9kw.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3835040/",
-    "releaseDate": "2025-08-08T00:00:00.000Z",
+    "id": "360653",
+    "name": "I Commissioned Some Snails 4",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobx1t.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3728030/",
+    "releaseDate": "2025-07-18T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3715,25 +3801,25 @@
     "ordinal": 248045
   },
   {
-    "id": "363601",
-    "name": "Nuice Industries",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coacou.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3518730/",
-    "releaseDate": "2025-09-08T00:00:00.000Z",
+    "id": "363636",
+    "name": "HgmGame-Lion",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coacp9.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3821780/",
+    "releaseDate": "2025-07-03T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 248941
   },
   {
-    "id": "365855",
-    "name": "Drift Highway: Retro Console Edition",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaey6.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3892780/",
-    "releaseDate": "2025-09-05T00:00:00.000Z",
+    "id": "365864",
+    "name": "Grocery Run",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaeyo.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3633040/",
+    "releaseDate": "2025-09-04T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3743,25 +3829,23 @@
     "ordinal": 249837
   },
   {
-    "id": "368512",
-    "name": "Silent Scream 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coajsx.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3023460/",
-    "releaseDate": "2025-05-27T00:00:00.000Z",
+    "id": "368528",
+    "name": "Rennsport: Deluxe Edition",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coai7u.jpg",
+    "releaseDate": "2025-11-10T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 250733
   },
   {
-    "id": "371425",
-    "name": "Object Factory",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaogi.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4054430/",
-    "releaseDate": "2025-10-09T00:00:00.000Z",
+    "id": "371431",
+    "name": "Squirrel Madness & Silent Mist",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaogh.jpg",
+    "releaseDate": "2025-09-28T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3771,11 +3855,11 @@
     "ordinal": 251629
   },
   {
-    "id": "374019",
-    "name": "Coconut Simulator 2",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc2h5.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3880190/",
-    "releaseDate": "2025-11-15T00:00:00.000Z",
+    "id": "374029",
+    "name": "Time and Space Legacy",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coap8i.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3931220/",
+    "releaseDate": "2025-12-08T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3785,52 +3869,51 @@
     "ordinal": 252525
   },
   {
-    "id": "376680",
-    "name": "Cinco Noches en Casa Rosada 3",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coatfk.jpg",
-    "releaseDate": "2025-08-16T00:00:00.000Z",
+    "id": "376705",
+    "name": "Slime Saga",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coatgy.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4032230/",
+    "releaseDate": "2025-11-21T00:00:00.000Z",
     "players": {
-      "max": "unknown",
-      "online": false,
+      "max": 2,
+      "online": true,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 253421
   },
   {
-    "id": "379373",
-    "name": "Sugoroku New Year's Party",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaws8.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4217990/",
-    "releaseDate": "2025-12-24T00:00:00.000Z",
+    "id": "379393",
+    "name": "101 Cats in Belgium",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobwb4.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4169220/",
+    "releaseDate": "2025-12-21T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 254317
   },
   {
-    "id": "383020",
-    "name": "Songs of Silence: Celestial Church Expansion",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob4nj.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4179260/",
-    "releaseDate": "2025-12-16T00:00:00.000Z",
+    "id": "383048",
+    "name": "Rivalia Online",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob4qv.jpg",
+    "releaseDate": "2025-10-10T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 255213
   },
   {
-    "id": "393117",
-    "name": "I Can't Beat The Beautiful Ones",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coboxt.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3185890/",
-    "releaseDate": "2025-09-25T00:00:00.000Z",
+    "id": "393383",
+    "name": "Dot Com Mystery",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coboob.jpg",
+    "releaseDate": "2025-03-14T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3840,25 +3923,25 @@
     "ordinal": 256109
   },
   {
-    "id": "111333",
-    "name": "Deadhaus Sonata",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobaea.jpg",
-    "storeUrl": "https://store.steampowered.com/app/1142050/",
+    "id": "113556",
+    "name": "Eternal Exodus",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co3qe3.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1009410/",
     "releaseDate": "2026-05-14T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 257005
   },
   {
-    "id": "293449",
-    "name": "Backpacker Guild",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co7z24.jpg",
-    "storeUrl": "https://store.steampowered.com/app/2824000/",
-    "releaseDate": "2026-05-21T00:00:00.000Z",
+    "id": "293860",
+    "name": "Deflectorium",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/co9826.jpg",
+    "storeUrl": "https://store.steampowered.com/app/1910170/",
+    "releaseDate": "2026-03-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3868,11 +3951,11 @@
     "ordinal": 257901
   },
   {
-    "id": "344923",
-    "name": "Tezzel: The Tilemaker's Tale",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobwar.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3703730/",
-    "releaseDate": "2026-04-10T00:00:00.000Z",
+    "id": "345029",
+    "name": "Creepy Support",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coa31n.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3685900/",
+    "releaseDate": "2026-07-14T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3882,11 +3965,11 @@
     "ordinal": 258797
   },
   {
-    "id": "365977",
-    "name": "Dino Citadel",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob68s.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3352930/",
-    "releaseDate": "2026-06-30T00:00:00.000Z",
+    "id": "366097",
+    "name": "Path to Tamer Town",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coaf8r.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3939760/",
+    "releaseDate": "2026-03-31T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3896,11 +3979,11 @@
     "ordinal": 259693
   },
   {
-    "id": "376788",
-    "name": "Monster Hunter Stories 3: Twisted Reflection - Monster Hair: Malzeno Bob",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobsbz.jpg",
-    "storeUrl": "https://store.steampowered.com/app/3581290/",
-    "releaseDate": "2026-03-12T00:00:00.000Z",
+    "id": "376792",
+    "name": "Monster Hunter Stories 3: Twisted Reflection - Rudy's Outfit: Rudyzeno",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobsc6.jpg",
+    "storeUrl": "https://store.steampowered.com/app/3581440/",
+    "releaseDate": "2026-03-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3910,9 +3993,9 @@
     "ordinal": 260589
   },
   {
-    "id": "385070",
-    "name": "Train Your Brain! Spot the Difference With Space Photos",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob9q5.jpg",
+    "id": "385075",
+    "name": "Tenshi no uta: The Angel's Verse",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cob9qa.jpg",
     "releaseDate": "2026-01-15T00:00:00.000Z",
     "players": {
       "max": "unknown",
@@ -3923,11 +4006,11 @@
     "ordinal": 261485
   },
   {
-    "id": "388666",
-    "name": "Demons' Timeline",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobgi6.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4198660/",
-    "releaseDate": "2026-04-29T00:00:00.000Z",
+    "id": "388682",
+    "name": "MetalMuters",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobgba.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4287050/",
+    "releaseDate": "2026-07-13T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3937,11 +4020,11 @@
     "ordinal": 262381
   },
   {
-    "id": "390873",
-    "name": "Chicks in Trouble",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobkbr.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4048470/",
-    "releaseDate": "2026-03-31T00:00:00.000Z",
+    "id": "390876",
+    "name": "Cardwheel",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobkbu.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4047130/",
+    "releaseDate": "2026-03-03T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3951,11 +4034,11 @@
     "ordinal": 263277
   },
   {
-    "id": "393187",
-    "name": "Plaser",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobobq.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4327650/",
-    "releaseDate": "2026-02-20T00:00:00.000Z",
+    "id": "393189",
+    "name": "Click Them Off",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobobs.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4317710/",
+    "releaseDate": "2026-02-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3965,11 +4048,10 @@
     "ordinal": 264173
   },
   {
-    "id": "396383",
-    "name": "Silly Linguine Cat Simulator Deluxe Online",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobvuu.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4368350/",
-    "releaseDate": "2026-03-17T00:00:00.000Z",
+    "id": "396386",
+    "name": "Holy Crap Bears!",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobufl.jpg",
+    "releaseDate": "2026-03-29T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -3979,10 +4061,11 @@
     "ordinal": 265069
   },
   {
-    "id": "399417",
-    "name": "Hyke: Northern Light(s) - A Witch’s Chill Time",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobz6h.jpg",
-    "releaseDate": "2026-04-30T00:00:00.000Z",
+    "id": "399423",
+    "name": "Veritas Tales: Witch of the Dark Castle",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/cobz6r.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4508570/",
+    "releaseDate": "2026-07-09T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,
@@ -4006,24 +4089,25 @@
     "ordinal": 266861
   },
   {
-    "id": "405877",
-    "name": "ApePoint Extraction",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc8re.jpg",
-    "storeUrl": "https://store.steampowered.com/app/4266990/",
-    "releaseDate": "2026-03-06T00:00:00.000Z",
+    "id": "405871",
+    "name": "The Others Will Join Shortly",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coc82f.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4397500/",
+    "releaseDate": "2026-07-23T00:00:00.000Z",
     "players": {
-      "max": 2,
-      "online": true,
+      "max": "unknown",
+      "online": false,
       "localCoop": false
     },
     "sessionShape": "openended",
     "ordinal": 267757
   },
   {
-    "id": "408907",
-    "name": "Guild Soup",
-    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coccn7.jpg",
-    "releaseDate": "2026-07-01T00:00:00.000Z",
+    "id": "408897",
+    "name": "Tom Clancy’s The Division 2: Into the Dark Bundle",
+    "coverUrl": "https://images.igdb.com/igdb/image/upload/t_cover_big/coccnf.jpg",
+    "storeUrl": "https://store.steampowered.com/app/4661990/",
+    "releaseDate": "2026-06-16T00:00:00.000Z",
     "players": {
       "max": "unknown",
       "online": false,

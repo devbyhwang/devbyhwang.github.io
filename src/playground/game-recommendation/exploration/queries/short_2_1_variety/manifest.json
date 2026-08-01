@@ -1,12 +1,12 @@
 {
   "format": 1,
-  "generatedAt": "2026-07-31T01:24:21.127Z",
-  "gameCount": 269454,
+  "generatedAt": "2026-08-01T10:38:15.045Z",
+  "gameCount": 269456,
   "pageSize": 24,
   "rank": {
     "path": "exploration/queries/short_2_1_variety/rank.u32le",
-    "ordinalCount": 5,
-    "byteLength": 20
+    "ordinalCount": 6,
+    "byteLength": 24
   },
   "views": {
     "new": {
@@ -16,7 +16,7 @@
     },
     "rising": {
       "path": "exploration/queries/short_2_1_variety/rising.bits",
-      "count": 0,
+      "count": 1,
       "byteLength": 33682
     },
     "discovery": {
