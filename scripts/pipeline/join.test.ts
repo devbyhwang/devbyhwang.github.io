@@ -147,9 +147,12 @@ describe("numeric IGDB joins", () => {
     // raw.steam.apps on every single IGDB game in the joinSources loop. With production-scale
     // inputs (~270k games × ~82k apps) that hung the pipeline for 56+ minutes. This fixture is
     // deliberately smaller (still large enough to blow way past the time bound if the map were
-    // rebuilt per game) so the test stays fast and non-flaky on CI.
+    // rebuilt per game) so the test stays fast and non-flaky on CI. gameCount is set high enough
+    // (8,000) that the buggy O(n×m) pattern lands in the multi-second range — far past the bound
+    // with a healthy safety margin — while the fixed O(n) code stays in single-digit ms
+    // regardless of fixture size, so this costs nothing for the passing case.
     const appCount = 20_000;
-    const gameCount = 2_000;
+    const gameCount = 8_000;
     const apps = Array.from({ length: appCount }, (_, index) => ({
       appId: index + 1,
       tags: {},
