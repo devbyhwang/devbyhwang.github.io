@@ -345,8 +345,6 @@ describe("live pipeline orchestration", () => {
     const emitted = readEmittedCatalog(destination);
     expect(emitted.games[0]).toMatchObject({
       steamAppId: 730,
-      rating: 90,
-      reviewCount: 100,
       streaming: {
         totalViewers: 130,
         channelCount: 6,
@@ -370,6 +368,11 @@ describe("live pipeline orchestration", () => {
     });
     expect(emitted.games[0].quality).not.toHaveProperty("totalRating");
     expect(emitted.games[0].quality).not.toHaveProperty("totalRatingCount");
+    // This fixture's catalog is far below the 2,000-game overlap floor, so no Steam scale is
+    // fitted and the legacy rating/reviewCount fallbacks stay unset rather than leak the raw
+    // 90% Steam ratio onto an IGDB-shaped scale.
+    expect(emitted.games[0]).not.toHaveProperty("rating");
+    expect(emitted.games[0]).not.toHaveProperty("reviewCount");
   });
 
   it("emits a catalog when one SteamSpy app uses its existing stale cache", async () => {
@@ -626,20 +629,24 @@ describe("pipeline CLI commands", () => {
         igdbRatingCount: 18,
         criticRating: 87,
         criticRatingCount: 12,
-        totalRating: 77.0909090909091,
-        totalRatingCount: 30,
+        totalRating: 79.17647058823529,
+        totalRatingCount: 60,
       },
-      rating: 81,
-      reviewCount: 18,
+      // rating/reviewCount now mirror the shrunk quality.totalRating(Count) rather than the raw IGDB value.
+      rating: 79.17647058823529,
+      reviewCount: 60,
     });
     expect(unrated).toMatchObject({
       quality: {
         steamPositive: 2000,
         steamNegative: 100,
       },
-      rating: 95.23809523809523,
-      reviewCount: 2100,
+      // This fixture catalog is far below the 2,000-game overlap floor, so no Steam scale is
+      // fitted; the raw 95.2% Steam ratio must not leak into rating, and reviewCount falls
+      // back to the IGDB rating_count instead of the Steam review total.
+      reviewCount: 30,
     });
+    expect(unrated).not.toHaveProperty("rating");
     expect(catalogText).not.toContain("\"responses\"");
     expect(catalogText).not.toContain("\"request\"");
   });

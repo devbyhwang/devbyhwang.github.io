@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { HttpClient, IgdbFetchInput, IgdbGame, SteamApp } from "../model";
 import { fetchIgdb } from "../sources/igdb";
-import { bayesianRating, qualityStats } from "./quality";
+import { GLOBAL_QUALITY_PRIOR, bayesianRating, qualityStats } from "./quality";
+import { fitSteamScale } from "./steam-scale";
 
 function game(overrides: Partial<IgdbGame> = {}): IgdbGame {
   return {
@@ -158,5 +159,47 @@ describe("IGDB quality field queries", () => {
       expect.stringContaining("total_rating"),
       expect.stringContaining("total_rating_count"),
     ]));
+  });
+});
+
+const SCALE = fitSteamScale(Array.from({ length: 2000 }, (_, index) => ({
+  steam: 60 + (40 * index) / 2000,
+  igdb: 50 + (40 * index) / 2000,
+})))!;
+
+function steamApp(positive: number, negative: number) {
+  return { appId: 1, tags: {}, positive, negative, owners: "", price: "0", discount: "0" };
+}
+
+describe("qualityStats with a Steam scale", () => {
+  it("uses aligned Steam reviews when IGDB has no rating", () => {
+    const stats = qualityStats({ id: 1 } as never, steamApp(950, 50), GLOBAL_QUALITY_PRIOR, SCALE);
+
+    expect(stats.totalRating).toBeDefined();
+    // 95% 원시 비율이 IGDB 척도로 내려와야 한다
+    expect(stats.totalRating!).toBeLessThan(95);
+    expect(stats.totalRatingCount).toBe(1000);
+  });
+
+  it("keeps the IGDB rating when one exists", () => {
+    const stats = qualityStats(
+      { id: 1, total_rating: 82, total_rating_count: 400 } as never,
+      steamApp(950, 50), GLOBAL_QUALITY_PRIOR, SCALE,
+    );
+
+    expect(stats.totalRatingCount).toBe(400);
+  });
+
+  it("ignores Steam when no scale is supplied", () => {
+    const stats = qualityStats({ id: 1 } as never, steamApp(950, 50), GLOBAL_QUALITY_PRIOR);
+
+    expect(stats.totalRating).toBeUndefined();
+  });
+
+  it("still records the raw counts", () => {
+    const stats = qualityStats({ id: 1 } as never, steamApp(950, 50), GLOBAL_QUALITY_PRIOR, SCALE);
+
+    expect(stats.steamPositive).toBe(950);
+    expect(stats.steamNegative).toBe(50);
   });
 });

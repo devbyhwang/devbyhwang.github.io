@@ -1,4 +1,5 @@
 import type { IgdbGame, QualityStats, SteamApp } from "../model";
+import { alignSteamRating, steamRatio, type SteamScale } from "./steam-scale";
 
 export type QualityPrior = {
   rating: number;
@@ -11,7 +12,7 @@ export const GLOBAL_QUALITY_PRIOR: QualityPrior = {
 };
 
 type QualitySignal = {
-  source: "user" | "critic" | "total";
+  source: "user" | "critic" | "total" | "steam";
   rating?: number;
   count?: number;
   shrunk: number | null;
@@ -38,6 +39,7 @@ function signal(
 function signalPriority(signalValue: QualitySignal): number {
   if (signalValue.source === "user") return 2;
   if (signalValue.source === "critic") return 1;
+  if (signalValue.source === "steam") return 1;
   return 0;
 }
 
@@ -45,7 +47,7 @@ function hasRating(signalValue: QualitySignal): boolean {
   return signalValue.rating !== undefined;
 }
 
-function selectedTotal(total: QualitySignal, user: QualitySignal, critic: QualitySignal): Pick<QualityStats, "totalRating" | "totalRatingCount"> {
+function selectedTotal(total: QualitySignal, user: QualitySignal, critic: QualitySignal, steam: QualitySignal): Pick<QualityStats, "totalRating" | "totalRatingCount"> {
   if (hasRating(total)) {
     return {
       ...(total.shrunk === null ? {} : { totalRating: total.shrunk }),
@@ -53,7 +55,7 @@ function selectedTotal(total: QualitySignal, user: QualitySignal, critic: Qualit
     };
   }
 
-  const candidates = [user, critic].filter(hasRating).sort((left, right) => {
+  const candidates = [user, critic, steam].filter(hasRating).sort((left, right) => {
     const leftCount = left.count ?? -1;
     const rightCount = right.count ?? -1;
     if (rightCount !== leftCount) return rightCount - leftCount;
@@ -96,17 +98,23 @@ export function qualityStats(
   igdb: IgdbGame,
   steam: SteamApp | undefined,
   prior: QualityPrior = GLOBAL_QUALITY_PRIOR,
+  scale?: SteamScale,
 ): QualityStats {
   const user = signal("user", igdb.rating, igdb.rating_count, prior);
   const critic = signal("critic", igdb.aggregated_rating, igdb.aggregated_rating_count, prior);
   const total = signal("total", igdb.total_rating, igdb.total_rating_count, prior);
+
+  const ratio = steam && scale ? steamRatio(steam.positive, steam.negative) : null;
+  const steamSignal = ratio === null || !scale
+    ? signal("steam", undefined, undefined, prior)
+    : signal("steam", alignSteamRating(ratio, scale), steam!.positive + steam!.negative, prior);
 
   return {
     ...(igdb.rating === undefined ? {} : { igdbRating: igdb.rating }),
     ...(igdb.rating_count === undefined ? {} : { igdbRatingCount: igdb.rating_count }),
     ...(igdb.aggregated_rating === undefined ? {} : { criticRating: igdb.aggregated_rating }),
     ...(igdb.aggregated_rating_count === undefined ? {} : { criticRatingCount: igdb.aggregated_rating_count }),
-    ...selectedTotal(total, user, critic),
+    ...selectedTotal(total, user, critic, steamSignal),
     ...(steam?.positive === undefined ? {} : { steamPositive: steam.positive }),
     ...(steam?.negative === undefined ? {} : { steamNegative: steam.negative }),
   };

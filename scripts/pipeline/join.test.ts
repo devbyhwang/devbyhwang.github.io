@@ -205,8 +205,10 @@ describe("GameRecord enrichment", () => {
       sessionShape: "chapter",
       viewerPlayable: { ok: false },
       buzz: { twitchViewers: 1200, twitchChannels: 12, viewerGrowth7d: null, isNewRelease: true, demandShare: 0, demandSources: { chzzk: false, twitch: true }, sourceStatus: { chzzk: "fresh", twitch: "fresh" } },
-      rating: 90,
-      reviewCount: 100,
+      // Steam의 원시 리뷰 비율(90%)이 아니라 IGDB 사용자 평점의 shrink 값이다 — 이 join
+      // 경로는 run.ts가 채우는 steamScale이 없으므로 Steam 신호가 후보에 들어오지 않는다.
+      rating: 70.79411764705883,
+      reviewCount: 9,
       discountPercent: 15,
     });
     expect(records[0].topTags).toEqual([
@@ -251,7 +253,7 @@ describe("GameRecord enrichment", () => {
     });
   });
 
-  it("falls back to IGDB rating and rating count when Steam has no reviews", () => {
+  it("falls back to the shrunk IGDB quality total for rating and its count when Steam has no reviews", () => {
     const records = enrichGames(joinSources(raw({
       igdb: {
         ...raw().igdb,
@@ -259,10 +261,11 @@ describe("GameRecord enrichment", () => {
       },
     })), knowledge, generatedAt);
 
-    expect(records[0]).toMatchObject({ rating: 81, reviewCount: 18 });
+    // rating은 이제 quality.totalRating(베이즈 shrink 적용)과 같은 값이다 — 원시 igdb.rating이 아니다.
+    expect(records[0]).toMatchObject({ rating: 74.6046511627907, reviewCount: 18 });
   });
 
-  it("keeps legacy top-level IGDB-only rating fields on the raw user score while shrinking quality.totalRating", () => {
+  it("keeps the legacy top-level rating fields in sync with the shrunk quality.totalRating", () => {
     const records = enrichGames(joinSources(raw({
       igdb: {
         ...raw().igdb,
@@ -281,8 +284,8 @@ describe("GameRecord enrichment", () => {
     })), knowledge, generatedAt);
 
     expect(records[0]).toMatchObject({
-      rating: 81,
-      reviewCount: 18,
+      rating: 77.0909090909091,
+      reviewCount: 30,
       quality: {
         igdbRating: 81,
         igdbRatingCount: 18,
@@ -388,5 +391,14 @@ describe("adult content exclusion", () => {
     );
 
     expect(records.map((record) => record.id)).toEqual(["2"]);
+  });
+});
+
+describe("Steam review scale alignment", () => {
+  it("does not write the raw Steam ratio into rating", () => {
+    const records = enrichGames([joinedGame({ steam: { appId: 1, tags: {}, positive: 950, negative: 50, owners: "", price: "0", discount: "0" } })], knowledge, generatedAt);
+
+    // 95라는 원시 비율이 그대로 새어나가면 안 된다 — IGDB 평점과 척도가 다르다
+    expect(records[0].rating).not.toBe(95);
   });
 });

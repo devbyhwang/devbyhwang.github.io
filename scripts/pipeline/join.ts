@@ -108,12 +108,12 @@ function twitchCoverUrl(value: string): string {
 }
 
 function reviewFields(game: JoinedGame): Pick<GameRecord, "rating" | "reviewCount" | "discountPercent" | "quality"> {
-  const steamReviews = game.steam ? game.steam.positive + game.steam.negative : 0;
-  const quality = qualityStats(game.igdb, game.steam, GLOBAL_QUALITY_PRIOR);
-  const rating = steamReviews > 0
-    ? game.steam!.positive / steamReviews * 100
-    : game.igdb.rating;
-  const reviewCount = steamReviews > 0 ? steamReviews : game.igdb.rating_count;
+  const quality = qualityStats(game.igdb, game.steam, GLOBAL_QUALITY_PRIOR, game.steamScale);
+  // rating/reviewCount는 score.ts가 quality를 못 읽을 때 쓰는 폴백이다. 예전에는 Steam
+  // 긍정 비율(0~100%)을 그대로 넣었는데, IGDB 평점과 척도가 달라 Steam이 있는 게임이
+  // 조직적으로 높게 매겨졌다. 이제 척도 정렬을 거친 quality만 신뢰한다.
+  const rating = quality.totalRating ?? game.igdb.rating;
+  const reviewCount = quality.totalRatingCount ?? game.igdb.rating_count;
   const discountPercent = game.steam ? positiveInteger(game.steam.discount) : undefined;
   return {
     ...(rating === undefined ? {} : { rating }),

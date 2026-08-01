@@ -9,7 +9,9 @@ import { appendSnapshot, deriveStreamingFeatures, makeDailySnapshot, readHistory
 import { enrichGames, joinSources } from "./join";
 import { loadKnowledge } from "./knowledge";
 import { combineDemandShares, resolveChzzkCategories } from "./chzzk";
-import type { ChzzkRawSnapshot, DemandShareEntry, IgdbGame, IgdbRawSnapshot, KnowledgeAssets, PipelineOptions, PipelineResult, RawResponseRecorder, RawSources, SourceAdapters, SourceConfig, SteamRawSnapshot, TwitchRawSnapshot } from "./model";
+import { GLOBAL_QUALITY_PRIOR, qualityStats } from "./metrics/quality";
+import { fitSteamScale, steamRatio } from "./metrics/steam-scale";
+import type { ChzzkRawSnapshot, DemandShareEntry, IgdbGame, IgdbRawSnapshot, JoinedGame, KnowledgeAssets, PipelineOptions, PipelineResult, RawResponseRecorder, RawSources, SourceAdapters, SourceConfig, SteamRawSnapshot, TwitchRawSnapshot } from "./model";
 import { createHttpClient, saveRaw } from "./http";
 import { fetchIgdb } from "./sources/igdb";
 import { fetchSteam, mergeSteamSnapshots } from "./sources/steam";
@@ -279,6 +281,22 @@ async function fetchAllSourcesWithStatus(
   };
 }
 
+/**
+ * IGDB 평점과 Steam 리뷰를 둘 다 가진 게임들에서 한 번만 척도를 맞춘다. 게임마다
+ * 다시 맞추면 실행 내내 상대 순위가 흔들리고, 겹침이 부족하면(<2,000)
+ * `fitSteamScale`이 `null`을 돌려줘 이후 join 단계가 Steam 신호 없이 진행된다.
+ */
+function fitJoinedSteamScale(joined: JoinedGame[]) {
+  const pairs = joined.flatMap((game) => {
+    if (!game.steam) return [];
+    const ratio = steamRatio(game.steam.positive, game.steam.negative);
+    if (ratio === null) return [];
+    const igdbRating = qualityStats(game.igdb, undefined, GLOBAL_QUALITY_PRIOR).totalRating;
+    return igdbRating === undefined ? [] : [{ steam: ratio, igdb: igdbRating }];
+  });
+  return fitSteamScale(pairs) ?? undefined;
+}
+
 function demandFor(raw: RawSources, aliases: KnowledgeAssets["chzzkAliases"]): {
   shares: Map<string, number>;
   demandSources: { chzzk: boolean; twitch: boolean };
@@ -346,7 +364,9 @@ export async function runPipeline(options: PipelineOptions): Promise<PipelineRes
     raw = { ...raw, chzzk: { ...raw.chzzk, warnings: [...raw.chzzk.warnings, ...demand.warnings] } };
     if (fetchedSources.includes("chzzk")) await cacheFresh(rootDir, "chzzk", raw.chzzk);
   }
-  const joined = joinSources(raw);
+  const joinedGames = joinSources(raw);
+  const steamScale = fitJoinedSteamScale(joinedGames);
+  const joined = steamScale ? joinedGames.map((game) => ({ ...game, steamScale })) : joinedGames;
   const historyPath = resolve(rootDir, "data/history.json");
   const twitchFresh = fetchedSources.includes("twitch");
   const currentHistory = readHistory(historyPath);

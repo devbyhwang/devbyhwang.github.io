@@ -2,6 +2,7 @@ import type { fetchIgdb } from "./sources/igdb";
 import type { fetchSteam } from "./sources/steam";
 import type { fetchTwitch } from "./sources/twitch";
 import type { fetchChzzk } from "./sources/chzzk";
+import type { SteamScale } from "./metrics/steam-scale";
 
 export type VibeKey = "healing" | "variety" | "horror" | "hardcore" | "chatting" | "spectacle";
 export type SessionShape = "match" | "run" | "chapter" | "openended";
@@ -173,6 +174,7 @@ export type JoinedGame = {
     boxArtUrl?: string;
   };
   tags: SteamTag[];
+  steamScale?: SteamScale;
 };
 
 export type HttpClient = {
