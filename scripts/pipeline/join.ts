@@ -46,8 +46,7 @@ function steamCandidates(game: IgdbGame, raw: RawSources): number[] {
   return [...new Set([...fromSnapshot, ...embedded])];
 }
 
-function selectedSteam(game: IgdbGame, raw: RawSources): { steamAppId?: number; steam?: SteamApp } {
-  const apps = new Map(raw.steam.apps.map((app) => [app.appId, app]));
+function selectedSteam(game: IgdbGame, apps: Map<number, SteamApp>, raw: RawSources): { steamAppId?: number; steam?: SteamApp } {
   const candidates = steamCandidates(game, raw);
   const matched = candidates.find((candidate) => apps.has(candidate));
   const steamAppId = matched ?? candidates[0];
@@ -73,12 +72,13 @@ export function joinSources(raw: RawSources): JoinedGame[] {
       ...(boxArtUrl ? { boxArtUrl } : {}),
     };
   };
+  const steamApps = new Map(raw.steam.apps.map((app) => [app.appId, app]));
   const seen = new Set<number>();
   const joined: JoinedGame[] = [];
   for (const igdb of raw.igdb.games) {
     if (seen.has(igdb.id)) continue;
     seen.add(igdb.id);
-    const steam = selectedSteam(igdb, raw);
+    const steam = selectedSteam(igdb, steamApps, raw);
     joined.push({
       igdb,
       ...steam,

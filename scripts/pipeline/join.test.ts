@@ -141,6 +141,47 @@ describe("numeric IGDB joins", () => {
     expect(games[0].twitch).toEqual({ viewers: 0, channels: 0 });
     expect(games[1].steam?.appId).toBe(730);
   });
+
+  it("resolves a large catalog against a large Steam app list without rebuilding the map per game", () => {
+    // Regression guard for the O(n×m) bug: selectedSteam() used to rebuild a Map from
+    // raw.steam.apps on every single IGDB game in the joinSources loop. With production-scale
+    // inputs (~270k games × ~82k apps) that hung the pipeline for 56+ minutes. This fixture is
+    // deliberately smaller (still large enough to blow way past the time bound if the map were
+    // rebuilt per game) so the test stays fast and non-flaky on CI.
+    const appCount = 20_000;
+    const gameCount = 2_000;
+    const apps = Array.from({ length: appCount }, (_, index) => ({
+      appId: index + 1,
+      tags: {},
+      positive: 0,
+      negative: 0,
+      owners: "",
+      price: "0",
+      discount: "0",
+    }));
+    const games = Array.from({ length: gameCount }, (_, index) => ({
+      id: index + 1,
+      name: `Game ${index + 1}`,
+      first_release_date: 1784505600,
+      // Reference an appId within the Steam apps range so every game resolves a Steam match.
+      external_games: [{ external_game_source: 1, uid: String(index + 1) }],
+    }));
+
+    const started = Date.now();
+    const joined = joinSources(raw({
+      igdb: { ...raw().igdb, games },
+      steam: { ...raw().steam, apps },
+    }));
+    const elapsedMs = Date.now() - started;
+
+    expect(joined).toHaveLength(gameCount);
+    // Spot-check a game to confirm correctness survived the refactor, not just speed.
+    const spotCheck = joined.find((game) => game.igdb.id === 1337);
+    expect(spotCheck?.steam?.appId).toBe(1337);
+    // Generous bound: fast enough to pass reliably on a slow CI runner, but tight enough that a
+    // reintroduced per-game Map rebuild (O(n×m) ≈ 40M+ insertions) would blow past it.
+    expect(elapsedMs).toBeLessThan(2000);
+  });
 });
 
 describe("GameRecord enrichment", () => {
