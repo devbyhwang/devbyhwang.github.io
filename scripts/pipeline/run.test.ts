@@ -375,6 +375,63 @@ describe("live pipeline orchestration", () => {
     expect(emitted.games[0]).not.toHaveProperty("reviewCount");
   });
 
+  it("merges SteamSpy bulk backfill review counts for a game the live Steam fetch never resolved", async () => {
+    const destination = root();
+    const base = sources();
+    const initialSteam = {
+      ...base.steam,
+      responses: [{ top_sellers: { items: [{ id: 570 }] } }],
+      topSellerAppIds: [570],
+      apps: [{ appId: 570, tags: {}, positive: 1, negative: 0, owners: "", price: "0", discount: "0" }],
+    };
+    // Simulates the live per-appId detail fetch failing to resolve appId 800 for this run
+    // (e.g. an unlisted or region-locked store page) while the bulk backfill still has it.
+    const detailSteam = { ...base.steam, responses: [], topSellerAppIds: [570], apps: [] };
+    const igdb = {
+      ...base.igdb,
+      externalGames: [{ game: 42, uid: "800", external_game_source: 1 }],
+    };
+
+    mkdirSync(join(destination, "data/raw/steam/all"), { recursive: true });
+    writeFileSync(
+      join(destination, "data/raw/steam/all/0000.json"),
+      `${JSON.stringify({ entries: [{ appId: 800, positive: 321, negative: 9 }] })}\n`,
+    );
+
+    const steamInputs: SteamFetchInput[] = [];
+    const result = await runPipeline({
+      rootDir: destination,
+      asOf,
+      allowNetwork: true,
+      logger,
+      adapters: {
+        twitch: async () => base.twitch,
+        igdb: async () => igdb,
+        steam: async (input) => {
+          steamInputs.push(input);
+          return steamInputs.length === 1 ? initialSteam : detailSteam;
+        },
+        chzzk: async () => base.chzzk,
+      },
+      config: { twitchClientId: "client", twitchClientSecret: "secret", twitchTopGameLimit: 1, twitchStreamPageLimit: 1, igdbRecentDays: 60, chzzkPageLimit: 1, chzzkRetryLimit: 1 },
+    });
+
+    expect(result.catalogUpdated).toBe(true);
+    expect(steamInputs).toEqual([
+      expect.objectContaining({ steamAppIds: [] }),
+      expect.objectContaining({ steamAppIds: [800], includeTopSellers: false }),
+    ]);
+    // Confirms the live detail fetch really did come back empty for 800 in this fixture.
+    expect(initialSteam.apps.some((app) => app.appId === 800)).toBe(false);
+    expect(detailSteam.apps.some((app) => (app as { appId: number }).appId === 800)).toBe(false);
+
+    const game = readEmittedCatalog(destination).games.find((candidate) => candidate.id === "42");
+    expect(game).toMatchObject({
+      steamAppId: 800,
+      quality: { steamPositive: 321, steamNegative: 9 },
+    });
+  });
+
   it("emits a catalog when one SteamSpy app uses its existing stale cache", async () => {
     const destination = root();
 

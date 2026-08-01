@@ -11,12 +11,13 @@ import { loadKnowledge } from "./knowledge";
 import { combineDemandShares, resolveChzzkCategories } from "./chzzk";
 import { GLOBAL_QUALITY_PRIOR, qualityStats } from "./metrics/quality";
 import { fitSteamScale, steamRatio } from "./metrics/steam-scale";
-import type { ChzzkRawSnapshot, DemandShareEntry, IgdbGame, IgdbRawSnapshot, JoinedGame, KnowledgeAssets, PipelineOptions, PipelineResult, RawResponseRecorder, RawSources, SourceAdapters, SourceConfig, SteamRawSnapshot, TwitchRawSnapshot } from "./model";
+import type { ChzzkRawSnapshot, DemandShareEntry, IgdbGame, IgdbRawSnapshot, JoinedGame, KnowledgeAssets, PipelineOptions, PipelineResult, RawResponseRecorder, RawSources, SourceAdapters, SourceConfig, SteamApp, SteamRawSnapshot, TwitchRawSnapshot } from "./model";
 import { createHttpClient, saveRaw } from "./http";
 import { fetchIgdb } from "./sources/igdb";
 import { fetchSteam, mergeSteamSnapshots } from "./sources/steam";
 import { fetchTwitch } from "./sources/twitch";
 import { fetchChzzk } from "./sources/chzzk";
+import { loadSteamSpyBulkReviews } from "./steam-bulk-reviews";
 
 type SourceName = keyof RawSources;
 type SourceSnapshot = IgdbRawSnapshot | TwitchRawSnapshot | SteamRawSnapshot | ChzzkRawSnapshot;
@@ -258,6 +259,28 @@ async function fetchAllSourcesWithStatus(
       steamDetailsStale = true;
       logger.warn("steam detail enrichment failed; keeping the initial Steam snapshot");
     }
+  }
+
+  // Merge the SteamSpy bulk backfill in for review evidence only, after every use of live
+  // Steam data for IGDB discovery above — merging earlier would balloon the IGDB fetch's
+  // `steamAppIds` scope from ~50 live apps to the full 82,505-app bulk set. A live-fetched
+  // entry always wins on collision; bulk-only apps get sparse defaults (no tags/price) since
+  // only their positive/negative review counts feed the join step.
+  const bulkReviews = loadSteamSpyBulkReviews(rootDir);
+  const knownSteamAppIds = new Set(steamSnapshot.apps.map((app) => app.appId));
+  const bulkOnlyApps: SteamApp[] = [...bulkReviews.entries()]
+    .filter(([appId]) => !knownSteamAppIds.has(appId))
+    .map(([appId, review]) => ({
+      appId,
+      tags: {},
+      positive: review.positive,
+      negative: review.negative,
+      owners: "",
+      price: "0",
+      discount: "0",
+    }));
+  if (bulkOnlyApps.length > 0) {
+    steamSnapshot = { ...steamSnapshot, apps: [...steamSnapshot.apps, ...bulkOnlyApps] };
   }
 
   const sourceResults = [
