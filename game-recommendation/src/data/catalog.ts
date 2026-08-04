@@ -148,6 +148,8 @@ function isQuality(value: unknown): value is QualityStats {
     && optionalInteger(quality.igdbRatingCount, 0)
     && optionalNumber(quality.criticRating, 0, 100)
     && optionalInteger(quality.criticRatingCount, 0)
+    && optionalNumber(quality.igdbTotalRating, 0, 100)
+    && optionalInteger(quality.igdbTotalRatingCount, 0)
     && optionalNumber(quality.totalRating, 0, 100)
     && optionalInteger(quality.totalRatingCount, 0)
     && optionalInteger(quality.steamPositive, 0)

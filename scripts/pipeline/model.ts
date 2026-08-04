@@ -90,6 +90,8 @@ export type QualityStats = {
   igdbRatingCount?: number;
   criticRating?: number;
   criticRatingCount?: number;
+  igdbTotalRating?: number;
+  igdbTotalRatingCount?: number;
   totalRating?: number;
   totalRatingCount?: number;
   steamPositive?: number;

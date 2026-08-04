@@ -59,6 +59,8 @@ describe("qualityStats", () => {
       igdbRatingCount: 18,
       criticRating: 92,
       criticRatingCount: 44,
+      igdbTotalRating: 88,
+      igdbTotalRatingCount: 50,
       totalRating: 82,
       totalRatingCount: 50,
       steamPositive: 900,
@@ -115,6 +117,7 @@ describe("qualityStats", () => {
       igdbRatingCount: 12,
       criticRating: 91,
       criticRatingCount: 45,
+      igdbTotalRatingCount: 200,
       totalRating: 83.5,
       totalRatingCount: 200,
     });

@@ -114,6 +114,8 @@ export function qualityStats(
     ...(igdb.rating_count === undefined ? {} : { igdbRatingCount: igdb.rating_count }),
     ...(igdb.aggregated_rating === undefined ? {} : { criticRating: igdb.aggregated_rating }),
     ...(igdb.aggregated_rating_count === undefined ? {} : { criticRatingCount: igdb.aggregated_rating_count }),
+    ...(igdb.total_rating === undefined ? {} : { igdbTotalRating: igdb.total_rating }),
+    ...(igdb.total_rating_count === undefined ? {} : { igdbTotalRatingCount: igdb.total_rating_count }),
     ...selectedTotal(total, user, critic, steamSignal),
     ...(steam?.positive === undefined ? {} : { steamPositive: steam.positive }),
     ...(steam?.negative === undefined ? {} : { steamNegative: steam.negative }),

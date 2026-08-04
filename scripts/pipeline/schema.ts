@@ -101,6 +101,8 @@ function validateQuality(value: unknown, path: string): asserts value is Quality
   optionalInteger(quality.igdbRatingCount, `${path}.igdbRatingCount`, 0);
   optionalFinite(quality.criticRating, `${path}.criticRating`, 0, 100);
   optionalInteger(quality.criticRatingCount, `${path}.criticRatingCount`, 0);
+  optionalFinite(quality.igdbTotalRating, `${path}.igdbTotalRating`, 0, 100);
+  optionalInteger(quality.igdbTotalRatingCount, `${path}.igdbTotalRatingCount`, 0);
   optionalFinite(quality.totalRating, `${path}.totalRating`, 0, 100);
   optionalInteger(quality.totalRatingCount, `${path}.totalRatingCount`, 0);
   optionalInteger(quality.steamPositive, `${path}.steamPositive`, 0);

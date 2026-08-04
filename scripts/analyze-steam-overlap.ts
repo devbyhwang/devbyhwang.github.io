@@ -17,6 +17,8 @@ type CatalogGame = {
   steamAppId?: number;
   quality?: {
     igdbRating?: number;
+    criticRating?: number;
+    igdbTotalRating?: number;
     totalRating?: number;
     totalRatingCount?: number;
   };
@@ -45,7 +47,9 @@ export function measureSteamOverlap(
   const pairs: Array<{ steam: number; igdb: number }> = [];
 
   for (const game of catalog) {
-    const rated = game.quality?.igdbRating != null;
+    const rated = game.quality?.igdbRating != null
+      || game.quality?.criticRating != null
+      || game.quality?.igdbTotalRating != null;
     if (rated) igdbRated += 1;
     if (game.steamAppId == null) { if (rated) evidenceAfter += 1; continue; }
     withSteamAppId += 1;
@@ -56,8 +60,10 @@ export function measureSteamOverlap(
     matched += 1;
     evidenceAfter += 1;
     if (rated) {
+      const igdb = game.quality?.totalRating;
+      if (igdb === undefined) continue;
       overlap += 1;
-      pairs.push({ steam: (review.positive / total) * 100, igdb: game.quality!.igdbRating! });
+      pairs.push({ steam: (review.positive / total) * 100, igdb });
     }
   }
   return { games: catalog.length, withSteamAppId, matched, igdbRated, overlap, evidenceAfter, pairs };
