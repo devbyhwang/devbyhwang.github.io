@@ -49,10 +49,14 @@ module.exports = {
       preview: "/assets/yolo-labeling-preview.svg",
     },
     {
-      title: "게임 추천기",
-      blurb: "혼자 또는 함께할 인원, 플레이 시간, 분위기를 고르면 지금 보기 좋은 게임 5개를 추천합니다.",
+      title: "오늘 뭐 켜지? · Mohaji",
+      blurb: "방송 시간, 함께할 인원, 원하는 분위기를 고르면 지금 켜기 좋은 게임을 추천합니다.",
       links: [
-        { label: "추천 시작", href: "/playground/game-recommendation/" },
+        {
+          label: "추천 시작",
+          href: "https://mohaji-ci1.pages.dev/",
+          external: true,
+        },
       ],
     },
   ],
