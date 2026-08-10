@@ -10,7 +10,7 @@
   <p class="muted">{{ item.blurb }}</p>
   {% if launch %}
   <div class="inline-links">
-    <span>{{ launch.label }} →</span>
+    <span>{{ launch.label }} {% if launch.external %}↗{% else %}→{% endif %}</span>
   </div>
   {% endif %}
 {% endmacro %}
@@ -20,7 +20,12 @@
   {% for item in playgroundCards %}
     {% set launch = item.links | first %}
     {% if launch %}
-    <a class="playground-card" href="{{ launch.href | url }}" aria-label="{{ item.title }} {{ launch.label }}">
+    <a
+      class="playground-card"
+      href="{{ launch.href | url }}"
+      aria-label="{{ item.title }} {{ launch.label }}{% if launch.external %} 새 탭에서 열기{% endif %}"
+      {% if launch.external %}target="_blank" rel="noopener"{% endif %}
+    >
       {{ playgroundCardContent(item, launch) }}
     </a>
     {% else %}

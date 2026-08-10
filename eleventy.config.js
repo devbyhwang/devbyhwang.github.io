@@ -313,9 +313,14 @@ module.exports = function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets/icons": "assets/icons" });
   eleventyConfig.addPassthroughCopy({ "src/styles": "styles" });
   getPlaygroundDemoDirectories().forEach((demoDirectory) => {
+    if (demoDirectory === "game-recommendation") return;
     eleventyConfig.addPassthroughCopy({
       [`src/playground/${demoDirectory}`]: `playground/${demoDirectory}`,
     });
+  });
+  eleventyConfig.addPassthroughCopy({
+    "src/playground/game-recommendation/index.njk":
+      "playground/game-recommendation/index.html",
   });
   eleventyConfig.addPassthroughCopy({ "src/ads.txt": "ads.txt" });
   eleventyConfig.addWatchTarget("src/styles");
