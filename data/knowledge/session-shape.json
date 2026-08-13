@@ -1,9 +1,0 @@
-{
-  "rules": [
-    { "shape": "match", "tagsAny": ["Competitive", "MOBA", "PvP"] },
-    { "shape": "run", "tagsAny": ["Roguelike", "Roguelite"] },
-    { "shape": "chapter", "tagsAny": ["Story Rich", "Visual Novel"] },
-    { "shape": "openended", "genresAny": ["Simulation", "Sandbox"] }
-  ],
-  "default": "openended"
-}
