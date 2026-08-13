@@ -2,21 +2,6 @@
 
 Eleventy 사이트의 `/playground/`에 노출되는 독립형 데모 모음입니다.
 
-## 게임 추천기 catalog 운영
-
-게임 추천기는 `game-recommendation/`의 React/Vite 소스와
-`src/playground/game-recommendation/catalog.json`을 함께 사용합니다. 외부 API secret은
-저장소에 두지 않고 GitHub Actions secrets에서만 읽습니다.
-
-```bash
-npm run pipeline:validate
-npm run pipeline:backfill -- --start 1980-01-01 --end 2026-01-01
-```
-
-실제 역사 데이터 백필은 `Backfill game recommendation catalog` workflow에서 실행합니다.
-백필 범위는 연도 단위로 나뉘며 `data/checkpoints/igdb.json`에 진행 상태가 저장됩니다.
-정기 최신 데이터 갱신은 `Refresh game recommendation catalog` workflow가 매일 00:00 UTC에 실행합니다.
-
 ## 새 데모 추가하기
 
 1. **디렉터리 생성**
@@ -84,4 +69,4 @@ npm run pipeline:backfill -- --start 1980-01-01 --end 2026-01-01
 - **PDF OCR Extractor** - 브라우저에서 PDF/이미지 텍스트를 인식하고 주요 데이터를 자동으로 정리하는 도구
 - **Local LLM Chat** - 브라우저에서 실행해보는 가벼운 로컬 AI 채팅 playground
 - **Focus Timer** - 구글 타이머 스타일의 집중 타이머. 종료 알림과 남은 시간 아이콘 표시 지원
-- **게임 추천기** - 인원, 플레이 시간, 분위기, 시청자 참여 조건을 바탕으로 지금 보기 좋은 게임을 추천하는 서비스
+- **오늘 뭐 켜지? (Mohaji)** - 외부 Mohaji 서비스로 연결되는 게임 추천 카드

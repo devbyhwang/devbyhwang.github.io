@@ -27,10 +27,7 @@ npm run dev
 npm run dev      # Eleventy 개발 서버
 npm run build    # 프로덕션 빌드, 출력: _site/
 npm run clean    # _site/ 삭제
-npm test         # 게임 추천 앱 + 수집 파이프라인 테스트
-npm run pipeline:fixture   # 네트워크 없는 fixture catalog 생성
-npm run pipeline:validate  # 실데이터 catalog와 history 검증
-npm run pipeline:backfill -- --start 1980-01-01 --end 2026-01-01  # 지정 기간 IGDB 역사 데이터 수집
+npm test         # 프로덕션 빌드 + 블로그 리다이렉트 테스트
 ```
 
 ## 프로젝트 구조
@@ -42,9 +39,6 @@ npm run pipeline:backfill -- --start 1980-01-01 --end 2026-01-01  # 지정 기�
 - `src/playground.njk`: Playground 목록 (`/playground/`).
 - `src/blog/`: 글 파일. 빌드 URL은 `/posts/`.
 - `src/playground/`: `/playground/`로 복사되는 독립형 Playground 데모.
-- `game-recommendation/`: 게임 추천 Playground의 React/Vite 소스.
-- `scripts/pipeline/`: Twitch·IGDB·Steam 기반 게임 추천 catalog 수집 파이프라인.
-- `data/`: 게임 추천 knowledge, raw cache, history.
 - `src/_includes/layouts/base.njk`: 공통 레이아웃, canonical, description, Open Graph, Twitter card, CSP.
 - `src/_includes/layouts/post.njk`: 글 상세 레이아웃.
 - `src/_includes/partials/`: 글 목록과 글 상세 공통 파셜.
@@ -157,16 +151,6 @@ Playground는 독립형 데모 영역입니다.
 | `GOOGLE_ADS_PLAYGROUND_BOTTOM_SLOT` | Playground 하단 display 광고 슬롯 | 빈 값 |
 | `GOOGLE_ANALYTICS_ID` | Google Analytics 4 Measurement ID | `G-F1FV4MKDPN` |
 
-게임 추천 pipeline 환경변수:
-
-| 변수 | 용도 | 기본값 |
-| --- | --- | --- |
-| `TWITCH_CLIENT_ID` | Twitch/IGDB API client ID | 필수 |
-| `TWITCH_CLIENT_SECRET` | Twitch app access token 발급용 secret | 필수 |
-| `TWITCH_TOP_GAME_LIMIT` | Twitch 인기 게임 수집 개수 | `1000` |
-| `TWITCH_STREAM_PAGE_LIMIT` | Twitch stream 페이지 제한 | `20` |
-| `IGDB_RECENT_DAYS` | IGDB 최근 출시 게임 검색 기간 | `60` |
-
 광고 동작:
 
 - `GOOGLE_ADS_ENABLE=true`이고 `GOOGLE_ADS_CLIENT`가 있을 때 AdSense 스크립트를 로드합니다.
@@ -205,15 +189,6 @@ curl -sL <cdn-url> | openssl dgst -sha384 -binary | openssl base64 -A
 - 빌드 산출물 `_site/`를 GitHub Pages artifact로 업로드합니다.
 
 GitHub Settings > Pages에서 배포 소스가 GitHub Actions인지 확인하세요.
-
-게임 추천 catalog 갱신 workflow도 이 저장소에서 매일 00:00 UTC에 실행됩니다.
-처음 운영하기 전에 repository secrets에 `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET`을 등록하고,
-`Backfill game recommendation catalog` workflow를 먼저 수동 실행해 역사 데이터를 채우세요. 시작일은
-`YYYY-MM-DD` 형식의 포함 범위이고 종료일은 제외 범위입니다. 백필은 연도 단위 파티션과
-`data/checkpoints/igdb.json`으로 중단 후 재실행을 지원합니다. 이후
-`Refresh game recommendation catalog`가 매일 실행되어 최신 스트리밍·평가 데이터를 갱신합니다. 수집 범위는
-repository variables의 `TWITCH_TOP_GAME_LIMIT`, `TWITCH_STREAM_PAGE_LIMIT`, `IGDB_RECENT_DAYS`로
-조정할 수 있으며 refresh workflow 기본값은 각각 `100`, `5`, `60`입니다.
 
 ## 라이선스
 
