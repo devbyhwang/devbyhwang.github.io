@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">오늘 뭐 켜지? · Mohaji preview</title>
+  <desc id="desc">방송 시간, 인원, 분위기 선택 카드가 오늘의 추천 게임 카드로 모이는 일러스트.</desc>
+  <defs>
+    <linearGradient id="mohaji-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B1233"/>
+      <stop offset="1" stop-color="#33205C"/>
+    </linearGradient>
+    <linearGradient id="mohaji-card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#F1E7FF"/>
+    </linearGradient>
+    <linearGradient id="mohaji-thumb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4B2E86"/>
+      <stop offset="1" stop-color="#23134A"/>
+    </linearGradient>
+    <filter id="mohaji-shadow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0F0823" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <rect width="960" height="540" fill="url(#mohaji-bg)"/>
+  <circle cx="120" cy="470" r="220" fill="#4B2E86" opacity="0.18"/>
+  <circle cx="860" cy="70" r="180" fill="#FF6FB0" opacity="0.1"/>
+
+  <!-- sunburst behind the drawn card -->
+  <g opacity="0.16">
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(0 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(45 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(90 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(135 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(180 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(225 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(270 610 280)"/>
+    <rect x="606" y="140" width="8" height="100" rx="4" fill="#FFC857" transform="rotate(315 610 280)"/>
+  </g>
+
+  <!-- input chips: 시간 / 인원 / 분위기 -->
+  <g font-family="Pretendard, 'Avenir Next', Arial, sans-serif">
+    <path d="M340 182 C 400 182 420 220 485 250" stroke="#C9B8EC" stroke-width="2" stroke-dasharray="4 7" fill="none" opacity="0.4"/>
+    <path d="M340 268 C 400 268 420 268 485 270" stroke="#C9B8EC" stroke-width="2" stroke-dasharray="4 7" fill="none" opacity="0.4"/>
+    <path d="M340 354 C 400 354 420 300 485 285" stroke="#C9B8EC" stroke-width="2" stroke-dasharray="4 7" fill="none" opacity="0.4"/>
+
+    <rect x="90" y="150" width="250" height="64" rx="32" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.16"/>
+    <circle cx="122" cy="182" r="20" fill="#FFC857"/>
+    <path d="M122 170v14l10 6" stroke="#2B1650" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <text x="156" y="178" fill="#FBF7FF" font-size="16" font-weight="700">2시간 방송</text>
+    <text x="156" y="198" fill="#C9B8EC" font-size="12" font-weight="600">예상 방송 시간</text>
+
+    <rect x="90" y="236" width="250" height="64" rx="32" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.16"/>
+    <circle cx="122" cy="268" r="20" fill="#FF6FB0"/>
+    <circle cx="115" cy="263" r="6" fill="#FBF7FF"/>
+    <circle cx="129" cy="263" r="6" fill="#FBF7FF"/>
+    <path d="M108 275c4 7 24 7 28 0" stroke="#FBF7FF" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <text x="156" y="264" fill="#FBF7FF" font-size="16" font-weight="700">듀오</text>
+    <text x="156" y="284" fill="#C9B8EC" font-size="12" font-weight="600">함께하는 인원</text>
+
+    <rect x="90" y="322" width="250" height="64" rx="32" fill="#FFFFFF" fill-opacity="0.08" stroke="#FFFFFF" stroke-opacity="0.16"/>
+    <circle cx="122" cy="354" r="20" fill="#6FE6C7"/>
+    <path d="M122 344l4 8 8 2-8 2-4 8-4-8-8-2 8-2z" fill="#FBF7FF"/>
+    <text x="156" y="350" fill="#FBF7FF" font-size="16" font-weight="700">텐션 UP</text>
+    <text x="156" y="370" fill="#C9B8EC" font-size="12" font-weight="600">오늘의 분위기</text>
+  </g>
+
+  <!-- sparkles -->
+  <path d="M760 96l6 14 14 6-14 6-6 14-6-14-14-6 14-6z" fill="#FFC857" opacity="0.85"/>
+  <path d="M812 320l4 10 10 4-10 4-4 10-4-10-10-4 10-4z" fill="#FF6FB0" opacity="0.8"/>
+
+  <!-- the drawn recommendation card -->
+  <g transform="rotate(-7 610 280)" font-family="Pretendard, 'Avenir Next', Arial, sans-serif">
+    <rect x="470" y="90" width="280" height="380" rx="28" fill="url(#mohaji-card)" filter="url(#mohaji-shadow)"/>
+    <rect x="494" y="114" width="232" height="150" rx="18" fill="url(#mohaji-thumb)"/>
+    <circle cx="610" cy="189" r="30" fill="#FFC857"/>
+    <path d="M602 175v28l24-14z" fill="#2B1650"/>
+    <circle cx="706" cy="134" r="6" fill="#FF6FB0"/>
+
+    <rect x="452" y="118" width="132" height="40" rx="20" fill="#FFC857" transform="rotate(-14 518 138)"/>
+    <text x="518" y="144" text-anchor="middle" fill="#2B1650" font-size="15" font-weight="800" transform="rotate(-14 518 138)">오늘의 PICK</text>
+
+    <rect x="494" y="282" width="170" height="20" rx="10" fill="#2B1650"/>
+    <rect x="494" y="314" width="210" height="10" rx="5" fill="#2B1650" opacity="0.28"/>
+    <rect x="494" y="334" width="180" height="10" rx="5" fill="#2B1650" opacity="0.2"/>
+
+    <rect x="494" y="396" width="176" height="36" rx="18" fill="#EDE3FF"/>
+    <text x="582" y="419" text-anchor="middle" fill="#5B3FA0" font-size="15" font-weight="700">지금 켜기 좋아요</text>
+  </g>
+
+  <text x="90" y="100" fill="#FFC857" font-family="Pretendard, 'Avenir Next', Arial, sans-serif" font-size="18" font-weight="800" letter-spacing="6">MOHAJI</text>
+  <text x="88" y="452" fill="#FBF7FF" font-family="Pretendard, 'Avenir Next', Arial, sans-serif" font-size="54" font-weight="800">오늘 뭐 켜지?</text>
+  <text x="90" y="486" fill="#C9B8EC" font-family="Pretendard, 'Avenir Next', Arial, sans-serif" font-size="19" font-weight="600">방송 분위기에 딱 맞는 게임 추천</text>
+</svg>
