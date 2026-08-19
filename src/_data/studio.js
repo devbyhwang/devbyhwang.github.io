@@ -66,6 +66,7 @@ const games = [
         external: true,
       },
     ],
+    preview: "/assets/mohaji-preview.svg",
   },
 ];
 
