@@ -20,11 +20,14 @@ Eleventy 사이트의 `/playground/`에 노출되는 독립형 데모 모음입�
    ```js
    {
      title: "Your Demo Name",
+     createdAt: "2026-01-01", // 추가한 날짜 (YYYY-MM-DD)
      blurb: "한 줄 설명",
      links: [{ label: "Launch", href: "/playground/your-demo-name/" }],
      preview: "/assets/your-demo-preview.png",
    }
    ```
+
+   목록(홈/`/playground/`)은 `createdAt` 내림차순으로 자동 정렬되므로 배열 위치는 상관없습니다.
 
 4. **로컬 확인**
    ```bash
