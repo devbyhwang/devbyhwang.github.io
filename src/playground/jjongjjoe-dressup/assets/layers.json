@@ -1,0 +1,34 @@
+{
+  "canvas": {
+    "width": 768,
+    "height": 832
+  },
+  "assets": [
+    "base",
+    "arms-neutral",
+    "outfit-default",
+    "eyes-open",
+    "eyes-closed",
+    "mouth-closed",
+    "mouth-open",
+    "mouth-half",
+    "sunglasses",
+    "body",
+    "base-gesture",
+    "arms-gesture"
+  ],
+  "order": [
+    "body",
+    "base",
+    "eyes",
+    "mouth",
+    "outfit",
+    "arms",
+    "accessory"
+  ],
+  "limitations": [
+    "Generated featureless torso and legs are layered beneath original head, hair and tail.",
+    "Face layers retain original white backing.",
+    "Original head and garment source resolution 192×208 enlarged to 768×832."
+  ]
+}

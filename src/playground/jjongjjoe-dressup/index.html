@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<head>
+ <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="description" content="죵쬐의 표정과 옷을 골라 나만의 조합을 만들어요. 직접 그린 옷도 입혀보고 PNG로 저장할 수 있어요.">
+ <title>죵쬐 옷장 · DevByHwang Playground</title>
+ <link rel="stylesheet" href="style.css"><script type="module" src="app.js"></script>
+</head>
+<body>
+ <header class="header"><a class="back" href="../">← Playground</a><a class="wordmark" href="./">죵쬐 옷장<span>DRESS UP STUDIO</span></a><button class="quiet" id="guide-open">옷 만드는 방법 ↗</button></header>
+ <main>
+  <div class="intro"><div><p class="eyebrow">달콤레나의 죵쬐와 놀기</p><h1>오늘은 뭐 입지<span>?</span></h1><p>기본 죵쬐 위에 옷을 하나씩. 나만의 스타일을 만들어봐요.</p></div><span class="intro-tag">작은 옷장, 무한한 조합 ✦</span></div>
+  <div class="studio">
+   <section class="preview-panel" aria-label="캐릭터 미리보기">
+    <div class="panel-top"><span><i class="dot"></i> 나의 죵쬐</span><button id="reset" class="quiet">처음으로 ↺</button></div>
+    <div class="stage checker" id="stage"><span class="stage-sticker">HELLO,<br>죵쬐!</span><canvas id="preview" width="768" height="832" aria-label="선택한 표정과 옷을 입은 죵쬐"></canvas><p class="stage-caption">치지직 스트리머 달콤레나의 캐릭터</p></div>
+    <div class="preview-bottom"><div class="backgrounds" aria-label="미리보기 배경"><button class="swatch selected" data-bg="checker" aria-label="투명 격자 배경" aria-pressed="true"></button><button class="swatch lavender" data-bg="lavender" aria-label="보라 배경" aria-pressed="false"></button><button class="swatch peach" data-bg="peach" aria-label="살구 배경" aria-pressed="false"></button></div><span>저장은 투명 배경 PNG</span></div>
+    <button id="save" class="primary save" disabled>내 죵쬐 저장하기 <span>↓ PNG</span></button>
+   </section>
+   <section class="wardrobe-panel" aria-label="옷장">
+    <div class="wardrobe-heading"><h2>죵쬐의 옷장</h2><span id="item-count"></span></div>
+    <div class="tabs" role="tablist" aria-label="부위 선택">
+     <button role="tab" id="tab-clothes" aria-controls="catalog" aria-selected="true" tabindex="0" data-category="clothes">옷</button><button role="tab" id="tab-eyes" aria-controls="catalog" aria-selected="false" tabindex="-1" data-category="eyes">눈</button><button role="tab" id="tab-mouth" aria-controls="catalog" aria-selected="false" tabindex="-1" data-category="mouth">입</button><button role="tab" id="tab-arms" aria-controls="catalog" aria-selected="false" tabindex="-1" data-category="arms">팔</button><button role="tab" id="tab-accessory" aria-controls="catalog" aria-selected="false" tabindex="-1" data-category="accessory">소품</button>
+    </div>
+    <p class="hint">옷 카드를 고르면 기본 몸 위에 입혀져요. 기본 몸을 선택하면 옷을 벗길 수 있어요.</p>
+    <div id="catalog" class="catalog" role="tabpanel" aria-labelledby="tab-clothes"></div>
+    <div class="import-box"><div class="import-icon">＋</div><div><h3>내가 그린 옷 입혀보기</h3><p>투명 PNG를 불러와 죵쬐에게 입혀요.</p></div><label class="import-button" for="file">PNG 불러오기<input type="file" id="file" accept="image/png"></label></div>
+    <section id="adjustments" class="adjustments" hidden aria-label="직접 만든 옷 조정"><div class="section-heading"><h3>옷 맞추기</h3><button id="align-reset" class="quiet">위치 초기화</button></div><p class="hint">템플릿 크기의 옷은 그대로 맞아요. 다른 크기는 아래에서 조절하세요.</p>
+     <label>좌우 위치 <output id="x-value">0</output><input id="x" type="range" min="-768" max="768" value="0"></label>
+     <label>위아래 위치 <output id="y-value">0</output><input id="y" type="range" min="-832" max="832" value="0"></label>
+     <label>옷 크기 <output id="scale-value">100%</output><input id="scale" type="range" min="10" max="300" value="100"></label>
+     <label class="select-label">팔과 겹치는 순서<select id="order"><option value="40">팔 뒤에 입히기</option><option value="70">팔 앞에 입히기</option></select></label>
+     <details class="contribute"><summary>이 옷을 공용 옷장에 제안하기 ↗</summary><p>제출한 옷은 확인 후 공용 옷장에 추가해요. 아래 두 파일을 저장하고 제안 글에 첨부해주세요.</p><label>옷 이름<input id="clothing-name" maxlength="80" placeholder="예: 보라색 후드티"></label><label>제작자<input id="author" maxlength="80" placeholder="닉네임"></label><button id="export-clothes" class="secondary">옷 PNG 저장</button><button id="export-info" class="secondary">정보 JSON 저장</button><a id="submit" target="_blank" rel="noopener noreferrer" class="text-link">GitHub에 제안 글 쓰기 ↗</a><small>제안 글은 직접 제출해야 해요. GitHub 로그인이 필요합니다.</small></details>
+    </section>
+    <div class="coming"><span>✧</span><p>새 옷을 기다리고 있어요.<br><strong>함께 죵쬐의 옷장을 채워봐요.</strong></p><button id="guide-button" class="text-link">제작 템플릿 받기 ↗</button></div>
+   </section>
+  </div>
+  <p id="download-help" class="hint" hidden>다운로드가 시작되지 않으면 <button id="show-export" class="text-link">이미지 열기 ↗</button>에서 이미지를 길게 누르거나 우클릭해 저장하세요.</p>
+  <p id="status" class="status" role="status" aria-live="polite">옷장을 준비하고 있어요…</p>
+ </main>
+ <footer><span>죵쬐 · 캐릭터 원작: 달콤레나</span><span>팬이 만든 옷입히기 Playground</span></footer>
+ <dialog id="guide"><button id="guide-close" class="close" aria-label="안내 닫기">×</button><p class="eyebrow">MAKE YOUR OWN</p><h2>죵쬐에게 새 옷을!</h2><ol><li><strong>가이드를 내려받아요.</strong><p>768 × 832 픽셀 캔버스와 기본 몸의 위치를 기준으로 그려주세요.</p></li><li><strong>옷만 새 레이어에 그려요.</strong><p>가이드 레이어를 숨기고 투명 PNG로 저장해요. 기본 몸 위에 원하는 모양의 옷을 자유롭게 그리면 돼요.</p></li><li><strong>입혀보고 제안해요.</strong><p>PNG를 불러와 위치를 확인한 뒤, 옷 PNG와 제작자 정보 파일을 제안 글에 첨부해주세요. 확인 후 공용 옷장에 추가됩니다.</p></li></ol><div class="guide-actions"><button id="download-guide" class="primary">제작 가이드 PNG ↓</button><button id="download-template" class="secondary">빈 투명 템플릿 PNG ↓</button></div><p class="hint">직접 그렸거나 공유할 권한이 있는 이미지를 사용해주세요. 애니메이션용 의상은 아직 지원하지 않아요.</p></dialog>
+<dialog id="export-dialog"><button id="export-close" class="close" aria-label="저장 이미지 닫기">×</button><h2>저장할 이미지</h2><img id="export-image" alt="저장할 투명 PNG" style="max-width:100%;max-height:65vh;object-fit:contain"><a id="export-download" class="text-link" download="죵쬐.png">PNG 다운로드 ↓</a><p class="hint">모바일에서는 이미지를 길게 눌러 저장할 수도 있어요.</p></dialog>
+</body>
+</html>

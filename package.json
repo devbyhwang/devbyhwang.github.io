@@ -8,7 +8,8 @@
     "build": "npm run clean && ELEVENTY_ENV=production eleventy",
     "clean": "rm -rf _site",
     "pretest": "npm run build",
-    "test": "npm run test:blog-redirect",
+    "test": "npm run test:blog-redirect && npm run test:dressup",
+    "test:dressup": "vitest run scripts/jjongjjoe-dressup.test.ts --root . --environment node",
     "test:blog-redirect": "vitest run scripts/blog-redirect.test.ts --root . --environment node"
   },
   "dependencies": {},

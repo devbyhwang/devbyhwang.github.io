@@ -2,6 +2,13 @@
 // 목록은 createdAt 내림차순(최신 순)으로 노출되며, 같은 날짜면 아래 작성 순서를 유지합니다.
 const games = [
   {
+    title: "죵쬐 옷장",
+    createdAt: "2026-10-06",
+    blurb: "달콤레나의 죵쬐에게 표정과 옷을 골라 입혀요. 직접 그린 옷을 불러오고 나만의 조합을 PNG로 저장하세요.",
+    links: [{ label: "옷 입히기", href: "/playground/jjongjjoe-dressup/" }],
+    preview: "/assets/jjongjjoe-dressup-preview.png",
+  },
+  {
     title: "Embercraft Fireplace",
     createdAt: "2026-05-16",
     blurb: "Three.js와 Cannon.js로 만든 실시간 장작불 시뮬레이션. 물리 기반 파티클, 동적 오디오, 절차적 불꽃 생성.",
