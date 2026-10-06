@@ -1,0 +1,64 @@
+{
+  "canvas": {
+    "width": 768,
+    "height": 832
+  },
+  "assets": [
+    "base",
+    "arms-neutral",
+    "outfit-default",
+    "eyes-open",
+    "eyes-closed",
+    "mouth-closed",
+    "mouth-open",
+    "mouth-half",
+    "sunglasses"
+  ],
+  "order": [
+    "base",
+    "outfit",
+    "arms",
+    "eyes",
+    "mouth",
+    "accessory"
+  ],
+  "outfitFootprint": [
+    [
+      244,
+      452
+    ],
+    [
+      432,
+      452
+    ],
+    [
+      420,
+      524
+    ],
+    [
+      432,
+      604
+    ],
+    [
+      436,
+      684
+    ],
+    [
+      224,
+      700
+    ],
+    [
+      220,
+      612
+    ],
+    [
+      228,
+      528
+    ]
+  ],
+  "limitations": [
+    "Base outfit area is transparent; replacement clothes must cover garment footprint.",
+    "Face layers include original white face backing.",
+    "Original raster resolution 192×208; enlarged to shared 768×832 canvas."
+  ]
+}
