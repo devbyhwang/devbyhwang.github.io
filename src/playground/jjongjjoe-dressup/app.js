@@ -3,7 +3,7 @@ import { catalog } from './catalog.js';
 const $=id=>document.getElementById(id);
 const canvas=$('preview'),ctx=canvas.getContext('2d');
 const items=[...catalog],images=new Map();
-const defaults={clothes:'default',eyes:'open',mouth:'closed',arms:'neutral',accessory:'none'};
+const defaults={clothes:'none',eyes:'open',mouth:'closed',arms:'neutral',accessory:'none'};
 let selected={...defaults},category='clothes',ready=false,importSerial=0;
 let transform={x:0,y:0,scale:1,order:40};
 function status(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error);}
@@ -20,7 +20,7 @@ function drawItem(target,item){
 function render(){
  if(!ready)return;
  ctx.clearRect(0,0,WIDTH,HEIGHT);ctx.imageSmoothingEnabled=true;
- const layers=[{src: selected.arms==='gesture' ? 'assets/base-gesture.png' : 'assets/base.png',order:10},...Object.keys(selected).map(current).filter(Boolean).filter(i=>i.src).map(i=>({...i,order:i.custom?transform.order:i.order}))];
+ const layers=[{src:'assets/body.png',order:5},{src: selected.arms==='gesture' ? 'assets/base-gesture.png' : 'assets/base.png',order:10},...Object.keys(selected).map(current).filter(Boolean).filter(i=>i.src).map(i=>({...i,order:i.custom?transform.order:i.order}))];
  for(const i of orderLayers(layers))drawItem(ctx,i);
 }
 function syncControls(){
@@ -63,7 +63,7 @@ $('file').addEventListener('change',async event=>{
  const file=event.target.files[0];if(!file)return;const serial=++importSerial;let url;
  try{validateFile(file);validatePngSignature(new Uint8Array(await file.slice(0,8).arrayBuffer()));status('새 옷을 불러오고 있어요…');url=URL.createObjectURL(file);const image=await loadImage(url);validateDimensions(image.width,image.height);if(serial!==importSerial)return;
   const id=`custom-${serial}`,name=file.name.replace(/\.png$/i,'');items.push(createImportedGarment(id,file.name,url));images.set(url,image);url=null;
-  selected.clothes=id;chooseCategory('clothes');syncControls();render();status('옷을 불러왔어요. 위치를 맞춰보고, 기본 옷 영역을 덮는지도 확인해주세요.');
+  selected.clothes=id;chooseCategory('clothes');syncControls();render();status('옷을 불러왔어요. 위치를 맞춰보고, 기본 몸 위에 자연스럽게 놓이는지 확인해주세요.');
  }catch(error){if(serial===importSerial)status(error.message,true);}
  finally{if(url)URL.revokeObjectURL(url);event.target.value='';}
 });
@@ -91,7 +91,7 @@ $('download-template').addEventListener('click',()=>{const c=document.createElem
 $('show-export').addEventListener('click',()=>$('export-dialog').showModal());
 $('export-close').addEventListener('click',()=>$('export-dialog').close());
 async function init(){
- try{const sources=[...new Set(['assets/base.png','assets/base-gesture.png',...items.map(i=>i.src).filter(Boolean)])];await Promise.all(sources.map(async src=>images.set(src,await loadImage(src))));ready=true;render();updateCatalog();syncControls();$('save').disabled=false;status('눈, 입, 팔과 소품을 골라보세요. 직접 그린 옷도 불러올 수 있어요.');}
+ try{const sources=[...new Set(['assets/body.png','assets/base.png','assets/base-gesture.png',...items.map(i=>i.src).filter(Boolean)])];await Promise.all(sources.map(async src=>images.set(src,await loadImage(src))));ready=true;render();updateCatalog();syncControls();$('save').disabled=false;status('눈, 입, 팔과 소품을 골라보세요. 직접 그린 옷도 불러올 수 있어요.');}
  catch(error){status(`옷장을 열지 못했어요. 새로고침 후 다시 시도해주세요. ${error.message}`,true);}
 }
 init();

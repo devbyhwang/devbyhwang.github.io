@@ -12,53 +12,23 @@
     "mouth-closed",
     "mouth-open",
     "mouth-half",
-    "sunglasses"
+    "sunglasses",
+    "body",
+    "base-gesture",
+    "arms-gesture"
   ],
   "order": [
+    "body",
     "base",
-    "outfit",
-    "arms",
     "eyes",
     "mouth",
+    "outfit",
+    "arms",
     "accessory"
   ],
-  "outfitFootprint": [
-    [
-      244,
-      452
-    ],
-    [
-      432,
-      452
-    ],
-    [
-      420,
-      524
-    ],
-    [
-      432,
-      604
-    ],
-    [
-      436,
-      684
-    ],
-    [
-      224,
-      700
-    ],
-    [
-      220,
-      612
-    ],
-    [
-      228,
-      528
-    ]
-  ],
   "limitations": [
-    "Base outfit area is transparent; replacement clothes must cover garment footprint.",
-    "Face layers include original white face backing.",
-    "Original raster resolution 192×208; enlarged to shared 768×832 canvas."
+    "Generated featureless torso and legs are layered beneath original head, hair and tail.",
+    "Face layers retain original white backing.",
+    "Original head and garment source resolution 192×208 enlarged to 768×832."
   ]
 }

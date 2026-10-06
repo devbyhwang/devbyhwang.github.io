@@ -1,4 +1,5 @@
 export const catalog = [
+ {id:'none',category:'clothes',name:'기본 몸',author:'옷 없이 시작하기',src:null,order:40},
  {id:'default',category:'clothes',name:'기본 셔츠 & 스커트',author:'죵쬐 기본 의상',src:'assets/outfit-default.png',order:40},
  {id:'open',category:'eyes',name:'또렷한 눈',author:'기본 표정',src:'assets/eyes-open.png',order:20},
  {id:'closed',category:'eyes',name:'눈 감기',author:'기본 표정',src:'assets/eyes-closed.png',order:20},
